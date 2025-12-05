@@ -245,7 +245,7 @@ Keine kritischen Probleme bekannt.
 ## 🔗 Wichtige Links
 
 - **Supabase Dashboard:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw
-- **GitHub Repository:** https://github.com/u4231458123-droid/newopencarbox
+- **GitHub Repository:** https://github.com/u4231458123-droid/OpenCarBox_NEW
 - **Dokumentation:** `/docs`
 - **Master Plan:** `/docs/tasks/master_plan.md`
 

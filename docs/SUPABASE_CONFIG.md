@@ -1,7 +1,7 @@
 # Supabase Konfiguration - OpenCarBox & Carvantooo
 
 > **WICHTIGE DOKUMENTATION**
-> Alle Supabase-Credentials und Konfigurationen.
+> Konfigurationshinweise für Supabase. **KEINE SECRETS HIER!**
 
 **Projekt:** OpenCarBox & Carvantooo  
 **Supabase Projekt-ID:** `twkdrljfjkbypyhdnhyw`  
@@ -14,19 +14,21 @@
 
 ### Public Keys (Browser-sicher)
 
+Diese Keys sind sicher für den Browser und können in `.env.local` verwendet werden:
+
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://twkdrljfjkbypyhdnhyw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_-_TYsWD7ArLjLSqbMhCf3g_dp0YM8gr
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<Hole aus Supabase Dashboard → Settings → API>
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
 ```
 
 ### Private Keys (NUR Server-side!)
 
-⚠️ **NIEMALS im Browser oder Frontend-Code verwenden!**
+⚠️ **NIEMALS im Browser, Frontend-Code oder Dokumentation committen!**
 
 ```env
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SECRET_KEY=sb_secret_dDQeQ6c7gCMPs8JD8KZx0g_VUGy9wdX
+SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
+SUPABASE_SECRET_KEY=<Hole aus Supabase Dashboard → Settings → API>
 ```
 
 ---
@@ -38,7 +40,7 @@ SUPABASE_SECRET_KEY=sb_secret_dDQeQ6c7gCMPs8JD8KZx0g_VUGy9wdX
 Für normale Queries mit Connection Pooling (PgBouncer):
 
 ```env
-POSTGRES_URL=postgres://postgres.twkdrljfjkbypyhdnhyw:fHYfEWKt04N02gZD@aws-1-eu-central-2.pooler.supabase.com:6543/postgres?sslmode=require&supa=base-pooler.x
+POSTGRES_URL=postgres://postgres.<PROJECT_REF>:<PASSWORD>@aws-1-eu-central-2.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true
 ```
 
 ### Prisma-spezifisch
@@ -46,7 +48,7 @@ POSTGRES_URL=postgres://postgres.twkdrljfjkbypyhdnhyw:fHYfEWKt04N02gZD@aws-1-eu-
 Für Prisma ORM mit PgBouncer:
 
 ```env
-POSTGRES_PRISMA_URL=postgres://postgres.twkdrljfjkbypyhdnhyw:fHYfEWKt04N02gZD@aws-1-eu-central-2.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true
+POSTGRES_PRISMA_URL=postgres://postgres.<PROJECT_REF>:<PASSWORD>@aws-1-eu-central-2.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true
 ```
 
 ### Direct Connection (Non-Pooling)
@@ -54,8 +56,10 @@ POSTGRES_PRISMA_URL=postgres://postgres.twkdrljfjkbypyhdnhyw:fHYfEWKt04N02gZD@aw
 Für Migrationen und Admin-Aufgaben:
 
 ```env
-POSTGRES_URL_NON_POOLING=postgres://postgres.twkdrljfjkbypyhdnhyw:fHYfEWKt04N02gZD@aws-1-eu-central-2.pooler.supabase.com:5432/postgres?sslmode=require
+POSTGRES_URL_NON_POOLING=postgres://postgres.<PROJECT_REF>:<PASSWORD>@aws-1-eu-central-2.pooler.supabase.com:5432/postgres?sslmode=require
 ```
+
+**Hinweis:** Ersetze `<PROJECT_REF>` mit `twkdrljfjkbypyhdnhyw` und `<PASSWORD>` mit dem echten Passwort aus Supabase Dashboard → Settings → Database.
 
 ---
 
@@ -164,9 +168,7 @@ export async function createOrder(orderData: OrderInput) {
 
 ### Über Supabase MCP (empfohlen)
 
-```typescript
-// Migrationen werden automatisch über MCP angewendet
-```
+Migrationen werden automatisch über MCP angewendet, wenn der MCP-Server korrekt konfiguriert ist.
 
 ### Über SQL Editor (manuell)
 
@@ -187,19 +189,22 @@ export async function createOrder(orderData: OrderInput) {
 
 ## ⚠️ Sicherheit
 
-### DO's ✅
+### DO's
 
 - Verwende ANON_KEY im Browser
 - Verwende SERVICE_ROLE nur in Server-Code
 - Halte RLS aktiviert
 - Teste Policies regelmäßig
+- Verwende Platzhalter in Dokumentation
+- Kopiere echte Keys nur in `.env.local` (nicht in Git!)
 
-### DON'Ts ❌
+### DON'Ts
 
 - NIE SERVICE_ROLE im Frontend
-- NIE Secrets in Git committen
+- NIE Secrets in Git committen (auch nicht in Docs!)
 - NIE RLS deaktivieren ohne Grund
 - NIE Direct Connection für normale Queries
+- NIE Passwörter in Dokumentation schreiben
 
 ---
 

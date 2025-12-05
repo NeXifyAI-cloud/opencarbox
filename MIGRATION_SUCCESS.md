@@ -42,11 +42,13 @@
 
 ## 🔑 Credentials (NEUES Projekt)
 
+**WICHTIG:** Echte Keys nur in `.env.local` speichern, NICHT in Git committen!
+
 ```env
 # PRODUCTION SUPABASE (twkdrljfjkbypyhdnhyw)
 NEXT_PUBLIC_SUPABASE_URL=https://twkdrljfjkbypyhdnhyw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a2RybGpmamtieXB5aGRuaHl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4OTY1OTEsImV4cCI6MjA4MDQ3MjU5MX0.d8IA9ShHypsY7-nF5nbNTvrdv6ipUuLuhxgttKkkvcw
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3a2RybGpmamtieXB5aGRuaHl3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDg5NjU5MSwiZXhwIjoyMDgwNDcyNTkxfQ.55s7zXzc7PSHWRo5_iKrV8Dg1l42X75vncz-aaZwGDs
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<Hole aus Supabase Dashboard → Settings → API>
+SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
 ```
 
 ---
@@ -110,4 +112,3 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhY
 **Erstellt:** 2024-12-05  
 **Projekt:** OpenCarBox & Carvantooo  
 **Status:** ✅ MIGRATION ERFOLGREICH
-

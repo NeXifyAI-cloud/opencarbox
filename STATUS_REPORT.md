@@ -185,7 +185,7 @@ npm run dev
 
 ## 🔗 LINKS
 
-- **Supabase Dashboard:** https://supabase.com/dashboard/project/nbdgamjagmptwphzqkpe
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw
 - **GitHub Repository:** https://github.com/u4231458123-droid/newopencarbox
 - **MCP Config:** `c:\Users\pcour\.cursor\mcp.json`
 

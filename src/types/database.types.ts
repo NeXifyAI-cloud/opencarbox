@@ -1,12 +1,3 @@
-/**
- * Automatisch generierte Supabase Datenbank-Typen
- * 
- * Diese Datei wird mit `mcp_supabase_generate_typescript_types` generiert.
- * NICHT manuell bearbeiten!
- * 
- * @generated
- */
-
 export type Json =
   | string
   | number
@@ -16,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
+  }
   public: {
     Tables: {
       appointments: {
@@ -685,7 +681,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_order_number: { Args: Record<PropertyKey, never>; Returns: string }
+      generate_order_number: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
@@ -696,70 +692,125 @@ export type Database = {
   }
 }
 
-// ===========================================
-// HELPER TYPES
-// ===========================================
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
-/** Extrahiert den Row-Type einer Tabelle */
 export type Tables<
-  TableName extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-> = (DefaultSchema["Tables"] & DefaultSchema["Views"])[TableName] extends {
-  Row: infer R
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
-  ? R
-  : never
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
-/** Extrahiert den Insert-Type einer Tabelle */
 export type TablesInsert<
-  TableName extends keyof DefaultSchema["Tables"]
-> = DefaultSchema["Tables"][TableName] extends {
-  Insert: infer I
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
-  ? I
-  : never
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
-/** Extrahiert den Update-Type einer Tabelle */
 export type TablesUpdate<
-  TableName extends keyof DefaultSchema["Tables"]
-> = DefaultSchema["Tables"][TableName] extends {
-  Update: infer U
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
 }
-  ? U
-  : never
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
-// ===========================================
-// CONVENIENCE EXPORTS
-// ===========================================
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
-export type Profile = Tables<"profiles">
-export type Vehicle = Tables<"vehicles">
-export type Category = Tables<"categories">
-export type Product = Tables<"products">
-export type ProductVehicleCompatibility = Tables<"product_vehicle_compatibility">
-export type Order = Tables<"orders">
-export type OrderItem = Tables<"order_items">
-export type Service = Tables<"services">
-export type Appointment = Tables<"appointments">
-export type VehicleForSale = Tables<"vehicles_for_sale">
-export type ChatConversation = Tables<"chat_conversations">
-export type ChatMessage = Tables<"chat_messages">
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
-// Insert Types
-export type ProfileInsert = TablesInsert<"profiles">
-export type VehicleInsert = TablesInsert<"vehicles">
-export type CategoryInsert = TablesInsert<"categories">
-export type ProductInsert = TablesInsert<"products">
-export type OrderInsert = TablesInsert<"orders">
-export type OrderItemInsert = TablesInsert<"order_items">
-export type ServiceInsert = TablesInsert<"services">
-export type AppointmentInsert = TablesInsert<"appointments">
-export type VehicleForSaleInsert = TablesInsert<"vehicles_for_sale">
-
-// Update Types
-export type ProfileUpdate = TablesUpdate<"profiles">
-export type VehicleUpdate = TablesUpdate<"vehicles">
-export type ProductUpdate = TablesUpdate<"products">
-export type OrderUpdate = TablesUpdate<"orders">
-
+export const Constants = {
+  public: {
+    Enums: {},
+  },
+} as const

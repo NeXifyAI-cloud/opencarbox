@@ -7,16 +7,22 @@
   
   "infrastructure": {
     "github": {
-      "repository": "https://github.com/u4231458123-droid/newopencarbox",
+      "repository": "https://github.com/u4231458123-droid/OpenCarBox_NEW",
       "branch_main": "main",
       "branch_dev": "develop"
     },
     "supabase": {
-      "project_ref": "nbdgamjagmptwphzqkpe",
-      "url": "https://nbdgamjagmptwphzqkpe.supabase.co",
+      "project_ref": "twkdrljfjkbypyhdnhyw",
+      "url": "https://twkdrljfjkbypyhdnhyw.supabase.co",
       "mcp_enabled": true,
+      "status": "BEZAHLT - Production Ready",
       "tables": ["profiles", "vehicles", "categories", "products", "product_vehicle_compatibility", "orders", "order_items", "services", "appointments", "vehicles_for_sale", "chat_conversations", "chat_messages"],
       "storage_buckets": ["product-images", "vehicle-images", "category-images", "service-images", "avatars", "chat-attachments"]
+    },
+    "vercel": {
+      "project": "open-car-box-new",
+      "connected": true,
+      "auto_deploy": true
     }
   },
 

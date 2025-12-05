@@ -20,7 +20,7 @@
 
 ### 2. Supabase Integration
 
-- [x] **Supabase MCP** verbunden (`nbdgamjagmptwphzqkpe`)
+- [x] **Supabase MCP** verbunden (`twkdrljfjkbypyhdnhyw` - BEZAHLT)
 - [x] **Datenbank-Schema** erstellt (12 Tabellen)
   - `profiles` - Benutzerprofile
   - `vehicles` - Meine Garage (HSN/TSN)
@@ -244,7 +244,7 @@ Keine kritischen Probleme bekannt.
 
 ## 🔗 Wichtige Links
 
-- **Supabase Dashboard:** https://supabase.com/dashboard/project/nbdgamjagmptwphzqkpe
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw
 - **GitHub Repository:** https://github.com/u4231458123-droid/newopencarbox
 - **Dokumentation:** `/docs`
 - **Master Plan:** `/docs/tasks/master_plan.md`

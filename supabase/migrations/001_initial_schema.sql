@@ -2,7 +2,7 @@
 -- OpenCarBox & Carvantooo - Initiales Datenbank-Schema
 -- Supabase PostgreSQL Migration
 -- ===========================================
--- Projekt: nbdgamjagmptwphzqkpe
+-- Projekt: twkdrljfjkbypyhdnhyw (Production)
 -- Erstellt: 2024-12-05
 -- ===========================================
 

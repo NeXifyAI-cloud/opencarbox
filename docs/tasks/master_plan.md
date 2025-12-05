@@ -76,61 +76,61 @@
   - [x] Breakpoints
 
 ### TASK-005: Datenbank-Schema
-- **Status:** ⬜ OFFEN
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-001
-- **Beschreibung:** Prisma Schema mit allen Entitäten
+- **Beschreibung:** Supabase Schema mit allen Entitäten (via MCP migriert)
 - **Akzeptanzkriterien:**
-  - [ ] User Model
-  - [ ] Product Model
-  - [ ] Category Model
-  - [ ] Order Model
-  - [ ] Vehicle Model
-  - [ ] Service Model
-  - [ ] Appointment Model
-  - [ ] Relations definiert
-  - [ ] Seed-Daten
+  - [x] profiles (User) Model
+  - [x] products Model
+  - [x] categories Model
+  - [x] orders + order_items Model
+  - [x] vehicles Model
+  - [x] services Model
+  - [x] appointments Model
+  - [x] Relations definiert (RLS Policies)
+  - [ ] Seed-Daten (Optional)
 
 ### TASK-006: Scripts erstellen
-- **Status:** ⬜ OFFEN
+- **Status:** 🔄 IN ARBEIT
 - **Priorität:** MITTEL
 - **Abhängigkeiten:** TASK-001
 - **Beschreibung:** Sync-Docs-to-Rules und Quality-Gate Scripts
 - **Akzeptanzkriterien:**
-  - [ ] sync-docs-to-rules.ts funktioniert
-  - [ ] quality-gate.ts prüft Code-Qualität
-  - [ ] Husky pre-commit Hook
+  - [x] sync-docs-to-rules.ts erstellt
+  - [x] quality-gate.ts erstellt
+  - [ ] Husky pre-commit Hook konfigurieren
 
 ---
 
 ## 🎨 Phase 2: UI-Komponenten-Bibliothek (Woche 2)
 
 ### TASK-010: shadcn/ui Setup
-- **Status:** ⬜ OFFEN
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-001, TASK-004
 - **Beschreibung:** shadcn/ui initialisieren und an Design-System anpassen
 - **Akzeptanzkriterien:**
-  - [ ] shadcn/ui CLI konfiguriert
-  - [ ] components.json angepasst
-  - [ ] Farben überschrieben
-  - [ ] globals.css mit CSS-Variablen
+  - [x] shadcn/ui CLI konfiguriert
+  - [x] components.json angepasst
+  - [x] Farben überschrieben
+  - [x] globals.css mit CSS-Variablen
 
 ### TASK-011: Atoms - Basis-Komponenten
-- **Status:** ⬜ OFFEN
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-010
 - **Beschreibung:** Alle atomaren UI-Komponenten
 - **Akzeptanzkriterien:**
-  - [ ] Button (6 Varianten)
-  - [ ] Input (Text, Number, Search, HSN)
-  - [ ] Badge (Status, Category, Price)
-  - [ ] Icon (Lucide + Custom)
-  - [ ] Avatar
-  - [ ] Spinner
-  - [ ] Skeleton
-  - [ ] Alle mit TypeScript Props
-  - [ ] Alle dokumentiert
+  - [x] Button (8 Varianten inkl. carvantooo/opencarbox)
+  - [x] Input (mit Label, Error, Icons)
+  - [x] Badge (9 Varianten inkl. success/warning/info)
+  - [x] Icon (Lucide) - wird direkt importiert
+  - [x] Avatar (mit SimpleAvatar Wrapper)
+  - [x] Spinner (mit PageSpinner, LoadingOverlay)
+  - [x] Skeleton (mit SkeletonCard, SkeletonProductCard, etc.)
+  - [x] Alle mit TypeScript Props
+  - [x] Alle dokumentiert (JSDoc)
 
 ### TASK-012: Molecules - Zusammengesetzte Komponenten
 - **Status:** ⬜ OFFEN
@@ -475,15 +475,15 @@
 
 ## 📊 Status-Übersicht
 
-| Phase | Tasks | Erledigt | Offen |
-|-------|-------|----------|-------|
-| Phase 1: Fundament | 6 | 1 | 5 |
-| Phase 2: UI-Komponenten | 5 | 0 | 5 |
-| Phase 3: Core-Features | 9 | 0 | 9 |
-| Phase 4: Integrationen | 6 | 0 | 6 |
-| Phase 5: Admin & Polish | 4 | 0 | 4 |
-| Phase 6: Launch | 3 | 0 | 3 |
-| **GESAMT** | **33** | **1** | **32** |
+| Phase | Tasks | Erledigt | In Arbeit | Offen |
+|-------|-------|----------|-----------|-------|
+| Phase 1: Fundament | 6 | 5 | 1 | 0 |
+| Phase 2: UI-Komponenten | 5 | 2 | 0 | 3 |
+| Phase 3: Core-Features | 9 | 0 | 0 | 9 |
+| Phase 4: Integrationen | 6 | 0 | 0 | 6 |
+| Phase 5: Admin & Polish | 4 | 0 | 0 | 4 |
+| Phase 6: Launch | 3 | 0 | 0 | 3 |
+| **GESAMT** | **33** | **7** | **1** | **25** |
 
 ---
 
@@ -493,6 +493,8 @@
 - 2024-12-05: Markenarchitektur finalisiert (Carvantooo = Shop, OpenCarBox = Services)
 - 2024-12-05: Tech-Stack festgelegt (Next.js 14, Supabase, Stripe)
 - 2024-12-05: Design-System definiert (Rot-Blau, Premium-Ästhetik)
+- 2024-12-05: Supabase Migration auf bezahltes Projekt (twkdrljfjkbypyhdnhyw)
+- 2024-12-05: UI-Komponenten-Bibliothek gestartet (Button, Input, Badge, Avatar, Spinner, Skeleton)
 
 ### Risiken
 - TecDoc API Zugang muss beantragt werden
@@ -505,5 +507,5 @@
 
 ---
 
-**Letzte Aktualisierung:** 2024-12-05
+**Letzte Aktualisierung:** 2024-12-06
 

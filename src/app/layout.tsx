@@ -9,6 +9,7 @@
 
 import type { Metadata, Viewport } from 'next';
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from 'next/font/google';
+import { Providers } from '@/components/providers';
 import './globals.css';
 
 /* =============================================================================
@@ -154,7 +155,7 @@ interface RootLayoutProps {
  * Umschließt die gesamte Anwendung und definiert:
  * - HTML-Struktur mit Sprachattribut
  * - Font-Variablen
- * - Global Provider (TODO: Implementieren)
+ * - Global Provider (Theme, Query, Toast)
  */
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
@@ -164,15 +165,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background antialiased">
-        {/* 
-          TODO: Provider hinzufügen:
-          - ThemeProvider (Dark Mode)
-          - QueryClientProvider (TanStack Query)
-          - Toaster (Benachrichtigungen)
-        */}
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
 }
-

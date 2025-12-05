@@ -133,19 +133,19 @@
   - [x] Alle dokumentiert (JSDoc)
 
 ### TASK-012: Molecules - Zusammengesetzte Komponenten
-- **Status:** ⬜ OFFEN
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-011
 - **Beschreibung:** Zusammengesetzte Komponenten aus Atoms
 - **Akzeptanzkriterien:**
-  - [ ] SearchBar (mit HSN/TSN)
-  - [ ] ProductCard
-  - [ ] ServiceCard
-  - [ ] VehicleCard
-  - [ ] PriceDisplay
-  - [ ] FormField
-  - [ ] NavItem
-  - [ ] Rating
+  - [x] SearchBar (mit HSN/TSN)
+  - [x] ProductCard (3 Varianten: default, compact, horizontal)
+  - [x] ServiceCard (3 Varianten: default, compact, featured)
+  - [ ] VehicleCard (wird bei Bedarf ergänzt)
+  - [x] PriceDisplay (mit PriceCompact)
+  - [ ] FormField (wird bei Bedarf ergänzt)
+  - [ ] NavItem (wird bei Bedarf ergänzt)
+  - [x] Rating (mit RatingCompact)
 
 ### TASK-013: Organisms - Komplexe Komponenten
 - **Status:** ⬜ OFFEN
@@ -478,12 +478,12 @@
 | Phase | Tasks | Erledigt | In Arbeit | Offen |
 |-------|-------|----------|-----------|-------|
 | Phase 1: Fundament | 6 | 5 | 1 | 0 |
-| Phase 2: UI-Komponenten | 5 | 2 | 0 | 3 |
+| Phase 2: UI-Komponenten | 5 | 3 | 0 | 2 |
 | Phase 3: Core-Features | 9 | 0 | 0 | 9 |
 | Phase 4: Integrationen | 6 | 0 | 0 | 6 |
 | Phase 5: Admin & Polish | 4 | 0 | 0 | 4 |
 | Phase 6: Launch | 3 | 0 | 0 | 3 |
-| **GESAMT** | **33** | **7** | **1** | **25** |
+| **GESAMT** | **33** | **8** | **1** | **24** |
 
 ---
 

@@ -1,0 +1,405 @@
+/**
+ * Globale Styles - OpenCarBox & Carvantooo
+ * 
+ * Dieses Stylesheet definiert:
+ * - CSS-Variablen für shadcn/ui Kompatibilität
+ * - Design-System-Tokens
+ * - Basis-Styles
+ * - Utility-Klassen
+ * 
+ * @see /docs/design-system/colors.md
+ * @see tailwind.config.ts
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================================================
+   CSS VARIABLEN - Design System Tokens
+   ============================================================================= */
+
+@layer base {
+  :root {
+    /* ---------------------------------------------------------------------
+       Basis-Farben (Light Mode)
+       --------------------------------------------------------------------- */
+    --background: 0 0% 100%;           /* #FFFFFF */
+    --foreground: 222.2 84% 4.9%;      /* Slate 900 */
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Primärfarbe - Carvantooo Rot */
+    --primary: 0 72% 51%;              /* #E53E3E */
+    --primary-foreground: 0 0% 100%;
+
+    /* Sekundärfarbe - OpenCarBox Blau */
+    --secondary: 210 79% 46%;          /* #3182CE */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 0 72% 51%;                 /* Carvantooo Rot */
+
+    /* Border Radius */
+    --radius: 0.5rem;
+
+    /* ---------------------------------------------------------------------
+       Marken-spezifische Variablen
+       --------------------------------------------------------------------- */
+    
+    /* Carvantooo (Shop) */
+    --carvantooo-primary: 0 72% 51%;
+    --carvantooo-glow: rgba(229, 62, 62, 0.4);
+    
+    /* OpenCarBox (Services) */
+    --opencarbox-primary: 210 79% 46%;
+    --opencarbox-glow: rgba(49, 130, 206, 0.4);
+
+    /* ---------------------------------------------------------------------
+       Schatten
+       --------------------------------------------------------------------- */
+    --shadow-card: 0 2px 8px -2px rgb(0 0 0 / 0.1), 0 4px 12px -4px rgb(0 0 0 / 0.05);
+    --shadow-card-hover: 0 8px 24px -8px rgb(0 0 0 / 0.15), 0 16px 32px -16px rgb(0 0 0 / 0.1);
+  }
+
+  /* Dark Mode */
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 0 72% 65%;              /* Helleres Rot für Dark Mode */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 79% 60%;          /* Helleres Blau für Dark Mode */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 50.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 0 72% 65%;
+
+    /* Carvantooo Dark */
+    --carvantooo-glow: rgba(248, 113, 113, 0.4);
+    
+    /* OpenCarBox Dark */
+    --opencarbox-glow: rgba(96, 165, 250, 0.4);
+  }
+}
+
+/* =============================================================================
+   BASIS-STYLES
+   ============================================================================= */
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Überschriften */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  /* Links */
+  a {
+    @apply transition-colors duration-200;
+  }
+
+  /* Focus States */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+
+  /* Auswahl */
+  ::selection {
+    @apply bg-carvantooo-100 text-carvantooo-900;
+  }
+
+  .dark ::selection {
+    @apply bg-carvantooo-900 text-carvantooo-100;
+  }
+}
+
+/* =============================================================================
+   KOMPONENTEN-STYLES
+   ============================================================================= */
+
+@layer components {
+  /* Container mit maximalem Inhalt */
+  .container-content {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Premium Card mit Hover-Effekt */
+  .card-premium {
+    @apply bg-card rounded-xl border border-border;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-premium:hover {
+    @apply -translate-y-1;
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* Glassmorphism Card */
+  .card-glass {
+    @apply backdrop-blur-xl bg-white/80 dark:bg-slate-900/80;
+    @apply border border-white/20 dark:border-slate-700/50;
+    @apply rounded-2xl;
+  }
+
+  /* Gradient Button - Carvantooo */
+  .btn-gradient-red {
+    @apply bg-gradient-to-r from-carvantooo-500 to-carvantooo-700;
+    @apply text-white font-medium;
+    @apply hover:from-carvantooo-600 hover:to-carvantooo-800;
+    @apply transition-all duration-300;
+  }
+
+  .btn-gradient-red:hover {
+    box-shadow: 0 0 20px var(--carvantooo-glow);
+  }
+
+  /* Gradient Button - OpenCarBox */
+  .btn-gradient-blue {
+    @apply bg-gradient-to-r from-opencarbox-500 to-opencarbox-700;
+    @apply text-white font-medium;
+    @apply hover:from-opencarbox-600 hover:to-opencarbox-800;
+    @apply transition-all duration-300;
+  }
+
+  .btn-gradient-blue:hover {
+    box-shadow: 0 0 20px var(--opencarbox-glow);
+  }
+
+  /* Gradient Border */
+  .border-gradient-red {
+    @apply relative;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #E53E3E, #9B2C2C) border-box;
+    border: 2px solid transparent;
+  }
+
+  .border-gradient-blue {
+    @apply relative;
+    background: linear-gradient(white, white) padding-box,
+                linear-gradient(135deg, #3182CE, #1A365D) border-box;
+    border: 2px solid transparent;
+  }
+
+  /* Input mit Label-Float */
+  .input-float-label {
+    @apply relative;
+  }
+
+  .input-float-label input {
+    @apply w-full px-4 py-3 border border-border rounded-lg;
+    @apply focus:border-carvantooo-500 focus:ring-1 focus:ring-carvantooo-500;
+    @apply transition-all duration-200;
+  }
+
+  .input-float-label label {
+    @apply absolute left-4 top-3 text-muted-foreground;
+    @apply transition-all duration-200 pointer-events-none;
+  }
+
+  .input-float-label input:focus ~ label,
+  .input-float-label input:not(:placeholder-shown) ~ label {
+    @apply -top-2.5 left-3 text-xs bg-background px-1;
+    @apply text-carvantooo-500;
+  }
+}
+
+/* =============================================================================
+   UTILITY-KLASSEN
+   ============================================================================= */
+
+@layer utilities {
+  /* Text Gradient */
+  .text-gradient-red {
+    @apply bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-carvantooo-500 to-carvantooo-700;
+  }
+
+  .text-gradient-blue {
+    @apply bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-opencarbox-500 to-opencarbox-700;
+  }
+
+  /* Glow Effects */
+  .glow-red {
+    box-shadow: 0 0 20px var(--carvantooo-glow);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px var(--opencarbox-glow);
+  }
+
+  /* Noise Texture (für Premium-Look) */
+  .texture-noise {
+    position: relative;
+  }
+
+  .texture-noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+  }
+
+  /* Mesh Gradient Backgrounds */
+  .bg-mesh-red {
+    background: 
+      radial-gradient(at 40% 20%, rgba(229, 62, 62, 0.3) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(155, 44, 44, 0.2) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(254, 215, 215, 0.3) 0px, transparent 50%);
+  }
+
+  .bg-mesh-blue {
+    background: 
+      radial-gradient(at 40% 20%, rgba(49, 130, 206, 0.3) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(26, 54, 93, 0.2) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(190, 227, 248, 0.3) 0px, transparent 50%);
+  }
+
+  /* Animierte Unterstreichung für Links */
+  .link-underline {
+    @apply relative;
+  }
+
+  .link-underline::after {
+    content: "";
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-current;
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Scrollbar Styling */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme('colors.slate.300');
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: theme('colors.slate.400');
+  }
+
+  /* Hide Scrollbar aber scroll erhalten */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* =============================================================================
+   ANIMATIONEN
+   ============================================================================= */
+
+@layer utilities {
+  /* Stagger Animation für Listen */
+  .animate-stagger > * {
+    @apply opacity-0 animate-fade-in-up;
+  }
+
+  .animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .animate-stagger > *:nth-child(2) { animation-delay: 100ms; }
+  .animate-stagger > *:nth-child(3) { animation-delay: 200ms; }
+  .animate-stagger > *:nth-child(4) { animation-delay: 300ms; }
+  .animate-stagger > *:nth-child(5) { animation-delay: 400ms; }
+  .animate-stagger > *:nth-child(6) { animation-delay: 500ms; }
+}
+
+/* =============================================================================
+   PRINT STYLES
+   ============================================================================= */
+
+@media print {
+  body {
+    @apply bg-white text-black;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
+

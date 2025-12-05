@@ -65,19 +65,30 @@ export function useLocalStorage<T>(
 
   // Synchronisiere mit anderen Tabs/Fenstern
   useEffect(() => {
+    // SSR-Guard: Event Listener nur im Browser registrieren
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === key && e.newValue !== null) {
-        try {
-          setStoredValue(JSON.parse(e.newValue) as T);
-        } catch {
-          // Ungültiges JSON ignorieren
+      if (e.key === key) {
+        // Bug 1 Fix: Auch Löschungen synchronisieren (e.newValue === null)
+        if (e.newValue === null) {
+          // Item wurde in anderem Tab gelöscht -> auf initialValue zurücksetzen
+          setStoredValue(initialValue);
+        } else {
+          try {
+            setStoredValue(JSON.parse(e.newValue) as T);
+          } catch {
+            // Ungültiges JSON ignorieren
+          }
         }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [key]);
+  }, [key, initialValue]);
 
   return [storedValue, setValue, removeValue];
 }

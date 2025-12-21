@@ -52,6 +52,8 @@ export interface BadgeProps
     VariantProps<typeof badgeVariants> {
   /** Optionales Icon links */
   icon?: React.ReactNode;
+  /** Zusätzliche CSS-Klassen */
+  className?: string;
 }
 
 /**

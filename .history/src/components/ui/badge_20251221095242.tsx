@@ -52,12 +52,22 @@ export interface BadgeProps
     VariantProps<typeof badgeVariants> {
   /** Optionales Icon links */
   icon?: React.ReactNode;
+  /** Zusätzliche CSS-Klassen */
+  className?: string;
 }
 
 /**
  * Badge-Komponente für Status-Anzeigen und Kategorien.
  */
 function Badge({ className, variant, icon, children, ...props }: BadgeProps) {
+  return (
+    <div className={cn(badgeVariants({ variant }), className)} {...props}>
+      {icon && <span className="mr-1">{icon}</span>}
+      {children}
+    </div>
+  );
+}
+
   return (
     <div className={cn(badgeVariants({ variant }), className)} {...props}>
       {icon && <span className="mr-1">{icon}</span>}

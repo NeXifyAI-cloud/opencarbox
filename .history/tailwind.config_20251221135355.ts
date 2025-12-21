@@ -71,34 +71,6 @@ const config: Config = {
           900: '#7C2D12',
           DEFAULT: '#FF6B35',
         },
-        /* kfzteile24 Grau-Palette für Filter und Backgrounds */
-        kfzgray: {
-          50: '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          400: '#9CA3AF',
-          500: '#6B7280',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-          900: '#111827',
-          DEFAULT: '#6B7280',
-        },
-        /* Neutrale Slate Palette */
-        slate: {
-          50: '#F8FAFC',
-          100: '#F1F5F9',
-          200: '#E2E8F0',
-          300: '#CBD5E1',
-          400: '#94A3B8',
-          500: '#64748B',
-          600: '#475569',
-          700: '#334155',
-          800: '#1E293B',
-          900: '#0F172A',
-          950: '#020617',
-        },
         /* Status-Farben */
         success: {
           50: '#ECFDF5',

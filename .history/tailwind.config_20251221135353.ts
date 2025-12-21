@@ -59,34 +59,6 @@ const config: Config = {
         },
         /* kfzteile24 Orange - Für Aktionen, CTAs, Hochzeiten */
         kfz: {
-          50: '#FFF5F5',
-          100: '#FFE5E5',
-          200: '#FECACA',
-          300: '#FDA4A4',
-          400: '#FB7185',
-          500: '#FF6B35', // Primary Orange wie kfzteile24
-          600: '#EA580C', // Hover
-          700: '#C2410C', // Active
-          800: '#9A3412',
-          900: '#7C2D12',
-          DEFAULT: '#FF6B35',
-        },
-        /* kfzteile24 Grau-Palette für Filter und Backgrounds */
-        kfzgray: {
-          50: '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          400: '#9CA3AF',
-          500: '#6B7280',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-          900: '#111827',
-          DEFAULT: '#6B7280',
-        },
-        /* Neutrale Slate Palette */
-        slate: {
           50: '#F8FAFC',
           100: '#F1F5F9',
           200: '#E2E8F0',

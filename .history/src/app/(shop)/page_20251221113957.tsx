@@ -5,15 +5,15 @@ import { motion } from 'framer-motion';
 import { Search, ShoppingCart, Filter, Truck, ShieldCheck, Star, ShoppingBag, ChevronRight, Package, LayoutGrid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ProductCard } from '@/components/shared/product-card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useProducts } from '@/hooks/use-products';
 import { cn } from '@/lib/utils';
 
-const products = [
-  {
-    id: 1,
-    name: 'Bremsscheiben Set Vorne',
-    brand: 'Brembo',
-    price: 129.90,
-    rating: 4.8,
+/**
+ * Carvantooo Shop Landing Page - Dynamisch mit Supabase
+ */
+export default function ShopPage() {
     reviews: 124,
     image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&q=80&w=400',
     category: 'Bremsanlage'

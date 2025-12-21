@@ -2,9 +2,9 @@
   "version": "2.0",
   "project": "OpenCarBox & Carvantooo Platform",
   "updated": "2024-12-05",
-
+  
   "role": "Autonomer Senior System Architect & Fullstack Developer",
-
+  
   "infrastructure": {
     "github": {
       "repository": "https://github.com/u4231458123-droid/OpenCarBox_NEW",
@@ -12,8 +12,8 @@
       "branch_dev": "develop"
     },
     "supabase": {
-      "project_ref": "gvbwxxkqlkblnhfchidd",
-      "url": "https://gvbwxxkqlkblnhfchidd.supabase.co",
+      "project_ref": "twkdrljfjkbypyhdnhyw",
+      "url": "https://twkdrljfjkbypyhdnhyw.supabase.co",
       "mcp_enabled": true,
       "status": "BEZAHLT - Production Ready",
       "tables": ["profiles", "vehicles", "categories", "products", "product_vehicle_compatibility", "orders", "order_items", "services", "appointments", "vehicles_for_sale", "chat_conversations", "chat_messages"],

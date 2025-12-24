@@ -9,11 +9,14 @@ import FeaturedProducts from '../components/home/FeaturedProducts';
 import TopBrands from '../components/home/TopBrands';
 import AppBanner from '../components/home/AppBanner';
 import InfoSection from '../components/home/InfoSection';
+import { useCart } from '../context/CartContext';
 
 const HomePage = () => {
+  const { cart } = useCart();
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header cartItems={0} />
+      <Header cartItems={cart.item_count} />
       
       <main className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex gap-6">

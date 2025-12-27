@@ -244,6 +244,186 @@ def test_api_root():
         print(f"❌ Cannot reach API root: {e}")
         return False
 
+def test_create_workshop_appointment():
+    """Test creating a workshop appointment"""
+    print("🔧 Testing Create Workshop Appointment...")
+    
+    try:
+        appointment_url = f"{API_BASE}/workshop/appointments"
+        appointment_data = {
+            "customer_name": "Max Mustermann",
+            "customer_email": "max.mustermann@example.com",
+            "customer_phone": "+43 123 456 789",
+            "vehicle_brand": "BMW",
+            "vehicle_model": "3er",
+            "vehicle_year": 2020,
+            "license_plate": "W-123MM",
+            "service_type": "inspection",
+            "preferred_date": "2025-01-20",
+            "preferred_time": "10:00",
+            "message": "Regelmäßige Inspektion nach Herstellervorgaben"
+        }
+        
+        response = requests.post(
+            appointment_url,
+            json=appointment_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 201:
+            appointment = response.json()
+            print("✅ Workshop appointment created successfully!")
+            print(f"Appointment ID: {appointment.get('id')}")
+            print(f"Customer: {appointment.get('customer_name')}")
+            print(f"Service: {appointment.get('service_type')}")
+            print(f"Status: {appointment.get('status')}")
+            return True, appointment.get('id')
+        else:
+            print(f"❌ Failed to create workshop appointment!")
+            print(f"Error: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during workshop appointment creation: {e}")
+        return False, None
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, None
+
+def test_get_workshop_appointments(admin_token):
+    """Test getting workshop appointments as admin"""
+    print("📋 Testing Get Workshop Appointments (Admin)...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    try:
+        appointments_url = f"{API_BASE}/workshop/appointments"
+        headers = {
+            "Authorization": f"Bearer {admin_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(appointments_url, headers=headers, timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            appointments = response.json()
+            print("✅ Workshop appointments retrieved successfully!")
+            print(f"Number of appointments: {len(appointments)}")
+            
+            if appointments:
+                for apt in appointments[:3]:  # Show first 3
+                    print(f"  - {apt.get('customer_name')} ({apt.get('service_type')}) - {apt.get('status')}")
+            return True
+        else:
+            print(f"❌ Failed to get workshop appointments!")
+            print(f"Error: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during workshop appointments retrieval: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False
+
+def test_create_vehicle(admin_token):
+    """Test creating a vehicle as admin"""
+    print("🚗 Testing Create Vehicle (Admin)...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False, None
+    
+    try:
+        vehicle_url = f"{API_BASE}/vehicles"
+        vehicle_data = {
+            "brand": "Audi",
+            "model": "A4 Avant",
+            "year": 2023,
+            "price": 45900.00,
+            "mileage": 15000,
+            "fuel_type": "Benzin",
+            "transmission": "Automatik",
+            "color": "Schwarz Metallic",
+            "description": "Gepflegter Audi A4 Avant mit Vollausstattung. Scheckheftgepflegt, Nichtraucherfahrzeug.",
+            "features": ["Klimaautomatik", "Navigationssystem", "Ledersitze", "Xenon-Scheinwerfer"],
+            "is_new": False,
+            "location": "Wien",
+            "contact_phone": "+43 1 234 5678",
+            "images": ["https://example.com/audi-a4-1.jpg", "https://example.com/audi-a4-2.jpg"]
+        }
+        
+        headers = {
+            "Authorization": f"Bearer {admin_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.post(
+            vehicle_url,
+            json=vehicle_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 201:
+            vehicle = response.json()
+            print("✅ Vehicle created successfully!")
+            print(f"Vehicle ID: {vehicle.get('id')}")
+            print(f"Vehicle: {vehicle.get('brand')} {vehicle.get('model')} ({vehicle.get('year')})")
+            print(f"Price: {vehicle.get('price')}€")
+            print(f"Mileage: {vehicle.get('mileage')} km")
+            return True, vehicle.get('id')
+        else:
+            print(f"❌ Failed to create vehicle!")
+            print(f"Error: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during vehicle creation: {e}")
+        return False, None
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, None
+
+def test_get_vehicles():
+    """Test getting vehicles (public endpoint)"""
+    print("🚙 Testing Get Vehicles (Public)...")
+    
+    try:
+        vehicles_url = f"{API_BASE}/vehicles"
+        response = requests.get(vehicles_url, timeout=10)
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            vehicles = response.json()
+            print("✅ Vehicles retrieved successfully!")
+            print(f"Number of vehicles: {len(vehicles)}")
+            
+            if vehicles:
+                for vehicle in vehicles[:3]:  # Show first 3
+                    print(f"  - {vehicle.get('brand')} {vehicle.get('model')} ({vehicle.get('year')}) - {vehicle.get('price')}€")
+            return True
+        else:
+            print(f"❌ Failed to get vehicles!")
+            print(f"Error: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during vehicles retrieval: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False
+
 def main():
     """Run all backend tests including E2E flow"""
     print("=" * 60)

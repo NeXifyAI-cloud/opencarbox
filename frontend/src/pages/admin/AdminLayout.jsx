@@ -5,8 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { 
   LayoutDashboard, Package, FolderTree, ShoppingCart, Users, 
   Settings, Tag, LogOut, Menu, X, ChevronDown, Bell, Search,
-  Wrench, Car,
-  Car
+  Wrench, Car
 } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';

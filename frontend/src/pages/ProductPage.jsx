@@ -5,7 +5,7 @@ import Footer from '../components/layout/Footer';
 import { featuredProducts } from '../data/mockData';
 import { 
   Star, Heart, ShoppingCart, Truck, RotateCcw, Shield, 
-  ChevronRight, Plus, Minus, Check, Info, Loader
+  ChevronRight, Plus, Minus, Check, Info, Loader, Wrench, ArrowRight
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -30,15 +30,12 @@ const ProductPage = () => {
       try {
         let data = null;
         try {
-            // Try fetching from real API
             data = await productService.getById(productId);
         } catch (err) {
              console.warn("API fetch failed, falling back to mock data", err);
-             // Fallback
              data = featuredProducts.find(p => p.id === parseInt(productId) || p.id === productId);
         }
 
-        // If still no data (e.g. ID not found in mock), use first mock product as fallback
         if (!data) {
              data = featuredProducts[0];
         }
@@ -204,6 +201,22 @@ const ProductPage = () => {
                 </Button>
               </div>
 
+              {/* Cross-Sell Workshop Service */}
+              <div className="bg-[#e6fffa] border border-[#4fd1c5] rounded-lg p-4 mb-6 flex items-start gap-4">
+                <div className="bg-white p-2 rounded-full shadow-sm">
+                  <Wrench className="h-6 w-6 text-[#1e3a5f]" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-bold text-[#1e3a5f]">Einbau-Service gewünscht?</h3>
+                  <p className="text-sm text-gray-700 mt-1">
+                    Lassen Sie dieses Ersatzteil direkt in unserer OpenCarBox Werkstatt montieren.
+                  </p>
+                  <Link to="/werkstatt" className="inline-flex items-center text-sm font-bold text-[#1e3a5f] hover:text-[#4fd1c5] mt-2 group">
+                    Termin vereinbaren <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              </div>
+
               {/* Benefits */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-gray-50 rounded-lg">
                 <div className="flex items-center gap-2">
@@ -243,7 +256,6 @@ const ProductPage = () => {
             </TabsContent>
             
             <TabsContent value="specifications">
-               {/* Specs would go here */}
                <p>Keine Spezifikationen verfügbar.</p>
             </TabsContent>
             

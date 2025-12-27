@@ -31,6 +31,8 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCustomers from "./pages/admin/AdminCustomers";
 
+import AdminWorkshop from "./pages/admin/AdminWorkshop";
+import AdminCars from "./pages/admin/AdminCars";
 import WorkshopPage from "./pages/WorkshopPage";
 import CarDealershipPage from "./pages/CarDealershipPage";
 function App() {

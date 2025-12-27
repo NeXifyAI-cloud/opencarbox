@@ -45,19 +45,19 @@ def test_admin_login():
             print("✅ Admin login successful!")
             print(f"Access Token: {data.get('access_token', 'N/A')[:50]}...")
             print(f"User Info: {data.get('user', {})}")
-            return True
+            return True, data.get('access_token')
         else:
             print(f"❌ Admin login failed!")
             print(f"Error: {response.text}")
-            return False
+            return False, None
             
     except requests.exceptions.RequestException as e:
         print(f"❌ Network error during admin login: {e}")
-        return False
+        return False, None
     except json.JSONDecodeError as e:
         print(f"❌ Invalid JSON response: {e}")
         print(f"Raw response: {response.text}")
-        return False
+        return False, None
 
 def test_category_products():
     """Test Category Page - Load products from API for 'ersatzteile' category"""

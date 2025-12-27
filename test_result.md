@@ -111,7 +111,7 @@ backend:
     file: "backend/routes/auth_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "main"
@@ -119,6 +119,9 @@ backend:
       - working: true
         agent: "main"
         comment: "Fixed: Admin user was missing in DB. Updated seed.py to use correct password 'admin' and re-seeded DB. Curl test passed."
+      - working: true
+        agent: "testing"
+        comment: "VERIFIED: Admin login working perfectly. API accessible at /api/auth/login. Credentials admin@carvatoo.at/admin return valid JWT token with user info (id, email, role: admin). All backend tests passed (3/3)."
 
 frontend:
   - task: "Integrate OpenCarBox Design System"

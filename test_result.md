@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Revert to original kfzteile24 design but keep admin login fix and working images."
+user_problem_statement: "Apply kfzteile24 clone design to entire project and connect to backend API."
 
 backend:
   - task: "Fix Admin Login (bcrypt/seed issue)"
@@ -113,15 +113,9 @@ backend:
     priority: "high"
     needs_retesting: false
     status_history:
-      - working: false
-        agent: "main"
-        comment: "Initial state: Login failed with 'E-Mail oder Passwort falsch'."
-      - working: true
-        agent: "main"
-        comment: "Fixed: Admin user was missing in DB. Updated seed.py to use correct password 'admin' and re-seeded DB. Curl test passed."
       - working: true
         agent: "testing"
-        comment: "✅ VERIFIED: Admin login working perfectly. All backend tests passed (API root: ✅, Health check: ✅, Admin login with admin@carvatoo.at/admin: ✅). Access token generated successfully."
+        comment: "Verified working."
 
 frontend:
   - task: "Revert to Original Design"
@@ -133,28 +127,34 @@ frontend:
     needs_retesting: false
     status_history:
       - working: true
-        agent: "main"
-        comment: "Reverted all frontend files to original state. Updated mockData.js to use new working Unsplash images but with old data structure."
-      - working: true
         agent: "testing"
-        comment: "✅ VERIFIED: Frontend successfully reverted to original kfzteile24 design. Blue header (#1e3a5f), 'Carvatoo' branding (no OpenCarBox text), original layout confirmed. Images using working Unsplash URLs."
+        comment: "Verified working."
+
+  - task: "Connect Frontend to Backend API"
+    implemented: true
+    working: false
+    file: "frontend/src/services/api.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "Updated CategoryPage, ProductPage, CartPage to use real API. Need verification."
 
 metadata:
   created_by: "main_agent"
-  version: "1.2"
-  test_sequence: 2
+  version: "1.3"
+  test_sequence: 3
   run_ui: true
 
 test_plan:
   current_focus:
-    - "Fix Admin Login (bcrypt/seed issue)"
-    - "Revert to Original Design"
+    - "Connect Frontend to Backend API"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "I have manually reverted the frontend to the original design (blue header, kfzteile24 clone). The Admin Login fix (backend) is preserved. I also fixed the broken images in mockData.js by using valid Unsplash URLs. Please verify the Admin Login still works and the Frontend looks like the original clone (not the red/blue OpenCarBox design)."
-  - agent: "testing"
-    message: "✅ TESTING COMPLETE: Both tasks verified successfully. Backend admin login working perfectly (all API tests passed). Frontend successfully reverted to original kfzteile24 design with blue header, Carvatoo branding, and working images. Revert operation successful."
+    message: "I have updated CategoryPage, ProductPage, and CartPage to use the real backend API (via services/api.js) instead of mock data. The design is consistent with the reverted kfzteile24 clone. Please verify the following flow: 1. Visit Category Page -> Products load from API. 2. Click Product -> Details load from API. 3. Add to Cart -> Cart updates (via API)."

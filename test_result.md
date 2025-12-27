@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix admin login and integrate OpenCarBox design system (missing images, new components)."
+user_problem_statement: "Revert to original kfzteile24 design but keep admin login fix and working images."
 
 backend:
   - task: "Fix Admin Login (bcrypt/seed issue)"
@@ -111,7 +111,7 @@ backend:
     file: "backend/routes/auth_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "main"
@@ -119,28 +119,19 @@ backend:
       - working: true
         agent: "main"
         comment: "Fixed: Admin user was missing in DB. Updated seed.py to use correct password 'admin' and re-seeded DB. Curl test passed."
-      - working: true
-        agent: "testing"
-        comment: "VERIFIED: Admin login working perfectly. API accessible at /api/auth/login. Credentials admin@carvatoo.at/admin return valid JWT token with user info (id, email, role: admin). All backend tests passed (3/3)."
 
 frontend:
-  - task: "Integrate OpenCarBox Design System"
+  - task: "Revert to Original Design"
     implemented: true
     working: true
     file: "frontend/src/pages/HomePage.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-      - working: false
-        agent: "main"
-        comment: "Initial state: Missing images, old kfzteile24 layout."
       - working: true
         agent: "main"
-        comment: "Implemented: New Hero, CategoryOverview, Updated MockData with valid Unsplash images, Updated Tailwind Config with new colors."
-      - working: true
-        agent: "testing"
-        comment: "VERIFIED: Homepage design system working correctly. Fixed syntax error in mockData.js (malformed serviceAreas array). Frontend accessible, React app loading, 'OpenCarBox' and 'Carvantooo' text present in Hero component, Unsplash images configured. All frontend tests passed (7/7)."
+        comment: "Reverted all frontend files to original state. Updated mockData.js to use new working Unsplash images but with old data structure."
 
 metadata:
   created_by: "main_agent"
@@ -151,13 +142,11 @@ metadata:
 test_plan:
   current_focus:
     - "Fix Admin Login (bcrypt/seed issue)"
-    - "Integrate OpenCarBox Design System"
+    - "Revert to Original Design"
   stuck_tasks: []
   test_all: true
   test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "I have fixed the backend login by re-seeding the database. The admin credentials are 'admin@carvatoo.at' / 'admin'. I have also completely revamped the Homepage with the new OpenCarBox design (Hero, Colors, Images). Please verify the Login works and the Homepage loads correctly with the new 'OpenCarBox' text and valid images."
-  - agent: "testing"
-    message: "TESTING COMPLETE: Both backend and frontend are working perfectly. Backend: Admin login verified with correct JWT token response. Frontend: Fixed syntax error in mockData.js, homepage loads with OpenCarBox design elements. All tests passed. Ready for production."
+    message: "I have manually reverted the frontend to the original design (blue header, kfzteile24 clone). The Admin Login fix (backend) is preserved. I also fixed the broken images in mockData.js by using valid Unsplash URLs. Please verify the Admin Login still works and the Frontend looks like the original clone (not the red/blue OpenCarBox design)."

@@ -385,3 +385,150 @@ export const companyInfo = {
     gericht: 'Handelsgericht Wien'
   }
 };
+
+// Werkstatt Services
+export const workshopServices = [
+  {
+    id: 'inspection',
+    name: 'Inspektion & Wartung',
+    description: 'Regelmäßige Wartung nach Herstellervorgaben zum Erhalt der Garantie.',
+    priceFrom: 89.00,
+    duration: '1-2 Stunden',
+    icon: 'ClipboardList'
+  },
+  {
+    id: 'oil-change',
+    name: 'Ölwechsel',
+    description: 'Inklusive Markenöl und Ölfilter. Schnell und sauber.',
+    priceFrom: 49.90,
+    duration: '30-45 Minuten',
+    icon: 'Droplet'
+  },
+  {
+    id: 'brakes',
+    name: 'Bremsenservice',
+    description: 'Austausch von Bremsscheiben und Belägen. Sicherheitscheck inklusive.',
+    priceFrom: 129.00,
+    duration: '1-2 Stunden',
+    icon: 'Disc'
+  },
+  {
+    id: 'tires',
+    name: 'Reifenservice',
+    description: 'Radwechsel, Wuchten und Montage. Einlagerung möglich.',
+    priceFrom: 29.90,
+    duration: '30-60 Minuten',
+    icon: 'Circle'
+  },
+  {
+    id: 'ac',
+    name: 'Klimaservice',
+    description: 'Dichtheitsprüfung, Desinfektion und Auffüllen des Kältemittels.',
+    priceFrom: 69.00,
+    duration: '45-60 Minuten',
+    icon: 'Wind'
+  },
+  {
+    id: 'hu-au',
+    name: 'HU / AU Vorführung',
+    description: 'Haupt- und Abgasuntersuchung durch anerkannte Prüforganisationen.',
+    priceFrom: 120.00,
+    duration: '1 Tag',
+    icon: 'ShieldCheck'
+  }
+];
+
+// Autohandel (Cars for Sale)
+export const carsForSale = [
+  {
+    id: 'car-1',
+    brand: 'Volkswagen',
+    model: 'Golf VII GTI',
+    year: 2019,
+    price: 24900,
+    mileage: 45000,
+    fuel: 'Benzin',
+    transmission: 'Automatik',
+    power: '245 PS',
+    color: 'Deep Black Perleffekt',
+    image: 'https://images.unsplash.com/photo-1504215680853-026ed2a45def?w=800&h=600&fit=crop',
+    features: ['Navi', 'LED-Scheinwerfer', 'ACC', 'Sitzheizung'],
+    isNew: false
+  },
+  {
+    id: 'car-2',
+    brand: 'Audi',
+    model: 'A4 Avant 40 TDI',
+    year: 2021,
+    price: 32500,
+    mileage: 28000,
+    fuel: 'Diesel',
+    transmission: 'Automatik',
+    power: '190 PS',
+    color: 'Gletscherweiß Metallic',
+    image: 'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&h=600&fit=crop',
+    features: ['Virtual Cockpit', 'Matrix-LED', 'Anhängerkupplung', 'Standheizung'],
+    isNew: false
+  },
+  {
+    id: 'car-3',
+    brand: 'BMW',
+    model: '330i M Sport',
+    year: 2022,
+    price: 45900,
+    mileage: 15000,
+    fuel: 'Benzin',
+    transmission: 'Automatik',
+    power: '258 PS',
+    color: 'Portimao Blau',
+    image: 'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=600&fit=crop',
+    features: ['M Sportpaket', 'Head-Up Display', 'Laserlicht', 'Schiebedach'],
+    isNew: false
+  },
+  {
+    id: 'car-4',
+    brand: 'Mercedes-Benz',
+    model: 'C 220 d T-Modell',
+    year: 2020,
+    price: 29900,
+    mileage: 55000,
+    fuel: 'Diesel',
+    transmission: 'Automatik',
+    power: '194 PS',
+    color: 'Obsidianschwarz',
+    image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop',
+    features: ['Avantgarde', 'Widescreen', 'Park-Paket', 'Ambientebeleuchtung'],
+    isNew: false
+  },
+  {
+    id: 'car-5',
+    brand: 'Tesla',
+    model: 'Model 3 Long Range',
+    year: 2023,
+    price: 49900,
+    mileage: 5000,
+    fuel: 'Elektro',
+    transmission: 'Automatik',
+    power: '498 PS',
+    color: 'Pearl White',
+    image: 'https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&h=600&fit=crop',
+    features: ['Autopilot', 'Premium Innenraum', '19 Zoll Felgen', 'Wärmepumpe'],
+    isNew: false
+  },
+  {
+    id: 'car-6',
+    brand: 'Porsche',
+    model: '911 Carrera S (992)',
+    year: 2021,
+    price: 129900,
+    mileage: 12000,
+    fuel: 'Benzin',
+    transmission: 'Automatik',
+    power: '450 PS',
+    color: 'Indischrot',
+    image: 'https://images.unsplash.com/photo-1503376763036-066120622c74?w=800&h=600&fit=crop',
+    features: ['Sport Chrono', 'Sportabgasanlage', 'Bose', 'Lift-System'],
+    isNew: false
+  }
+];
+

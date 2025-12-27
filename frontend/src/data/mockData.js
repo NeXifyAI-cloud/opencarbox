@@ -1,11 +1,46 @@
-// Mock-Daten für Carvatoo Shop
+// Carvatoo - Premium Mock-Daten
+// "Weil dein Auto zur Familie gehört."
+
+// Funktionierende Produkt-Bilder (Pexels/Unsplash - verified working)
+const productImages = {
+  bremsscheibe: 'https://images.pexels.com/photos/3806249/pexels-photo-3806249.jpeg?auto=compress&cs=tinysrgb&w=400',
+  oelfilter: 'https://images.pexels.com/photos/3807386/pexels-photo-3807386.jpeg?auto=compress&cs=tinysrgb&w=400',
+  motoroel: 'https://images.pexels.com/photos/4489702/pexels-photo-4489702.jpeg?auto=compress&cs=tinysrgb&w=400',
+  batterie: 'https://images.pexels.com/photos/5835359/pexels-photo-5835359.jpeg?auto=compress&cs=tinysrgb&w=400',
+  werkzeug: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=400',
+  reifen: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
+  stossdaempfer: 'https://images.pexels.com/photos/4489765/pexels-photo-4489765.jpeg?auto=compress&cs=tinysrgb&w=400',
+  bremsen: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400',
+};
+
+// Kategorie-Bilder
+const categoryImages = {
+  ersatzteile: 'https://images.pexels.com/photos/3807386/pexels-photo-3807386.jpeg?auto=compress&cs=tinysrgb&w=400',
+  reifen: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=400',
+  batterien: 'https://images.pexels.com/photos/5835359/pexels-photo-5835359.jpeg?auto=compress&cs=tinysrgb&w=400',
+  oele: 'https://images.pexels.com/photos/4489702/pexels-photo-4489702.jpeg?auto=compress&cs=tinysrgb&w=400',
+  pflege: 'https://images.pexels.com/photos/6873091/pexels-photo-6873091.jpeg?auto=compress&cs=tinysrgb&w=400',
+  zubehoer: 'https://images.pexels.com/photos/4489765/pexels-photo-4489765.jpeg?auto=compress&cs=tinysrgb&w=400',
+  saison: 'https://images.pexels.com/photos/3806249/pexels-photo-3806249.jpeg?auto=compress&cs=tinysrgb&w=400',
+  lampen: 'https://images.pexels.com/photos/1149137/pexels-photo-1149137.jpeg?auto=compress&cs=tinysrgb&w=400',
+  dachboxen: 'https://images.pexels.com/photos/1592384/pexels-photo-1592384.jpeg?auto=compress&cs=tinysrgb&w=400',
+  tuning: 'https://images.pexels.com/photos/3752169/pexels-photo-3752169.jpeg?auto=compress&cs=tinysrgb&w=400',
+  werkzeug: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=400',
+};
+
+// Hero-Banner Bilder
+const heroImages = {
+  slide1: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  slide2: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  slide3: 'https://images.pexels.com/photos/3806288/pexels-photo-3806288.jpeg?auto=compress&cs=tinysrgb&w=1200',
+};
 
 export const categories = [
   {
     id: 'ersatzteile',
     name: 'Ersatz- und Verschleißteile',
     icon: 'Settings',
-    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=300&h=200&fit=crop',
+    image: categoryImages.ersatzteile,
     subcategories: [
       { id: 'bremsanlage', name: 'Bremsanlage', count: 15420 },
       { id: 'abgasanlage', name: 'Abgasanlage', count: 8930 },
@@ -19,9 +54,9 @@ export const categories = [
   },
   {
     id: 'reifen',
-    name: 'Reifen, Felgen, Kompletträder',
+    name: 'Reifen & Felgen',
     icon: 'Circle',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop',
+    image: categoryImages.reifen,
     subcategories: [
       { id: 'sommerreifen', name: 'Sommerreifen', count: 8900 },
       { id: 'winterreifen', name: 'Winterreifen', count: 7650 },
@@ -32,9 +67,9 @@ export const categories = [
   },
   {
     id: 'batterien',
-    name: 'Batterien und Ladegeräte',
+    name: 'Batterien & Ladegeräte',
     icon: 'Battery',
-    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=300&h=200&fit=crop',
+    image: categoryImages.batterien,
     subcategories: [
       { id: 'autobatterien', name: 'Autobatterien', count: 2340 },
       { id: 'ladegeraete', name: 'Ladegeräte', count: 890 },
@@ -43,9 +78,9 @@ export const categories = [
   },
   {
     id: 'oele',
-    name: 'Öle, Schmierung, Additive',
+    name: 'Öle & Schmierstoffe',
     icon: 'Droplet',
-    image: 'https://images.unsplash.com/photo-1635784458812-1d4c2c3e8f8b?w=300&h=200&fit=crop',
+    image: categoryImages.oele,
     subcategories: [
       { id: 'motoroel', name: 'Motoröl', count: 3450 },
       { id: 'getriebeoel', name: 'Getriebeöl', count: 1230 },
@@ -55,9 +90,9 @@ export const categories = [
   },
   {
     id: 'pflege',
-    name: 'Pflege und Lackierung',
+    name: 'Pflege & Reinigung',
     icon: 'Sparkles',
-    image: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=300&h=200&fit=crop',
+    image: categoryImages.pflege,
     subcategories: [
       { id: 'autopflege', name: 'Autopflege', count: 4560 },
       { id: 'lackpflege', name: 'Lackpflege', count: 2340 },
@@ -67,9 +102,9 @@ export const categories = [
   },
   {
     id: 'zubehoer',
-    name: 'Zubehör und Pannenhilfe',
+    name: 'Zubehör & Pannenhilfe',
     icon: 'Wrench',
-    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=300&h=200&fit=crop',
+    image: categoryImages.zubehoer,
     subcategories: [
       { id: 'warndreieck', name: 'Warndreieck & Warnweste', count: 340 },
       { id: 'verbandskasten', name: 'Verbandskasten', count: 120 },
@@ -78,58 +113,25 @@ export const categories = [
     ]
   },
   {
-    id: 'saison',
-    name: 'Saisonartikel',
-    icon: 'Sun',
-    image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=300&h=200&fit=crop',
-    subcategories: [
-      { id: 'frostschutz', name: 'Frostschutzmittel', count: 890 },
-      { id: 'eiskratzer', name: 'Eiskratzer', count: 340 },
-      { id: 'schneeketten', name: 'Schneeketten', count: 560 },
-    ]
-  },
-  {
-    id: 'lampen',
-    name: 'Glühlampen und Leuchten',
-    icon: 'Lightbulb',
-    image: 'https://images.unsplash.com/photo-1489824904134-891ab64532f1?w=300&h=200&fit=crop',
-    subcategories: [
-      { id: 'scheinwerfer', name: 'Scheinwerferlampen', count: 2340 },
-      { id: 'rueckleuchten', name: 'Rückleuchten', count: 1890 },
-      { id: 'led', name: 'LED-Beleuchtung', count: 3450 },
-    ]
-  },
-  {
-    id: 'dachboxen',
-    name: 'Dachboxen und Trägersysteme',
-    icon: 'Package',
-    image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=300&h=200&fit=crop',
-    subcategories: [
-      { id: 'dachbox', name: 'Dachboxen', count: 450 },
-      { id: 'dachtraeger', name: 'Dachträger', count: 890 },
-      { id: 'fahrradtraeger', name: 'Fahrradträger', count: 670 },
-    ]
-  },
-  {
-    id: 'tuning',
-    name: 'Tuning und Styling',
-    icon: 'Zap',
-    image: 'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=300&h=200&fit=crop',
-    subcategories: [
-      { id: 'sportauspuff', name: 'Sportauspuff', count: 1230 },
-      { id: 'spoiler', name: 'Spoiler', count: 890 },
-      { id: 'bodykits', name: 'Bodykits', count: 340 },
-    ]
-  },
-  {
     id: 'werkzeug',
-    name: 'Werkzeuge und Werkstatt',
+    name: 'Werkzeuge',
     icon: 'Hammer',
-    image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=300&h=200&fit=crop',
+    image: categoryImages.werkzeug,
     subcategories: [
       { id: 'handwerkzeug', name: 'Handwerkzeug', count: 5670 },
       { id: 'wagenheber', name: 'Wagenheber', count: 340 },
       { id: 'diagnose', name: 'Diagnosegeräte', count: 890 },
+    ]
+  },
+  {
+    id: 'lampen',
+    name: 'Glühlampen & Leuchten',
+    icon: 'Lightbulb',
+    image: categoryImages.lampen,
+    subcategories: [
+      { id: 'scheinwerfer', name: 'Scheinwerferlampen', count: 2340 },
+      { id: 'rueckleuchten', name: 'Rückleuchten', count: 1890 },
+      { id: 'led', name: 'LED-Beleuchtung', count: 3450 },
     ]
   },
 ];
@@ -150,14 +152,14 @@ export const carBrands = [
 ];
 
 export const topBrands = [
-  { id: 'bosch', name: 'BOSCH', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Bosch-logo.svg/200px-Bosch-logo.svg.png' },
-  { id: 'ate', name: 'ATE', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/ATE_logo.svg/200px-ATE_logo.svg.png' },
-  { id: 'brembo', name: 'Brembo', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Brembo_logo.svg/200px-Brembo_logo.svg.png' },
-  { id: 'mann', name: 'MANN-FILTER', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/MANN-FILTER_logo.svg/200px-MANN-FILTER_logo.svg.png' },
-  { id: 'liquimoly', name: 'LIQUI MOLY', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Liqui_Moly_logo.svg/200px-Liqui_Moly_logo.svg.png' },
-  { id: 'skf', name: 'SKF', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/SKF_logo.svg/200px-SKF_logo.svg.png' },
-  { id: 'luk', name: 'LuK', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/LuK_Logo.svg/200px-LuK_Logo.svg.png' },
-  { id: 'valeo', name: 'Valeo', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Valeo_Logo.svg/200px-Valeo_Logo.svg.png' },
+  { id: 'bosch', name: 'BOSCH' },
+  { id: 'ate', name: 'ATE' },
+  { id: 'brembo', name: 'Brembo' },
+  { id: 'mann', name: 'MANN-FILTER' },
+  { id: 'liquimoly', name: 'LIQUI MOLY' },
+  { id: 'skf', name: 'SKF' },
+  { id: 'luk', name: 'LuK' },
+  { id: 'valeo', name: 'Valeo' },
 ];
 
 export const featuredProducts = [
@@ -168,7 +170,7 @@ export const featuredProducts = [
     price: 89.99,
     originalPrice: 129.99,
     discount: 31,
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+    image: productImages.bremsscheibe,
     rating: 4.8,
     reviews: 234,
     inStock: true,
@@ -181,7 +183,7 @@ export const featuredProducts = [
     price: 12.49,
     originalPrice: 18.99,
     discount: 34,
-    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=300&fit=crop',
+    image: productImages.oelfilter,
     rating: 4.9,
     reviews: 567,
     inStock: true,
@@ -194,7 +196,7 @@ export const featuredProducts = [
     price: 42.99,
     originalPrice: 59.99,
     discount: 28,
-    image: 'https://images.unsplash.com/photo-1635784458812-1d4c2c3e8f8b?w=400&h=300&fit=crop',
+    image: productImages.motoroel,
     rating: 4.7,
     reviews: 891,
     inStock: true,
@@ -207,7 +209,7 @@ export const featuredProducts = [
     price: 54.99,
     originalPrice: 79.99,
     discount: 31,
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
+    image: productImages.bremsen,
     rating: 4.8,
     reviews: 345,
     inStock: true,
@@ -220,7 +222,7 @@ export const featuredProducts = [
     price: 67.99,
     originalPrice: 99.99,
     discount: 32,
-    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=300&fit=crop',
+    image: productImages.stossdaempfer,
     rating: 4.6,
     reviews: 178,
     inStock: true,
@@ -233,7 +235,7 @@ export const featuredProducts = [
     price: 89.99,
     originalPrice: 119.99,
     discount: 25,
-    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&h=300&fit=crop',
+    image: productImages.batterie,
     rating: 4.9,
     reviews: 432,
     inStock: true,
@@ -246,9 +248,7 @@ export const vehicleTypes = [
   { id: 'auto', name: 'Auto', icon: 'Car' },
   { id: 'eauto', name: 'E-Auto', icon: 'Zap' },
   { id: 'motorrad', name: 'Motorrad', icon: 'Bike' },
-  { id: 'emotorrad', name: 'E-Motorrad', icon: 'Zap' },
   { id: 'transporter', name: 'Transporter', icon: 'Truck' },
-  { id: 'etransporter', name: 'E-Transporter', icon: 'Zap' },
 ];
 
 export const manufacturers = [
@@ -265,22 +265,22 @@ export const benefits = [
   },
   {
     icon: 'Package',
-    title: 'Riesenauswahl: Über',
-    subtitle: '3 Millionen Teile'
+    title: 'Riesenauswahl',
+    subtitle: '3 Millionen+ Teile'
   },
   {
     icon: 'Truck',
-    title: 'Versand heute bei',
-    subtitle: 'Bestellungen bis 15 Uhr'
+    title: 'Blitzschnell',
+    subtitle: 'Bestellung bis 15 Uhr'
   },
   {
     icon: 'RotateCcw',
-    title: '30 Tage kostenlose',
-    subtitle: 'Rücksendungen'
+    title: '30 Tage',
+    subtitle: 'Rückgaberecht'
   },
   {
     icon: 'Shield',
-    title: 'Herstellergarantie',
+    title: 'Garantie',
     subtitle: 'auf alle Produkte'
   },
 ];
@@ -289,26 +289,26 @@ export const bannerSlides = [
   {
     id: 1,
     title: 'Bis zu 50% sparen',
-    subtitle: 'auf Elektrik-Teile',
-    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&h=400&fit=crop',
+    subtitle: 'auf Bremsanlagen',
+    image: heroImages.slide1,
     buttonText: 'Jetzt entdecken',
-    link: '/kategorie/elektrik'
+    link: '/kategorie/ersatzteile'
   },
   {
     id: 2,
-    title: 'Werkzeuge',
-    subtitle: 'Profi-Qualität für Ihr Auto',
-    image: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=1200&h=400&fit=crop',
+    title: 'Profi-Werkzeuge',
+    subtitle: 'für Ihre Werkstatt',
+    image: heroImages.slide2,
     buttonText: 'Zum Sortiment',
     link: '/kategorie/werkzeug'
   },
   {
     id: 3,
     title: 'Wintercheck',
-    subtitle: 'Machen Sie Ihr Auto winterfit',
-    image: 'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&h=400&fit=crop',
-    buttonText: 'Mehr erfahren',
-    link: '/kategorie/saison'
+    subtitle: 'Jetzt Reifen wechseln',
+    image: heroImages.slide3,
+    buttonText: 'Reifen finden',
+    link: '/kategorie/reifen'
   },
 ];
 
@@ -334,3 +334,54 @@ export const sidebarCategories = [
   'Stoßdämpfer',
   'Zündung / Glühanlage',
 ];
+
+// Service-Bereiche für OpenCarBox
+export const serviceAreas = [
+  {
+    id: 'shop',
+    title: 'Carvatoo Shop',
+    description: 'Premium Autoteile mit HSN/TSN-Suche',
+    icon: 'ShoppingCart',
+    color: 'teal',
+    features: ['Über 1 Mio. Teile', '24h Express', 'Bestpreis Garantie'],
+    href: '/'
+  },
+  {
+    id: 'werkstatt',
+    title: 'OpenCarBox Werkstatt',
+    description: 'Meisterbetrieb für Inspektion & Reparatur',
+    icon: 'Wrench',
+    color: 'navy',
+    features: ['Online-Terminbuchung', 'Faire Preise', 'Herstellervorgaben'],
+    href: '/werkstatt'
+  },
+  {
+    id: 'autohandel',
+    title: 'OpenCarBox Autohandel',
+    description: 'Geprüfte Gebraucht- und Neuwagen',
+    icon: 'Car',
+    color: 'navy',
+    features: ['Geprüfte Qualität', 'Finanzierung möglich', 'Inzahlungnahme'],
+    href: '/fahrzeuge'
+  }
+];
+
+// Firmeninfos
+export const companyInfo = {
+  name: 'Carvatoo',
+  legalName: 'OpenCarBox GmbH',
+  claim: 'Weil dein Auto zur Familie gehört.',
+  phone: '+43 1 798 134 10',
+  email: 'office@carvatoo.at',
+  address: {
+    street: 'Rennweg 76',
+    postalCode: '1030',
+    city: 'Wien',
+    country: 'Österreich'
+  },
+  legal: {
+    firmenbuch: 'FN 534799 w',
+    uid: 'ATU75630015',
+    gericht: 'Handelsgericht Wien'
+  }
+};

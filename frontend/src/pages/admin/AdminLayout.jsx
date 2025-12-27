@@ -30,6 +30,8 @@ const AdminLayout = ({ children }) => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
     { icon: Package, label: 'Produkte', path: '/admin/produkte' },
+    { icon: Wrench, label: 'Werkstatt', path: '/admin/werkstatt' },
+    { icon: Car, label: 'Fahrzeuge', path: '/admin/fahrzeuge' },
     { icon: FolderTree, label: 'Kategorien', path: '/admin/kategorien' },
     { icon: ShoppingCart, label: 'Bestellungen', path: '/admin/bestellungen' },
     { icon: Users, label: 'Kunden', path: '/admin/kunden' },

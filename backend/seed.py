@@ -232,7 +232,7 @@ async def seed_admin():
         "first_name": "Admin",
         "last_name": "Carvatoo",
         "phone": "+43 1 987 65 43",
-        "hashed_password": get_password_hash("Carvatoo2025!"),
+        "hashed_password": get_password_hash("admin"),
         "role": "admin",
         "is_active": True,
         "created_at": datetime.utcnow(),

@@ -425,7 +425,7 @@ def test_get_vehicles():
         return False
 
 def main():
-    """Run all backend tests including E2E flow"""
+    """Run all backend tests including E2E flow and new workshop/vehicle routes"""
     print("=" * 60)
     print("🚀 CARVATOO BACKEND E2E TESTING")
     print("=" * 60)
@@ -436,6 +436,7 @@ def main():
     
     results = {}
     test_product = None
+    admin_token = None
     
     # Test API connectivity
     results['api_root'] = test_api_root()
@@ -444,11 +445,50 @@ def main():
     results['api_health'] = test_api_health()
     print()
     
-    # Test admin login
-    results['admin_login'] = test_admin_login()
+    # Test admin login and get token
+    admin_login_success, admin_token = test_admin_login()
+    results['admin_login'] = admin_login_success
     print()
     
-    # E2E Flow Testing
+    # Test new workshop routes
+    print("=" * 60)
+    print("🔧 WORKSHOP ROUTES TESTING")
+    print("=" * 60)
+    
+    # Test creating workshop appointment
+    appointment_success, appointment_id = test_create_workshop_appointment()
+    results['create_appointment'] = appointment_success
+    print()
+    
+    # Test getting workshop appointments as admin
+    if admin_token:
+        get_appointments_success = test_get_workshop_appointments(admin_token)
+        results['get_appointments'] = get_appointments_success
+        print()
+    else:
+        print("⚠️ Skipping admin appointment retrieval due to login failure")
+        results['get_appointments'] = False
+    
+    # Test new vehicle routes
+    print("=" * 60)
+    print("🚗 VEHICLE ROUTES TESTING")
+    print("=" * 60)
+    
+    # Test creating vehicle as admin
+    if admin_token:
+        create_vehicle_success, vehicle_id = test_create_vehicle(admin_token)
+        results['create_vehicle'] = create_vehicle_success
+        print()
+    else:
+        print("⚠️ Skipping vehicle creation due to admin login failure")
+        results['create_vehicle'] = False
+    
+    # Test getting vehicles (public)
+    get_vehicles_success = test_get_vehicles()
+    results['get_vehicles'] = get_vehicles_success
+    print()
+    
+    # E2E Flow Testing (existing tests)
     print("=" * 60)
     print("🔄 E2E FLOW TESTING")
     print("=" * 60)
@@ -491,10 +531,24 @@ def main():
     
     # Group tests
     api_tests = ['api_root', 'api_health', 'admin_login']
+    workshop_tests = ['create_appointment', 'get_appointments']
+    vehicle_tests = ['create_vehicle', 'get_vehicles']
     e2e_tests = ['category_products', 'product_details', 'add_to_cart', 'cart_page']
     
     print("API Tests:")
     for test_name in api_tests:
+        if test_name in results:
+            status = "✅ PASS" if results[test_name] else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
+    print("\nWorkshop Tests:")
+    for test_name in workshop_tests:
+        if test_name in results:
+            status = "✅ PASS" if results[test_name] else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
+    print("\nVehicle Tests:")
+    for test_name in vehicle_tests:
         if test_name in results:
             status = "✅ PASS" if results[test_name] else "❌ FAIL"
             print(f"  {test_name.replace('_', ' ').title()}: {status}")
@@ -510,8 +564,13 @@ def main():
     
     print(f"\nTotal: {passed_tests}/{total_tests} tests passed")
     
-    # Check E2E flow specifically
+    # Check specific test groups
+    workshop_passed = sum(results.get(test, False) for test in workshop_tests)
+    vehicle_passed = sum(results.get(test, False) for test in vehicle_tests)
     e2e_passed = sum(results.get(test, False) for test in e2e_tests)
+    
+    print(f"Workshop Routes: {workshop_passed}/{len(workshop_tests)} tests passed")
+    print(f"Vehicle Routes: {vehicle_passed}/{len(vehicle_tests)} tests passed")
     print(f"E2E Flow: {e2e_passed}/{len(e2e_tests)} tests passed")
     
     if passed_tests == total_tests:

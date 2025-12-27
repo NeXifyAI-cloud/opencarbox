@@ -151,6 +151,24 @@ export const serviceAreas = [
     href: '/'
   },
   {
+    id: 'werkstatt',
+    title: 'OpenCarBox Werkstatt',
+    description: 'Meisterbetrieb für Inspektion & Reparatur',
+    icon: 'Wrench',
+    color: 'opencarbox',
+    features: ['Online-Terminbuchung', 'Faire Preise', 'Herstellervorgaben'],
+    href: '/werkstatt'
+  },
+  {
+    id: 'autohandel',
+    title: 'OpenCarBox Autohandel',
+    description: 'Geprüfte Gebraucht- und Neuwagen',
+    icon: 'Car',
+    color: 'opencarbox',
+    features: ['Geprüfte Qualität', 'Finanzierung möglich', 'Inzahlungnahme'],
+    href: '/fahrzeuge'
+  }
+];
 
 export const vehicleTypes = [
   { id: 'alle', name: 'Alle', icon: 'LayoutGrid' },
@@ -176,23 +194,4 @@ export const sidebarCategories = [
   'Motor',
   'Stoßdämpfer',
   'Zündung',
-];
-
-    id: 'werkstatt',
-    title: 'OpenCarBox Werkstatt',
-    description: 'Meisterbetrieb für Inspektion & Reparatur',
-    icon: 'Wrench',
-    color: 'opencarbox',
-    features: ['Online-Terminbuchung', 'Faire Preise', 'Herstellervorgaben'],
-    href: '/werkstatt'
-  },
-  {
-    id: 'autohandel',
-    title: 'OpenCarBox Autohandel',
-    description: 'Geprüfte Gebraucht- und Neuwagen',
-    icon: 'Car',
-    color: 'opencarbox',
-    features: ['Geprüfte Qualität', 'Finanzierung möglich', 'Inzahlungnahme'],
-    href: '/fahrzeuge'
-  }
 ];

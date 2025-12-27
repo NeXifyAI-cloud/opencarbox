@@ -31,6 +31,8 @@ import AdminProducts from "./pages/admin/AdminProducts";
 import AdminOrders from "./pages/admin/AdminOrders";
 import AdminCustomers from "./pages/admin/AdminCustomers";
 
+import WorkshopPage from "./pages/WorkshopPage";
+import CarDealershipPage from "./pages/CarDealershipPage";
 function App() {
   return (
     <div className="App">
@@ -72,6 +74,8 @@ function App() {
               <Route path="/newsletter" element={<HomePage />} />
               <Route path="/hilfe" element={<HomePage />} />
               <Route path="/widerruf" element={<AGBPage />} />
+              <Route path="/werkstatt" element={<WorkshopPage />} />
+              <Route path="/fahrzeuge" element={<CarDealershipPage />} />
               <Route path="/kontakt" element={<ImpressumPage />} />
             </Routes>
           </BrowserRouter>

@@ -1,78 +1,72 @@
 import React from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import Sidebar from '../components/layout/Sidebar';
-import HeroSlider from '../components/home/HeroSlider';
-import BenefitsBar from '../components/home/BenefitsBar';
-import CategoryGrid from '../components/home/CategoryGrid';
-import FeaturedProducts from '../components/home/FeaturedProducts';
-import TopBrands from '../components/home/TopBrands';
-import AppBanner from '../components/home/AppBanner';
-import InfoSection from '../components/home/InfoSection';
+import { Hero } from '../components/shared/Hero';
+import { CategoryOverview } from '../components/shared/CategoryOverview';
 import { useCart } from '../context/CartContext';
+import { Phone, Mail } from 'lucide-react';
 
 const HomePage = () => {
   const { cart } = useCart();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header cartItems={cart.item_count} />
-      
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <div className="flex gap-6">
-          {/* Sidebar - Hidden on mobile */}
-          <div className="hidden lg:block">
-            <Sidebar />
-          </div>
+    <div className="flex flex-col min-h-screen font-body bg-white">
+      <Header cartItems={cart?.item_count || 0} />
 
-          {/* Main Content */}
-          <div className="flex-1">
-            <HeroSlider />
-            <BenefitsBar />
-            <CategoryGrid />
-            <FeaturedProducts />
-            <TopBrands />
-            <AppBanner />
-            <InfoSection />
+      <main className="flex-grow">
+        {/* Premium Hero Section */}
+        <Hero />
 
-            {/* SEO Content */}
-            <section className="mt-10 bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-              <h2 className="text-2xl font-bold text-[#1e3a5f] mb-4">
-                Carvatoo - Dein Online-Shop für günstige Kfz-Teile & Zubehör
-              </h2>
-              <div className="prose prose-sm max-w-none text-gray-600">
-                <p className="mb-4">
-                  Carvatoo ist mit über 3 Mio. Kfz-Teilen und Autozubehör einer der größten 
-                  Online-Shops für Autoteile aller gängigen Automarken. In der Regel versenden wir 
-                  lagernde Teile noch am gleichen Werktag, wenn du vor 15 Uhr bestellst.
-                </p>
-                
-                <h3 className="text-lg font-semibold text-[#1e3a5f] mt-6 mb-3">
-                  Deine Vorteile beim Kauf von Kfz-Teilen bei uns
-                </h3>
-                <ul className="list-disc list-inside space-y-1 mb-4">
-                  <li>Große Auswahl und niedrige Preise</li>
-                  <li>Kaufberatung und qualifizierter Support</li>
-                  <li>Mehr als 150.000 Produkte sofort lieferbar</li>
-                  <li>Garantie und Rückgaberecht</li>
-                  <li>Fokus auf Qualität und Markenhersteller</li>
-                  <li>Sicherer und bequemer Online-Kauf mit vielen Bezahloptionen</li>
-                </ul>
+        {/* Bereichsübersicht */}
+        <CategoryOverview />
 
-                <h3 className="text-lg font-semibold text-[#1e3a5f] mt-6 mb-3">
-                  Riesiges Sortiment von Kfz-Teilen und Kfz-Zubehör
-                </h3>
-                <p>
-                  Unser umfangreiches PKW-Teile Sortiment sorgt für sicheres Bremsen mit hochwertigen 
-                  Bremsscheiben und Bremsbelägen. Für deinen Auspuff findest du Endschalldämpfer, 
-                  Katalysatoren, Lambdasonden, Rußpartikelfilter und Turbolader. Auch sämtliche Filter, 
-                  wie zum Beispiel Kraftstofffilter, Luftfilter, Ölfilter und Innenraumfilter kannst 
-                  du bei uns günstig bestellen.
-                </p>
+        {/* Premium CTA Section */}
+        <section className="py-24 bg-slate-900 text-white relative overflow-hidden">
+          {/* Dekorative Elemente */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-carvantooo-500 via-opencarbox-500 to-carvantooo-500" />
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-opencarbox-500/10 rounded-full blur-3xl" />
+
+          <div className="container mx-auto px-4 relative z-10 text-center">
+            <h2 className="text-4xl md:text-5xl font-display font-bold mb-6 tracking-tight">
+              Bereit für erstklassigen Service?
+            </h2>
+            <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-12">
+              Ob Sie Teile suchen, einen Werkstatt-Termin brauchen oder ein neues Auto –
+              unser Team steht Ihnen mit Expertise zur Seite.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-6">
+              <a
+                href="/kontakt"
+                className="px-8 py-4 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-100 transition-all hover:scale-105 shadow-xl"
+              >
+                Kontakt aufnehmen
+              </a>
+
+              <div className="flex items-center gap-6">
+                <a href="tel:+43179813410" className="flex items-center gap-3 group">
+                  <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-opencarbox-500 transition-colors">
+                    <Phone className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Rufen Sie uns an</div>
+                    <div className="text-lg font-bold">+43 1 798 134 10</div>
+                  </div>
+                </a>
+
+                <a href="mailto:office@opencarbox.at" className="flex items-center gap-3 group">
+                  <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-carvantooo-500 transition-colors">
+                    <Mail className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Schreiben Sie uns</div>
+                    <div className="text-lg font-bold">office@opencarbox.at</div>
+                  </div>
+                </a>
               </div>
-            </section>
+            </div>
           </div>
-        </div>
+        </section>
       </main>
 
       <Footer />

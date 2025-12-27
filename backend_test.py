@@ -341,7 +341,7 @@ def test_create_vehicle(admin_token):
         return False, None
     
     try:
-        vehicle_url = f"{API_BASE}/vehicles"
+        vehicle_url = f"{API_BASE}/vehicles/"
         vehicle_data = {
             "brand": "Audi",
             "model": "A4 Avant",

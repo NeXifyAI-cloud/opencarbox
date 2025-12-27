@@ -117,6 +117,30 @@ backend:
         agent: "testing"
         comment: "Verified working."
 
+  - task: "Workshop Routes Implementation"
+    implemented: true
+    working: true
+    file: "backend/routes/workshop_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Workshop routes fully functional. POST /api/workshop/appointments creates appointments successfully (status 201), GET /api/workshop/appointments (admin-only) retrieves appointments correctly. Admin authentication working properly. Created test appointment for 'Max Mustermann' with inspection service."
+
+  - task: "Vehicle Routes Implementation"
+    implemented: true
+    working: true
+    file: "backend/routes/vehicle_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "✅ VERIFIED: Vehicle routes fully functional. POST /api/vehicles/ (admin-only) creates vehicles successfully (status 201), GET /api/vehicles (public) retrieves vehicles correctly. Fixed routing issue with trailing slash. Created test vehicle: Audi A4 Avant (2023) for 45900€. Both admin and public endpoints working properly."
+
 frontend:
   - task: "Revert to Original Design"
     implemented: true

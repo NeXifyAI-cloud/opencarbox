@@ -21,6 +21,8 @@ from routes.category_routes import router as category_router
 from routes.cart_routes import router as cart_router
 from routes.order_routes import router as order_router
 from routes.admin_routes import router as admin_router
+from routes.workshop_routes import router as workshop_router
+from routes.vehicle_routes import router as vehicle_router
 from database import client
 
 
@@ -68,6 +70,8 @@ api_router.include_router(auth_router)
 api_router.include_router(product_router)
 api_router.include_router(category_router)
 api_router.include_router(cart_router)
+api_router.include_router(workshop_router)
+api_router.include_router(vehicle_router)
 api_router.include_router(order_router)
 api_router.include_router(admin_router)
 

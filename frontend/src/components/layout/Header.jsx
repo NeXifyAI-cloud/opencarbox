@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Search, ShoppingCart, User, Heart, Phone, 
-  ChevronDown, Menu, X, Car, Zap, Bike, Truck, LayoutGrid, Wrench, ShoppingBag
+  ChevronDown, Menu, X, Car, Zap, Bike, Truck, LayoutGrid, Wrench, ShoppingBag,
+  Calendar, MapPin
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';

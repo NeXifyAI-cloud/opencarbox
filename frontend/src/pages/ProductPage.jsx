@@ -12,7 +12,7 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { productService } from '../services/api';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../components/ui/use-toast';
+import { useToast } from '../hooks/use-toast';
 
 const ProductPage = () => {
   const { productId } = useParams();

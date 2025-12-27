@@ -17,7 +17,7 @@ import {
 import { Checkbox } from '../components/ui/checkbox';
 import { productService } from '../services/api';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../components/ui/use-toast';
+import { useToast } from '../hooks/use-toast';
 
 const CategoryPage = () => {
   const { categoryId, subcategoryId } = useParams();

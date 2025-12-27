@@ -151,6 +151,33 @@ export const serviceAreas = [
     href: '/'
   },
   {
+
+export const vehicleTypes = [
+  { id: 'alle', name: 'Alle', icon: 'LayoutGrid' },
+  { id: 'auto', name: 'Auto', icon: 'Car' },
+  { id: 'eauto', name: 'E-Auto', icon: 'Zap' },
+  { id: 'motorrad', name: 'Motorrad', icon: 'Bike' },
+  { id: 'transporter', name: 'Transporter', icon: 'Truck' },
+];
+
+export const manufacturers = [
+  'Audi', 'BMW', 'Mercedes-Benz', 'Volkswagen', 'Opel', 'Ford', 
+  'Škoda', 'SEAT', 'Toyota', 'Hyundai', 'Renault', 'Peugeot',
+  'Fiat', 'Mazda', 'Honda', 'Nissan', 'Kia', 'Volvo', 'Porsche', 'Mini'
+];
+
+export const sidebarCategories = [
+  'Startseite',
+  'Abgasanlage',
+  'Bremsanlage',
+  'Elektrik',
+  'Filter',
+  'Karosserie',
+  'Motor',
+  'Stoßdämpfer',
+  'Zündung',
+];
+
     id: 'werkstatt',
     title: 'OpenCarBox Werkstatt',
     description: 'Meisterbetrieb für Inspektion & Reparatur',

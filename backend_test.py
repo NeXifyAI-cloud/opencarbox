@@ -245,15 +245,17 @@ def test_api_root():
         return False
 
 def main():
-    """Run all backend tests"""
+    """Run all backend tests including E2E flow"""
     print("=" * 60)
-    print("🚀 CARVATOO BACKEND TESTING")
+    print("🚀 CARVATOO BACKEND E2E TESTING")
     print("=" * 60)
     print(f"Backend URL: {BACKEND_URL}")
     print(f"API Base: {API_BASE}")
+    print(f"Session ID: {SESSION_ID}")
     print()
     
     results = {}
+    test_product = None
     
     # Test API connectivity
     results['api_root'] = test_api_root()
@@ -266,19 +268,71 @@ def main():
     results['admin_login'] = test_admin_login()
     print()
     
+    # E2E Flow Testing
+    print("=" * 60)
+    print("🔄 E2E FLOW TESTING")
+    print("=" * 60)
+    
+    # 1. Category Page - Load products from API
+    category_success, test_product = test_category_products()
+    results['category_products'] = category_success
+    print()
+    
+    if test_product and test_product.get('id'):
+        # 2. Product Page - Load product details
+        product_success, product_details = test_product_details(test_product['id'])
+        results['product_details'] = product_success
+        print()
+        
+        if product_success:
+            # 3. Add to Cart - Add product to cart
+            add_cart_success = test_add_to_cart(test_product['id'])
+            results['add_to_cart'] = add_cart_success
+            print()
+            
+            # 4. Cart Page - Verify item is present
+            cart_success = test_cart_page()
+            results['cart_page'] = cart_success
+            print()
+        else:
+            print("⚠️ Skipping cart tests due to product details failure")
+            results['add_to_cart'] = False
+            results['cart_page'] = False
+    else:
+        print("⚠️ Skipping product and cart tests due to category failure")
+        results['product_details'] = False
+        results['add_to_cart'] = False
+        results['cart_page'] = False
+    
     # Summary
     print("=" * 60)
     print("📊 TEST SUMMARY")
     print("=" * 60)
     
-    for test_name, passed in results.items():
-        status = "✅ PASS" if passed else "❌ FAIL"
-        print(f"{test_name.replace('_', ' ').title()}: {status}")
+    # Group tests
+    api_tests = ['api_root', 'api_health', 'admin_login']
+    e2e_tests = ['category_products', 'product_details', 'add_to_cart', 'cart_page']
+    
+    print("API Tests:")
+    for test_name in api_tests:
+        if test_name in results:
+            status = "✅ PASS" if results[test_name] else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
+    print("\nE2E Flow Tests:")
+    for test_name in e2e_tests:
+        if test_name in results:
+            status = "✅ PASS" if results[test_name] else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
     
     total_tests = len(results)
     passed_tests = sum(results.values())
     
     print(f"\nTotal: {passed_tests}/{total_tests} tests passed")
+    
+    # Check E2E flow specifically
+    e2e_passed = sum(results.get(test, False) for test in e2e_tests)
+    print(f"E2E Flow: {e2e_passed}/{len(e2e_tests)} tests passed")
     
     if passed_tests == total_tests:
         print("🎉 All tests passed!")

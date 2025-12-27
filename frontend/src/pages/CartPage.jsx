@@ -5,34 +5,27 @@ import Footer from '../components/layout/Footer';
 import { Trash2, Plus, Minus, ShoppingCart, ArrowRight, Truck, Shield, Tag } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { featuredProducts } from '../data/mockData';
+import { useCart } from '../context/CartContext';
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState(
-    featuredProducts.slice(0, 3).map(p => ({ ...p, quantity: 1 }))
-  );
+  const { cart, updateQuantity, removeFromCart, applyCoupon } = useCart();
   const [couponCode, setCouponCode] = useState('');
-
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 1) return;
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeItem = (id) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
+  
+  const cartItems = cart.items || [];
+  
+  // Calculations (Backend handles this ideally, but good for UI responsiveness)
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 120 ? 0 : 5.99;
   const total = subtotal + shipping;
 
+  const handleUpdateQuantity = (id, newQty) => {
+      if (newQty < 1) return;
+      updateQuantity(id, newQty);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header cartItems={cartItems.reduce((sum, item) => sum + item.quantity, 0)} />
+      <Header cartItems={cart.item_count} />
       
       <main className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-[#1e3a5f] mb-8">Warenkorb</h1>
@@ -54,12 +47,12 @@ const CartPage = () => {
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <div
-                  key={item.id}
+                  key={item.id || item.product_id}
                   className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex gap-4"
                 >
-                  <Link to={`/produkt/${item.id}`} className="flex-shrink-0">
+                  <Link to={`/produkt/${item.product_id || item.id}`} className="flex-shrink-0">
                     <img
-                      src={item.image}
+                      src={item.image || 'https://via.placeholder.com/150'}
                       alt={item.name}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
@@ -68,7 +61,7 @@ const CartPage = () => {
                     <div className="flex justify-between">
                       <div>
                         <span className="text-xs text-gray-500">{item.brand}</span>
-                        <Link to={`/produkt/${item.id}`}>
+                        <Link to={`/produkt/${item.product_id || item.id}`}>
                           <h3 className="font-semibold text-[#1e3a5f] hover:text-[#4fd1c5] transition-colors">
                             {item.name}
                           </h3>
@@ -76,7 +69,7 @@ const CartPage = () => {
                         <p className="text-sm text-green-600 mt-1">Auf Lager</p>
                       </div>
                       <button
-                        onClick={() => removeItem(item.id)}
+                        onClick={() => removeFromCart(item.product_id || item.id)}
                         className="text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="h-5 w-5" />
@@ -85,14 +78,14 @@ const CartPage = () => {
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center border rounded-lg">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => handleUpdateQuantity(item.product_id || item.id, item.quantity - 1)}
                           className="p-2 hover:bg-gray-100 transition-colors"
                         >
                           <Minus className="h-4 w-4" />
                         </button>
                         <span className="px-4 font-semibold">{item.quantity}</span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => handleUpdateQuantity(item.product_id || item.id, item.quantity + 1)}
                           className="p-2 hover:bg-gray-100 transition-colors"
                         >
                           <Plus className="h-4 w-4" />
@@ -134,7 +127,11 @@ const CartPage = () => {
                       placeholder="Code eingeben"
                       className="flex-1"
                     />
-                    <Button variant="outline" className="flex items-center gap-1">
+                    <Button 
+                        variant="outline" 
+                        className="flex items-center gap-1"
+                        onClick={() => applyCoupon(couponCode)}
+                    >
                       <Tag className="h-4 w-4" />
                       Einlösen
                     </Button>
@@ -164,9 +161,11 @@ const CartPage = () => {
                   <p className="text-xs text-gray-500">inkl. MwSt.</p>
                 </div>
 
-                <Button className="w-full mt-6 bg-[#4fd1c5] hover:bg-[#38b2ac] text-[#1e3a5f] font-semibold py-6 text-lg">
-                  Zur Kasse
-                </Button>
+                <Link to="/kasse">
+                    <Button className="w-full mt-6 bg-[#4fd1c5] hover:bg-[#38b2ac] text-[#1e3a5f] font-semibold py-6 text-lg">
+                    Zur Kasse
+                    </Button>
+                </Link>
 
                 {/* Trust Badges */}
                 <div className="mt-6 space-y-3">

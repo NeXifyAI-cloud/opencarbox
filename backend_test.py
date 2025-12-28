@@ -1095,10 +1095,14 @@ def main():
     print("🛒 ORDER CREATION & CHECKOUT TESTING")
     print("=" * 60)
     
-    # Test creating order
-    create_order_success, order_number = test_create_order()
-    results['create_order'] = create_order_success
-    print()
+    # Test creating order with authentication
+    if user_token:
+        create_order_success, order_number = test_create_order_authenticated(user_token)
+        results['create_order'] = create_order_success
+        print()
+    else:
+        print("⚠️ Skipping order creation due to user login failure")
+        results['create_order'] = False
     
     # Test getting orders as admin
     if admin_token:

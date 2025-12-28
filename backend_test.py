@@ -754,7 +754,8 @@ def test_get_orders_admin(admin_token):
         return False
     
     try:
-        orders_url = f"{API_BASE}/orders"
+        # Use trailing slash to avoid redirect
+        orders_url = f"{API_BASE}/orders/"
         headers = {
             "Authorization": f"Bearer {admin_token}",
             "Content-Type": "application/json"

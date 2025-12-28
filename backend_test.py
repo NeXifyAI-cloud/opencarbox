@@ -1276,6 +1276,7 @@ def main():
     workshop_tests = ['create_appointment', 'workshop_form', 'sofort_termin', 'express_services', 'get_appointments']
     vehicle_tests = ['create_vehicle', 'get_vehicles']
     order_tests = ['create_order', 'get_orders']
+    specific_tests = ['vehicle_search', 'security_headers']
     e2e_tests = ['category_products', 'product_details', 'add_to_cart', 'cart_page']
     
     print("API Tests:")

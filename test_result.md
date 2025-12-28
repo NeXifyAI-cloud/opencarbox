@@ -171,8 +171,8 @@ frontend:
 
 metadata:
   created_by: "main_agent"
-  version: "1.5"
-  test_sequence: 5
+  version: "1.6"
+  test_sequence: 6
   run_ui: true
 
 test_plan:
@@ -188,3 +188,5 @@ agent_communication:
     message: "✅ COMPREHENSIVE E2E TESTING COMPLETED: All 7 tests passed (3 API connectivity + 4 E2E flow). Verified complete flow: 1) Category Page (/kategorie/ersatzteile) loads 18 unique products from database via API (no mock data fallback), 2) Product Page loads full details from API, 3) Add to Cart successfully adds product with session management, 4) Cart Page displays added items correctly. Backend APIs are fully functional with real database data. Frontend-to-backend integration is working perfectly."
   - agent: "testing"
     message: "✅ NEW ROUTES TESTING COMPLETED: All 11 tests passed including new workshop and vehicle routes. Workshop Routes: POST /api/workshop/appointments (✅ creates appointments), GET /api/workshop/appointments (✅ admin retrieval). Vehicle Routes: POST /api/vehicles/ (✅ admin creation), GET /api/vehicles (✅ public retrieval). Fixed routing issue with trailing slash. All backend APIs are fully functional with proper authentication and data persistence."
+  - agent: "testing"
+    message: "✅ WORKSHOP PAGE E2E BACKEND TESTING COMPLETED: All 14 tests passed (11 existing + 3 workshop-specific). Verified workshop appointment form submission with exact frontend data structure: 1) Workshop form submission (✅ all fields saved correctly), 2) 'Sofort Termin buchen' flow (✅ general inquiry booking), 3) Express services booking (✅ Pickerl, Ölwechsel, Reifenwechsel, Klimaservice all working). Backend API POST /api/workshop/appointments fully functional with proper data persistence and field validation. Workshop Page backend integration is working perfectly."

@@ -6,7 +6,7 @@ import Sidebar from '../components/layout/Sidebar';
 import { featuredProducts } from '../data/mockData'; // Fallback if API fails or for initial render
 import { Star, Heart, ShoppingCart, Filter, ChevronDown, Grid, List, ChevronRight, Loader } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
+import ImageWithFallback from '../components/ui/ImageWithFallback';
 import {
   Select,
   SelectContent,

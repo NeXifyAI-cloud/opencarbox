@@ -14,6 +14,7 @@ import { Label } from '../components/ui/label';
 import { useToast } from '../hooks/use-toast';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import { companyConfig } from '../config/company';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -116,7 +117,7 @@ const WorkshopPage = () => {
                 </h1>
                 <p className="text-xl text-gray-200 mb-8 leading-relaxed">
                   Modernste Werkstatt-Technologie trifft auf jahrelange Expertise. 
-                  Bei OpenCarBox in Wien 1030.
+                  Bei {companyConfig.legalName} in {companyConfig.address.city} {companyConfig.address.zip}.
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -130,18 +131,18 @@ const WorkshopPage = () => {
                   >
                     Sofort Termin buchen
                   </Button>
-                  <a href="tel:+4317981310">
+                  <a href={`tel:${companyConfig.contact.phone.replace(/\s/g, '')}`}>
                     <Button 
                       variant="outline"
                       size="lg" 
                       className="bg-white/10 hover:bg-white/20 text-white border-white/20 font-bold h-14 px-8 text-lg backdrop-blur-sm"
                     >
-                      01 798 13 10
+                      {companyConfig.contact.phone}
                     </Button>
                   </a>
                 </div>
                 <p className="mt-6 text-gray-300 text-sm font-medium flex items-center justify-center md:justify-start gap-2">
-                  <MapPin className="h-4 w-4 text-[#4fd1c5]" /> Rennweg 76, 1030 Wien • Mo-Fr 8:00-18:00
+                  <MapPin className="h-4 w-4 text-[#4fd1c5]" /> {companyConfig.address.street}, {companyConfig.address.zip} {companyConfig.address.city} • Mo-Fr 8:00-18:00
                 </p>
               </div>
               
@@ -250,7 +251,7 @@ const WorkshopPage = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-[#1e3a5f] mb-4">Unsere KFZ-Services in Wien</h2>
             <p className="text-gray-600 max-w-2xl mx-auto text-lg">
               Von der klassischen Reparatur bis zur kompletten Fahrzeugpflege - 
-              OpenCarBox bietet Ihnen alle Automotive-Dienstleistungen unter einem Dach.
+              {companyConfig.name} bietet Ihnen alle Automotive-Dienstleistungen unter einem Dach.
             </p>
           </div>
           
@@ -268,7 +269,17 @@ const WorkshopPage = () => {
                     <CardDescription className="mt-3 text-base leading-relaxed">{service.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {/* No prices displayed as requested */}
+                    <div className="flex justify-between items-end pt-6 border-t border-gray-100">
+                      <span className="flex items-center gap-1.5 text-sm text-gray-500 font-medium bg-gray-50 px-3 py-1 rounded-full">
+                        <Clock className="h-4 w-4" /> {service.duration}
+                      </span>
+                      <div className="text-right">
+                        <span className="text-xs text-gray-400 block mb-0.5">ab</span>
+                        <span className="font-bold text-[#1e3a5f] text-2xl">
+                          {service.priceFrom.toFixed(2).replace('.', ',')} €
+                        </span>
+                      </div>
+                    </div>
                   </CardContent>
                   <CardFooter className="bg-gray-50/50 pt-6">
                     <Button 
@@ -291,7 +302,7 @@ const WorkshopPage = () => {
         <section className="py-20 bg-gray-50 border-t border-gray-200">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold text-[#1e3a5f] mb-4">Ihre Vorteile bei OpenCarBox</h2>
+              <h2 className="text-3xl font-bold text-[#1e3a5f] mb-4">Ihre Vorteile bei {companyConfig.name}</h2>
               <p className="text-gray-600 max-w-2xl mx-auto">
                 Als Ihre KFZ-Fachwerkstatt in Wien bieten wir Ihnen erstklassigen Service mit vielen Zusatzleistungen.
               </p>

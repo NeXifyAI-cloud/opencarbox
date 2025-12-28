@@ -189,6 +189,30 @@ backend:
         agent: "testing"
         comment: "✅ PRODUCT ADMIN EDIT TESTING COMPLETED: Both endpoints working perfectly. 1) GET /api/products/{id} successfully retrieves product details (tested with product ID 1659b619-3918-4f8c-a99e-44c01254ee0b), 2) PUT /api/products/{id} successfully updates product with admin authentication (updated name, description, price +10€, stock +5). Update verification confirmed changes were persisted correctly. Admin product editing functionality is fully operational."
 
+  - task: "Vehicle Search Functionality"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/vehicle_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to verify GET /api/vehicles?search=Golf returns filtered results based on brand, model, and variant regex matching."
+
+  - task: "Security Headers Implementation"
+    implemented: true
+    working: "NA"
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to verify GET /api/health returns proper security headers including X-Frame-Options, X-Content-Type-Options, etc."
+
 frontend:
   - task: "Revert to Original Design"
     implemented: true

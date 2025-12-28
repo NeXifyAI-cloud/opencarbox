@@ -1214,6 +1214,21 @@ def main():
         print("⚠️ Skipping admin orders retrieval due to login failure")
         results['get_orders'] = False
     
+    # Test new specific functionality requested
+    print("=" * 60)
+    print("🔍 SPECIFIC FUNCTIONALITY TESTING")
+    print("=" * 60)
+    
+    # Test vehicle search functionality
+    vehicle_search_success, golf_matches = test_vehicle_search()
+    results['vehicle_search'] = vehicle_search_success
+    print()
+    
+    # Test security headers
+    security_headers_success, missing_headers = test_security_headers()
+    results['security_headers'] = security_headers_success
+    print()
+    
     # E2E Flow Testing (existing tests)
     print("=" * 60)
     print("🔄 E2E FLOW TESTING")

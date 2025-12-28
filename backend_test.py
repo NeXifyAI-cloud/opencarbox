@@ -424,6 +424,151 @@ def test_get_vehicles():
         print(f"❌ Invalid JSON response: {e}")
         return False
 
+def test_workshop_form_submission():
+    """Test workshop form submission with exact frontend data structure"""
+    print("📝 Testing Workshop Form Submission (Frontend Structure)...")
+    
+    try:
+        appointment_url = f"{API_BASE}/workshop/appointments"
+        # This matches the exact structure sent from WorkshopPage.jsx
+        form_data = {
+            "name": "Maria Schneider",
+            "email": "maria.schneider@example.com", 
+            "phone": "+43 664 123 4567",
+            "date": "2025-01-25",
+            "vehicle": "Audi A4 Avant",
+            "serviceId": "inspection",
+            "serviceName": "Inspektion & Wartung"
+        }
+        
+        response = requests.post(
+            appointment_url,
+            json=form_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 201:
+            appointment = response.json()
+            print("✅ Workshop form submission successful!")
+            print(f"Appointment ID: {appointment.get('id')}")
+            print(f"Customer: {appointment.get('name')}")
+            print(f"Service: {appointment.get('serviceName')}")
+            print(f"Vehicle: {appointment.get('vehicle')}")
+            print(f"Date: {appointment.get('date')}")
+            print(f"Status: {appointment.get('status')}")
+            return True, appointment.get('id')
+        else:
+            print(f"❌ Failed to submit workshop form!")
+            print(f"Error: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during workshop form submission: {e}")
+        return False, None
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, None
+
+def test_sofort_termin_booking():
+    """Test 'Sofort Termin buchen' button functionality"""
+    print("⚡ Testing 'Sofort Termin buchen' Flow...")
+    
+    try:
+        appointment_url = f"{API_BASE}/workshop/appointments"
+        # This matches the data when "Sofort Termin buchen" is clicked
+        sofort_data = {
+            "name": "Thomas Weber",
+            "email": "thomas.weber@example.com",
+            "phone": "+43 1 234 5678", 
+            "date": "2025-01-22",
+            "vehicle": "BMW X3",
+            "serviceId": "general",
+            "serviceName": "Allgemeine Anfrage"
+        }
+        
+        response = requests.post(
+            appointment_url,
+            json=sofort_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 201:
+            appointment = response.json()
+            print("✅ 'Sofort Termin buchen' booking successful!")
+            print(f"Appointment ID: {appointment.get('id')}")
+            print(f"Customer: {appointment.get('name')}")
+            print(f"Service: {appointment.get('serviceName')}")
+            print(f"Status: {appointment.get('status')}")
+            return True
+        else:
+            print(f"❌ Failed to book 'Sofort Termin'!")
+            print(f"Error: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during 'Sofort Termin' booking: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False
+
+def test_express_services_booking():
+    """Test Express Services booking (Pickerl, Ölwechsel, etc.)"""
+    print("🚀 Testing Express Services Booking...")
+    
+    express_services = [
+        {"id": "pickerl", "name": "§57a Pickerl"},
+        {"id": "oil", "name": "Ölwechsel"},
+        {"id": "tires", "name": "Reifenwechsel"},
+        {"id": "climate", "name": "Klimaservice"}
+    ]
+    
+    results = []
+    
+    for service in express_services:
+        try:
+            appointment_url = f"{API_BASE}/workshop/appointments"
+            express_data = {
+                "name": f"Test Customer {service['id'].title()}",
+                "email": f"test.{service['id']}@example.com",
+                "phone": "+43 699 123 4567",
+                "date": "2025-01-23",
+                "vehicle": "VW Golf VII",
+                "serviceId": service['id'],
+                "serviceName": service['name']
+            }
+            
+            response = requests.post(
+                appointment_url,
+                json=express_data,
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            if response.status_code == 201:
+                appointment = response.json()
+                print(f"✅ {service['name']} booking successful! ID: {appointment.get('id')}")
+                results.append(True)
+            else:
+                print(f"❌ {service['name']} booking failed! Status: {response.status_code}")
+                results.append(False)
+                
+        except Exception as e:
+            print(f"❌ Error booking {service['name']}: {e}")
+            results.append(False)
+    
+    success_count = sum(results)
+    total_count = len(results)
+    print(f"Express Services Results: {success_count}/{total_count} successful")
+    
+    return success_count == total_count
+
 def main():
     """Run all backend tests including E2E flow and new workshop/vehicle routes"""
     print("=" * 60)

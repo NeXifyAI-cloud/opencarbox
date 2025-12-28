@@ -1315,6 +1315,12 @@ def main():
             status = "✅ PASS" if results[test_name] else "❌ FAIL"
             print(f"  {test_name.replace('_', ' ').title()}: {status}")
     
+    print("\nSpecific Functionality Tests:")
+    for test_name in specific_tests:
+        if test_name in results:
+            status = "✅ PASS" if results[test_name] else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
     print("\nE2E Flow Tests:")
     for test_name in e2e_tests:
         if test_name in results:
@@ -1332,6 +1338,7 @@ def main():
     workshop_passed = sum(results.get(test, False) for test in workshop_tests)
     vehicle_passed = sum(results.get(test, False) for test in vehicle_tests)
     order_passed = sum(results.get(test, False) for test in order_tests)
+    specific_passed = sum(results.get(test, False) for test in specific_tests)
     e2e_passed = sum(results.get(test, False) for test in e2e_tests)
     
     print(f"User Dashboard: {dashboard_passed}/{len(dashboard_tests)} tests passed")
@@ -1339,6 +1346,7 @@ def main():
     print(f"Workshop Routes: {workshop_passed}/{len(workshop_tests)} tests passed")
     print(f"Vehicle Routes: {vehicle_passed}/{len(vehicle_tests)} tests passed")
     print(f"Order Routes: {order_passed}/{len(order_tests)} tests passed")
+    print(f"Specific Functionality: {specific_passed}/{len(specific_tests)} tests passed")
     print(f"E2E Flow: {e2e_passed}/{len(e2e_tests)} tests passed")
     
     if passed_tests == total_tests:

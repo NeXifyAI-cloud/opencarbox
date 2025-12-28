@@ -161,27 +161,33 @@ backend:
 
   - task: "User Dashboard - GET /api/orders/me"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/order_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to test GET /api/orders/me endpoint to ensure it returns list of orders for the authenticated user. This is used by AccountPage to display user's order history."
+      - working: true
+        agent: "testing"
+        comment: "✅ USER DASHBOARD TESTING COMPLETED: GET /api/orders/me endpoint working perfectly. Successfully retrieved user orders (1 order found: CT-20251228-52AEE9E4 - pending - 115.98€) for authenticated user. Endpoint properly filters orders by user_id and returns correct order data structure. AccountPage will be able to display user's order history correctly."
 
   - task: "Product Admin Edit - GET and PUT /api/products/{id}"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/product_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Need to verify GET /api/products/{id} and PUT /api/products/{id} endpoints exist and work properly for admin product editing functionality."
+      - working: true
+        agent: "testing"
+        comment: "✅ PRODUCT ADMIN EDIT TESTING COMPLETED: Both endpoints working perfectly. 1) GET /api/products/{id} successfully retrieves product details (tested with product ID 1659b619-3918-4f8c-a99e-44c01254ee0b), 2) PUT /api/products/{id} successfully updates product with admin authentication (updated name, description, price +10€, stock +5). Update verification confirmed changes were persisted correctly. Admin product editing functionality is fully operational."
 
 frontend:
   - task: "Revert to Original Design"

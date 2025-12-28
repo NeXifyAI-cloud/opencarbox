@@ -1,205 +1,87 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { 
-  User, Package, MapPin, Settings, LogOut, Edit, Plus, Trash2,
-  ChevronRight, Clock, Check, Truck, XCircle
-} from 'lucide-react';
+import { LogOut, Package, User, MapPin, CreditCard, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const AccountPage = () => {
-  const { user, logout, updateProfile } = useAuth();
-  const { cart } = useCart();
+  const { user, logout, token } = useAuth();
   const navigate = useNavigate();
-  const [editing, setEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    first_name: user?.first_name || '',
-    last_name: user?.last_name || '',
-    phone: user?.phone || ''
-  });
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
+  useEffect(() => {
+    if (token) {
+      fetchOrders();
+    }
+  }, [token]);
+
+  const fetchOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const response = await axios.get(`${API}/orders/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setOrders(response.data);
+    } catch (error) {
+      console.error("Bestellungen konnten nicht geladen werden", error);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const handleSave = async () => {
-    await updateProfile(formData);
-    setEditing(false);
-  };
-
-  // Mock-Bestellungen
-  const orders = [
-    {
-      id: 'CT-20251224-ABC123',
-      date: '24.12.2024',
-      status: 'delivered',
-      total: 145.47,
-      items: 3
-    },
-    {
-      id: 'CT-20251220-DEF456',
-      date: '20.12.2024',
-      status: 'shipped',
-      total: 89.99,
-      items: 1
-    }
-  ];
-
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      pending: { label: 'Ausstehend', icon: Clock, color: 'bg-yellow-100 text-yellow-800' },
-      confirmed: { label: 'Bestätigt', icon: Check, color: 'bg-blue-100 text-blue-800' },
-      shipped: { label: 'Versendet', icon: Truck, color: 'bg-purple-100 text-purple-800' },
-      delivered: { label: 'Geliefert', icon: Check, color: 'bg-green-100 text-green-800' },
-      cancelled: { label: 'Storniert', icon: XCircle, color: 'bg-red-100 text-red-800' }
-    };
-    const config = statusConfig[status] || statusConfig.pending;
-    const Icon = config.icon;
-    return (
-      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${config.color}`}>
-        <Icon className="h-3 w-3" />
-        {config.label}
-      </span>
-    );
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header cartItems={cart.item_count} />
-      
-      <main className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-          <Link to="/" className="hover:text-[#4fd1c5]">Startseite</Link>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-[#1e3a5f]">Mein Konto</span>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header />
+      <main className="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+        <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
-          <div className="lg:col-span-1">
+          <aside className="w-full md:w-64 flex-shrink-0">
             <Card>
               <CardContent className="p-6">
                 <div className="text-center mb-6">
-                  <div className="w-20 h-20 rounded-full bg-[#4fd1c5]/20 flex items-center justify-center mx-auto mb-3">
-                    <User className="h-10 w-10 text-[#4fd1c5]" />
+                  <div className="w-20 h-20 bg-[#1e3a5f] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-3">
+                    {user?.first_name?.[0]}{user?.last_name?.[0]}
                   </div>
-                  <h2 className="font-semibold text-[#1e3a5f]">
-                    {user.first_name} {user.last_name}
-                  </h2>
-                  <p className="text-sm text-gray-500">{user.email}</p>
+                  <h2 className="font-bold text-lg">{user?.first_name} {user?.last_name}</h2>
+                  <p className="text-sm text-gray-500">{user?.email}</p>
                 </div>
-                <nav className="space-y-1">
-                  <button className="w-full flex items-center gap-3 px-4 py-2 text-left rounded-lg bg-[#4fd1c5]/10 text-[#1e3a5f]">
-                    <User className="h-5 w-5" /> Mein Profil
-                  </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-2 text-left rounded-lg text-gray-600 hover:bg-gray-100">
-                    <Package className="h-5 w-5" /> Bestellungen
-                  </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-2 text-left rounded-lg text-gray-600 hover:bg-gray-100">
-                    <MapPin className="h-5 w-5" /> Adressen
-                  </button>
-                  <button className="w-full flex items-center gap-3 px-4 py-2 text-left rounded-lg text-gray-600 hover:bg-gray-100">
-                    <Settings className="h-5 w-5" /> Einstellungen
-                  </button>
-                  <button 
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-4 py-2 text-left rounded-lg text-red-600 hover:bg-red-50"
-                  >
-                    <LogOut className="h-5 w-5" /> Abmelden
-                  </button>
-                </nav>
+                <Button variant="outline" className="w-full text-red-600 hover:text-red-700 hover:bg-red-50" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" /> Abmelden
+                </Button>
               </CardContent>
             </Card>
-          </div>
+          </aside>
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
-            <Tabs defaultValue="profile">
-              <TabsList className="grid w-full grid-cols-3 mb-6">
-                <TabsTrigger value="profile">Profil</TabsTrigger>
-                <TabsTrigger value="orders">Bestellungen</TabsTrigger>
-                <TabsTrigger value="addresses">Adressen</TabsTrigger>
+          <div className="flex-1">
+            <h1 className="text-2xl font-bold text-[#1e3a5f] mb-6">Mein Konto</h1>
+            
+            <Tabs defaultValue="orders" className="w-full">
+              <TabsList className="mb-6">
+                <TabsTrigger value="orders" className="flex items-center gap-2">
+                  <Package className="h-4 w-4" /> Bestellungen
+                </TabsTrigger>
+                <TabsTrigger value="profile" className="flex items-center gap-2">
+                  <User className="h-4 w-4" /> Profil
+                </TabsTrigger>
+                <TabsTrigger value="addresses" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" /> Adressen
+                </TabsTrigger>
               </TabsList>
-
-              <TabsContent value="profile">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle>Persönliche Daten</CardTitle>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setEditing(!editing)}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      {editing ? 'Abbrechen' : 'Bearbeiten'}
-                    </Button>
-                  </CardHeader>
-                  <CardContent>
-                    {editing ? (
-                      <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <Label>Vorname</Label>
-                            <Input 
-                              value={formData.first_name}
-                              onChange={(e) => setFormData({...formData, first_name: e.target.value})}
-                            />
-                          </div>
-                          <div>
-                            <Label>Nachname</Label>
-                            <Input 
-                              value={formData.last_name}
-                              onChange={(e) => setFormData({...formData, last_name: e.target.value})}
-                            />
-                          </div>
-                        </div>
-                        <div>
-                          <Label>Telefon</Label>
-                          <Input 
-                            value={formData.phone}
-                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                          />
-                        </div>
-                        <Button onClick={handleSave} className="bg-[#4fd1c5] hover:bg-[#38b2ac] text-[#1e3a5f]">
-                          Speichern
-                        </Button>
-                      </div>
-                    ) : (
-                      <dl className="grid grid-cols-2 gap-4">
-                        <div>
-                          <dt className="text-sm text-gray-500">Vorname</dt>
-                          <dd className="font-medium text-[#1e3a5f]">{user.first_name}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-sm text-gray-500">Nachname</dt>
-                          <dd className="font-medium text-[#1e3a5f]">{user.last_name}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-sm text-gray-500">E-Mail</dt>
-                          <dd className="font-medium text-[#1e3a5f]">{user.email}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-sm text-gray-500">Telefon</dt>
-                          <dd className="font-medium text-[#1e3a5f]">{user.phone || '-'}</dd>
-                        </div>
-                      </dl>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
 
               <TabsContent value="orders">
                 <Card>
@@ -207,35 +89,37 @@ const AccountPage = () => {
                     <CardTitle>Meine Bestellungen</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {orders.length === 0 ? (
-                      <div className="text-center py-8">
-                        <Package className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500">Noch keine Bestellungen vorhanden</p>
-                        <Link to="/">
-                          <Button className="mt-4 bg-[#4fd1c5] hover:bg-[#38b2ac] text-[#1e3a5f]">
-                            Jetzt einkaufen
-                          </Button>
-                        </Link>
+                    {loadingOrders ? (
+                      <p>Laden...</p>
+                    ) : orders.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <Package className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                        <p>Noch keine Bestellungen vorhanden.</p>
+                        <Button className="mt-4 bg-[#1e3a5f]" onClick={() => navigate('/')}>Jetzt einkaufen</Button>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         {orders.map((order) => (
-                          <div key={order.id} className="border rounded-lg p-4 hover:border-[#4fd1c5] transition-colors">
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="font-mono text-sm text-gray-500">{order.id}</span>
-                              {getStatusBadge(order.status)}
+                          <div key={order.id} className="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-[#4fd1c5] transition-colors">
+                            <div>
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="font-mono font-bold text-[#1e3a5f]">{order.order_number}</span>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${
+                                  order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                                  order.status === 'delivered' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                                }`}>
+                                  {order.status === 'pending' ? 'In Bearbeitung' : order.status}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                {new Date(order.created_at).toLocaleDateString('de-DE')} • {order.items?.length} Artikel
+                              </p>
                             </div>
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="text-sm text-gray-500">Bestellt am {order.date}</p>
-                                <p className="text-sm text-gray-500">{order.items} Artikel</p>
-                              </div>
-                              <div className="text-right">
-                                <p className="font-bold text-[#1e3a5f]">{order.total.toFixed(2).replace('.', ',')} €</p>
-                                <Link to={`/bestellung/${order.id}`} className="text-sm text-[#4fd1c5] hover:underline">
-                                  Details ansehen
-                                </Link>
-                              </div>
+                            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                              <span className="font-bold text-[#1e3a5f]">{order.total?.toFixed(2).replace('.', ',')} €</span>
+                              <Button variant="ghost" size="sm" onClick={() => navigate(`/bestellung/${order.order_number}`)}>
+                                Details <ChevronRight className="h-4 w-4 ml-1" />
+                              </Button>
                             </div>
                           </div>
                         ))}
@@ -245,47 +129,40 @@ const AccountPage = () => {
                 </Card>
               </TabsContent>
 
+              <TabsContent value="profile">
+                <Card>
+                  <CardHeader><CardTitle>Persönliche Daten</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Vorname</label>
+                        <p className="font-medium">{user?.first_name}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Nachname</label>
+                        <p className="font-medium">{user?.last_name}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">E-Mail</label>
+                        <p className="font-medium">{user?.email}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-medium text-gray-500">Telefon</label>
+                        <p className="font-medium">{user?.phone || '-'}</p>
+                      </div>
+                    </div>
+                    <Button variant="outline" className="mt-6">Daten bearbeiten</Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
               <TabsContent value="addresses">
                 <Card>
-                  <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle>Gespeicherte Adressen</CardTitle>
-                    <Button variant="outline" size="sm">
-                      <Plus className="h-4 w-4 mr-2" /> Neue Adresse
-                    </Button>
-                  </CardHeader>
+                  <CardHeader><CardTitle>Adressbuch</CardTitle></CardHeader>
                   <CardContent>
-                    {(!user.addresses || user.addresses.length === 0) ? (
-                      <div className="text-center py-8">
-                        <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                        <p className="text-gray-500">Keine Adressen gespeichert</p>
-                        <Button className="mt-4" variant="outline">
-                          <Plus className="h-4 w-4 mr-2" /> Adresse hinzufügen
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {user.addresses.map((address, index) => (
-                          <div key={index} className="border rounded-lg p-4 relative">
-                            {address.is_default && (
-                              <span className="absolute top-2 right-2 text-xs bg-[#4fd1c5]/20 text-[#1e3a5f] px-2 py-1 rounded">
-                                Standard
-                              </span>
-                            )}
-                            <p className="font-medium">{address.street} {address.house_number}</p>
-                            <p className="text-gray-600">{address.postal_code} {address.city}</p>
-                            <p className="text-gray-600">{address.country}</p>
-                            <div className="mt-3 flex gap-2">
-                              <Button variant="ghost" size="sm">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <p className="text-gray-500">Hier können Sie Ihre Liefer- und Rechnungsadressen verwalten.</p>
+                    {/* Placeholder for Address Management */}
+                    <Button className="mt-4 bg-[#1e3a5f]">Neue Adresse hinzufügen</Button>
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -293,7 +170,6 @@ const AccountPage = () => {
           </div>
         </div>
       </main>
-
       <Footer />
     </div>
   );

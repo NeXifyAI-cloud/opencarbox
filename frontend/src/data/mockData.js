@@ -367,8 +367,8 @@ export const companyInfo = {
   name: 'Carvatoo',
   legalName: 'OpenCarBox GmbH',
   claim: 'Weil dein Auto zur Familie gehört.',
-  phone: '+43 1 798 134 10',
-  email: 'office@carvatoo.at',
+  phone: '+43 1 798 13 10',
+  email: 'office@opencarbox.co.at',
   address: {
     street: 'Rennweg 76',
     postalCode: '1030',
@@ -382,54 +382,48 @@ export const companyInfo = {
   }
 };
 
-// Werkstatt Services (Updated from OpenCarBox.center)
+// Werkstatt Services (OpenCarBox.center replica - NO PRICES)
 export const workshopServices = [
   {
     id: 'pickerl',
-    name: '§57a Pickerl Überprüfung',
-    description: 'Offizielle KFZ-Überprüfung nach österreichischen Standards. Schnell, zuverlässig und zu fairen Preisen.',
-    priceFrom: 55.00,
-    duration: '45-60 Minuten',
+    name: '§57a Überprüfung (Pickerl)',
+    description: 'Offizielle KFZ-Überprüfung nach österreichischen Standards. Schnell, zuverlässig und professionell.',
+    duration: 'ca. 60 Min',
     icon: 'ShieldCheck'
   },
   {
     id: 'inspektion',
     name: 'KFZ-Inspektion',
     description: 'Professionelle Fahrzeuginspektion von erfahrenen KFZ-Technikern mit modernster Diagnosetechnik.',
-    priceFrom: 89.00,
-    duration: '1-2 Stunden',
+    duration: 'nach Aufwand',
     icon: 'ClipboardList'
   },
   {
     id: 'lack-karosserie',
     name: 'Lack & Karosserie',
     description: 'Unfallschäden, Lackierungen, Delle-Reparatur und Karosserie-Arbeiten - alles aus einer Hand.',
-    priceFrom: 150.00,
-    duration: 'Auf Anfrage',
+    duration: 'nach Aufwand',
     icon: 'Wrench'
   },
   {
     id: 'reifenservice',
     name: 'Reifenservice & Achsvermessung',
     description: 'Reifenmontage, Wuchten, Achsvermessung und Einlagerung für optimale Fahrsicherheit.',
-    priceFrom: 29.90,
-    duration: '30-60 Minuten',
+    duration: 'ca. 45 Min',
     icon: 'Circle'
   },
   {
     id: 'klimaservice',
     name: 'Klimaservice',
     description: 'Klimaanlagen-Wartung, Desinfektion und Reparatur für angenehmes Fahren bei jedem Wetter.',
-    priceFrom: 69.00,
-    duration: '45-60 Minuten',
+    duration: 'ca. 60 Min',
     icon: 'Wind'
   },
   {
     id: 'oelwechsel',
     name: 'Ölwechsel & Wartung',
     description: 'Regelmäßige Wartung für die Langlebigkeit Ihres Fahrzeugs mit hochwertigen Markenölen.',
-    priceFrom: 49.90,
-    duration: '30-45 Minuten',
+    duration: 'ca. 45 Min',
     icon: 'Droplet'
   }
 ];

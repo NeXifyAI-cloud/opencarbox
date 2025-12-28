@@ -8,7 +8,7 @@ import {
   ChevronRight, Plus, Minus, Check, Info, Loader, Wrench, ArrowRight
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
+import ImageWithFallback from '../components/ui/ImageWithFallback';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { productService } from '../services/api';
 import { useCart } from '../context/CartContext';

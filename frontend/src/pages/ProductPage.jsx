@@ -121,7 +121,7 @@ const ProductPage = () => {
                           selectedImage === index ? 'border-[#4fd1c5]' : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
-                        <img src={img} alt="" className="w-full h-full object-cover" />
+                        <ImageWithFallback src={img} alt="" className="w-full h-full object-cover" />
                       </button>
                     ))}
                   </div>

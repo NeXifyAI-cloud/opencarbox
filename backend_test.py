@@ -681,7 +681,8 @@ def test_create_order_authenticated(user_token):
         test_product = products_response.json()[0]
         
         # Create order with proper payload structure and authentication
-        order_url = f"{API_BASE}/orders"
+        # Try with trailing slash to avoid redirect
+        order_url = f"{API_BASE}/orders/"
         order_data = {
             "items": [
                 {

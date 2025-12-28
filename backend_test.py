@@ -773,6 +773,25 @@ def main():
     results['get_vehicles'] = get_vehicles_success
     print()
     
+    # Test order creation and retrieval
+    print("=" * 60)
+    print("🛒 ORDER CREATION & CHECKOUT TESTING")
+    print("=" * 60)
+    
+    # Test creating order
+    create_order_success, order_number = test_create_order()
+    results['create_order'] = create_order_success
+    print()
+    
+    # Test getting orders as admin
+    if admin_token:
+        get_orders_success = test_get_orders_admin(admin_token)
+        results['get_orders'] = get_orders_success
+        print()
+    else:
+        print("⚠️ Skipping admin orders retrieval due to login failure")
+        results['get_orders'] = False
+    
     # E2E Flow Testing (existing tests)
     print("=" * 60)
     print("🔄 E2E FLOW TESTING")

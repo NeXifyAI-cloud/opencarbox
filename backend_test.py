@@ -570,7 +570,7 @@ def test_express_services_booking():
     return success_count == total_count
 
 def main():
-    """Run all backend tests including E2E flow and new workshop/vehicle routes"""
+    """Run all backend tests including E2E flow and workshop page specific tests"""
     print("=" * 60)
     print("🚀 CARVATOO BACKEND E2E TESTING")
     print("=" * 60)
@@ -603,6 +603,21 @@ def main():
     # Test creating workshop appointment
     appointment_success, appointment_id = test_create_workshop_appointment()
     results['create_appointment'] = appointment_success
+    print()
+    
+    # Test workshop form submission (frontend structure)
+    workshop_form_success, form_appointment_id = test_workshop_form_submission()
+    results['workshop_form'] = workshop_form_success
+    print()
+    
+    # Test 'Sofort Termin buchen' flow
+    sofort_success = test_sofort_termin_booking()
+    results['sofort_termin'] = sofort_success
+    print()
+    
+    # Test Express Services booking
+    express_success = test_express_services_booking()
+    results['express_services'] = express_success
     print()
     
     # Test getting workshop appointments as admin
@@ -676,7 +691,7 @@ def main():
     
     # Group tests
     api_tests = ['api_root', 'api_health', 'admin_login']
-    workshop_tests = ['create_appointment', 'get_appointments']
+    workshop_tests = ['create_appointment', 'workshop_form', 'sofort_termin', 'express_services', 'get_appointments']
     vehicle_tests = ['create_vehicle', 'get_vehicles']
     e2e_tests = ['category_products', 'product_details', 'add_to_cart', 'cart_page']
     

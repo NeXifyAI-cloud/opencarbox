@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Search, ShoppingCart, User, Heart, Phone, 
   ChevronDown, Menu, X, Car, Zap, Bike, Truck, LayoutGrid, Wrench, ShoppingBag,
@@ -19,7 +19,9 @@ import { manufacturers } from '../../data/mockData';
 const Header = ({ cartItems = 0 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedVehicleType, setSelectedVehicleType] = useState('alle');
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   const vehicleTypes = [
     { id: 'alle', name: 'Alle', icon: LayoutGrid },
@@ -28,6 +30,20 @@ const Header = ({ cartItems = 0 }) => {
     { id: 'motorrad', name: 'Motorrad', icon: Bike },
     { id: 'transporter', name: 'Transporter', icon: Truck },
   ];
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      if (isActive('/werkstatt')) {
+        // Logic for workshop search could be different
+        // For now, redirect to workshop page with query
+      } else if (isActive('/fahrzeuge')) {
+        navigate(`/fahrzeuge?search=${encodeURIComponent(searchQuery)}`);
+      } else {
+        navigate(`/kategorien?search=${encodeURIComponent(searchQuery)}`);
+      }
+    }
+  };
 
   // Helper to check active section
   const isActive = (path) => {
@@ -87,7 +103,7 @@ const Header = ({ cartItems = 0 }) => {
 
             {/* Global Search Bar */}
             <div className="flex-1 max-w-3xl hidden md:flex">
-              <div className="relative w-full flex shadow-lg rounded-lg">
+              <form onSubmit={handleSearch} className="relative w-full flex shadow-lg rounded-lg">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2">
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
@@ -98,12 +114,14 @@ const Header = ({ cartItems = 0 }) => {
                     isActive('/fahrzeuge') ? "Fahrzeugmarke oder Modell suchen..." :
                     "Artikel-Nr., OE-Nummer oder Teilename suchen..."
                   }
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-12 pr-4 py-3 h-14 rounded-l-lg border-none text-gray-900 focus:ring-2 focus:ring-[#4fd1c5] text-base"
                 />
-                <Button className="bg-[#4fd1c5] hover:bg-[#38b2ac] text-[#1e3a5f] font-bold text-base rounded-l-none px-10 h-14 transition-colors">
+                <Button type="submit" className="bg-[#4fd1c5] hover:bg-[#38b2ac] text-[#1e3a5f] font-bold text-base rounded-l-none px-10 h-14 transition-colors">
                   Suchen
                 </Button>
-              </div>
+              </form>
             </div>
 
             {/* User Actions */}
@@ -150,16 +168,18 @@ const Header = ({ cartItems = 0 }) => {
 
           {/* Mobile Search (Visible only on mobile) */}
           <div className="mt-6 md:hidden pb-2">
-            <div className="relative w-full flex shadow-md">
+            <form onSubmit={handleSearch} className="relative w-full flex shadow-md">
               <Input 
                 type="text"
                 placeholder="Suchen..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-12 rounded-lg border-none text-gray-900 pl-4 pr-12 text-base"
               />
-              <button className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#4fd1c5] p-2 rounded-md text-[#1e3a5f]">
+              <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#4fd1c5] p-2 rounded-md text-[#1e3a5f]">
                 <Search className="h-5 w-5" />
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>

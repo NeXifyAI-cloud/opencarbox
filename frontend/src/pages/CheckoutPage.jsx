@@ -5,13 +5,19 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../components/ui/card';
-import { CheckCircle2, CreditCard, Truck } from 'lucide-react';
+import { CheckCircle2, CreditCard, Truck, AlertTriangle } from 'lucide-react';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
+import axios from 'axios';
+import { useToast } from '../components/ui/use-toast';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
 
 const CheckoutPage = () => {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, sessionId } = useCart();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,7 +30,8 @@ const CheckoutPage = () => {
     paymentMethod: 'card'
   });
 
-  const subtotal = cart.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartItems = cart.items || [];
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal >= 120 ? 0 : 5.99;
   const total = subtotal + shipping;
 
@@ -42,15 +49,53 @@ const CheckoutPage = () => {
 
   const handlePlaceOrder = async () => {
     setLoading(true);
-    // Simulate API call
-    setTimeout(async () => {
-      await clearCart();
+    try {
+      // 1. Create order payload
+      const orderData = {
+        shipping_address: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          address: {
+            street: formData.address,
+            city: formData.city,
+            postal_code: formData.zip,
+            country: "AT" // Default for now
+          }
+        },
+        payment_method: formData.paymentMethod,
+        items: cartItems.map(item => ({
+          product_id: item.product_id || item.id,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        session_id: sessionId
+      };
+
+      // 2. Send to backend
+      const response = await axios.post(`${API}/orders`, orderData);
+      
+      if (response.data.id || response.data.order_number) {
+        // 3. Clear cart and redirect
+        await clearCart();
+        navigate(`/bestellung/${response.data.order_number}`);
+      } else {
+        throw new Error("Keine Bestellnummer erhalten");
+      }
+
+    } catch (error) {
+      console.error("Order failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Fehler bei der Bestellung",
+        description: error.response?.data?.detail || "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+      });
+    } finally {
       setLoading(false);
-      navigate('/bestellung/12345'); // Mock Order ID
-    }, 1500);
+    }
   };
 
-  if (cart.items.length === 0 && step === 1) {
+  if (cartItems.length === 0 && step === 1) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <Header />
@@ -135,7 +180,9 @@ const CheckoutPage = () => {
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end">
-                  <Button onClick={handleNextStep} className="bg-[#1e3a5f] hover:bg-[#2d4a6f]">Weiter zur Zahlung</Button>
+                  <Button onClick={handleNextStep} className="bg-[#1e3a5f] hover:bg-[#2d4a6f]" disabled={!formData.firstName || !formData.lastName || !formData.email || !formData.address}>
+                    Weiter zur Zahlung
+                  </Button>
                 </CardFooter>
               </Card>
             )}
@@ -201,8 +248,8 @@ const CheckoutPage = () => {
                     <div>
                       <h3 className="font-bold text-[#1e3a5f] mb-2">Artikel</h3>
                       <div className="space-y-3">
-                        {cart.items.map((item) => (
-                          <div key={item.id} className="flex justify-between text-sm">
+                        {cartItems.map((item) => (
+                          <div key={item.id || item.product_id} className="flex justify-between text-sm">
                             <span className="text-gray-600">{item.quantity}x {item.name}</span>
                             <span className="font-medium text-[#1e3a5f]">{(item.price * item.quantity).toFixed(2).replace('.', ',')} €</span>
                           </div>

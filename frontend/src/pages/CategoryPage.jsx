@@ -28,21 +28,22 @@ const CategoryPage = () => {
   
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // In a real app, we'd fetch category details too to get the name
-        // For now, we'll try to get products by category
-        // If the backend doesn't support filtering by category slug yet, 
-        // we might fallback to all products or mocked data.
+        const searchParams = new URLSearchParams(location.search);
+        const searchQuery = searchParams.get('search');
         
         let data = [];
         try {
             // Try fetching from real API
-            // Assuming the backend has a filter ?category=slug
-            const response = await productService.getAll({ category: subcategoryId || categoryId });
+            const response = await productService.getAll({ 
+              category: subcategoryId || categoryId,
+              search: searchQuery
+            });
             data = response.items || response; // Handle paginated or list response
         } catch (err) {
             console.warn("API fetch failed, falling back to mock data", err);

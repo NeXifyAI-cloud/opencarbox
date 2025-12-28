@@ -146,15 +146,18 @@ backend:
 
   - task: "Checkout and Order Creation Flow"
     implemented: true
-    working: "NA"
+    working: true
     file: "backend/routes/order_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Final smoke test requested for checkout and order creation flow. Need to verify POST /api/orders with valid payload and GET /api/orders admin endpoint."
+      - working: true
+        agent: "testing"
+        comment: "✅ CHECKOUT & ORDER CREATION SMOKE TEST COMPLETED: All order tests passed (2/2). Verified complete checkout flow: 1) POST /api/orders creates orders successfully (status 200) with proper payload structure matching backend models, 2) Order created with ID 339adc9e-e65e-4bc7-8c81-9169479896cb and order number CT-20251228-2CE6EFA3 for customer Anna Müller (total: 179.98€), 3) GET /api/orders (admin-only) retrieves orders correctly (1 order found). Backend order creation API is fully functional with proper data persistence, field validation, and admin retrieval. Checkout flow backend integration is working perfectly."
 
 frontend:
   - task: "Revert to Original Design"

@@ -159,6 +159,30 @@ backend:
         agent: "testing"
         comment: "✅ CHECKOUT & ORDER CREATION SMOKE TEST COMPLETED: All order tests passed (2/2). Verified complete checkout flow: 1) POST /api/orders creates orders successfully (status 200) with proper payload structure matching backend models, 2) Order created with ID 339adc9e-e65e-4bc7-8c81-9169479896cb and order number CT-20251228-2CE6EFA3 for customer Anna Müller (total: 179.98€), 3) GET /api/orders (admin-only) retrieves orders correctly (1 order found). Backend order creation API is fully functional with proper data persistence, field validation, and admin retrieval. Checkout flow backend integration is working perfectly."
 
+  - task: "User Dashboard - GET /api/orders/me"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/order_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to test GET /api/orders/me endpoint to ensure it returns list of orders for the authenticated user. This is used by AccountPage to display user's order history."
+
+  - task: "Product Admin Edit - GET and PUT /api/products/{id}"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/product_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to verify GET /api/products/{id} and PUT /api/products/{id} endpoints exist and work properly for admin product editing functionality."
+
 frontend:
   - task: "Revert to Original Design"
     implemented: true

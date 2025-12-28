@@ -3,6 +3,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { companyConfig } from '../config/company';
 
 const DatenschutzPage = () => {
   return (
@@ -27,14 +28,14 @@ const DatenschutzPage = () => {
               denen Sie persönlich identifiziert werden können.
             </p>
           </section>
-
+          
           <section>
             <h2 className="text-xl font-semibold text-[#1e3a5f] mb-3">2. Verantwortliche Stelle</h2>
             <p className="text-gray-600">
-              <strong>Carvatoo GmbH</strong><br />
-              Autostraße 123<br />
-              1010 Wien, Österreich<br />
-              E-Mail: datenschutz@carvatoo.at
+              <strong>{companyConfig.legalName}</strong><br />
+              {companyConfig.address.street}<br />
+              {companyConfig.address.zip} {companyConfig.address.city}, {companyConfig.address.country}<br />
+              E-Mail: {companyConfig.contact.email}
             </p>
           </section>
 

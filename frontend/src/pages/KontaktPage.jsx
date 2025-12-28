@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import { useToast } from '../hooks/use-toast';
+import { companyConfig } from '../config/company';
 
 const KontaktPage = () => {
   const { toast } = useToast();
@@ -72,7 +73,7 @@ const KontaktPage = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800">Telefon</h3>
-                    <p className="text-gray-600">+43 1 987 65 43</p>
+                    <p className="text-gray-600"><a href={`tel:${companyConfig.contact.phone.replace(/\s/g, '')}`} className="hover:text-[#4fd1c5]">{companyConfig.contact.phone}</a></p>
                     <p className="text-sm text-gray-500 mt-1">Mo-Fr: 08:00 - 18:00 Uhr</p>
                   </div>
                 </li>
@@ -82,7 +83,7 @@ const KontaktPage = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800">E-Mail</h3>
-                    <p className="text-gray-600">info@carvatoo.at</p>
+                    <p className="text-gray-600"><a href={`mailto:${companyConfig.contact.email}`} className="hover:text-[#4fd1c5]">{companyConfig.contact.email}</a></p>
                     <p className="text-sm text-gray-500 mt-1">Wir antworten i.d.R. innerhalb von 24h</p>
                   </div>
                 </li>
@@ -92,9 +93,9 @@ const KontaktPage = () => {
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-800">Anschrift</h3>
-                    <p className="text-gray-600">Carvatoo GmbH</p>
-                    <p className="text-gray-600">Autostraße 123</p>
-                    <p className="text-gray-600">1010 Wien, Österreich</p>
+                    <p className="text-gray-600">{companyConfig.legalName}</p>
+                    <p className="text-gray-600">{companyConfig.address.street}</p>
+                    <p className="text-gray-600">{companyConfig.address.zip} {companyConfig.address.city}, {companyConfig.address.country}</p>
                   </div>
                 </li>
               </ul>

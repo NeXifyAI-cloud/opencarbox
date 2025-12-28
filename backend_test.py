@@ -605,6 +605,13 @@ def test_create_order():
         # Now create order with proper payload structure
         order_url = f"{API_BASE}/orders"
         order_data = {
+            "items": [
+                {
+                    "product_id": test_product["id"],
+                    "quantity": 2,
+                    "price": test_product.get("price", 50.0)
+                }
+            ],
             "shipping_info": {
                 "first_name": "Anna",
                 "last_name": "Müller",
@@ -621,6 +628,89 @@ def test_create_order():
             "billing_same_as_shipping": True,
             "payment_method": "card",
             "notes": "Bitte klingeln bei Müller"
+        }
+        
+        response = requests.post(
+            order_url,
+            json=order_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code in [200, 201]:
+            order = response.json()
+            print("✅ Order created successfully!")
+            print(f"Order ID: {order.get('id')}")
+            print(f"Order Number: {order.get('order_number')}")
+            print(f"Customer: {order.get('shipping_info', {}).get('first_name')} {order.get('shipping_info', {}).get('last_name')}")
+            print(f"Total: {order.get('total')}€")
+            print(f"Status: {order.get('status')}")
+            print(f"Payment Status: {order.get('payment_status')}")
+            return True, order.get('order_number')
+        else:
+            print(f"❌ Failed to create order!")
+            print(f"Error: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during order creation: {e}")
+        return False, None
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, None
+
+def test_create_order_authenticated(user_token):
+    """Test creating an order with authentication"""
+    print("🛒 Testing Create Order (Authenticated)...")
+    
+    if not user_token:
+        print("❌ No user token available")
+        return False, None
+    
+    try:
+        # Get a product first
+        products_url = f"{API_BASE}/products"
+        products_response = requests.get(products_url, timeout=10)
+        
+        if products_response.status_code != 200 or not products_response.json():
+            print("❌ No products available for order test")
+            return False, None
+        
+        test_product = products_response.json()[0]
+        
+        # Create order with proper payload structure and authentication
+        order_url = f"{API_BASE}/orders"
+        order_data = {
+            "items": [
+                {
+                    "product_id": test_product["id"],
+                    "quantity": 2,
+                    "price": test_product.get("price", 50.0)
+                }
+            ],
+            "shipping_info": {
+                "first_name": "Anna",
+                "last_name": "Müller",
+                "email": "anna.mueller@example.com",
+                "phone": "+43 664 987 6543",
+                "address": {
+                    "street": "Mariahilfer Straße",
+                    "house_number": "123",
+                    "postal_code": "1060",
+                    "city": "Wien",
+                    "country": "Österreich"
+                }
+            },
+            "billing_same_as_shipping": True,
+            "payment_method": "card",
+            "notes": "Bitte klingeln bei Müller"
+        }
+        
+        headers = {
+            "Authorization": f"Bearer {user_token}",
+            "Content-Type": "application/json"
         }
         
         response = requests.post(

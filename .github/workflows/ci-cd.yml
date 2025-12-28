@@ -44,12 +44,13 @@ jobs:
 
       - name: Linting
         working-directory: ${{ steps.detect.outputs.project_root }}
-        run: npm run lint || true
+        run: npm run lint
+        continue-on-error: true
 
       - name: Type Check
         id: typecheck
         working-directory: ${{ steps.detect.outputs.project_root }}
-        run: npx tsc --noEmit || true
+        run: npx tsc --noEmit
         continue-on-error: true
 
       - name: Build Project

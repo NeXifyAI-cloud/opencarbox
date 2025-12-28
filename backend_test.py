@@ -694,6 +694,185 @@ def test_get_orders_admin(admin_token):
         print(f"❌ Invalid JSON response: {e}")
         return False
 
+def test_get_user_orders(user_token):
+    """Test GET /api/orders/me - get orders for authenticated user"""
+    print("👤 Testing Get User Orders (/api/orders/me)...")
+    
+    if not user_token:
+        print("❌ No user token available")
+        return False
+    
+    try:
+        orders_url = f"{API_BASE}/orders/me"
+        headers = {
+            "Authorization": f"Bearer {user_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(orders_url, headers=headers, timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            orders = response.json()
+            print("✅ User orders retrieved successfully!")
+            print(f"Number of user orders: {len(orders)}")
+            
+            if orders:
+                for order in orders[:3]:  # Show first 3
+                    print(f"  - Order {order.get('order_number')} - {order.get('status')} - {order.get('total')}€")
+                    print(f"    User ID: {order.get('user_id')}")
+            else:
+                print("  - No orders found for this user")
+            return True
+        else:
+            print(f"❌ Failed to get user orders!")
+            print(f"Error: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during user orders retrieval: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False
+
+def test_get_product_by_id(product_id):
+    """Test GET /api/products/{id} - get specific product details"""
+    print(f"🔍 Testing Get Product by ID (/api/products/{product_id})...")
+    
+    try:
+        product_url = f"{API_BASE}/products/{product_id}"
+        response = requests.get(product_url, timeout=10)
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            product = response.json()
+            print("✅ Product retrieved successfully!")
+            print(f"Product Name: {product.get('name', 'N/A')}")
+            print(f"Product Brand: {product.get('brand', 'N/A')}")
+            print(f"Product Price: {product.get('price', 'N/A')}€")
+            print(f"Product Stock: {product.get('stock', 'N/A')}")
+            print(f"Product ID: {product.get('id', 'N/A')}")
+            return True, product
+        else:
+            print(f"❌ Failed to get product!")
+            print(f"Error: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during product retrieval: {e}")
+        return False, None
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, None
+
+def test_update_product_admin(product_id, admin_token):
+    """Test PUT /api/products/{id} - admin product update"""
+    print(f"✏️ Testing Update Product (/api/products/{product_id})...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    try:
+        # First get the current product to preserve existing data
+        get_success, current_product = test_get_product_by_id(product_id)
+        if not get_success:
+            print("❌ Cannot update product - failed to get current product data")
+            return False
+        
+        # Update some fields
+        update_data = {
+            "name": current_product.get('name', 'Test Product') + " (Updated)",
+            "description": "Updated description for testing admin edit functionality",
+            "price": float(current_product.get('price', 100)) + 10.00,  # Add 10€ to price
+            "stock": current_product.get('stock', 10) + 5  # Add 5 to stock
+        }
+        
+        product_url = f"{API_BASE}/products/{product_id}"
+        headers = {
+            "Authorization": f"Bearer {admin_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.put(
+            product_url,
+            json=update_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            result = response.json()
+            print("✅ Product updated successfully!")
+            print(f"Response: {result}")
+            
+            # Verify the update by getting the product again
+            verify_success, updated_product = test_get_product_by_id(product_id)
+            if verify_success:
+                print("✅ Update verification:")
+                print(f"  Name: {updated_product.get('name')}")
+                print(f"  Price: {updated_product.get('price')}€")
+                print(f"  Stock: {updated_product.get('stock')}")
+                print(f"  Description: {updated_product.get('description', 'N/A')[:50]}...")
+            
+            return True
+        else:
+            print(f"❌ Failed to update product!")
+            print(f"Error: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during product update: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False
+
+def test_user_login():
+    """Test user login to get user token for testing /api/orders/me"""
+    print("🔐 Testing User Login...")
+    
+    # First, let's try to create a test user or use existing user
+    # For now, we'll try with admin credentials as user
+    login_url = f"{API_BASE}/auth/login"
+    login_data = {
+        "email": "admin@carvatoo.at",
+        "password": "admin"
+    }
+    
+    try:
+        response = requests.post(
+            login_url,
+            json=login_data,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            print("✅ User login successful!")
+            print(f"Access Token: {data.get('access_token', 'N/A')[:50]}...")
+            print(f"User Info: {data.get('user', {})}")
+            return True, data.get('access_token')
+        else:
+            print(f"❌ User login failed!")
+            print(f"Error: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during user login: {e}")
+        return False, None
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        print(f"Raw response: {response.text}")
+        return False, None
+
 def main():
     """Run all backend tests including E2E flow and workshop page specific tests"""
     print("=" * 60)

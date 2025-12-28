@@ -19,16 +19,21 @@ const CarDealershipPage = () => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
   useEffect(() => {
     fetchCars();
-  }, [filterBrand]);
+  }, [filterBrand, location.search]);
 
   const fetchCars = async () => {
     setLoading(true);
     try {
+      const searchParams = new URLSearchParams(location.search);
+      const searchQuery = searchParams.get('search');
+
       const params = {};
       if (filterBrand !== 'all') params.brand = filterBrand;
+      if (searchQuery) params.search = searchQuery;
       
       const response = await axios.get(`${API}/vehicles`, { params });
       setCars(response.data);

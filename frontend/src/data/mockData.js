@@ -1,3 +1,5 @@
+import { companyConfig } from '../config/company';
+
 // Carvatoo - Premium Mock-Daten
 // "Weil dein Auto zur Familie gehört."
 
@@ -363,22 +365,18 @@ export const serviceAreas = [
   }
 ];
 
+// Deprecated: Use companyConfig from ../config/company.js instead
 export const companyInfo = {
-  name: 'Carvatoo',
-  legalName: 'OpenCarBox GmbH',
+  name: companyConfig.name,
+  legalName: companyConfig.legalName,
   claim: 'Weil dein Auto zur Familie gehört.',
-  phone: '+43 1 798 13 10',
-  email: 'office@opencarbox.co.at',
-  address: {
-    street: 'Rennweg 76',
-    postalCode: '1030',
-    city: 'Wien',
-    country: 'Österreich'
-  },
+  phone: companyConfig.contact.phone,
+  email: companyConfig.contact.email,
+  address: companyConfig.address,
   legal: {
-    firmenbuch: 'FN 534799 w',
-    uid: 'ATU75630015',
-    gericht: 'Handelsgericht Wien'
+    firmenbuch: companyConfig.legal.registerNumber,
+    uid: companyConfig.legal.uid,
+    gericht: companyConfig.legal.court
   }
 };
 

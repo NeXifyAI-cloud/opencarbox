@@ -569,6 +569,131 @@ def test_express_services_booking():
     
     return success_count == total_count
 
+def test_create_order():
+    """Test creating an order with valid payload (mimicking CheckoutPage.jsx)"""
+    print("🛒 Testing Create Order (Checkout Flow)...")
+    
+    try:
+        # First, add some items to cart to create a valid order
+        cart_url = f"{API_BASE}/cart/items"
+        
+        # Get a product first
+        products_url = f"{API_BASE}/products"
+        products_response = requests.get(products_url, timeout=10)
+        
+        if products_response.status_code != 200 or not products_response.json():
+            print("❌ No products available for order test")
+            return False, None
+        
+        test_product = products_response.json()[0]
+        
+        # Add product to cart
+        cart_data = {
+            "product_id": test_product["id"],
+            "quantity": 2
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "X-Session-ID": SESSION_ID
+        }
+        
+        cart_response = requests.post(cart_url, json=cart_data, headers=headers, timeout=10)
+        if cart_response.status_code != 200:
+            print(f"❌ Failed to add product to cart: {cart_response.text}")
+            return False, None
+        
+        # Now create order with proper payload structure
+        order_url = f"{API_BASE}/orders"
+        order_data = {
+            "shipping_info": {
+                "first_name": "Anna",
+                "last_name": "Müller",
+                "email": "anna.mueller@example.com",
+                "phone": "+43 664 987 6543",
+                "address": {
+                    "street": "Mariahilfer Straße",
+                    "house_number": "123",
+                    "postal_code": "1060",
+                    "city": "Wien",
+                    "country": "Österreich"
+                }
+            },
+            "billing_same_as_shipping": True,
+            "payment_method": "card",
+            "notes": "Bitte klingeln bei Müller"
+        }
+        
+        response = requests.post(
+            order_url,
+            json=order_data,
+            headers=headers,
+            timeout=10
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code in [200, 201]:
+            order = response.json()
+            print("✅ Order created successfully!")
+            print(f"Order ID: {order.get('id')}")
+            print(f"Order Number: {order.get('order_number')}")
+            print(f"Customer: {order.get('shipping_info', {}).get('first_name')} {order.get('shipping_info', {}).get('last_name')}")
+            print(f"Total: {order.get('total')}€")
+            print(f"Status: {order.get('status')}")
+            print(f"Payment Status: {order.get('payment_status')}")
+            return True, order.get('order_number')
+        else:
+            print(f"❌ Failed to create order!")
+            print(f"Error: {response.text}")
+            return False, None
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during order creation: {e}")
+        return False, None
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, None
+
+def test_get_orders_admin(admin_token):
+    """Test getting all orders as admin"""
+    print("📋 Testing Get All Orders (Admin)...")
+    
+    if not admin_token:
+        print("❌ No admin token available")
+        return False
+    
+    try:
+        orders_url = f"{API_BASE}/orders"
+        headers = {
+            "Authorization": f"Bearer {admin_token}",
+            "Content-Type": "application/json"
+        }
+        
+        response = requests.get(orders_url, headers=headers, timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            data = response.json()
+            orders = data.get('orders', []) if isinstance(data, dict) else data
+            print("✅ Orders retrieved successfully!")
+            print(f"Number of orders: {len(orders)}")
+            
+            if orders:
+                for order in orders[:3]:  # Show first 3
+                    print(f"  - Order {order.get('order_number')} - {order.get('status')} - {order.get('total')}€")
+            return True
+        else:
+            print(f"❌ Failed to get orders!")
+            print(f"Error: {response.text}")
+            return False
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during orders retrieval: {e}")
+        return False
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False
+
 def main():
     """Run all backend tests including E2E flow and workshop page specific tests"""
     print("=" * 60)

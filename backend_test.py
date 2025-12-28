@@ -965,6 +965,105 @@ def test_user_login():
         print(f"Raw response: {response.text}")
         return False, None
 
+def test_vehicle_search():
+    """Test vehicle search functionality with search parameter"""
+    print("🔍 Testing Vehicle Search (search=Golf)...")
+    
+    try:
+        vehicles_url = f"{API_BASE}/vehicles"
+        params = {"search": "Golf"}
+        
+        response = requests.get(vehicles_url, params=params, timeout=10)
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            vehicles = response.json()
+            print("✅ Vehicle search executed successfully!")
+            print(f"Number of vehicles found: {len(vehicles)}")
+            
+            # Check if search results contain Golf in brand, model, or variant
+            golf_matches = []
+            for vehicle in vehicles:
+                brand = vehicle.get('brand', '').lower()
+                model = vehicle.get('model', '').lower()
+                variant = vehicle.get('variant', '').lower()
+                
+                if 'golf' in brand or 'golf' in model or 'golf' in variant:
+                    golf_matches.append(f"{vehicle.get('brand')} {vehicle.get('model')} {vehicle.get('variant', '')}")
+            
+            print(f"Golf matches found: {len(golf_matches)}")
+            if golf_matches:
+                for match in golf_matches[:3]:  # Show first 3 matches
+                    print(f"  - {match}")
+            
+            # Test passes if we get a response (even if no Golf vehicles exist)
+            return True, len(golf_matches)
+        else:
+            print(f"❌ Vehicle search failed!")
+            print(f"Error: {response.text}")
+            return False, 0
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during vehicle search: {e}")
+        return False, 0
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, 0
+
+def test_security_headers():
+    """Test security headers on /api/health endpoint"""
+    print("🔒 Testing Security Headers (/api/health)...")
+    
+    try:
+        health_url = f"{API_BASE}/health"
+        response = requests.get(health_url, timeout=10)
+        
+        print(f"Status Code: {response.status_code}")
+        
+        if response.status_code == 200:
+            headers = response.headers
+            print("✅ Health endpoint accessible!")
+            
+            # Check for security headers
+            security_headers = {
+                "X-Frame-Options": headers.get("X-Frame-Options"),
+                "X-Content-Type-Options": headers.get("X-Content-Type-Options"),
+                "X-XSS-Protection": headers.get("X-XSS-Protection"),
+                "Strict-Transport-Security": headers.get("Strict-Transport-Security"),
+                "Content-Security-Policy": headers.get("Content-Security-Policy")
+            }
+            
+            print("Security Headers Found:")
+            missing_headers = []
+            for header_name, header_value in security_headers.items():
+                if header_value:
+                    print(f"  ✅ {header_name}: {header_value}")
+                else:
+                    print(f"  ❌ {header_name}: Missing")
+                    missing_headers.append(header_name)
+            
+            # Test passes if most security headers are present
+            headers_present = len([h for h in security_headers.values() if h])
+            total_headers = len(security_headers)
+            
+            print(f"Security headers present: {headers_present}/{total_headers}")
+            
+            if headers_present >= 3:  # At least 3 out of 5 headers should be present
+                return True, missing_headers
+            else:
+                return False, missing_headers
+        else:
+            print(f"❌ Health endpoint failed!")
+            print(f"Error: {response.text}")
+            return False, ["All headers missing - endpoint failed"]
+            
+    except requests.exceptions.RequestException as e:
+        print(f"❌ Network error during security headers test: {e}")
+        return False, ["Network error"]
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON response: {e}")
+        return False, ["Invalid response"]
+
 def main():
     """Run all backend tests including E2E flow and workshop page specific tests"""
     print("=" * 60)

@@ -19,6 +19,7 @@ async def get_vehicles(
     brand: Optional[str] = None,
     min_price: Optional[float] = None,
     max_price: Optional[float] = None,
+    search: Optional[str] = None
 ):
     """Gibt verfügbare Fahrzeuge zurück."""
     query = {"is_sold": False}
@@ -37,6 +38,13 @@ async def get_vehicles(
             query["price"]["$gte"] = min_price
         if max_price:
             query["price"]["$lte"] = max_price
+            
+    if search:
+        query["$or"] = [
+            {"brand": {"$regex": search, "$options": "i"}},
+            {"model": {"$regex": search, "$options": "i"}},
+            {"variant": {"$regex": search, "$options": "i"}}
+        ]
             
     vehicles = await db.vehicles_sales.find(query).to_list(100)
     for v in vehicles:

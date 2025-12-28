@@ -144,6 +144,18 @@ backend:
         agent: "testing"
         comment: "✅ VERIFIED: Vehicle routes fully functional. POST /api/vehicles/ (admin-only) creates vehicles successfully (status 201), GET /api/vehicles (public) retrieves vehicles correctly. Fixed routing issue with trailing slash. Created test vehicle: Audi A4 Avant (2023) for 45900€. Both admin and public endpoints working properly."
 
+  - task: "Checkout and Order Creation Flow"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/order_routes.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Final smoke test requested for checkout and order creation flow. Need to verify POST /api/orders with valid payload and GET /api/orders admin endpoint."
+
 frontend:
   - task: "Revert to Original Design"
     implemented: true

@@ -886,6 +886,7 @@ def main():
     results = {}
     test_product = None
     admin_token = None
+    user_token = None
     
     # Test API connectivity
     results['api_root'] = test_api_root()
@@ -898,6 +899,53 @@ def main():
     admin_login_success, admin_token = test_admin_login()
     results['admin_login'] = admin_login_success
     print()
+    
+    # Test user login for /api/orders/me testing
+    user_login_success, user_token = test_user_login()
+    results['user_login'] = user_login_success
+    print()
+    
+    # Test new user dashboard functionality
+    print("=" * 60)
+    print("👤 USER DASHBOARD TESTING")
+    print("=" * 60)
+    
+    # Test GET /api/orders/me
+    if user_token:
+        get_user_orders_success = test_get_user_orders(user_token)
+        results['get_user_orders'] = get_user_orders_success
+        print()
+    else:
+        print("⚠️ Skipping user orders test due to login failure")
+        results['get_user_orders'] = False
+    
+    # Test product admin edit functionality
+    print("=" * 60)
+    print("✏️ PRODUCT ADMIN EDIT TESTING")
+    print("=" * 60)
+    
+    # First get a product to test with
+    category_success, test_product = test_category_products()
+    if test_product and test_product.get('id'):
+        product_id = test_product['id']
+        
+        # Test GET /api/products/{id}
+        get_product_success, product_details = test_get_product_by_id(product_id)
+        results['get_product_by_id'] = get_product_success
+        print()
+        
+        # Test PUT /api/products/{id} (admin only)
+        if admin_token and get_product_success:
+            update_product_success = test_update_product_admin(product_id, admin_token)
+            results['update_product_admin'] = update_product_success
+            print()
+        else:
+            print("⚠️ Skipping product update test due to missing admin token or product")
+            results['update_product_admin'] = False
+    else:
+        print("⚠️ Skipping product tests due to no available products")
+        results['get_product_by_id'] = False
+        results['update_product_admin'] = False
     
     # Test new workshop routes
     print("=" * 60)
@@ -976,14 +1024,13 @@ def main():
     print("🔄 E2E FLOW TESTING")
     print("=" * 60)
     
-    # 1. Category Page - Load products from API
-    category_success, test_product = test_category_products()
+    # 1. Category Page - Load products from API (already done above, reuse result)
     results['category_products'] = category_success
     print()
     
     if test_product and test_product.get('id'):
-        # 2. Product Page - Load product details
-        product_success, product_details = test_product_details(test_product['id'])
+        # 2. Product Page - Load product details (already done above, reuse result)
+        product_success = results.get('get_product_by_id', False)
         results['product_details'] = product_success
         print()
         
@@ -1013,7 +1060,9 @@ def main():
     print("=" * 60)
     
     # Group tests
-    api_tests = ['api_root', 'api_health', 'admin_login']
+    api_tests = ['api_root', 'api_health', 'admin_login', 'user_login']
+    dashboard_tests = ['get_user_orders']
+    product_admin_tests = ['get_product_by_id', 'update_product_admin']
     workshop_tests = ['create_appointment', 'workshop_form', 'sofort_termin', 'express_services', 'get_appointments']
     vehicle_tests = ['create_vehicle', 'get_vehicles']
     order_tests = ['create_order', 'get_orders']
@@ -1021,6 +1070,18 @@ def main():
     
     print("API Tests:")
     for test_name in api_tests:
+        if test_name in results:
+            status = "✅ PASS" if results[test_name] else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
+    print("\nUser Dashboard Tests:")
+    for test_name in dashboard_tests:
+        if test_name in results:
+            status = "✅ PASS" if results[test_name] else "❌ FAIL"
+            print(f"  {test_name.replace('_', ' ').title()}: {status}")
+    
+    print("\nProduct Admin Tests:")
+    for test_name in product_admin_tests:
         if test_name in results:
             status = "✅ PASS" if results[test_name] else "❌ FAIL"
             print(f"  {test_name.replace('_', ' ').title()}: {status}")
@@ -1055,11 +1116,15 @@ def main():
     print(f"\nTotal: {passed_tests}/{total_tests} tests passed")
     
     # Check specific test groups
+    dashboard_passed = sum(results.get(test, False) for test in dashboard_tests)
+    product_admin_passed = sum(results.get(test, False) for test in product_admin_tests)
     workshop_passed = sum(results.get(test, False) for test in workshop_tests)
     vehicle_passed = sum(results.get(test, False) for test in vehicle_tests)
     order_passed = sum(results.get(test, False) for test in order_tests)
     e2e_passed = sum(results.get(test, False) for test in e2e_tests)
     
+    print(f"User Dashboard: {dashboard_passed}/{len(dashboard_tests)} tests passed")
+    print(f"Product Admin: {product_admin_passed}/{len(product_admin_tests)} tests passed")
     print(f"Workshop Routes: {workshop_passed}/{len(workshop_tests)} tests passed")
     print(f"Vehicle Routes: {vehicle_passed}/{len(vehicle_tests)} tests passed")
     print(f"Order Routes: {order_passed}/{len(order_tests)} tests passed")

@@ -224,9 +224,7 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus:
-    - "User Dashboard - GET /api/orders/me"
-    - "Product Admin Edit - GET and PUT /api/products/{id}"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"

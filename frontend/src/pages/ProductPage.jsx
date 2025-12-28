@@ -97,7 +97,7 @@ const ProductPage = () => {
             {/* Product Images */}
             <div>
               <div className="relative aspect-square rounded-lg overflow-hidden bg-gray-100 mb-4">
-                <img
+                <ImageWithFallback
                   src={productImages[selectedImage]}
                   alt={product.name}
                   className="w-full h-full object-cover"

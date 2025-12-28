@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Car, Phone, Mail, MapPin, Facebook, Instagram, Youtube, CreditCard, Truck } from 'lucide-react';
+import { companyConfig } from '../../config/company';
 
 const Footer = () => {
   return (
@@ -15,12 +16,12 @@ const Footer = () => {
                 <Car className="h-6 w-6 text-[#4fd1c5]" />
               </div>
               <div>
-                <span className="text-2xl font-bold text-white">Carvatoo</span>
+                <span className="text-2xl font-bold text-white">{companyConfig.name}</span>
                 <p className="text-xs text-[#4fd1c5] -mt-1">Weil dein Auto zur Familie gehört.</p>
               </div>
             </Link>
             <p className="text-gray-300 text-sm mb-4">
-              Carvatoo ist Ihr zuverlässiger Partner für hochwertige Kfz-Teile und Autozubehör. 
+              {companyConfig.name} ist Ihr zuverlässiger Partner für hochwertige Kfz-Teile und Autozubehör. 
               Mit über 3 Millionen Teilen im Sortiment finden Sie bei uns alles, was Ihr Auto braucht.
             </p>
             <div className="flex gap-4">
@@ -66,15 +67,15 @@ const Footer = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2 text-gray-300">
                 <Phone className="h-4 w-4 text-[#4fd1c5]" />
-                <span>+43 1 987 65 43</span>
+                <a href={`tel:${companyConfig.contact.phone.replace(/\s/g, '')}`} className="hover:text-white transition-colors">{companyConfig.contact.phone}</a>
               </li>
               <li className="flex items-center gap-2 text-gray-300">
                 <Mail className="h-4 w-4 text-[#4fd1c5]" />
-                <span>info@carvatoo.at</span>
+                <a href={`mailto:${companyConfig.contact.email}`} className="hover:text-white transition-colors">{companyConfig.contact.email}</a>
               </li>
               <li className="flex items-start gap-2 text-gray-300">
                 <MapPin className="h-4 w-4 text-[#4fd1c5] mt-0.5" />
-                <span>Carvatoo GmbH<br />Autostraße 123<br />1010 Wien, Österreich</span>
+                <span>{companyConfig.legalName}<br />{companyConfig.address.street}<br />{companyConfig.address.zip} {companyConfig.address.city}, {companyConfig.address.country}</span>
               </li>
             </ul>
           </div>
@@ -107,7 +108,7 @@ const Footer = () => {
       <div className="border-t border-white/10 bg-[#162d47]">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-wrap items-center justify-between gap-4 text-sm text-gray-400">
-            <p>© 2025 Carvatoo GmbH. Alle Rechte vorbehalten.</p>
+            <p>© {new Date().getFullYear()} {companyConfig.legalName}. Alle Rechte vorbehalten.</p>
             <div className="flex gap-4">
               <Link to="/impressum" className="hover:text-[#4fd1c5] transition-colors">Impressum</Link>
               <Link to="/datenschutz" className="hover:text-[#4fd1c5] transition-colors">Datenschutz</Link>

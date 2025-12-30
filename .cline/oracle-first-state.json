@@ -1,0 +1,28 @@
+{
+  "currentSession": {
+    "id": "session_1767102812420",
+    "startedAt": "2025-12-30T13:53:32.420Z",
+    "lastActivity": "2025-12-30T13:53:53.991Z",
+    "tasksCompleted": 0,
+    "tasksInProgress": [
+      "task_1767102833989_92adfb"
+    ],
+    "currentContext": ""
+  },
+  "taskQueue": [
+    {
+      "id": "task_1767102833989_92adfb",
+      "description": "Starte Oracle-First Protocol für die aktuelle Aufgabe",
+      "priority": "NORMAL",
+      "status": "IN_PROGRESS",
+      "context": "ACTION: test\nDESCRIPTION: Starte Oracle-First Protocol für die aktuelle Aufgabe\nFILES: None\n\nFILE CONTEXT:",
+      "createdAt": "2025-12-30T13:53:53.991Z"
+    }
+  ],
+  "taskHistory": [],
+  "stats": {
+    "totalSessions": 1,
+    "totalTasks": 0,
+    "successRate": 1
+  }
+}

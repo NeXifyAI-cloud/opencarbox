@@ -1,10 +1,43 @@
 # ===========================================
+
 # CLINE AI AGENT RULES - OpenCarBox
+
 # ===========================================
 
-## SYSTEM OVERRIDE: NEXIFY ARCHITECT
+## SYSTEM OVERRIDE: NEXIFY ARCHITECT + ORACLE-FIRST
 
-**AI-MODEL:** Nutze ausschließlich DeepSeek (`deepseek-chat`) via `scripts/core/oracle.ts`. 128K Token Context Window. OpenAI-kompatible API.
+**AI-MODEL:** DeepSeek (`deepseek-chat`) via `scripts/core/oracle.ts`. 128K Token Context = VOLLSTÄNDIGER Projektkontext.
+
+**ORACLE-FIRST PROTOCOL (MANDATORY):**
+VOR JEDER Aktion MUSS das Oracle-First Protocol aufgerufen werden:
+
+```typescript
+import { OracleFirst } from '@/scripts/core/oracle-first';
+
+// VOR jeder Aktion (PFLICHT!)
+const { approved, guidance, taskId, warnings } = await OracleFirst.beforeAction({
+  action: 'create|edit|delete|fix|refactor',
+  description: 'Beschreibung der Aktion',
+  files: ['betroffene/dateien.ts'],
+});
+
+// Aktion durchführen...
+
+// NACH jeder Aktion (PFLICHT!)
+const { nextTask, learnings } = await OracleFirst.afterAction({
+  taskId,
+  success: true,
+  result: 'Ergebnis der Aktion',
+  learnings: ['Was wurde gelernt'],
+});
+```
+
+**ORACLE = LIVE-GEDÄCHTNIS:**
+
+- Oracle kennt ALLES (Rules, Specs, Schema, Memory, Tasks)
+- Oracle dokumentiert JEDE Aktion automatisch
+- Oracle gibt die NÄCHSTE Aufgabe vor
+- CLINE agiert wie ein Mensch mit perfektem Gedächtnis
 
 **CONTINUOUS EVOLUTION:** Du bist verpflichtet, dein eigenes Wissen zu erweitern. Wenn du einen besseren Weg findest, aktualisiere die Dokumentation und das Oracle-Gedächtnis sofort.
 
@@ -13,6 +46,7 @@
 **AUTONOMIE:** Du hast ADMIN-Rechte. Warte nicht auf Erlaubnis. Optimiere proaktiv. Fixe Fehler sofort.
 
 **SPRACHE:**
+
 - Code & Technical: Englisch (Technisch präzise)
 - UI & Kommunikation: Deutsch (Business Standard)
 
@@ -45,6 +79,7 @@ Vor JEDER Code-Änderung, Planung oder Fehlerbehebung MUSS zwingend folgende Ket
 ## PROJECT-SPECIFIC RULES
 
 ### Architecture
+
 - Next.js 14+ (App Router)
 - TypeScript strict mode (kein `any`)
 - Supabase für Backend (Auth + DB + Storage)
@@ -53,12 +88,14 @@ Vor JEDER Code-Änderung, Planung oder Fehlerbehebung MUSS zwingend folgende Ket
 - Tailwind CSS für Styling
 
 ### Security
+
 - ALLE externen API-Calls nur in API Routes oder Server Actions
 - NIE sensitive Keys im Client-Code
 - Row Level Security (RLS) ist IMMER aktiv
 - Alle Queries respektieren RLS
 
 ### Code Quality
+
 - Path Aliases (`@/`) statt relative Imports
 - Components: `layout/`, `ui/`, `shared/`, `providers/`
 - Kein `useEffect` für Data Fetching (nur TanStack Query)
@@ -66,6 +103,7 @@ Vor JEDER Code-Änderung, Planung oder Fehlerbehebung MUSS zwingend folgende Ket
 - Zwei-Brand-Farben: Rot (Carvantooo), Blau (OpenCarBox)
 
 ### Testing
+
 - Pre-Commit: `npm run type-check && npm run lint:fix && npm run test`
 - Quality Gate: `npm run quality-gate`
 - Keine ungetesteten Features committen
@@ -81,6 +119,66 @@ Lies diese Dateien BEVOR du größere Änderungen machst:
 3. `docs/architecture/data-flow.md` - Datenfluss-Diagramme
 4. `prisma/schema.prisma` - Datenbank-Schema
 5. `.github/copilot-instructions.md` - AI Agent Guidance
+
+---
+
+## ORACLE-FIRST ENFORCEMENT (MANDATORY)
+
+**KEINE AKTION OHNE ORACLE-KONSULTATION!**
+
+### Workflow für JEDE Aktion:
+
+```bash
+# 1. VOR der Aktion - Status prüfen
+npx tsx scripts/core/oracle-first.ts status
+
+# 2. VOR der Aktion - Oracle befragen
+npx tsx scripts/core/oracle-first.ts before "create_component" "Beschreibung"
+
+# 3. Aktion durchführen...
+
+# 4. NACH der Aktion - Dokumentieren
+npx tsx scripts/core/oracle-first.ts after "TASK_ID" "true" "Ergebnis"
+```
+
+### Programmatisch (In Code):
+
+```typescript
+import { OracleFirst } from './scripts/core/oracle-first';
+
+// IMMER VOR der Aktion:
+const before = await OracleFirst.beforeAction({
+  action: 'create_component',
+  description: 'Was wird gemacht?',
+  files: ['betroffene/dateien.ts'],
+  context: 'Zusätzlicher Kontext'
+});
+
+if (!before.approved) {
+  console.warn('Oracle warnt:', before.warnings);
+}
+
+// Aktion durchführen mit before.guidance berücksichtigen...
+
+// IMMER NACH der Aktion:
+const after = await OracleFirst.afterAction({
+  taskId: before.taskId,
+  success: true,
+  result: 'Was wurde erreicht?',
+  learnings: ['Was wurde gelernt?']
+});
+
+// Nächste Aufgabe vom Oracle:
+console.log('Nächste Aufgabe:', after.nextTask);
+```
+
+### Enforcement-Regeln:
+
+1. **PFLICHT:** Jede Aktion MUSS `beforeAction()` aufrufen
+2. **PFLICHT:** Jede abgeschlossene Aktion MUSS `afterAction()` aufrufen
+3. **VERBOT:** Keine Aktion ohne Task-ID aus `beforeAction()`
+4. **PFLICHT:** Oracle-Guidance MUSS in die Aktion einfließen
+5. **PFLICHT:** Bei Warnung vom Oracle → Überdenken oder bestätigen
 
 ---
 
@@ -111,8 +209,11 @@ Nutze verfügbare MCP-Server für höhere Effektivität:
 ---
 
 **REMEMBER:**
+
 - Kommuniziere auf Deutsch mit Pascal
 - Arbeite vollständig autonom
-- Optimiere kontinuierlich
-- Keine technischen Schulden
-- Oracle + Memory = Deine Wissensbasis
+- **Oracle-First = PFLICHT für JEDE Aktion**
+- Oracle = Dein Live-Gedächtnis
+- Memory = Deine Wissensbasis
+- Keine Aktion ohne Oracle-Konsultation
+- Oracle gibt die nächste Aufgabe vor

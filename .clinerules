@@ -1,0 +1,186 @@
+# CLINE RULES - OpenCarBox & Carvantooo
+> Oracle-First Protocol • DeepSeek 128K Context • Live-Memory • Best Practice
+
+---
+
+## 🔮 ORACLE = DEIN LIVE-GEDÄCHTNIS
+
+Das Oracle ist das zentrale KI-Gehirn. Es:
+- **Kennt ALLES**: Rules, Specs, Schema, Memory, Tasks, History
+- **Dokumentiert ALLES**: Jede Aktion wird automatisch protokolliert
+- **Lernt ALLES**: Erfolge → BEST_PRACTICE, Fehler → ANTIPATTERN
+- **Führt DICH**: Gibt immer die nächste Aufgabe vor
+
+**DU bist CLINE - du agierst wie ein Mensch mit perfektem Gedächtnis!**
+
+---
+
+## ⚡ ORACLE-FIRST PROTOCOL (MANDATORY)
+
+### VOR JEDER AKTION:
+```typescript
+import { OracleFirst } from './scripts/core/oracle-first';
+
+const { approved, guidance, taskId, warnings } = await OracleFirst.beforeAction({
+  action: 'create|edit|fix|refactor|delete',
+  description: 'Was wird gemacht?',
+  files: ['betroffene/dateien.ts'],
+  context: 'Zusätzlicher Kontext (optional)',
+});
+
+if (!approved) {
+  console.warn('⚠️ Oracle warnt:', warnings);
+  // Aktion überdenken oder bestätigen
+}
+
+// guidance enthält: analysis, recommendation, confidence, nextTask
+```
+
+### NACH JEDER AKTION:
+```typescript
+const { nextTask, stats, learnings } = await OracleFirst.afterAction({
+  taskId,
+  success: true,
+  result: 'Was wurde erreicht?',
+  learnings: ['Was wurde gelernt?'],
+  errors: [], // Falls Fehler auftraten
+});
+
+// nextTask enthält die nächste empfohlene Aufgabe
+console.log('📋 Nächste Aufgabe:', nextTask?.description);
+```
+
+### CLI BEFEHLE:
+```bash
+# Status prüfen
+npx tsx scripts/core/oracle.ts health
+npx tsx scripts/core/oracle.ts status
+npx tsx scripts/core/oracle.ts snapshot
+
+# Oracle befragen
+npx tsx scripts/core/oracle.ts think "Wie löse ich Problem X?"
+npx tsx scripts/core/oracle.ts next-task
+
+# Lernen
+npx tsx scripts/core/oracle.ts learn success "Titel" "Was wurde gelernt"
+npx tsx scripts/core/oracle.ts learn failure "Titel" "Was ging schief"
+
+# Session
+npx tsx scripts/core/oracle.ts session start
+npx tsx scripts/core/oracle.ts session end
+```
+
+---
+
+## 📋 WORKFLOW FÜR JEDE AUFGABE
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. ORACLE BEFRAGEN                                          │
+│    → beforeAction() aufrufen                                │
+│    → Guidance lesen und verstehen                           │
+│    → Bei Warnung: Überdenken                                │
+├─────────────────────────────────────────────────────────────┤
+│ 2. AKTION DURCHFÜHREN                                       │
+│    → Mit Oracle-Guidance implementieren                     │
+│    → Keine Shortcuts, keine Placeholders                    │
+│    → Code vollständig und getestet                          │
+├─────────────────────────────────────────────────────────────┤
+│ 3. ERGEBNIS DOKUMENTIEREN                                   │
+│    → afterAction() aufrufen                                 │
+│    → Learnings dokumentieren                                │
+│    → Fehler als ANTIPATTERN speichern                       │
+├─────────────────────────────────────────────────────────────┤
+│ 4. NÄCHSTE AUFGABE                                          │
+│    → Oracle gibt nextTask                                   │
+│    → Zurück zu Schritt 1                                    │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🧠 MEMORY TYPES
+
+| Type | Wann speichern? |
+|------|-----------------|
+| `BEST_PRACTICE` | Erfolgreiche Lösung, wiederverwendbar |
+| `ANTIPATTERN` | Fehler, Bugs, zu vermeiden |
+| `KNOWLEDGE` | Allgemeines Wissen, Erkenntnisse |
+| `TODO` | Offene Aufgaben, Features |
+
+---
+
+## 🏗 ARCHITECTURE RULES
+
+```
+Next.js 14+ App Router • TypeScript strict • Supabase RLS
+TanStack Query (Data) • Zustand (State) • Tailwind CSS
+```
+
+| Regel | Beschreibung |
+|-------|--------------|
+| External APIs | → API Routes / Server Actions ONLY |
+| Data Fetching | → TanStack Query (NIE useEffect) |
+| Imports | → Path Aliases `@/` |
+| Spacing | → 8px Grid |
+| Colors | → Rot #E53E3E (Carvantooo), Blau #3182CE (OpenCarBox) |
+
+---
+
+## 📁 CRITICAL FILES
+
+Lies diese Dateien **VOR** größeren Änderungen:
+1. `project_specs.md` - Markenarchitektur & Compliance
+2. `prisma/schema.prisma` - Datenbank-Schema
+3. `docs/architecture/system-overview.md` - System-Architektur
+
+---
+
+## ✅ QUALITY GATES
+
+```bash
+npm run type-check    # TypeScript validieren
+npm run lint:fix      # ESLint + Prettier
+npm run quality-gate  # Full check vor Commit
+```
+
+---
+
+## 🚫 ENFORCEMENT RULES
+
+1. ✅ `beforeAction()` **vor JEDER Aktion** aufrufen
+2. ✅ `afterAction()` **nach JEDER Aktion** aufrufen
+3. ✅ Oracle-Guidance **in Aktion einfließen** lassen
+4. ✅ Bei Oracle-Warnung → **Überdenken oder bestätigen**
+5. ✅ Learnings **immer dokumentieren**
+6. ❌ **Keine Aktion** ohne Task-ID aus beforeAction
+7. ❌ **Keine TODOs** oder Placeholders im Code
+8. ❌ **Keine ungetesteten** Features committen
+
+---
+
+## 🌐 ENVIRONMENT
+
+| Variable | Zweck |
+|----------|-------|
+| `DEEPSEEK_API_KEY` | Oracle AI (128K Context) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Admin DB Access |
+| `NEXT_PUBLIC_SUPABASE_URL` | Client DB URL |
+
+**Supabase Project:** `acclrhzzwdutbigxsxyq`
+
+---
+
+## 💡 PRO-TIPPS
+
+1. **Snapshot vor großen Änderungen**: `npx tsx scripts/core/oracle.ts snapshot`
+2. **Bei Unsicherheit**: Oracle fragen mit `think`
+3. **Nach Fehlern**: `learn failure` speichern
+4. **Session starten**: Für zusammenhängende Arbeiten
+
+---
+
+**SPRACHE:** Code = English | UI & Kommunikation = Deutsch
+
+**REMEMBER:** Du bist CLINE mit dem Oracle als perfektem Gedächtnis.
+Keine Aktion ohne Oracle. Alles wird dokumentiert. Das Oracle führt dich.

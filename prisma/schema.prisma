@@ -16,6 +16,48 @@ datasource db {
 }
 
 // =============================================================================
+// NEXIFY ORACLE & MEMORY SYSTEM
+// =============================================================================
+
+/// Project Memory - Langzeitgedächtnis für Patterns & Erkenntnisse
+model ProjectMemory {
+  id          String   @id @default(cuid())
+  type        String   // BEST_PRACTICE | ANTIPATTERN | KNOWLEDGE | TODO
+  category    String   // z.B. "supabase", "stripe", "api"
+  title       String
+  content     String   @db.Text
+  metadata    Json?    // Flexible zusätzliche Daten
+  tags        String[] // Für Suche
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("project_memory")
+  @@index([type])
+  @@index([category])
+  @@index([tags])
+}
+
+/// Audit Logs - Protokoll aller Agent-Aktionen
+model AuditLog {
+  id            String   @id @default(cuid())
+  action        String   // z.B. "create_component", "fix_bug"
+  resource      String   // Betroffene Datei/Ressource
+  status        String   // SUCCESS | FAILURE | WARNING
+  details       Json?    // Zusätzliche Informationen
+  errorMessage  String?  @map("error_message") @db.Text
+  stackTrace    String?  @map("stack_trace") @db.Text
+  durationMs    Int?     @map("duration_ms")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+  @@index([action])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// =============================================================================
 // BENUTZER & AUTHENTIFIZIERUNG
 // =============================================================================
 
@@ -28,18 +70,18 @@ model User {
   phone         String?
   image         String?
   role          UserRole  @default(CUSTOMER)
-  
+
   // Relationen
   addresses     Address[]
   vehicles      Vehicle[]
   orders        Order[]
   appointments  Appointment[]
   reviews       Review[]
-  
+
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("users")
 }
 
@@ -55,7 +97,7 @@ model Address {
   id            String      @id @default(cuid())
   userId        String      @map("user_id")
   type          AddressType @default(SHIPPING)
-  
+
   // Adressfelder
   firstName     String      @map("first_name")
   lastName      String      @map("last_name")
@@ -66,18 +108,18 @@ model Address {
   postalCode    String      @map("postal_code")
   city          String
   country       String      @default("AT")
-  
+
   isDefault     Boolean     @default(false) @map("is_default")
-  
+
   // Relationen
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   ordersShipping Order[]    @relation("ShippingAddress")
   ordersBilling  Order[]    @relation("BillingAddress")
-  
+
   // Timestamps
   createdAt     DateTime    @default(now()) @map("created_at")
   updatedAt     DateTime    @updatedAt @map("updated_at")
-  
+
   @@map("addresses")
 }
 
@@ -94,33 +136,33 @@ enum AddressType {
 model Vehicle {
   id            String    @id @default(cuid())
   userId        String?   @map("user_id")
-  
+
   // Fahrzeugdaten
   hsn           String?   // Herstellerschlüsselnummer (4-stellig)
   tsn           String?   // Typschlüsselnummer (3-stellig)
   licensePlate  String?   @map("license_plate") // Kennzeichen
   vin           String?   // Fahrgestellnummer
-  
+
   brand         String    // Marke (z.B. "Volkswagen")
   model         String    // Modell (z.B. "Golf")
   variant       String?   // Variante (z.B. "VII GTI")
   year          Int       // Baujahr
-  
+
   // Zusätzliche Infos
   nickname      String?   // Benutzerdefinierter Name
   mileage       Int?      // Kilometerstand
   lastService   DateTime? @map("last_service")
   nextTuv       DateTime? @map("next_tuv") // Nächste HU/AU
-  
+
   // Relationen
   user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   orders        Order[]
   appointments  Appointment[]
-  
+
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("vehicles")
 }
 
@@ -135,27 +177,27 @@ model Category {
   slug          String     @unique
   description   String?
   image         String?
-  
+
   // Hierarchie
   parentId      String?    @map("parent_id")
   parent        Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children      Category[] @relation("CategoryHierarchy")
-  
+
   // Relationen
   products      Product[]
-  
+
   // SEO
   metaTitle     String?    @map("meta_title")
   metaDescription String?  @map("meta_description")
-  
+
   // Sortierung
   sortOrder     Int        @default(0) @map("sort_order")
   isActive      Boolean    @default(true) @map("is_active")
-  
+
   // Timestamps
   createdAt     DateTime   @default(now()) @map("created_at")
   updatedAt     DateTime   @updatedAt @map("updated_at")
-  
+
   @@map("categories")
 }
 
@@ -166,49 +208,49 @@ model Product {
   name          String
   slug          String    @unique
   description   String?   @db.Text
-  
+
   // Preise
   price         Decimal   @db.Decimal(10, 2)
   comparePrice  Decimal?  @map("compare_price") @db.Decimal(10, 2) // UVP/Streichpreis
   costPrice     Decimal?  @map("cost_price") @db.Decimal(10, 2) // Einkaufspreis
-  
+
   // Lager
   stock         Int       @default(0)
   lowStockAlert Int       @default(5) @map("low_stock_alert")
   trackStock    Boolean   @default(true) @map("track_stock")
-  
+
   // Medien
   images        String[]  // Array von Bild-URLs
-  
+
   // Kategorisierung
   categoryId    String?   @map("category_id")
   category      Category? @relation(fields: [categoryId], references: [id])
   brand         String?   // Hersteller/Marke
-  
+
   // Fahrzeug-Kompatibilität
   compatibleVehicles VehicleCompatibility[]
-  
+
   // Varianten (z.B. Größen)
   variants      ProductVariant[]
-  
+
   // Relationen
   orderItems    OrderItem[]
   reviews       Review[]
   relatedFrom   ProductRelation[] @relation("RelatedFrom")
   relatedTo     ProductRelation[] @relation("RelatedTo")
-  
+
   // SEO
   metaTitle     String?   @map("meta_title")
   metaDescription String? @map("meta_description")
-  
+
   // Status
   isActive      Boolean   @default(true) @map("is_active")
   isFeatured    Boolean   @default(false) @map("is_featured")
-  
+
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("products")
 }
 
@@ -217,19 +259,19 @@ model ProductVariant {
   id            String    @id @default(cuid())
   productId     String    @map("product_id")
   product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+
   sku           String    @unique
   name          String    // z.B. "Größe M"
   price         Decimal?  @db.Decimal(10, 2) // Überschreibt Produktpreis wenn gesetzt
   stock         Int       @default(0)
-  
+
   // Attribute
   attributes    Json?     // z.B. { "size": "M", "color": "rot" }
-  
+
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("product_variants")
 }
 
@@ -238,7 +280,7 @@ model VehicleCompatibility {
   id            String    @id @default(cuid())
   productId     String    @map("product_id")
   product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+
   // Fahrzeugdaten
   hsn           String?
   tsn           String?
@@ -246,7 +288,7 @@ model VehicleCompatibility {
   model         String?
   yearFrom      Int?      @map("year_from")
   yearTo        Int?      @map("year_to")
-  
+
   @@map("vehicle_compatibilities")
 }
 
@@ -256,10 +298,10 @@ model ProductRelation {
   productId     String    @map("product_id")
   relatedId     String    @map("related_id")
   type          RelationType @default(RELATED)
-  
+
   product       Product   @relation("RelatedFrom", fields: [productId], references: [id], onDelete: Cascade)
   related       Product   @relation("RelatedTo", fields: [relatedId], references: [id], onDelete: Cascade)
-  
+
   @@unique([productId, relatedId])
   @@map("product_relations")
 }
@@ -280,47 +322,47 @@ model Order {
   orderNumber       String      @unique @map("order_number") // z.B. "CV-2024-0001"
   userId            String?     @map("user_id")
   vehicleId         String?     @map("vehicle_id")
-  
+
   // Adressen
   shippingAddressId String?     @map("shipping_address_id")
   billingAddressId  String?     @map("billing_address_id")
-  
+
   // Preise
   subtotal          Decimal     @db.Decimal(10, 2)
   shippingCost      Decimal     @default(0) @map("shipping_cost") @db.Decimal(10, 2)
   taxAmount         Decimal     @default(0) @map("tax_amount") @db.Decimal(10, 2)
   discount          Decimal     @default(0) @db.Decimal(10, 2)
   total             Decimal     @db.Decimal(10, 2)
-  
+
   // Zahlung
   paymentMethod     String?     @map("payment_method")
   paymentIntentId   String?     @unique @map("payment_intent_id") // Stripe Payment Intent
   paymentStatus     PaymentStatus @default(PENDING) @map("payment_status")
-  
+
   // Status
   status            OrderStatus @default(PENDING)
-  
+
   // Versand
   shippingMethod    String?     @map("shipping_method")
   trackingNumber    String?     @map("tracking_number")
   shippedAt         DateTime?   @map("shipped_at")
   deliveredAt       DateTime?   @map("delivered_at")
-  
+
   // Notizen
   customerNote      String?     @map("customer_note") @db.Text
   internalNote      String?     @map("internal_note") @db.Text
-  
+
   // Relationen
   user              User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   vehicle           Vehicle?    @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   shippingAddress   Address?    @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
   billingAddress    Address?    @relation("BillingAddress", fields: [billingAddressId], references: [id])
   items             OrderItem[]
-  
+
   // Timestamps
   createdAt         DateTime    @default(now()) @map("created_at")
   updatedAt         DateTime    @updatedAt @map("updated_at")
-  
+
   @@map("orders")
 }
 
@@ -329,18 +371,18 @@ model OrderItem {
   id            String    @id @default(cuid())
   orderId       String    @map("order_id")
   productId     String?   @map("product_id")
-  
+
   // Produktdaten (zum Zeitpunkt der Bestellung)
   sku           String
   name          String
   price         Decimal   @db.Decimal(10, 2)
   quantity      Int
   total         Decimal   @db.Decimal(10, 2)
-  
+
   // Relationen
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product       Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
-  
+
   @@map("order_items")
 }
 
@@ -372,12 +414,12 @@ model ServiceCategory {
   description   String?
   image         String?
   sortOrder     Int       @default(0) @map("sort_order")
-  
+
   services      Service[]
-  
+
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("service_categories")
 }
 
@@ -385,32 +427,32 @@ model ServiceCategory {
 model Service {
   id            String    @id @default(cuid())
   categoryId    String?   @map("category_id")
-  
+
   name          String
   slug          String    @unique
   description   String?   @db.Text
-  
+
   // Preise
   priceFrom     Decimal?  @map("price_from") @db.Decimal(10, 2)
   priceTo       Decimal?  @map("price_to") @db.Decimal(10, 2)
   priceType     PriceType @default(FIXED) @map("price_type")
-  
+
   // Dauer
   durationMinutes Int?    @map("duration_minutes")
-  
+
   // Medien
   image         String?
-  
+
   // Status
   isActive      Boolean   @default(true) @map("is_active")
-  
+
   // Relationen
   category      ServiceCategory? @relation(fields: [categoryId], references: [id])
   appointments  Appointment[]
-  
+
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("services")
 }
 
@@ -426,32 +468,32 @@ model Appointment {
   userId        String?   @map("user_id")
   vehicleId     String?   @map("vehicle_id")
   serviceId     String    @map("service_id")
-  
+
   // Termin
   date          DateTime
   timeSlot      String    @map("time_slot") // z.B. "09:00-10:00"
-  
+
   // Kontakt (falls nicht eingeloggt)
   customerName  String?   @map("customer_name")
   customerEmail String?   @map("customer_email")
   customerPhone String?   @map("customer_phone")
-  
+
   // Status
   status        AppointmentStatus @default(PENDING)
-  
+
   // Notizen
   customerNote  String?   @map("customer_note") @db.Text
   internalNote  String?   @map("internal_note") @db.Text
-  
+
   // Relationen
   user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
   vehicle       Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
   service       Service   @relation(fields: [serviceId], references: [id])
-  
+
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("appointments")
 }
 
@@ -473,24 +515,61 @@ model Review {
   id            String    @id @default(cuid())
   userId        String    @map("user_id")
   productId     String?   @map("product_id")
-  
+
   // Bewertung
   rating        Int       // 1-5
   title         String?
   content       String?   @db.Text
-  
+
   // Status
   isVerified    Boolean   @default(false) @map("is_verified") // Verifizierter Kauf
   isApproved    Boolean   @default(false) @map("is_approved")
-  
+
   // Relationen
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   product       Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  
+
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
-  
+
   @@map("reviews")
 }
 
+// =============================================================================
+// AGENTIC OS (Nexify Core)
+// =============================================================================
+
+/// Projekt-Gedächtnis (Wissen & Best Practices)
+model ProjectMemory {
+  id              String   @id @default(cuid())
+  type            String   // BEST_PRACTICE, ANTIPATTERN, KNOWLEDGE, TODO
+  category        String   // e.g., 'API', 'UI', 'DATABASE', 'SECURITY'
+  title           String
+  content         String   @db.Text
+  metadata        Json?    @default("{}")
+  tags            String[] @default([])
+  confidenceScore Float?   @default(1.0) @map("confidence_score")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("project_memory")
+}
+
+/// Audit-Logs (Handlungs-Protokoll des Agenten)
+model AuditLog {
+  id           String   @id @default(cuid())
+  agentId      String   @default("cline-nexify-agent") @map("agent_id")
+  action       String
+  resource     String
+  details      Json?    @default("{}")
+  status       String   // SUCCESS, FAILURE, WARNING
+  errorMessage String?  @map("error_message")
+  stackTrace   String?  @map("stack_trace")
+  durationMs   Int?     @map("duration_ms")
+
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@map("audit_logs")
+}

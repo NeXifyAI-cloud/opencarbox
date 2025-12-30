@@ -69,3 +69,19 @@ supabase/.temp/
 # Misc
 *.pem
 .turbo/
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md
+
+# Local History Extension (VS Code)
+.history/
+
+# Cline State Files (local only)
+.cline/resilience-state.json
+.cline/watchdog-state.json
+.cline/watchdog.pid
+.cline/auto-restart-state.json
+.cline/resilience.log
+
+# Duplicate/Backup folders
+OpenCarBox/

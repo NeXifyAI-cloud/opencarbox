@@ -153,6 +153,107 @@ export class Memory {
   }
 
   /**
+   * Holt alle Einträge eines bestimmten Typs
+   */
+  static async getByType(type: MemoryType, limit: number = 50): Promise<any[]> {
+    return this.withRetry(async () => {
+      const { data, error } = await getSupabase()
+        .from('project_memory')
+        .select('*')
+        .eq('type', type)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw new Error(`Memory getByType failed: ${error.message}`);
+      return data || [];
+    }, 'Memory.getByType', [], MEMORY_CONFIG.maxRetries);
+  }
+
+  /**
+   * Holt alle Einträge (für Oracle Kontext)
+   */
+  static async getAll(limit: number = 100): Promise<any[]> {
+    return this.withRetry(async () => {
+      const { data, error } = await getSupabase()
+        .from('project_memory')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw new Error(`Memory getAll failed: ${error.message}`);
+      return data || [];
+    }, 'Memory.getAll', [], MEMORY_CONFIG.maxRetries);
+  }
+
+  /**
+   * Sucht nach Einträgen mit Tags
+   */
+  static async searchByTags(tags: string[], limit: number = 20): Promise<any[]> {
+    return this.withRetry(async () => {
+      const { data, error } = await getSupabase()
+        .from('project_memory')
+        .select('*')
+        .contains('tags', tags)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) throw new Error(`Memory searchByTags failed: ${error.message}`);
+      return data || [];
+    }, 'Memory.searchByTags', [], MEMORY_CONFIG.maxRetries);
+  }
+
+  /**
+   * Holt Statistiken über das Gedächtnis
+   */
+  static async getStats(): Promise<{
+    total: number;
+    byType: Record<string, number>;
+    recentCount: number;
+  }> {
+    return this.withRetry(async () => {
+      const { data, error } = await getSupabase()
+        .from('project_memory')
+        .select('type');
+
+      if (error) throw new Error(`Memory getStats failed: ${error.message}`);
+
+      const byType: Record<string, number> = {};
+      let recentCount = 0;
+      const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+
+      (data || []).forEach((m: any) => {
+        byType[m.type] = (byType[m.type] || 0) + 1;
+        if (new Date(m.created_at).getTime() > oneDayAgo) recentCount++;
+      });
+
+      return {
+        total: data?.length || 0,
+        byType,
+        recentCount
+      };
+    }, 'Memory.getStats', { total: 0, byType: {}, recentCount: 0 }, MEMORY_CONFIG.maxRetries);
+  }
+
+  /**
+   * Löscht alte Einträge (Cleanup)
+   */
+  static async cleanup(olderThanDays: number = 30, keepTypes: MemoryType[] = ['BEST_PRACTICE']): Promise<number> {
+    return this.withRetry(async () => {
+      const cutoffDate = new Date(Date.now() - olderThanDays * 24 * 60 * 60 * 1000).toISOString();
+
+      const { data, error } = await getSupabase()
+        .from('project_memory')
+        .delete()
+        .lt('created_at', cutoffDate)
+        .not('type', 'in', `(${keepTypes.join(',')})`)
+        .select('id');
+
+      if (error) throw new Error(`Memory cleanup failed: ${error.message}`);
+      return data?.length || 0;
+    }, 'Memory.cleanup', 0, 2);
+  }
+
+  /**
    * Health Check - Prüft Supabase Verbindung
    */
   static async healthCheck(): Promise<boolean> {

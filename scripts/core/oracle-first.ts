@@ -1,67 +1,62 @@
 #!/usr/bin/env tsx
 /**
- * Oracle-First Protocol - CLINE agiert wie ein Mensch
+ * ============================================================================
+ * ORACLE-FIRST PROTOCOL - CLINE agiert wie ein Mensch mit perfektem Gedächtnis
+ * ============================================================================
  *
- * KERNPRINZIP: Das Oracle ist das Live-Gedächtnis.
- * - Oracle kennt ALLES (Live-Time-Stand)
- * - CLINE befragt IMMER das Oracle vor jeder Aktion
- * - Jede Aufgabe wird dokumentiert
- * - Oracle gibt die nächste Aufgabe
+ * KERNPRINZIP:
+ * - VOR jeder Aktion: Oracle befragen
+ * - NACH jeder Aktion: Ergebnis dokumentieren
+ * - Oracle gibt IMMER die nächste Aufgabe
+ *
+ * WORKFLOW:
+ * 1. beforeAction() → Oracle analysiert, genehmigt, gibt Guidance
+ * 2. [Aktion durchführen]
+ * 3. afterAction() → Dokumentieren, Lernen, nächste Aufgabe holen
  *
  * @see .clinerules für Enforcement
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Memory, MemoryType } from './memory';
+import { Memory } from './memory';
 import { Oracle, OracleResponse, OracleTask } from './oracle';
-
-// ============================================================================
-// CONFIGURATION
-// ============================================================================
-
-const ORACLE_FIRST_CONFIG = {
-  stateFile: path.join(process.cwd(), '.cline', 'oracle-first-state.json'),
-  sessionTimeout: 30 * 60 * 1000, // 30 Min Session
-  maxTaskHistory: 100,
-  autoDocumentInterval: 60000, // 1 Min
-};
 
 // ============================================================================
 // TYPES
 // ============================================================================
 
-export interface OracleSession {
-  id: string;
-  startedAt: string;
-  lastActivity: string;
-  tasksCompleted: number;
-  tasksInProgress: string[];
-  currentContext: string;
-}
-
-export interface OracleFirstState {
-  currentSession: OracleSession | null;
-  taskQueue: OracleTask[];
-  taskHistory: OracleTask[];
-  stats: {
-    totalSessions: number;
-    totalTasks: number;
-    successRate: number;
-  };
+export interface BeforeActionParams {
+  action: string;           // z.B. "create_component", "fix_bug", "refactor"
+  description: string;      // Was wird gemacht?
+  files?: string[];         // Betroffene Dateien
+  context?: string;         // Zusätzlicher Kontext
+  priority?: OracleTask['priority'];
 }
 
 export interface BeforeActionResult {
-  approved: boolean;
-  guidance: OracleResponse;
-  taskId: string;
-  warnings: string[];
+  approved: boolean;        // Darf die Aktion ausgeführt werden?
+  taskId: string;           // Eindeutige Task-ID
+  guidance: OracleResponse; // Oracle's Analyse und Empfehlung
+  warnings: string[];       // Warnungen vom Oracle
+}
+
+export interface AfterActionParams {
+  taskId: string;           // Task-ID von beforeAction
+  success: boolean;         // War die Aktion erfolgreich?
+  result: string;           // Was wurde erreicht?
+  learnings?: string[];     // Was wurde gelernt?
+  errors?: string[];        // Aufgetretene Fehler
 }
 
 export interface AfterActionResult {
-  documented: boolean;
-  nextTask: OracleTask | null;
-  learnings: string[];
+  documented: boolean;      // Wurde dokumentiert?
+  nextTask: OracleTask | null; // Nächste empfohlene Aufgabe
+  learnings: string[];      // Verarbeitete Learnings
+  stats: {
+    successRate: number;
+    tasksCompleted: number;
+  };
 }
 
 // ============================================================================
@@ -69,377 +64,249 @@ export interface AfterActionResult {
 // ============================================================================
 
 /**
- * Oracle-First Protocol - MANDATORY vor JEDER Aktion
+ * Oracle-First Protocol - MANDATORY für CLINE
  *
- * Nutzung:
+ * @example
  * ```typescript
  * // VOR jeder Aktion
- * const { approved, guidance, taskId } = await OracleFirst.beforeAction({
+ * const { approved, taskId, guidance, warnings } = await OracleFirst.beforeAction({
  *   action: 'create_component',
  *   description: 'Erstelle Header-Komponente',
- *   files: ['src/components/header.tsx'],
+ *   files: ['src/components/layout/header.tsx'],
  * });
  *
  * if (!approved) {
- *   console.log('Action not approved:', guidance.recommendation);
+ *   console.warn('Oracle hat abgelehnt:', warnings);
  *   return;
  * }
  *
- * // Aktion durchführen...
+ * // Aktion mit guidance durchführen...
  *
  * // NACH der Aktion
- * const { nextTask } = await OracleFirst.afterAction({
+ * const { nextTask, stats } = await OracleFirst.afterAction({
  *   taskId,
  *   success: true,
- *   result: 'Header-Komponente erstellt',
- *   learnings: ['Tailwind für Styling verwendet'],
+ *   result: 'Header-Komponente mit Responsive Design erstellt',
+ *   learnings: ['Tailwind für Mobile-First genutzt'],
  * });
+ *
+ * console.log('Nächste Aufgabe:', nextTask?.description);
  * ```
  */
 export class OracleFirst {
-  private static state: OracleFirstState | null = null;
 
   // ==========================================================================
   // CORE PROTOCOL
   // ==========================================================================
 
   /**
-   * MANDATORY: Vor jeder Aktion aufrufen
+   * VOR jeder Aktion aufrufen - MANDATORY
    *
    * Das Oracle:
-   * 1. Analysiert die geplante Aktion
-   * 2. Prüft gegen Regeln und vergangene Erkenntnisse
-   * 3. Gibt Guidance und Warnungen
-   * 4. Dokumentiert den Start der Aktion
+   * 1. Lädt vollständigen Projektkontext
+   * 2. Analysiert die geplante Aktion
+   * 3. Prüft gegen Regeln und vergangene Erkenntnisse
+   * 4. Gibt Genehmigung, Guidance und Warnungen
    */
-  static async beforeAction(params: {
-    action: string;
-    description: string;
-    files?: string[];
-    context?: string;
-    priority?: OracleTask['priority'];
-  }): Promise<BeforeActionResult> {
-    console.log(`\n🔮 ORACLE-FIRST: Analysiere Aktion "${params.action}"...`);
+  static async beforeAction(params: BeforeActionParams): Promise<BeforeActionResult> {
+    console.log(`\n🔮 ORACLE-FIRST: Analysiere "${params.action}"...`);
 
-    // Session starten/fortsetzen
-    await this.ensureSession();
+    // Session sicherstellen
+    await Oracle.ensureSession();
 
-    // Kontext sammeln
+    // Dateikontext sammeln
     const fileContext = await this.getFileContext(params.files || []);
-    const fullContext = `
-ACTION: ${params.action}
-DESCRIPTION: ${params.description}
-FILES: ${(params.files || []).join(', ') || 'None'}
-
-FILE CONTEXT:
-${fileContext}
-
-${params.context ? `ADDITIONAL CONTEXT:\n${params.context}` : ''}
-    `.trim();
 
     // Oracle befragen
-    const guidance = await Oracle.thinkWithMemory(
-      `Analysiere diese geplante Aktion und gib Guidance:
+    const prompt = `
+Analysiere diese geplante Aktion:
 
+ACTION: ${params.action}
+DESCRIPTION: ${params.description}
+FILES: ${(params.files || []).join(', ') || 'Keine'}
+
+${fileContext ? `FILE CONTENTS:\n${fileContext}\n` : ''}
+${params.context ? `CONTEXT:\n${params.context}\n` : ''}
+
+FRAGEN:
 1. Ist diese Aktion sinnvoll im aktuellen Projektkontext?
 2. Gibt es bekannte Probleme oder Antipatterns zu beachten?
 3. Was sind die wichtigsten Schritte für die Implementierung?
 4. Gibt es Warnungen oder Risiken?
 
-Antworte mit approved: true/false im metadata Feld.`,
-      fullContext
-    );
+Setze "approved" auf true/false basierend auf deiner Analyse.
+    `.trim();
 
-    // Task erstellen
+    const guidance = await Oracle.think(prompt);
+
+    // Task-ID generieren
     const taskId = `task_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    const task: OracleTask = {
-      id: taskId,
-      description: params.description,
-      priority: params.priority || 'NORMAL',
-      status: 'IN_PROGRESS',
-      context: fullContext,
-      createdAt: new Date().toISOString(),
-    };
 
-    // State aktualisieren
-    const state = await this.loadState();
-    state.taskQueue.push(task);
-    if (state.currentSession) {
-      state.currentSession.tasksInProgress.push(taskId);
-      state.currentSession.lastActivity = new Date().toISOString();
+    // Warnings extrahieren
+    const warnings: string[] = guidance.warnings || [];
+
+    if (guidance.confidence < 0.7) {
+      warnings.push(`⚠️ Niedrige Konfidenz (${(guidance.confidence * 100).toFixed(0)}%)`);
     }
-    await this.saveState(state);
+    if (guidance.analysis.toLowerCase().includes('risk') ||
+        guidance.analysis.toLowerCase().includes('warning') ||
+        guidance.analysis.toLowerCase().includes('achtung')) {
+      warnings.push('⚠️ Oracle hat potenzielle Risiken identifiziert');
+    }
 
-    // Dokumentieren
+    // Genehmigung basierend auf Analyse
+    const approved = guidance.approved !== false &&
+                     guidance.confidence >= 0.3 &&
+                     !guidance.recommendation.toLowerCase().includes('nicht empfohlen');
+
+    // Audit Log
     await Memory.audit({
       action: 'before_action',
       resource: params.action,
-      status: 'SUCCESS',
+      status: approved ? 'SUCCESS' : 'WARNING',
       details: {
         taskId,
         description: params.description,
         files: params.files,
+        approved,
         confidence: guidance.confidence,
+        warnings: warnings.length
       }
     });
 
-    // Warnings extrahieren
-    const warnings: string[] = [];
-    if (guidance.confidence < 0.7) {
-      warnings.push(`⚠️ Low confidence (${(guidance.confidence * 100).toFixed(0)}%) - zusätzliche Überprüfung empfohlen`);
-    }
-    if (guidance.analysis.toLowerCase().includes('risk') || guidance.analysis.toLowerCase().includes('warning')) {
-      warnings.push('⚠️ Oracle hat potenzielle Risiken identifiziert');
-    }
-
-    const approved = guidance.confidence >= 0.3 && !guidance.recommendation.toLowerCase().includes('not recommended');
-
-    console.log(`✅ Oracle-First Analysis complete. Approved: ${approved}`);
+    console.log(`✅ Analyse abgeschlossen. Genehmigt: ${approved ? 'JA' : 'NEIN'}`);
     if (warnings.length > 0) {
-      console.log('Warnings:', warnings.join('\n'));
+      console.log('⚠️ Warnungen:', warnings.join(', '));
     }
 
     return {
       approved,
-      guidance,
       taskId,
+      guidance,
       warnings,
     };
   }
 
   /**
-   * MANDATORY: Nach jeder Aktion aufrufen
+   * NACH jeder Aktion aufrufen - MANDATORY
    *
    * Das Oracle:
    * 1. Dokumentiert das Ergebnis
-   * 2. Extrahiert Learnings
-   * 3. Aktualisiert den Kontext
+   * 2. Extrahiert und speichert Learnings
+   * 3. Aktualisiert Stats
    * 4. Gibt die nächste Aufgabe
    */
-  static async afterAction(params: {
-    taskId: string;
-    success: boolean;
-    result: string;
-    learnings?: string[];
-    errors?: string[];
-  }): Promise<AfterActionResult> {
-    console.log(`\n🔮 ORACLE-FIRST: Dokumentiere Ergebnis für ${params.taskId}...`);
+  static async afterAction(params: AfterActionParams): Promise<AfterActionResult> {
+    console.log(`\n🔮 ORACLE-FIRST: Dokumentiere ${params.taskId}...`);
 
-    // State laden
-    const state = await this.loadState();
+    // Task abschließen
+    await Oracle.completeTask(
+      params.taskId,
+      params.result,
+      params.success,
+      params.learnings
+    );
 
-    // Task finden und aktualisieren
-    const taskIndex = state.taskQueue.findIndex(t => t.id === params.taskId);
-    if (taskIndex >= 0) {
-      const task = state.taskQueue[taskIndex];
-      task.status = params.success ? 'COMPLETED' : 'FAILED';
-      task.result = params.result;
-      task.completedAt = new Date().toISOString();
+    // Fehler als Antipatterns speichern
+    const allLearnings = [...(params.learnings || [])];
 
-      // In History verschieben
-      state.taskHistory.unshift(task);
-      state.taskQueue.splice(taskIndex, 1);
-
-      // History begrenzen
-      if (state.taskHistory.length > ORACLE_FIRST_CONFIG.maxTaskHistory) {
-        state.taskHistory = state.taskHistory.slice(0, ORACLE_FIRST_CONFIG.maxTaskHistory);
-      }
-
-      // Stats aktualisieren
-      state.stats.totalTasks++;
-      const successCount = state.taskHistory.filter(t => t.status === 'COMPLETED').length;
-      state.stats.successRate = successCount / state.taskHistory.length;
-    }
-
-    // Session aktualisieren
-    if (state.currentSession) {
-      state.currentSession.tasksCompleted++;
-      state.currentSession.tasksInProgress = state.currentSession.tasksInProgress.filter(
-        id => id !== params.taskId
-      );
-      state.currentSession.lastActivity = new Date().toISOString();
-    }
-
-    await this.saveState(state);
-
-    // Im Memory dokumentieren
-    const memoryType: MemoryType = params.success ? 'BEST_PRACTICE' : 'ANTIPATTERN';
-    await Memory.remember({
-      type: memoryType,
-      category: 'task_result',
-      title: `Task ${params.taskId}: ${params.result.substring(0, 100)}`,
-      content: `
-Result: ${params.result}
-Success: ${params.success}
-Learnings: ${(params.learnings || []).join(', ')}
-Errors: ${(params.errors || []).join(', ')}
-      `.trim(),
-      metadata: {
-        taskId: params.taskId,
-        success: params.success,
-        learnings: params.learnings,
-        errors: params.errors,
-      },
-      tags: ['task', params.success ? 'success' : 'failure', 'documented']
-    });
-
-    // Learnings verarbeiten
-    const learnings = params.learnings || [];
     if (params.errors && params.errors.length > 0) {
-      // Fehler als Antipatterns speichern
       for (const error of params.errors) {
         await Memory.remember({
           type: 'ANTIPATTERN',
-          category: 'error_learning',
-          title: `Error from ${params.taskId}`,
+          category: 'error',
+          title: `Error in ${params.taskId}`,
           content: error,
-          tags: ['error', 'learning', 'antipattern']
+          tags: ['error', 'antipattern', 'avoid']
         });
-        learnings.push(`Avoid: ${error}`);
+        allLearnings.push(`AVOID: ${error}`);
       }
     }
-
-    // Audit Log
-    await Memory.audit({
-      action: 'after_action',
-      resource: params.taskId,
-      status: params.success ? 'SUCCESS' : 'FAILURE',
-      details: {
-        result: params.result,
-        learnings: learnings.length,
-        errors: params.errors?.length || 0,
-      }
-    });
 
     // Oracle Cache invalidieren (neues Wissen verfügbar)
     Oracle.invalidateCache();
 
     // Nächste Aufgabe holen
-    const nextTask = await Oracle.getNextTask(
-      `Letzte Aufgabe: ${params.result}\nSuccess: ${params.success}\nLearnings: ${learnings.join(', ')}`
-    );
+    const nextContext = `
+Letzte Aktion: ${params.result}
+Erfolg: ${params.success}
+Learnings: ${allLearnings.join(', ')}
+    `.trim();
 
-    console.log(`✅ Ergebnis dokumentiert. Success Rate: ${(state.stats.successRate * 100).toFixed(1)}%`);
+    const nextTask = await Oracle.getNextTask(nextContext);
+
+    // Status holen
+    const status = await Oracle.getStatus();
+
+    console.log(`✅ Dokumentiert. Success Rate: ${(status.successRate * 100).toFixed(1)}%`);
+    if (nextTask) {
+      console.log(`📋 Nächste Aufgabe: ${nextTask.description}`);
+    }
 
     return {
       documented: true,
       nextTask,
-      learnings,
+      learnings: allLearnings,
+      stats: {
+        successRate: status.successRate,
+        tasksCompleted: status.completedTasks,
+      }
     };
   }
 
   // ==========================================================================
-  // SESSION MANAGEMENT
+  // CONVENIENCE METHODS
   // ==========================================================================
 
   /**
-   * Startet oder setzt eine Session fort
+   * Schnelle Methode für einfache Aktionen
    */
-  static async ensureSession(): Promise<OracleSession> {
-    const state = await this.loadState();
+  static async execute<T>(
+    params: BeforeActionParams,
+    action: (guidance: OracleResponse) => Promise<T>
+  ): Promise<{ result: T | null; success: boolean; nextTask: OracleTask | null }> {
+    const before = await this.beforeAction(params);
 
-    // Prüfen ob Session noch gültig
-    if (state.currentSession) {
-      const lastActivity = new Date(state.currentSession.lastActivity).getTime();
-      if (Date.now() - lastActivity < ORACLE_FIRST_CONFIG.sessionTimeout) {
-        return state.currentSession;
-      }
-      // Session abgelaufen
-      await this.endSession();
+    if (!before.approved) {
+      console.warn('❌ Aktion nicht genehmigt:', before.warnings);
+      return { result: null, success: false, nextTask: null };
     }
 
-    // Neue Session starten
-    const session: OracleSession = {
-      id: `session_${Date.now()}`,
-      startedAt: new Date().toISOString(),
-      lastActivity: new Date().toISOString(),
-      tasksCompleted: 0,
-      tasksInProgress: [],
-      currentContext: '',
-    };
+    let result: T | null = null;
+    let success = false;
+    let errors: string[] = [];
 
-    state.currentSession = session;
-    state.stats.totalSessions++;
-    await this.saveState(state);
+    try {
+      result = await action(before.guidance);
+      success = true;
+    } catch (error) {
+      errors = [error instanceof Error ? error.message : String(error)];
+      console.error('❌ Aktion fehlgeschlagen:', errors[0]);
+    }
 
-    // Session im Memory dokumentieren
-    await Memory.audit({
-      action: 'session_start',
-      resource: session.id,
-      status: 'SUCCESS',
-      details: { sessionNumber: state.stats.totalSessions }
+    const after = await this.afterAction({
+      taskId: before.taskId,
+      success,
+      result: success ? 'Erfolgreich abgeschlossen' : 'Fehlgeschlagen',
+      learnings: success ? ['Erfolgreich implementiert'] : undefined,
+      errors: errors.length > 0 ? errors : undefined,
     });
 
-    console.log(`🚀 Oracle-First Session gestartet: ${session.id}`);
-    return session;
+    return { result, success, nextTask: after.nextTask };
   }
 
   /**
-   * Beendet die aktuelle Session
+   * Holt den aktuellen Status
    */
-  static async endSession(): Promise<void> {
-    const state = await this.loadState();
-
-    if (state.currentSession) {
-      await Memory.audit({
-        action: 'session_end',
-        resource: state.currentSession.id,
-        status: 'SUCCESS',
-        details: {
-          tasksCompleted: state.currentSession.tasksCompleted,
-          duration: Date.now() - new Date(state.currentSession.startedAt).getTime(),
-        }
-      });
-
-      console.log(`👋 Session beendet: ${state.currentSession.id} (${state.currentSession.tasksCompleted} Tasks)`);
-      state.currentSession = null;
-      await this.saveState(state);
-    }
+  static async getStatus() {
+    return Oracle.getStatus();
   }
 
-  // ==========================================================================
-  // STATE MANAGEMENT
-  // ==========================================================================
-
-  private static async loadState(): Promise<OracleFirstState> {
-    if (this.state) return this.state;
-
-    try {
-      if (fs.existsSync(ORACLE_FIRST_CONFIG.stateFile)) {
-        const data = fs.readFileSync(ORACLE_FIRST_CONFIG.stateFile, 'utf-8');
-        this.state = JSON.parse(data);
-        return this.state!;
-      }
-    } catch (e) {
-      console.warn('Could not load Oracle-First state, creating new');
-    }
-
-    this.state = {
-      currentSession: null,
-      taskQueue: [],
-      taskHistory: [],
-      stats: {
-        totalSessions: 0,
-        totalTasks: 0,
-        successRate: 1.0,
-      }
-    };
-
-    return this.state;
-  }
-
-  private static async saveState(state: OracleFirstState): Promise<void> {
-    this.state = state;
-
-    try {
-      const dir = path.dirname(ORACLE_FIRST_CONFIG.stateFile);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      fs.writeFileSync(ORACLE_FIRST_CONFIG.stateFile, JSON.stringify(state, null, 2));
-    } catch (e) {
-      console.error('Could not save Oracle-First state:', e);
-    }
+  /**
+   * Beendet die Session
+   */
+  static async endSession() {
+    return Oracle.endSession();
   }
 
   // ==========================================================================
@@ -451,14 +318,19 @@ Errors: ${(params.errors || []).join(', ')}
    */
   private static async getFileContext(files: string[]): Promise<string> {
     const contexts: string[] = [];
+    const maxFiles = 5;
+    const maxCharsPerFile = 3000;
 
-    for (const file of files.slice(0, 5)) { // Max 5 Files
+    for (const file of files.slice(0, maxFiles)) {
       try {
         const fullPath = path.isAbsolute(file) ? file : path.join(process.cwd(), file);
+
         if (fs.existsSync(fullPath)) {
           const content = fs.readFileSync(fullPath, 'utf-8');
-          // Begrenzen auf 3000 Zeichen pro File
-          contexts.push(`--- ${file} ---\n${content.substring(0, 3000)}`);
+          const truncated = content.length > maxCharsPerFile
+            ? content.substring(0, maxCharsPerFile) + '\n...[truncated]'
+            : content;
+          contexts.push(`--- ${file} ---\n${truncated}`);
         }
       } catch {
         // Silent fail
@@ -466,40 +338,6 @@ Errors: ${(params.errors || []).join(', ')}
     }
 
     return contexts.join('\n\n');
-  }
-
-  /**
-   * Holt den aktuellen Status
-   */
-  static async getStatus(): Promise<{
-    session: OracleSession | null;
-    pendingTasks: number;
-    completedTasks: number;
-    successRate: number;
-  }> {
-    const state = await this.loadState();
-    return {
-      session: state.currentSession,
-      pendingTasks: state.taskQueue.length,
-      completedTasks: state.stats.totalTasks,
-      successRate: state.stats.successRate,
-    };
-  }
-
-  /**
-   * Holt die Task-Queue
-   */
-  static async getTaskQueue(): Promise<OracleTask[]> {
-    const state = await this.loadState();
-    return state.taskQueue;
-  }
-
-  /**
-   * Holt die Task-History
-   */
-  static async getTaskHistory(limit: number = 10): Promise<OracleTask[]> {
-    const state = await this.loadState();
-    return state.taskHistory.slice(0, limit);
   }
 }
 
@@ -520,41 +358,39 @@ if (require.main === module) {
         break;
 
       case 'before':
-        const action = args[1] || 'test';
-        const actionDesc = args.slice(2).join(' ') || 'Test Action';
+        const action = args[1] || 'test_action';
+        const description = args.slice(2).join(' ') || 'Test-Aktion';
         const before = await OracleFirst.beforeAction({
-          action: action,
-          description: actionDesc,
+          action,
+          description,
         });
         console.log('\n📋 Before Action Result:');
-        console.log(JSON.stringify(before, null, 2));
+        console.log(JSON.stringify({
+          approved: before.approved,
+          taskId: before.taskId,
+          warnings: before.warnings,
+          confidence: before.guidance.confidence,
+          recommendation: before.guidance.recommendation,
+        }, null, 2));
         break;
 
       case 'after':
         const taskId = args[1] || 'test_task';
-        const result = args.slice(2).join(' ') || 'Test completed';
+        const result = args.slice(2).join(' ') || 'Test abgeschlossen';
         const after = await OracleFirst.afterAction({
           taskId,
           success: true,
           result,
         });
         console.log('\n📋 After Action Result:');
-        console.log(JSON.stringify(after, null, 2));
+        console.log(JSON.stringify({
+          documented: after.documented,
+          nextTask: after.nextTask?.description,
+          stats: after.stats,
+        }, null, 2));
         break;
 
-      case 'queue':
-        const queue = await OracleFirst.getTaskQueue();
-        console.log('\n📋 Task Queue:');
-        console.log(JSON.stringify(queue, null, 2));
-        break;
-
-      case 'history':
-        const history = await OracleFirst.getTaskHistory(10);
-        console.log('\n📜 Task History (last 10):');
-        console.log(JSON.stringify(history, null, 2));
-        break;
-
-      case 'end-session':
+      case 'end':
         await OracleFirst.endSession();
         break;
 
@@ -562,32 +398,32 @@ if (require.main === module) {
         console.log(`
 🔮 Oracle-First Protocol CLI
 
-Das Oracle-First Protocol stellt sicher, dass CLINE wie ein Mensch mit
-perfektem Gedächtnis agiert. JEDE Aktion wird vom Oracle analysiert und dokumentiert.
+CLINE agiert wie ein Mensch mit perfektem Gedächtnis.
+VOR jeder Aktion: beforeAction() → Analyse, Genehmigung, Guidance
+NACH jeder Aktion: afterAction() → Dokumentation, Learning, nächste Aufgabe
 
 Commands:
-  status       - Zeigt aktuellen Status (Session, Tasks, Success Rate)
-  before <desc> - Simuliert beforeAction für eine Aktion
+  status           - Aktueller Status (Session, Tasks, Success Rate)
+  before <action> <desc> - Simuliert beforeAction
   after <taskId> <result> - Simuliert afterAction
-  queue        - Zeigt die Task-Queue
-  history      - Zeigt die letzten 10 Tasks
-  end-session  - Beendet die aktuelle Session
+  end              - Beendet Session
 
-Nutzung im Code:
+Beispiele:
+  npx tsx scripts/core/oracle-first.ts status
+  npx tsx scripts/core/oracle-first.ts before create_component "Header erstellen"
+  npx tsx scripts/core/oracle-first.ts after task_123 "Header erfolgreich erstellt"
 
-  // VOR jeder Aktion (MANDATORY)
-  const { approved, guidance, taskId } = await OracleFirst.beforeAction({
+Im Code:
+  const { approved, taskId, guidance } = await OracleFirst.beforeAction({
     action: 'create_component',
-    description: 'Erstelle Header-Komponente',
+    description: 'Header erstellen',
     files: ['src/components/header.tsx'],
   });
 
-  // NACH der Aktion (MANDATORY)
-  const { nextTask } = await OracleFirst.afterAction({
-    taskId,
-    success: true,
-    result: 'Header erstellt',
-  });
+  if (approved) {
+    // Aktion durchführen...
+    await OracleFirst.afterAction({ taskId, success: true, result: '...' });
+  }
         `);
     }
   })();

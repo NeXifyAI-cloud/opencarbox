@@ -107,7 +107,7 @@ export class Memory {
       await this.withRetry(async () => {
         const { error } = await getSupabase().from('audit_logs').insert([{
           ...params,
-          timestamp: new Date().toISOString(),
+          created_at: new Date().toISOString(),
         }]);
         if (error) {
           throw new Error(`Audit logging failed: ${error.message}`);

@@ -520,9 +520,10 @@ if (require.main === module) {
         break;
 
       case 'before':
-        const actionDesc = args.slice(1).join(' ') || 'Test Action';
+        const action = args[1] || 'test';
+        const actionDesc = args.slice(2).join(' ') || 'Test Action';
         const before = await OracleFirst.beforeAction({
-          action: 'test',
+          action: action,
           description: actionDesc,
         });
         console.log('\n📋 Before Action Result:');

@@ -96,7 +96,7 @@ const VersandPage = () => {
             </h3>
             <p className="text-sm text-gray-600">
               Gerne können Sie Ihre Bestellung auch kostenfrei in unserer Filiale in Wien abholen:<br />
-              <strong>Carvatoo Abholshop, Rennweg 76, 1030 Wien</strong><br />
+              <strong>Carvantooo Abholshop, Rennweg 76, 1030 Wien</strong><br />
               Mo-Fr: 08:00 - 18:00 Uhr
             </p>
           </div>

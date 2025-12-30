@@ -1,6 +1,6 @@
 import { companyConfig } from '../config/company';
 
-// Carvatoo - Premium Mock-Daten
+// Carvantooo - Premium Mock-Daten
 // "Weil dein Auto zur Familie gehört."
 
 // Images
@@ -338,7 +338,7 @@ export const sidebarCategories = [
 export const serviceAreas = [
   {
     id: 'shop',
-    title: 'Carvatoo Shop',
+    title: 'Carvantooo Shop',
     description: 'Premium Autoteile mit HSN/TSN-Suche',
     icon: 'ShoppingCart',
     color: 'teal',

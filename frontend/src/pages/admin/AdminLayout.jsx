@@ -59,7 +59,7 @@ const AdminLayout = ({ children }) => {
         </button>
         <div className="flex items-center gap-3">
           <Car className="h-7 w-7 text-[#4fd1c5]" />
-          <span className="font-bold text-lg">Carvatoo Admin</span>
+          <span className="font-bold text-lg">Carvantooo Admin</span>
         </div>
         <div className="w-7" />
       </div>
@@ -75,7 +75,7 @@ const AdminLayout = ({ children }) => {
           <div className="flex items-center gap-3">
             <Car className="h-8 w-8 text-[#4fd1c5]" />
             <div>
-              <span className="font-bold text-xl">Carvatoo</span>
+              <span className="font-bold text-xl">Carvantooo</span>
               <p className="text-xs text-[#4fd1c5] font-medium tracking-wide">Admin-Portal</p>
             </div>
           </div>
@@ -112,7 +112,7 @@ const AdminLayout = ({ children }) => {
             <Car className="h-9 w-9 text-[#4fd1c5] flex-shrink-0" />
             {sidebarOpen && (
               <div className="min-w-0">
-                <span className="font-bold text-xl block truncate">Carvatoo</span>
+                <span className="font-bold text-xl block truncate">Carvantooo</span>
                 <p className="text-xs text-[#4fd1c5] font-medium tracking-wide truncate">Admin-Portal</p>
               </div>
             )}

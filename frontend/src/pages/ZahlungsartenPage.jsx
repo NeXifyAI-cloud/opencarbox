@@ -19,7 +19,7 @@ const ZahlungsartenPage = () => {
 
         <div className="bg-white rounded-lg shadow-sm p-8 space-y-8">
           <p className="text-gray-600 mb-6">
-            Bei Carvatoo können Sie sicher und bequem bezahlen. Wir bieten Ihnen folgende Zahlungsmöglichkeiten an:
+            Bei Carvantooo können Sie sicher und bequem bezahlen. Wir bieten Ihnen folgende Zahlungsmöglichkeiten an:
           </p>
 
           <div className="grid gap-6 md:grid-cols-2">

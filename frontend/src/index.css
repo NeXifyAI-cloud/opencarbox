@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* =============================================================================
-   CARVATOO - Premium Automotive E-Commerce Design System
+   Carvantooo - Premium Automotive E-Commerce Design System
    "Weil dein Auto zur Familie gehört."
    ============================================================================= */
 
@@ -25,11 +25,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Primärfarbe - Carvatoo Dunkelblau */
+    /* Primärfarbe - Carvantooo Dunkelblau */
     --primary: 209 52% 24%;
     --primary-foreground: 0 0% 100%;
 
-    /* Sekundärfarbe - Carvatoo Türkis */
+    /* Sekundärfarbe - Carvantooo Türkis */
     --secondary: 174 63% 56%;
     --secondary-foreground: 209 52% 24%;
 
@@ -48,12 +48,12 @@
 
     --radius: 0.5rem;
 
-    /* Carvatoo Brand Colors */
-    --carvatoo-navy: #1e3a5f;
-    --carvatoo-navy-light: #2d4a6f;
-    --carvatoo-teal: #4fd1c5;
-    --carvatoo-teal-dark: #38b2ac;
-    --carvatoo-teal-glow: rgba(79, 209, 197, 0.4);
+    /* Carvantooo Brand Colors */
+    --Carvantooo-navy: #1e3a5f;
+    --Carvantooo-navy-light: #2d4a6f;
+    --Carvantooo-teal: #4fd1c5;
+    --Carvantooo-teal-dark: #38b2ac;
+    --Carvantooo-teal-glow: rgba(79, 209, 197, 0.4);
 
     /* Schatten */
     --shadow-card: 0 2px 8px -2px rgb(0 0 0 / 0.1), 0 4px 12px -4px rgb(0 0 0 / 0.05);

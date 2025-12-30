@@ -49,7 +49,7 @@ const LoginPage = () => {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-[#1e3a5f]">Anmelden</CardTitle>
             <CardDescription>
-              Melden Sie sich in Ihrem Carvatoo-Konto an
+              Melden Sie sich in Ihrem Carvantooo-Konto an
             </CardDescription>
           </CardHeader>
           <CardContent>

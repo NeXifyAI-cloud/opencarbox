@@ -11,10 +11,10 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState({ items: [], total: 0, item_count: 0 });
   const [loading, setLoading] = useState(false);
   const [sessionId, setSessionId] = useState(() => {
-    let id = localStorage.getItem('carvatoo_session');
+    let id = localStorage.getItem('Carvantooo_session');
     if (!id) {
       id = uuidv4();
-      localStorage.setItem('carvatoo_session', id);
+      localStorage.setItem('Carvantooo_session', id);
     }
     return id;
   });

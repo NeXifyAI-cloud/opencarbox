@@ -9,7 +9,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState(localStorage.getItem('carvatoo_token'));
+  const [token, setToken] = useState(localStorage.getItem('Carvantooo_token'));
 
   useEffect(() => {
     if (token) {
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.post(`${API}/auth/login`, { email, password });
       const { access_token, user: userData } = response.data;
       
-      localStorage.setItem('carvatoo_token', access_token);
+      localStorage.setItem('Carvantooo_token', access_token);
       setToken(access_token);
       setUser(userData);
       
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('carvatoo_token');
+    localStorage.removeItem('Carvantooo_token');
     setToken(null);
     setUser(null);
   };

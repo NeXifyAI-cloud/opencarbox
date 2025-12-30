@@ -84,11 +84,11 @@ const HomePage = () => {
             {/* SEO Content */}
             <section className="mt-10 bg-white rounded-lg shadow-sm border border-gray-100 p-6">
               <h2 className="text-2xl font-bold text-[#1e3a5f] mb-4">
-                Carvatoo - Die OpenCarBox Plattform
+                Carvantooo - Die OpenCarBox Plattform
               </h2>
               <div className="prose prose-sm max-w-none text-gray-600">
                 <p className="mb-4">
-                  Carvatoo ist mehr als nur ein Online-Shop. Als Teil der OpenCarBox Plattform bieten wir Ihnen 
+                  Carvantooo ist mehr als nur ein Online-Shop. Als Teil der OpenCarBox Plattform bieten wir Ihnen 
                   ein ganzheitliches Erlebnis rund um Ihr Auto. Von hochwertigen Ersatzteilen über professionelle 
                   Werkstatt-Services bis hin zum Fahrzeugkauf - alles aus einer Hand.
                 </p>

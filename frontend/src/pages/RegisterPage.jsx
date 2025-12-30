@@ -83,7 +83,7 @@ const RegisterPage = () => {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-[#1e3a5f]">Konto erstellen</CardTitle>
             <CardDescription>
-              Registrieren Sie sich für ein Carvatoo-Konto
+              Registrieren Sie sich für ein Carvantooo-Konto
             </CardDescription>
           </CardHeader>
           <CardContent>

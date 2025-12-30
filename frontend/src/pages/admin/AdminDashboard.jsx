@@ -108,7 +108,7 @@ const AdminDashboard = () => {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-bold text-[#1e3a5f]">Dashboard</h1>
-          <p className="text-gray-500">Willkommen im Carvatoo Admin-Portal</p>
+          <p className="text-gray-500">Willkommen im Carvantooo Admin-Portal</p>
         </div>
 
         {/* Stats Grid */}

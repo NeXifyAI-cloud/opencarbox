@@ -96,7 +96,7 @@ const Header = ({ cartItems = 0 }) => {
                 <Car className="h-10 w-10 text-[#4fd1c5]" />
               </div>
               <div>
-                <span className="text-3xl font-bold tracking-tight text-white group-hover:text-[#4fd1c5] transition-colors font-display">Carvatoo</span>
+                <span className="text-3xl font-bold tracking-tight text-white group-hover:text-[#4fd1c5] transition-colors font-display">Carvantooo</span>
                 <p className="text-[11px] text-gray-300 uppercase tracking-widest -mt-1 font-medium">OpenCarBox Platform</p>
               </div>
             </Link>

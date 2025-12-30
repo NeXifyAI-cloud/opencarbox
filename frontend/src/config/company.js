@@ -1,5 +1,5 @@
 export const companyConfig = {
-  name: "Carvatoo",
+  name: "Carvantooo",
   legalName: "OpenCarBox GmbH",
   ceo: "Herr Arac Metehan",
   founded: "16.06.2020",
@@ -13,7 +13,7 @@ export const companyConfig = {
   contact: {
     phone: "01 7981310",
     email: "office@opencarbox.co.at",
-    website: "www.carvatoo.at" 
+    website: "www.Carvantooo.at" 
   },
   legal: {
     registerNumber: "FN 534799 w",

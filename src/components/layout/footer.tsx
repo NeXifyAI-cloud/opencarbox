@@ -1,296 +1,125 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import {
-    Clock,
-    CreditCard,
-    Facebook,
-    Instagram,
-    Mail,
-    MapPin,
-    Phone,
-    Shield,
-    Truck,
-    Youtube,
-} from 'lucide-react';
+import { type FC } from 'react';
 import Link from 'next/link';
+import { Mail, Phone, MapPin, Facebook, Instagram, Youtube } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+interface FooterProps {
+  variant?: 'default' | 'shop' | 'service';
+}
 
 /**
- * Footer-Link Gruppen
+ * Globaler Footer für OpenCarBox & Carvantooo
  */
-const footerLinks = {
-  shop: {
-    title: 'Shop',
-    links: [
-      { label: 'Alle Produkte', href: '/shop/produkte' },
-      { label: 'Kategorien', href: '/shop/kategorien' },
-      { label: 'Angebote', href: '/shop/angebote' },
-      { label: 'Neuheiten', href: '/shop/neuheiten' },
-      { label: 'Bestseller', href: '/shop/bestseller' },
-    ],
-  },
-  werkstatt: {
-    title: 'Werkstatt',
-    links: [
-      { label: 'Alle Services', href: '/werkstatt/services' },
-      { label: 'Termin buchen', href: '/werkstatt/termin' },
-      { label: 'Preisliste', href: '/werkstatt/preise' },
-      { label: 'Reparatur-Status', href: '/werkstatt/status' },
-    ],
-  },
-  autohandel: {
-    title: 'Autohandel',
-    links: [
-      { label: 'Fahrzeuge', href: '/autohandel/fahrzeuge' },
-      { label: 'Ankauf', href: '/autohandel/ankauf' },
-      { label: 'Finanzierung', href: '/autohandel/finanzierung' },
-      { label: 'Probefahrt', href: '/autohandel/probefahrt' },
-    ],
-  },
-  service: {
-    title: 'Service & Hilfe',
-    links: [
-      { label: 'Kontakt', href: '/kontakt' },
-      { label: 'FAQ', href: '/hilfe/faq' },
-      { label: 'Versand', href: '/hilfe/versand' },
-      { label: 'Retoure', href: '/hilfe/retoure' },
-      { label: 'Garantie', href: '/hilfe/garantie' },
-    ],
-  },
-  rechtliches: {
-    title: 'Rechtliches',
-    links: [
-      { label: 'Impressum', href: '/impressum' },
-      { label: 'Datenschutz', href: '/datenschutz' },
-      { label: 'AGB', href: '/agb' },
-      { label: 'Widerrufsrecht', href: '/widerruf' },
-    ],
-  },
-};
-
-/**
- * Trust-Badges
- */
-const trustBadges = [
-  { icon: Truck, label: 'Kostenloser Versand ab 50€' },
-  { icon: Shield, label: '2 Jahre Garantie' },
-  { icon: Clock, label: 'Schnelle Lieferung' },
-  { icon: CreditCard, label: 'Sichere Zahlung' },
-];
-
-/**
- * Social Media Links
- */
-const socialLinks = [
-  { icon: Facebook, href: 'https://facebook.com/carvantooo', label: 'Facebook' },
-  { icon: Instagram, href: 'https://instagram.com/carvantooo', label: 'Instagram' },
-  { icon: Youtube, href: 'https://youtube.com/carvantooo', label: 'YouTube' },
-];
-
-/**
- * Footer-Komponente für alle Seiten.
- *
- * @example
- * <Footer />
- */
-export function Footer() {
+export const Footer: FC<FooterProps> = ({ variant = 'default' }) => {
   return (
-    <footer className="border-t bg-neutral-50">
-      {/* Trust Badges */}
-      <div className="border-b bg-white py-6">
-        <div className="container">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {trustBadges.map((badge) => (
-              <div
-                key={badge.label}
-                className="flex items-center gap-3 text-sm"
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-opencarbox-100 text-opencarbox-600">
-                  <badge.icon className="h-5 w-5" />
-                </div>
-                <span className="font-medium text-foreground">{badge.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Main Footer */}
-      <div className="container py-12">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-6">
-          {/* Brand & Newsletter */}
-          <div className="lg:col-span-2">
-            <div className="mb-4">
-              <div className="flex items-center gap-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-opencarbox-500 font-bold text-white">
-                  O
-                </div>
-                <div>
-                  <span className="text-lg font-bold text-opencarbox-600">OpenCarBox</span>
-                  <span className="block text-xs text-muted-foreground">by Carvantooo</span>
-                </div>
-              </div>
-            </div>
-
-            <p className="mb-4 text-sm text-muted-foreground">
-              Weil das Auto zur Familie gehört. Ihr Partner für Ersatzteile,
-              Werkstatt-Services und Fahrzeuge in Österreich.
+    <footer className="bg-slate-900 text-white pt-20 pb-10 overflow-hidden relative">
+      <div className="container-content relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+          {/* Brand Column */}
+          <div className="space-y-6">
+            <Link href="/" className="inline-block">
+              <span className={cn(
+                "text-2xl font-display font-bold tracking-tighter",
+                variant === 'shop' ? "text-carvantooo-500" : "text-opencarbox-500"
+              )}>
+                {variant === 'shop' ? 'CARVANTOOO' : 'OPENCARBOX'}
+              </span>
+            </Link>
+            <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+              Ihr Partner für professionellen KFZ-Service, erstklassigen Autohandel
+              und Premium-Ersatzteile. Weil Qualität keine Kompromisse duldet.
             </p>
-
-            {/* Newsletter */}
-            <div className="mb-6">
-              <p className="mb-2 text-sm font-medium">Newsletter abonnieren</p>
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="E-Mail-Adresse"
-                  className="flex-1"
-                />
-                <Button variant="opencarbox">
-                  <Mail className="h-4 w-4" />
-                </Button>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                10% Rabatt auf Ihre erste Bestellung
-              </p>
-            </div>
-
-            {/* Kontakt */}
-            <div className="space-y-2 text-sm">
-              <a
-                href="tel:+4312345678"
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-              >
-                <Phone className="h-4 w-4" />
-                +43 1 234 567 8
-              </a>
-              <a
-                href="mailto:info@carvantooo.at"
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
-              >
-                <Mail className="h-4 w-4" />
-                info@carvantooo.at
-              </a>
-              <p className="flex items-center gap-2 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                Musterstraße 123, 1010 Wien
-              </p>
-            </div>
-          </div>
-
-          {/* Link Columns */}
-          <div>
-            <h4 className="mb-3 text-sm font-semibold text-foreground">
-              {footerLinks.shop.title}
-            </h4>
-            <ul className="space-y-2">
-              {footerLinks.shop.links.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-carvantooo-600"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="mb-3 text-sm font-semibold text-foreground">
-              {footerLinks.werkstatt.title}
-            </h4>
-            <ul className="space-y-2">
-              {footerLinks.werkstatt.links.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-opencarbox-600"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="mb-3 text-sm font-semibold text-foreground">
-              {footerLinks.service.title}
-            </h4>
-            <ul className="space-y-2">
-              {footerLinks.service.links.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="mb-3 text-sm font-semibold text-foreground">
-              {footerLinks.rechtliches.title}
-            </h4>
-            <ul className="space-y-2">
-              {footerLinks.rechtliches.links.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t bg-neutral-100 py-4">
-        <div className="container">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            {/* Copyright */}
-            <p className="text-center text-xs text-muted-foreground">
-              © {new Date().getFullYear()} OpenCarBox GmbH (Carvantooo). Alle Rechte vorbehalten.
-            </p>
-
-            {/* Social Links */}
             <div className="flex items-center gap-4">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground transition-colors hover:text-foreground"
-                  aria-label={social.label}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
-              ))}
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-carvantooo-500 transition-colors">
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-carvantooo-500 transition-colors">
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-carvantooo-500 transition-colors">
+                <Youtube className="w-5 h-5" />
+              </a>
             </div>
+          </div>
 
-            {/* Payment Icons */}
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground">Zahlungsarten:</span>
-              <div className="flex items-center gap-1.5">
-                {/* Placeholder für Payment Icons */}
-                <div className="h-6 w-10 rounded bg-neutral-200" title="Visa" />
-                <div className="h-6 w-10 rounded bg-neutral-200" title="Mastercard" />
-                <div className="h-6 w-10 rounded bg-neutral-200" title="PayPal" />
-                <div className="h-6 w-10 rounded bg-neutral-200" title="Klarna" />
-              </div>
-            </div>
+          {/* Services Column */}
+          <div>
+            <h3 className="font-display font-bold text-lg mb-6">Services</h3>
+            <ul className="space-y-4">
+              <li>
+                <Link href="/werkstatt" className="text-slate-400 hover:text-white transition-colors text-sm">Inspektion & Wartung</Link>
+              </li>
+              <li>
+                <Link href="/werkstatt" className="text-slate-400 hover:text-white transition-colors text-sm">Reparatur & Instandsetzung</Link>
+              </li>
+              <li>
+                <Link href="/werkstatt" className="text-slate-400 hover:text-white transition-colors text-sm">Reifenservice</Link>
+              </li>
+              <li>
+                <Link href="/fahrzeuge" className="text-slate-400 hover:text-white transition-colors text-sm">Gebrauchtwagenkauf</Link>
+              </li>
+              <li>
+                <Link href="/shop" className="text-slate-400 hover:text-white transition-colors text-sm">Ersatzteile-Shop</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Quick Links Column */}
+          <div>
+            <h3 className="font-display font-bold text-lg mb-6">Quick Links</h3>
+            <ul className="space-y-4">
+              <li>
+                <Link href="/uber-uns" className="text-slate-400 hover:text-white transition-colors text-sm">Über uns</Link>
+              </li>
+              <li>
+                <Link href="/kontakt" className="text-slate-400 hover:text-white transition-colors text-sm">Kontakt</Link>
+              </li>
+              <li>
+                <Link href="/karriere" className="text-slate-400 hover:text-white transition-colors text-sm">Karriere</Link>
+              </li>
+              <li>
+                <Link href="/impressum" className="text-slate-400 hover:text-white transition-colors text-sm">Impressum</Link>
+              </li>
+              <li>
+                <Link href="/datenschutz" className="text-slate-400 hover:text-white transition-colors text-sm">Datenschutz</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Column */}
+          <div>
+            <h3 className="font-display font-bold text-lg mb-6">Kontakt</h3>
+            <ul className="space-y-4">
+              <li className="flex gap-3">
+                <MapPin className="w-5 h-5 text-carvantooo-500 shrink-0" />
+                <span className="text-slate-400 text-sm">Rennweg 76, 1030 Wien,<br />Österreich</span>
+              </li>
+              <li className="flex gap-3">
+                <Phone className="w-5 h-5 text-carvantooo-500 shrink-0" />
+                <a href="tel:+43179813410" className="text-slate-400 hover:text-white transition-colors text-sm">+43 1 798 134 10</a>
+              </li>
+              <li className="flex gap-3">
+                <Mail className="w-5 h-5 text-carvantooo-500 shrink-0" />
+                <a href="mailto:office@opencarbox.at" className="text-slate-400 hover:text-white transition-colors text-sm">office@opencarbox.at</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-10 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-slate-500 text-xs">
+            © {new Date().getFullYear()} OpenCarBox GmbH. Alle Rechte vorbehalten.
+          </p>
+          <div className="flex items-center gap-8">
+            <span className="text-slate-600 text-[10px] font-mono">FN 534799 w</span>
+            <span className="text-slate-600 text-[10px] font-mono">ATU75630015</span>
           </div>
         </div>
       </div>
+
+      {/* Background Decorative Element */}
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-carvantooo-500/10 rounded-full blur-3xl pointer-events-none" />
     </footer>
   );
-}
+};

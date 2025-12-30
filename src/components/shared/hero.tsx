@@ -1,223 +1,123 @@
-/**
- * Hero Component - OpenCarBox & Carvantooo
- *
- * Premium Hero-Section für Landing Pages mit Brand-Varianten.
- * Unterstützt verschiedene Layouts und Animationen.
- *
- * @module components/shared/hero
- */
-
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import * as React from 'react';
+import { motion } from 'framer-motion';
+import { CheckCircle2, ChevronRight, Search } from 'lucide-react';
+import { type FC } from 'react';
 
 /**
- * Hero Props Interface
+ * Premium Hero Komponente für die Landing Page
  */
-interface HeroProps {
-  /**
-   * Hauptüberschrift
-   */
-  title: string;
-  /**
-   * Hervorgehobener Teil des Titels
-   */
-  titleHighlight?: string;
-  /**
-   * Untertitel / Beschreibung
-   */
-  subtitle?: string;
-  /**
-   * Brand-Variante für Farben
-   */
-  variant?: 'carvantooo' | 'opencarbox';
-  /**
-   * Primärer CTA Button
-   */
-  primaryCta?: {
-    label: string;
-    href: string;
-  };
-  /**
-   * Sekundärer CTA Button
-   */
-  secondaryCta?: {
-    label: string;
-    href: string;
-  };
-  /**
-   * Hintergrundbild URL
-   */
-  backgroundImage?: string;
-  /**
-   * Overlay-Stärke (0-100)
-   */
-  overlayOpacity?: number;
-  /**
-   * Layout-Variante
-   */
-  layout?: 'centered' | 'left' | 'split';
-  /**
-   * Zusätzliche CSS-Klassen
-   */
-  className?: string;
-  /**
-   * Children für custom content
-   */
-  children?: React.ReactNode;
-}
-
-/**
- * Hero Component
- */
-export function Hero({
-  title,
-  titleHighlight,
-  subtitle,
-  variant = 'opencarbox',
-  primaryCta,
-  secondaryCta,
-  backgroundImage,
-  overlayOpacity = 60,
-  layout = 'centered',
-  className,
-  children,
-}: HeroProps) {
-  const isCarvantooo = variant === 'carvantooo';
-
+export const Hero: FC = () => {
   return (
-    <section
-      className={cn(
-        'relative min-h-[600px] flex items-center overflow-hidden',
-        layout === 'centered' && 'justify-center text-center',
-        layout === 'left' && 'justify-start',
-        className
-      )}
-    >
-      {/* Background */}
-      {backgroundImage ? (
-        <>
-          <Image
-            src={backgroundImage}
-            alt=""
-            fill
-            className="object-cover"
-            priority
-          />
-          <div
-            className="absolute inset-0 bg-slate-900"
-            style={{ opacity: overlayOpacity / 100 }}
-          />
-        </>
-      ) : (
-        <div
-          className={cn(
-            'absolute inset-0',
-            isCarvantooo
-              ? 'bg-gradient-to-br from-carvantooo-600 via-carvantooo-500 to-carvantooo-700'
-              : 'bg-gradient-to-br from-opencarbox-600 via-opencarbox-500 to-opencarbox-700'
-          )}
-        />
-      )}
+    <section className="relative min-h-[90vh] flex items-center justify-center bg-mesh-red texture-noise overflow-hidden">
+      {/* Animierte Hintergrund-Elemente */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+        className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background"
+      />
 
-      {/* Decorative Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div
-          className={cn(
-            'absolute -top-1/2 -right-1/4 w-[800px] h-[800px] rounded-full opacity-20',
-            isCarvantooo ? 'bg-carvantooo-400' : 'bg-opencarbox-400'
-          )}
-        />
-        <div
-          className={cn(
-            'absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] rounded-full opacity-10',
-            isCarvantooo ? 'bg-carvantooo-300' : 'bg-opencarbox-300'
-          )}
-        />
-      </div>
-
-      {/* Content */}
-      <div
-        className={cn(
-          'relative z-10 container mx-auto px-4 py-20',
-          layout === 'centered' && 'max-w-4xl',
-          layout === 'left' && 'max-w-3xl'
-        )}
-      >
-        <h1
-          className={cn(
-            'text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6',
-            'leading-tight'
-          )}
+      <div className="relative z-10 container-content text-center pt-20">
+        {/* Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mb-8"
         >
-          {title}
-          {titleHighlight && (
-            <>
-              <br />
-              <span
-                className={cn(
-                  'bg-clip-text text-transparent',
-                  isCarvantooo
-                    ? 'bg-gradient-to-r from-carvantooo-200 to-white'
-                    : 'bg-gradient-to-r from-opencarbox-200 to-white'
-                )}
-              >
-                {titleHighlight}
-              </span>
-            </>
-          )}
-        </h1>
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-slate-800 text-sm font-medium">
+            <span className="w-2 h-2 rounded-full bg-carvantooo-500 animate-pulse" />
+            Willkommen bei Ihrer Automotive Premium Plattform
+          </span>
+        </motion.div>
 
-        {subtitle && (
-          <p className="text-lg md:text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            {subtitle}
-          </p>
-        )}
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="text-5xl md:text-7xl lg:text-8xl font-display font-extrabold text-slate-900 mb-8 tracking-tighter"
+        >
+          <span className="text-gradient-red">OpenCarBox</span>
+          <br className="sm:hidden" />
+          <span className="text-slate-400 mx-4 hidden sm:inline">&</span>
+          <br className="sm:hidden" />
+          <span className="text-gradient-blue">Carvantooo</span>
+        </motion.h1>
 
-        {/* CTAs */}
-        {(primaryCta || secondaryCta) && (
-          <div
-            className={cn(
-              'flex flex-wrap gap-4',
-              layout === 'centered' && 'justify-center'
-            )}
-          >
-            {primaryCta && (
-              <Button
-                asChild
-                variant={isCarvantooo ? 'primary-red' : 'primary-blue'}
-                size="lg"
-                className="group"
-              >
-                <Link href={primaryCta.href}>
-                  {primaryCta.label}
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-                </Link>
+        {/* Subheadline */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+          className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto mb-12 leading-relaxed"
+        >
+          Ihr Partner für{' '}
+          <strong className="text-opencarbox-600">KFZ-Service</strong>,{' '}
+          <strong className="text-opencarbox-600">Autohandel</strong> und{' '}
+          <strong className="text-carvantooo-600">Premium Autoteile</strong>.
+          <br />
+          <span className="text-slate-500 italic">"Weil das Auto zur Familie gehört."</span>
+        </motion.p>
+
+        {/* Fahrzeug-Finder Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+          className="card-glass max-w-3xl mx-auto p-2 sm:p-3 mb-12 shadow-2xl relative group"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-carvantooo-500/5 to-opencarbox-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+
+          <div className="bg-white/90 backdrop-blur-sm rounded-xl p-6 sm:p-8 flex flex-col gap-6 relative">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <Search className="w-5 h-5 text-carvantooo-500" />
+                Fahrzeugspezifische Suche
+              </h2>
+              <div className="flex items-center gap-2 text-xs text-slate-400 font-medium bg-slate-50 px-3 py-1 rounded-full">
+                <CheckCircle2 className="w-3 h-3 text-success" />
+                HSN/TSN Unterstützung
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="HSN/TSN oder Kennzeichen..."
+                  className="w-full h-14 pl-5 pr-4 rounded-xl border border-slate-200 focus:border-carvantooo-500 focus:ring-4 focus:ring-carvantooo-500/10 outline-none transition-all text-lg font-medium"
+                />
+              </div>
+              <Button className="h-14 px-10 rounded-xl btn-gradient-red text-lg font-bold shadow-lg shadow-carvantooo-500/20 hover:scale-[1.02] active:scale-[0.98]">
+                Teile finden
+                <ChevronRight className="ml-2 w-5 h-5" />
               </Button>
-            )}
-            {secondaryCta && (
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-              >
-                <Link href={secondaryCta.href}>{secondaryCta.label}</Link>
-              </Button>
-            )}
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-widest font-bold text-slate-400">
+              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-slate-300" /> Über 1 Mio. Teile</span>
+              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-slate-300" /> 24h Express</span>
+              <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-slate-300" /> Bestpreis Garantie</span>
+            </div>
           </div>
-        )}
-
-        {/* Custom Children */}
-        {children}
+        </motion.div>
       </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2"
+      >
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-[10px] uppercase tracking-widest font-bold text-slate-400">Entdecken</span>
+          <div className="w-[1px] h-12 bg-gradient-to-b from-slate-300 to-transparent" />
+        </div>
+      </motion.div>
     </section>
   );
-}
-
-export default Hero;
+};

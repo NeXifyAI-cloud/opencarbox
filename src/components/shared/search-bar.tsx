@@ -231,7 +231,7 @@ export function SearchBar({
       {/* Such-Button */}
       <Button
         type="button"
-        variant={variant === 'carvantooo' ? 'carvantooo' : variant === 'opencarbox' ? 'opencarbox' : 'default'}
+        variant={variant === 'carvantooo' ? 'primary-red' : variant === 'opencarbox' ? 'primary-blue' : 'secondary'}
         size={size}
         onClick={isHsnMode ? handleHsnTsnSearch : handleSearch}
         className="m-1 shrink-0"

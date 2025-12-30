@@ -56,16 +56,6 @@ export interface BadgeProps
 
 /**
  * Badge-Komponente für Status-Anzeigen und Kategorien.
- *
- * @example
- * <Badge>Standard</Badge>
- * <Badge variant="success">Verfügbar</Badge>
- * <Badge variant="warning">Wenige auf Lager</Badge>
- * <Badge variant="destructive">Ausverkauft</Badge>
- *
- * @example
- * <Badge variant="carvantooo">Shop</Badge>
- * <Badge variant="opencarbox">Werkstatt</Badge>
  */
 function Badge({ className, variant, icon, children, ...props }: BadgeProps) {
   return (
@@ -77,4 +67,3 @@ function Badge({ className, variant, icon, children, ...props }: BadgeProps) {
 }
 
 export { Badge, badgeVariants };
-

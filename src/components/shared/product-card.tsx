@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Star, ChevronRight } from 'lucide-react';

@@ -59,6 +59,13 @@ export const companyConfig = {
     euUrl: "https://ec.europa.eu/consumers/odr/",
     ombudsmann: "www.ombudsmann.at",
     oeamtc: "www.oeamtc.at"
+  },
+
+  social: {
+    facebook: "https://facebook.com/opencarbox",
+    instagram: "https://instagram.com/opencarbox",
+    twitter: "https://twitter.com/opencarbox",
+    youtube: "https://youtube.com/@opencarbox"
   }
 } as const;
 

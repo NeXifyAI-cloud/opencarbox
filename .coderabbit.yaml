@@ -1,0 +1,69 @@
+# CodeRabbit Configuration for OpenCarBox & Carvantooo
+# https://coderabbit.ai/docs/configuration
+
+language: de-DE
+
+reviews:
+  # Automatisches Review bei PRs aktivieren
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  path_instructions:
+    - path: "src/**/*.tsx"
+      instructions: |
+        - Prüfe auf TypeScript strict mode compliance
+        - Verwende @/ Import-Aliases (keine relativen Pfade wie ../../../)
+        - Tailwind-Klassen müssen dem 8px Grid-System folgen
+        - Keine Inline-Styles, nur Tailwind
+        - Deutsche UI-Texte, englischer Code
+    - path: "src/components/**"
+      instructions: |
+        - Komponenten müssen exportiert werden
+        - Props müssen typisiert sein (interface/type)
+        - Keine any-Types erlaubt
+        - Accessibility: aria-labels für interaktive Elemente
+    - path: "src/app/**"
+      instructions: |
+        - Next.js App Router Pattern befolgen
+        - Server Components sind Standard
+        - 'use client' nur wenn nötig (Interaktivität)
+        - SEO Metadata in generateMetadata() oder config
+    - path: "src/lib/supabase/**"
+      instructions: |
+        - Verwende Supabase Client, NICHT Prisma direkt
+        - RLS (Row Level Security) beachten
+        - Service Role Key nur server-seitig
+    - path: "prisma/**"
+      instructions: |
+        - Schema-only, Queries über Supabase Client
+        - Migrations mit db:push testen
+    - path: "scripts/**"
+      instructions: |
+        - Oracle-First Protocol beachten
+        - Memory-System für Learnings nutzen
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - main
+      - develop
+
+chat:
+  auto_reply: true
+
+# Ignorierte Dateien
+ignore:
+  - "node_modules/**"
+  - "dist/**"
+  - ".next/**"
+  - "coverage/**"
+  - "*.lock"
+  - "*.log"
+  - "frontend/**"  # Legacy React CRA - nur Referenz
+
+# Spezielle Regeln
+early_access: false
+enable_free_tier: true

@@ -1,4 +1,3 @@
-import { type FC } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Clock, ChevronRight, CheckCircle2 } from 'lucide-react';
@@ -26,7 +25,6 @@ interface ServiceCardProps {
  * Fokus auf Vertrauen, Professionalität und klare Informationen.
  */
 export const ServiceCard = ({
-  id,
   name,
   slug,
   description,

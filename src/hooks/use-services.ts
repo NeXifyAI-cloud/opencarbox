@@ -1,8 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase/client';
-import type { Database } from '@/types/supabase';
-
-type Service = Database['public']['Tables']['services']['Row'];
 
 /**
  * Hook zum Laden von Services aus Supabase

@@ -1,8 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase/client';
-import type { Database } from '@/types/supabase';
-
-type Product = Database['public']['Tables']['products']['Row'];
 
 /**
  * Hook zum Laden von Produkten aus Supabase

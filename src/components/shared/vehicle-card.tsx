@@ -1,7 +1,6 @@
-import { type FC } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Calendar, Fuel, Gauge, Zap, ChevronRight } from 'lucide-react';
+import { Gauge, Zap, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -29,11 +28,9 @@ interface VehicleCardProps {
  * Fokus auf technische Daten und hochwertige Präsentation.
  */
 export const VehicleCard = ({
-  id,
   title,
   slug,
   make,
-  model,
   year,
   mileage,
   price,

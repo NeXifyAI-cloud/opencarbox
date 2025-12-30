@@ -241,7 +241,7 @@ export function Footer() {
               © {currentYear} {companyConfig.legalName}. Alle Rechte vorbehalten.
             </p>
             <p className="text-gray-500 text-xs">
-              {companyConfig.legal.vatId} | {companyConfig.legal.registry}
+              {companyConfig.legal.uid} | {companyConfig.legal.registerNumber}
             </p>
           </div>
         </div>

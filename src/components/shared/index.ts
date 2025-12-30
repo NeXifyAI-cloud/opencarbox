@@ -16,6 +16,9 @@ export { ProductCard } from './product-card';
 export { ServiceCard } from './service-card';
 
 // Preis & Bewertung
-export { PriceDisplay, PriceCompact } from './price-display';
+export { PriceCompact, PriceDisplay } from './price-display';
 export { Rating, RatingCompact } from './rating';
 
+// Landing Page Components
+export { CategoryOverview } from './category-overview';
+export { Hero } from './hero';

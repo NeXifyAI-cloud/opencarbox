@@ -1,20 +1,18 @@
-import * as React from 'react';
-import Link from 'next/link';
-import {
-  Facebook,
-  Instagram,
-  Youtube,
-  Mail,
-  Phone,
-  MapPin,
-  CreditCard,
-  Truck,
-  Shield,
-  Clock,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+    Clock,
+    CreditCard,
+    Facebook,
+    Instagram,
+    Mail,
+    MapPin,
+    Phone,
+    Shield,
+    Truck,
+    Youtube,
+} from 'lucide-react';
+import Link from 'next/link';
 
 /**
  * Footer-Link Gruppen
@@ -296,4 +294,3 @@ export function Footer() {
     </footer>
   );
 }
-

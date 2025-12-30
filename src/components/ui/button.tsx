@@ -1,17 +1,17 @@
 /**
  * Button Component - OpenCarBox & Carvantooo
- * 
+ *
  * Premium Button mit Brand-Varianten und Loading-States.
  * Basiert auf Radix Slot für flexible Composition.
- * 
+ *
  * @module components/ui/button
  */
 
-import * as React from 'react';
+import { cn } from '@/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { cn } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import * as React from 'react';
 
 /**
  * Button Varianten Definition
@@ -26,14 +26,22 @@ const buttonVariants = cva(
           'bg-carvantooo-500 text-white hover:bg-carvantooo-600 active:bg-carvantooo-700 shadow-sm hover:shadow-md hover:shadow-carvantooo-glow',
         'gradient-red':
           'bg-gradient-carvantooo text-white hover:opacity-90 shadow-md hover:shadow-lg hover:shadow-carvantooo-glow',
-        
+        // Carvantooo Alias (für direkte Brand-Verwendung)
+        carvantooo:
+          'bg-carvantooo-500 text-white hover:bg-carvantooo-600 active:bg-carvantooo-700 shadow-sm hover:shadow-md hover:shadow-carvantooo-glow',
+
         // OpenCarBox Blau (Services)
         'primary-blue':
           'bg-opencarbox-500 text-white hover:bg-opencarbox-600 active:bg-opencarbox-700 shadow-sm hover:shadow-md hover:shadow-opencarbox-glow',
         'gradient-blue':
           'bg-gradient-opencarbox text-white hover:opacity-90 shadow-md hover:shadow-lg hover:shadow-opencarbox-glow',
-        
+        // OpenCarBox Alias (für direkte Brand-Verwendung)
+        opencarbox:
+          'bg-opencarbox-500 text-white hover:bg-opencarbox-600 active:bg-opencarbox-700 shadow-sm hover:shadow-md hover:shadow-opencarbox-glow',
+
         // Neutrale Varianten
+        default:
+          'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-700 shadow-sm',
         secondary:
           'bg-slate-100 text-slate-900 hover:bg-slate-200 active:bg-slate-300',
         outline:
@@ -86,24 +94,24 @@ export interface ButtonProps
 
 /**
  * Button Komponente
- * 
+ *
  * @example
  * ```tsx
  * // Carvantooo Shop Button
  * <Button variant="primary-red">In den Warenkorb</Button>
  * <Button variant="gradient-red" size="lg">Jetzt kaufen</Button>
- * 
+ *
  * // OpenCarBox Service Button
  * <Button variant="primary-blue">Termin buchen</Button>
  * <Button variant="gradient-blue" size="lg">Service anfragen</Button>
- * 
+ *
  * // Mit Loading State
  * <Button loading>Wird geladen...</Button>
- * 
+ *
  * // Mit Icons
  * <Button leftIcon={<ShoppingCart />}>Warenkorb</Button>
  * <Button rightIcon={<ArrowRight />}>Weiter</Button>
- * 
+ *
  * // Als Link
  * <Button asChild>
  *   <Link href="/shop">Zum Shop</Link>
@@ -127,7 +135,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const Comp = asChild ? Slot : 'button';
-    
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -147,4 +155,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button';
 
 export { Button, buttonVariants };
-

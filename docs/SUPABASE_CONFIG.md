@@ -3,10 +3,11 @@
 > **WICHTIGE DOKUMENTATION**
 > Konfigurationshinweise für Supabase. **KEINE SECRETS HIER!**
 
-**Projekt:** OpenCarBox & Carvantooo  
-**Supabase Projekt-ID:** `twkdrljfjkbypyhdnhyw`  
-**Region:** EU Central (Frankfurt)  
-**Aktualisiert:** 2024-12-05
+**Projekt:** OpenCarBox & Carvantooo
+**Supabase Projekt-ID:** `acclrhzzwdutbigxsxyq`
+**Region:** EU Central (Frankfurt)
+**Dashboard:** https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq
+**Aktualisiert:** 2024-12-30
 
 ---
 
@@ -17,9 +18,8 @@
 Diese Keys sind sicher für den Browser und können in `.env.local` verwendet werden:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://twkdrljfjkbypyhdnhyw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<Hole aus Supabase Dashboard → Settings → API>
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
+NEXT_PUBLIC_SUPABASE_URL=https://acclrhzzwdutbigxsxyq.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjY2xyaHp6d2R1dGJpZ3hzeHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0NzA0MTgsImV4cCI6MjA4MjA0NjQxOH0.EipGXl9SLxMcsMnnmvnN8dBqiM3j3CoIen1GrXas_NE
 ```
 
 ### Private Keys (NUR Server-side!)
@@ -28,7 +28,15 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<Hole aus Supabase Dashboard → Settings �
 
 ```env
 SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
-SUPABASE_SECRET_KEY=<Hole aus Supabase Dashboard → Settings → API>
+```
+
+### Access Token (für MCP Server & CLI)
+
+Für die Supabase CLI und MCP-Integration:
+
+```env
+SUPABASE_ACCESS_TOKEN=sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb
+MCP_SERVER_URL=https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage
 ```
 
 ---
@@ -59,7 +67,7 @@ Für Migrationen und Admin-Aufgaben:
 POSTGRES_URL_NON_POOLING=postgres://postgres.<PROJECT_REF>:<PASSWORD>@aws-1-eu-central-2.pooler.supabase.com:5432/postgres?sslmode=require
 ```
 
-**Hinweis:** Ersetze `<PROJECT_REF>` mit `twkdrljfjkbypyhdnhyw` und `<PASSWORD>` mit dem echten Passwort aus Supabase Dashboard → Settings → Database.
+**Hinweis:** Projekt-Ref ist `acclrhzzwdutbigxsxyq`. Passwort aus Supabase Dashboard → Settings → Database.
 
 ---
 
@@ -157,7 +165,7 @@ export async function createOrder(orderData: OrderInput) {
     .insert(orderData)
     .select()
     .single();
-  
+
   return { data, error };
 }
 ```
@@ -180,10 +188,10 @@ Migrationen werden automatisch über MCP angewendet, wenn der MCP-Server korrekt
 
 ## 🔗 Links
 
-- **Dashboard:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw
-- **API Docs:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw/api
-- **Table Editor:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw/editor
-- **Storage:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw/storage/buckets
+- **Dashboard:** https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq
+- **API Docs:** https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq/api
+- **Table Editor:** https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq/editor
+- **Storage:** https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq/storage/buckets
 
 ---
 

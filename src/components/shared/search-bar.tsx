@@ -1,11 +1,10 @@
 'use client';
 
-import * as React from 'react';
-import { Search, X, Car } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/hooks';
+import { cn } from '@/lib/utils';
+import { Car, Search, X } from 'lucide-react';
+import * as React from 'react';
 
 /**
  * Props für die SearchBar-Komponente
@@ -243,4 +242,3 @@ export function SearchBar({
     </div>
   );
 }
-

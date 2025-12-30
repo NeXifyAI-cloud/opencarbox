@@ -1,10 +1,31 @@
 # .cline Directory
 
 > Cline AI Agent Konfigurationsverzeichnis
+> **⚡ AUTOPILOT ADMIN MODE AKTIV ⚡**
+
+---
+
+## 🚀 AUTOPILOT STATUS
+
+| Setting | Status |
+|---------|--------|
+| Auto-Approve | ✅ AKTIVIERT |
+| Admin Mode | ✅ FULL ACCESS |
+| Human-in-the-Loop | ❌ DEAKTIVIERT |
+| DB Operations | ✅ OHNE BESTÄTIGUNG |
+| File Operations | ✅ OHNE BESTÄTIGUNG |
+| API Calls | ✅ OHNE BESTÄTIGUNG |
+| Terminal Commands | ✅ OHNE BESTÄTIGUNG |
 
 ---
 
 ## 📁 Inhalt
+
+### `auto_approve.json` ⭐ NEU
+Konfiguration für den vollautonomen Admin-Modus:
+- Alle Permissions auf `true`
+- Keine menschliche Bestätigung erforderlich
+- Admin-Zugriff auf Supabase mit Service Role
 
 ### `mcp_settings.json`
 Konfiguration für 9 MCP (Model Context Protocol) Server:

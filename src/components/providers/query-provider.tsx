@@ -1,17 +1,16 @@
 /**
  * Query Provider - TanStack Query
- * 
+ *
  * Stellt QueryClient für Server-State-Management bereit.
  * Konfiguriert Caching-Strategien und DevTools.
- * 
+ *
  * @module components/providers/query-provider
  */
 
 'use client';
 
-import * as React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import * as React from 'react';
 
 /**
  * Query Provider Props
@@ -22,12 +21,12 @@ interface QueryProviderProps {
 
 /**
  * Query Provider Komponente
- * 
+ *
  * Erstellt und konfiguriert QueryClient mit optimierten Settings:
  * - Produkte: 5min Cache, 2min Stale Time
  * - Kategorien: 30min Cache, 10min Stale Time
  * - Bestellungen: Immer fresh
- * 
+ *
  * @example
  * ```tsx
  * <QueryProvider>
@@ -59,11 +58,6 @@ export function QueryProvider({ children }: QueryProviderProps) {
   return (
     <QueryClientProvider client={queryClient}>
       {children}
-      {/* DevTools nur in Development */}
-      {process.env.NODE_ENV === 'development' && (
-        <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
-      )}
     </QueryClientProvider>
   );
 }
-

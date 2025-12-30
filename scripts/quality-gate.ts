@@ -2,7 +2,7 @@
 
 /**
  * Quality-Gate Script
- * 
+ *
  * Führt umfassende Qualitätsprüfungen durch:
  * - TypeScript Typ-Checks
  * - Zirkuläre Abhängigkeiten
@@ -10,19 +10,18 @@
  * - Fehlende JSDoc-Kommentare
  * - Code-Duplikation (Basic)
  * - Projekt-Standards-Compliance
- * 
+ *
  * Ausführung: npm run quality-gate
- * 
+ *
  * @see project_specs.md - Abschnitt 6
  */
 
+import { execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { execSync } from 'child_process';
 
 // Konfiguration
 const SRC_DIR = path.join(process.cwd(), 'src');
-const DOCS_DIR = path.join(process.cwd(), 'docs');
 
 interface QualityIssue {
   type: 'error' | 'warning' | 'info';
@@ -39,20 +38,20 @@ const issues: QualityIssue[] = [];
  */
 function checkTypeScript(): void {
   console.log('🔍 Prüfe TypeScript...');
-  
+
   try {
     execSync('npx tsc --noEmit', { stdio: 'pipe' });
     console.log('  ✅ Keine TypeScript-Fehler');
   } catch (error: any) {
     const output = error.stdout?.toString() || error.stderr?.toString() || '';
     const errorCount = (output.match(/error TS/g) || []).length;
-    
+
     issues.push({
       type: 'error',
       category: 'TypeScript',
       message: `${errorCount} TypeScript-Fehler gefunden`,
     });
-    
+
     console.log(`  ❌ ${errorCount} TypeScript-Fehler`);
   }
 }
@@ -62,26 +61,26 @@ function checkTypeScript(): void {
  */
 function checkConsoleLogs(): void {
   console.log('🔍 Prüfe Console-Logs...');
-  
+
   if (!fs.existsSync(SRC_DIR)) {
     console.log('  ⚠️  src/ Verzeichnis nicht gefunden');
     return;
   }
-  
+
   let consoleLogCount = 0;
-  
+
   function scanDirectory(dir: string): void {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
-      
+
       if (entry.isDirectory() && !entry.name.includes('node_modules')) {
         scanDirectory(fullPath);
       } else if (entry.name.match(/\.(ts|tsx|js|jsx)$/)) {
         const content = fs.readFileSync(fullPath, 'utf-8');
         const matches = content.match(/console\.(log|warn|error|debug|info)\(/g);
-        
+
         if (matches) {
           consoleLogCount += matches.length;
           issues.push({
@@ -94,9 +93,9 @@ function checkConsoleLogs(): void {
       }
     }
   }
-  
+
   scanDirectory(SRC_DIR);
-  
+
   if (consoleLogCount === 0) {
     console.log('  ✅ Keine console-Statements');
   } else {
@@ -109,16 +108,16 @@ function checkConsoleLogs(): void {
  */
 function checkDocumentation(): void {
   console.log('🔍 Prüfe Dokumentation...');
-  
+
   const requiredDocs = [
     'docs/tasks/master_plan.md',
     'docs/architecture/system-overview.md',
     'docs/design-system/colors.md',
     'project_specs.md',
   ];
-  
+
   let missingCount = 0;
-  
+
   for (const docPath of requiredDocs) {
     const fullPath = path.join(process.cwd(), docPath);
     if (!fs.existsSync(fullPath)) {
@@ -131,7 +130,7 @@ function checkDocumentation(): void {
       });
     }
   }
-  
+
   if (missingCount === 0) {
     console.log('  ✅ Alle Pflicht-Dokumente vorhanden');
   } else {
@@ -144,27 +143,27 @@ function checkDocumentation(): void {
  */
 function checkAnyTypes(): void {
   console.log('🔍 Prüfe "any" Types...');
-  
+
   if (!fs.existsSync(SRC_DIR)) {
     console.log('  ⚠️  src/ Verzeichnis nicht gefunden');
     return;
   }
-  
+
   let anyCount = 0;
-  
+
   function scanDirectory(dir: string): void {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
-      
+
       if (entry.isDirectory() && !entry.name.includes('node_modules')) {
         scanDirectory(fullPath);
       } else if (entry.name.match(/\.(ts|tsx)$/)) {
         const content = fs.readFileSync(fullPath, 'utf-8');
         // Suche nach : any, as any, <any>, any[] etc.
         const matches = content.match(/:\s*any\b|as\s+any\b|<any>|any\[\]/g);
-        
+
         if (matches) {
           anyCount += matches.length;
           issues.push({
@@ -177,9 +176,9 @@ function checkAnyTypes(): void {
       }
     }
   }
-  
+
   scanDirectory(SRC_DIR);
-  
+
   if (anyCount === 0) {
     console.log('  ✅ Keine "any" Types');
   } else {
@@ -192,35 +191,35 @@ function checkAnyTypes(): void {
  */
 function checkFunctionLength(): void {
   console.log('🔍 Prüfe Funktionslängen...');
-  
+
   if (!fs.existsSync(SRC_DIR)) {
     console.log('  ⚠️  src/ Verzeichnis nicht gefunden');
     return;
   }
-  
+
   let largeFunctionCount = 0;
   const MAX_LINES = 50;
-  
+
   function scanDirectory(dir: string): void {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
-    
+
     for (const entry of entries) {
       const fullPath = path.join(dir, entry.name);
-      
+
       if (entry.isDirectory() && !entry.name.includes('node_modules')) {
         scanDirectory(fullPath);
       } else if (entry.name.match(/\.(ts|tsx|js|jsx)$/)) {
         const content = fs.readFileSync(fullPath, 'utf-8');
-        
+
         // Einfache Heuristik: Zähle Zeilen zwischen function/const und schließender Klammer
         // Genauere Analyse würde einen Parser erfordern
         const functionMatches = content.match(/(function\s+\w+|const\s+\w+\s*=\s*(?:async\s*)?\([^)]*\)\s*=>|const\s+\w+\s*=\s*(?:async\s*)?function)/g);
-        
+
         if (functionMatches && functionMatches.length > 0) {
           // Vereinfachte Prüfung: Wenn Datei sehr lang ist, warnen
           const lines = content.split('\n').length;
           const avgLinesPerFunction = lines / functionMatches.length;
-          
+
           if (avgLinesPerFunction > MAX_LINES) {
             largeFunctionCount++;
             issues.push({
@@ -234,9 +233,9 @@ function checkFunctionLength(): void {
       }
     }
   }
-  
+
   scanDirectory(SRC_DIR);
-  
+
   if (largeFunctionCount === 0) {
     console.log('  ✅ Alle Funktionen im Rahmen');
   } else {
@@ -251,31 +250,31 @@ function generateSummary(): void {
   console.log('\n' + '═'.repeat(60));
   console.log('📊 QUALITY-GATE ZUSAMMENFASSUNG');
   console.log('═'.repeat(60) + '\n');
-  
+
   const errors = issues.filter(i => i.type === 'error');
   const warnings = issues.filter(i => i.type === 'warning');
   const infos = issues.filter(i => i.type === 'info');
-  
+
   console.log(`❌ Fehler:    ${errors.length}`);
   console.log(`⚠️  Warnungen: ${warnings.length}`);
   console.log(`ℹ️  Hinweise:  ${infos.length}`);
-  
+
   if (errors.length > 0) {
     console.log('\n📛 FEHLER (müssen behoben werden):');
     for (const error of errors) {
       console.log(`   • [${error.category}] ${error.file || ''}: ${error.message}`);
     }
   }
-  
+
   if (warnings.length > 0) {
     console.log('\n⚠️  WARNUNGEN (sollten behoben werden):');
     for (const warning of warnings) {
       console.log(`   • [${warning.category}] ${warning.file || ''}: ${warning.message}`);
     }
   }
-  
+
   console.log('\n' + '═'.repeat(60));
-  
+
   if (errors.length > 0) {
     console.log('❌ QUALITY-GATE: NICHT BESTANDEN');
     process.exit(1);
@@ -294,16 +293,15 @@ function generateSummary(): void {
 function main(): void {
   console.log('\n🚀 Starte Quality-Gate Prüfungen...\n');
   console.log('─'.repeat(60) + '\n');
-  
+
   checkTypeScript();
   checkConsoleLogs();
   checkAnyTypes();
   checkFunctionLength();
   checkDocumentation();
-  
+
   generateSummary();
 }
 
 // Ausführen
 main();
-

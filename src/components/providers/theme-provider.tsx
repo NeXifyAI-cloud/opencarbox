@@ -1,23 +1,27 @@
 /**
  * Theme Provider - Dark Mode Support
- * 
+ *
  * Ermöglicht System/Light/Dark Theme-Umschaltung.
  * Nutzt next-themes für persistente Theme-Auswahl.
- * 
+ *
  * @module components/providers/theme-provider
  */
 
 'use client';
 
+import { ThemeProvider as NextThemesProvider, type ThemeProviderProps as NextThemeProviderProps } from 'next-themes';
 import * as React from 'react';
-import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import { type ThemeProviderProps } from 'next-themes/dist/types';
+
+/** Theme Provider Props Interface */
+type ThemeProviderProps = NextThemeProviderProps & {
+  children: React.ReactNode;
+}
 
 /**
  * Theme Provider Komponente
- * 
+ *
  * Wrapper für next-themes ThemeProvider mit optimierten Einstellungen.
- * 
+ *
  * @example
  * ```tsx
  * <ThemeProvider>
@@ -38,4 +42,3 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
     </NextThemesProvider>
   );
 }
-

@@ -1,6 +1,7 @@
 # 🐛 Bug-Fixes - Supabase Migration
 
-**Datum:** 2024-12-05  
+**Datum:** 2024-12-05 (Initial) | 2024-12-30 (Update)
+**Aktuelles Projekt:** acclrhzzwdutbigxsxyq
 **Status:** ✅ ALLE BUGS BEHOBEN
 
 ---
@@ -11,23 +12,21 @@
 Dokumentation, Migration-Files und Konfigurationen verwendeten verschiedene Projekt-IDs, was zu Verwirrung führen konnte.
 
 ### Lösung
-- ✅ Alle Dateien auf `twkdrljfjkbypyhdnhyw` (bezahltes Projekt) vereinheitlicht
+- ✅ Alle Dateien auf `acclrhzzwdutbigxsxyq` (Production) vereinheitlicht
 - ✅ `supabase/migrations/001_initial_schema.sql` aktualisiert
 - ✅ `docs/SETUP_STATUS.md` korrigiert
 - ✅ `STATUS_REPORT.md` korrigiert
 
-### Verbleibend
-- ⚠️ MCP-Server Konfiguration (`c:\Users\pcour\.cursor\mcp.json`) muss manuell aktualisiert werden:
-  ```json
-  {
-    "mcpServers": {
-      "supabase": {
-        "url": "https://mcp.supabase.com/mcp?project_ref=twkdrljfjkbypyhdnhyw&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
-      }
+### MCP Server Konfiguration
+```json
+{
+  "mcpServers": {
+    "supabase": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage"
     }
   }
-  ```
-  Dann Cursor neustarten!
+}
+```
 
 ---
 
@@ -94,22 +93,16 @@ npm install schlug fehl wegen Peer-Dependency-Konflikt:
 
 ---
 
-## 📋 Checkliste - Was noch zu tun ist
+## 📋 Konfiguration
 
-### Du musst manuell:
+### Aktuelle Werte (.env):
 
-1. **MCP Server aktualisieren:**
-   - Öffne: `c:\Users\pcour\.cursor\mcp.json`
-   - Ändere Projekt-Ref zu `twkdrljfjkbypyhdnhyw`
-   - Cursor neustarten
-
-2. **`.env.local` erstellen:**
-   - Kopiere `env.example` zu `.env.local`
-   - Ersetze `<PASSWORD>` mit echtem Passwort aus Supabase Dashboard
-
-3. **Vercel Environment Variables:**
-   - Vercel Dashboard → Settings → Environment Variables
-   - Setze alle Supabase-Keys (ohne Platzhalter!)
+| Variable | Wert |
+|----------|------|
+| `PROJECT_ID` | `acclrhzzwdutbigxsxyq` |
+| `SUPABASE_ACCESS_TOKEN` | `sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb` |
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://acclrhzzwdutbigxsxyq.supabase.co` |
+| `MCP_SERVER_URL` | `https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&...` |
 
 ---
 
@@ -123,4 +116,3 @@ npm install schlug fehl wegen Peer-Dependency-Konflikt:
 ---
 
 **Erstellt:** 2024-12-05
-

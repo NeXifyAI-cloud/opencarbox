@@ -1,14 +1,14 @@
 /**
  * Supabase Client für Server-Komponenten und API Routes
- * 
+ *
  * Verwendet Cookies für Auth-Session-Management.
  * Dieser Client respektiert RLS und User-Sessions.
- * 
+ *
  * @example
  * ```tsx
  * // In Server Component
  * import { createServerClient } from '@/lib/supabase/server'
- * 
+ *
  * export default async function Page() {
  *   const supabase = await createServerClient()
  *   const { data } = await supabase.from('products').select('*')
@@ -17,9 +17,16 @@
  * ```
  */
 
-import { createServerClient as createSupabaseServerClient, type CookieOptions } from '@supabase/ssr'
-import { cookies } from 'next/headers'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/supabase';
+import { createServerClient as createSupabaseServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+/** Cookie-Typ für setAll */
+interface CookieToSet {
+  name: string;
+  value: string;
+  options?: Record<string, unknown>;
+}
 
 /**
  * Erstellt einen Supabase-Client für Server-Komponenten.
@@ -36,9 +43,9 @@ export async function createServerClient() {
         getAll() {
           return cookieStore.getAll()
         },
-        setAll(cookiesToSet) {
+        setAll(cookiesToSet: CookieToSet[]) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) =>
+            cookiesToSet.forEach(({ name, value, options }: CookieToSet) =>
               cookieStore.set(name, value, options)
             )
           } catch {
@@ -54,7 +61,7 @@ export async function createServerClient() {
 /**
  * Erstellt einen Supabase Admin-Client mit Service Role Key.
  * ACHTUNG: Umgeht RLS - nur für Admin-Operationen verwenden!
- * 
+ *
  * @example
  * ```ts
  * const admin = createAdminClient()
@@ -81,4 +88,3 @@ export function createAdminClient() {
     }
   )
 }
-

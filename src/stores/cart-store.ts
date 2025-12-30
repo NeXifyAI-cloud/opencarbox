@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 /**
  * Warenkorb-Artikel Interface
@@ -42,7 +42,13 @@ interface CartState {
   /** Mini-Cart öffnen/schließen */
   setIsOpen: (isOpen: boolean) => void;
 
-  // Computed Values
+  // Computed Values (als Properties für einfache Verwendung)
+  /** Gesamtanzahl der Artikel */
+  itemCount: number;
+  /** Gesamtpreis aller Artikel */
+  totalPrice: number;
+
+  // Legacy Getter-Funktionen (für Abwärtskompatibilität)
   /** Gesamtanzahl der Artikel */
   getTotalItems: () => number;
   /** Gesamtpreis aller Artikel */
@@ -66,6 +72,14 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       isOpen: false,
+
+      // Computed values als getter-Properties
+      get itemCount() {
+        return get().items.reduce((total, item) => total + item.quantity, 0);
+      },
+      get totalPrice() {
+        return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
+      },
 
       addItem: (item) => {
         set((state) => {
@@ -133,4 +147,3 @@ export const useCartStore = create<CartState>()(
     }
   )
 );
-

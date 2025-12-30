@@ -1,13 +1,20 @@
 /**
  * Supabase Middleware Client
- * 
+ *
  * Aktualisiert Auth-Session bei jedem Request.
  * Wird in middleware.ts verwendet.
  */
 
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
-import type { Database } from '@/types/supabase'
+import type { Database } from '@/types/supabase';
+import { createServerClient } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
+
+/** Cookie-Typ für setAll */
+interface CookieToSet {
+  name: string;
+  value: string;
+  options?: Record<string, unknown>;
+}
 
 /**
  * Aktualisiert die Supabase Auth-Session und setzt Cookies.
@@ -26,12 +33,12 @@ export async function updateSession(request: NextRequest) {
         getAll() {
           return request.cookies.getAll()
         },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+        setAll(cookiesToSet: CookieToSet[]) {
+          cookiesToSet.forEach(({ name, value }: CookieToSet) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
+          cookiesToSet.forEach(({ name, value, options }: CookieToSet) =>
             supabaseResponse.cookies.set(name, value, options)
           )
         },
@@ -41,9 +48,8 @@ export async function updateSession(request: NextRequest) {
 
   // WICHTIG: Nicht zwischen createServerClient und supabase.auth.getUser()
   // anderen Code ausführen. Ein einfacher Fehler kann schwer zu debuggen sein.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // User wird für Session-Refresh benötigt, auch wenn nicht direkt verwendet
+  await supabase.auth.getUser()
 
   // Optional: Geschützte Routen prüfen
   // if (!user && request.nextUrl.pathname.startsWith('/admin')) {
@@ -54,4 +60,3 @@ export async function updateSession(request: NextRequest) {
 
   return supabaseResponse
 }
-

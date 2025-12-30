@@ -1,7 +1,7 @@
 # 🚀 STATUS-REPORT: OpenCarBox & Carvantooo Platform
 
-**Datum:** 2024-12-05  
-**Phase:** 1 - Fundament (70% abgeschlossen)  
+**Datum:** 2024-12-05
+**Phase:** 1 - Fundament (70% abgeschlossen)
 **Status:** ✅ SETUP ERFOLGREICH - BEREIT FÜR ENTWICKLUNG
 
 ---
@@ -165,7 +165,7 @@ npm run dev
 ### 4. Supabase Studio öffnen
 
 ```bash
-# URL: https://supabase.com/dashboard/project/nbdgamjagmptwphzqkpe
+# URL: https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq
 # Alle Tabellen sind bereits erstellt
 ```
 
@@ -185,7 +185,7 @@ npm run dev
 
 ## 🔗 LINKS
 
-- **Supabase Dashboard:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq
 - **GitHub Repository:** https://github.com/u4231458123-droid/OpenCarBox_NEW
 - **MCP Config:** `c:\Users\pcour\.cursor\mcp.json`
 
@@ -209,7 +209,6 @@ Das Fundament ist gelegt. Alle Systeme sind konfiguriert und bereit für die Ums
 
 ---
 
-**Erstellt:** 2024-12-05  
-**Von:** Autonomous AI-Agent  
+**Erstellt:** 2024-12-05
+**Von:** Autonomous AI-Agent
 **Status:** ✅ READY FOR DEVELOPMENT
-

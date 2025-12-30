@@ -1,8 +1,7 @@
 # ✅ SUPABASE MIGRATION ABGESCHLOSSEN
 
-**Datum:** 2024-12-05  
-**Altes Projekt:** nbdgamjagmptwphzqkpe (NICHT mehr verwenden)  
-**Neues Projekt:** twkdrljfjkbypyhdnhyw (BEZAHLT - Production Ready)
+**Datum:** 2024-12-05 (Initial) | 2024-12-30 (Update)
+**Aktuelles Projekt:** acclrhzzwdutbigxsxyq (Production)
 
 ---
 
@@ -11,7 +10,7 @@
 ### 1. Datenbank-Schema
 ✅ **12 Tabellen** erfolgreich vorhanden:
 - profiles
-- vehicles  
+- vehicles
 - categories
 - products
 - product_vehicle_compatibility
@@ -45,10 +44,11 @@
 **WICHTIG:** Echte Keys nur in `.env.local` speichern, NICHT in Git committen!
 
 ```env
-# PRODUCTION SUPABASE (twkdrljfjkbypyhdnhyw)
-NEXT_PUBLIC_SUPABASE_URL=https://twkdrljfjkbypyhdnhyw.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=<Hole aus Supabase Dashboard → Settings → API>
-SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
+# PRODUCTION SUPABASE (acclrhzzwdutbigxsxyq)
+NEXT_PUBLIC_SUPABASE_URL=https://acclrhzzwdutbigxsxyq.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjY2xyaHp6d2R1dGJpZ3hzeHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0NzA0MTgsImV4cCI6MjA4MjA0NjQxOH0.EipGXl9SLxMcsMnnmvnN8dBqiM3j3CoIen1GrXas_NE
+SUPABASE_SERVICE_ROLE_KEY=<Hole aus .env>
+SUPABASE_ACCESS_TOKEN=sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb
 ```
 
 ---
@@ -68,24 +68,22 @@ SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
    {
      "mcpServers": {
        "supabase": {
-         "url": "https://mcp.supabase.com/mcp?project_ref=twkdrljfjkbypyhdnhyw&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
+         "url": "https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage"
        }
      }
    }
    ```
    - Cursor neustarten, damit MCP geladen wird
 
-3. **Altes Projekt aufräumen (optional):**
-   - Gehe zu: https://supabase.com/dashboard/project/nbdgamjagmptwphzqkpe
-   - Lösche alle Tabellen ODER
-   - Pausiere/Lösche das gesamte Projekt
+3. **Dashboard:**
+   - https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq
 
 ---
 
 ## 🚀 System ist bereit!
 
 - ✅ Datenbank komplett
-- ✅ Storage komplett  
+- ✅ Storage komplett
 - ✅ Konfiguration aktualisiert
 - ✅ TypeScript-Typen generiert
 - ⏳ Vercel Variables (von dir zu setzen)
@@ -109,6 +107,6 @@ SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
 
 ---
 
-**Erstellt:** 2024-12-05  
-**Projekt:** OpenCarBox & Carvantooo  
+**Erstellt:** 2024-12-05
+**Projekt:** OpenCarBox & Carvantooo
 **Status:** ✅ MIGRATION ERFOLGREICH

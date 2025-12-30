@@ -1,8 +1,29 @@
 
 # ===========================================
+
 # NeXify OpenCarBox - AI Agent Rules
+
 # ===========================================
-# WICHTIG: Credentials stehen in .env, nicht hier!
+
+# WICHTIG: Credentials stehen in .env, nicht hier
+
+---
+
+## 🚨 AUTO-CONTINUE PROTOCOL (KRITISCH!)
+
+**DU DARFST NIEMALS STOPPEN UND AUF EINGABE WARTEN!**
+
+Nach JEDER abgeschlossenen Aufgabe:
+
+1. `npx tsx scripts/core/oracle.ts learn success "Titel" "Ergebnis"`
+2. `npx tsx scripts/core/oracle.ts next-task`
+3. **SOFORT** mit der nächsten Aufgabe beginnen
+
+⚠️ STOP ist VERBOTEN außer bei:
+
+- Kritischen Fehlern die User-Input benötigen
+- Fehlenden Credentials/Permissions
+- Explizitem "STOP" vom User
 
 ---
 
@@ -82,7 +103,7 @@ Verwende den Supabase-MCP-Server:
   "servers": {
     "supabase": {
       "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
+      "url": "<https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage>"
     }
   }
 }
@@ -107,22 +128,24 @@ STELLE SICHER:
 Dieser Blueprint ist die unverhandelbare Verfassung für den NeXify AI Agenten. Er definiert eine **selbst-optimierende Intelligenz**.
 
 ### 1.1 Das "Recursive Intelligence" Protokoll (Der Loop)
+
 Vor JEDER Code-Änderung, Planung oder Fehlerbehebung MUSS zwingend folgende Kette durchlaufen werden:
 
-1.  **Thinking Process (Oracle):** Sende den Kontext an `gemini-2.0-flash-thinking-exp-01-21` via `oracle.ts`. Frage: "Was ist der sicherste und effizienteste Weg, dies zu lösen?"
-2.  **Memory Recall (Supabase):** Prüfe `project_memory` auf vergangene Fehler und Lösungen. Lerne aus der Historie.
-3.  **Execution:** Implementiere die Lösung präzise und vollständig.
-4.  **Verification:** Teste die Lösung (Integration & Unit Tests). **Keine Blind-Commits.**
-5.  **Live-Sync & Learning:** Speichere das Ergebnis.
-    * *Bei Erfolg:* Speichere das Muster als "Best Practice".
-    * *Bei Fehler:* Speichere den Fehler, den Stacktrace UND die Lösung als "Avoidance Pattern".
-6.  **Oracle Update:** Injeziere die neue Erkenntnis sofort zurück in den Oracle-Kontext.
+1. **Thinking Process (Oracle):** Sende den Kontext an `gemini-2.0-flash-thinking-exp-01-21` via `oracle.ts`. Frage: "Was ist der sicherste und effizienteste Weg, dies zu lösen?"
+2. **Memory Recall (Supabase):** Prüfe `project_memory` auf vergangene Fehler und Lösungen. Lerne aus der Historie.
+3. **Execution:** Implementiere die Lösung präzise und vollständig.
+4. **Verification:** Teste die Lösung (Integration & Unit Tests). **Keine Blind-Commits.**
+5. **Live-Sync & Learning:** Speichere das Ergebnis.
+    - *Bei Erfolg:* Speichere das Muster als "Best Practice".
+    - *Bei Fehler:* Speichere den Fehler, den Stacktrace UND die Lösung als "Avoidance Pattern".
+6. **Oracle Update:** Injeziere die neue Erkenntnis sofort zurück in den Oracle-Kontext.
 
 ### 1.2 "No-Void" Policy (Lückenloses Arbeiten)
-* **Verbot:** Es ist strengstens untersagt, Funktionen als "TODO", "Placeholder" oder "Not Implemented" zu hinterlassen.
-* **Pflicht:** Wenn eine Abhängigkeit fehlt, wird sie sofort erstellt.
-* **Root Cause Elimination:** Wenn ein Fehler auftritt, wird die **Ursache** behoben, nicht das Symptom. Analysiere die Kette bis zum Ursprung.
-* **Definition of Done:** Feature im Code + Erfolgreicher Test + Eintrag im Memory + Update im Wiki = **DONE**.
+
+- **Verbot:** Es ist strengstens untersagt, Funktionen als "TODO", "Placeholder" oder "Not Implemented" zu hinterlassen.
+- **Pflicht:** Wenn eine Abhängigkeit fehlt, wird sie sofort erstellt.
+- **Root Cause Elimination:** Wenn ein Fehler auftritt, wird die **Ursache** behoben, nicht das Symptom. Analysiere die Kette bis zum Ursprung.
+- **Definition of Done:** Feature im Code + Erfolgreicher Test + Eintrag im Memory + Update im Wiki = **DONE**.
 
 ---
 
@@ -131,18 +154,21 @@ Vor JEDER Code-Änderung, Planung oder Fehlerbehebung MUSS zwingend folgende Ket
 Jedes Projekt muss folgende Struktur initialisieren. Falls nicht vorhanden: **Sofort erstellen.**
 
 ### 2.1 File-Structure & Scripts
-* `scripts/core/oracle.ts`: Schnittstelle zum Google Brain (`gemini-2.0-flash-thinking-exp-01-21`). Muss Funktionen für `ingest_learning` und `optimize_context` enthalten.
-* `scripts/core/memory.ts`: Schnittstelle zu Supabase. Verwaltet `project_memory` (Wissen) und `audit_logs` (Handlungen).
-* `scripts/core/sync.ts`: Watcher für automatische Wiki-Updates und Oracle-Synchronisation.
+
+- `scripts/core/oracle.ts`: Schnittstelle zum Google Brain (`gemini-2.0-flash-thinking-exp-01-21`). Muss Funktionen für `ingest_learning` und `optimize_context` enthalten.
+- `scripts/core/memory.ts`: Schnittstelle zu Supabase. Verwaltet `project_memory` (Wissen) und `audit_logs` (Handlungen).
+- `scripts/core/sync.ts`: Watcher für automatische Wiki-Updates und Oracle-Synchronisation.
 
 ### 2.2 Environment Requirements (.env)
+
 ```bash
 # REQUIRED SECRETS
-NEXT_PUBLIC_SUPABASE_URL="[Production-URL]"
-SUPABASE_SERVICE_ROLE_KEY="[Master-Key]"
-GOOGLE_GENERATIVE_AI_API_KEY="[Google-Key]"
-PROJECT_ID="[projekt-name-slug]" # z.B. mydispatch
-AGENT_MODEL="gemini-2.0-flash-thinking-exp-01-21"
+NEXT_PUBLIC_SUPABASE_URL="https://acclrhzzwdutbigxsxyq.supabase.co"
+SUPABASE_SERVICE_ROLE_KEY="[Service-Role-Key]"
+SUPABASE_ACCESS_TOKEN="sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb"
+DEEPSEEK_API_KEY="[DeepSeek-Key]"
+PROJECT_ID="acclrhzzwdutbigxsxyq"
+AGENT_MODEL="deepseek-chat"
 📜 3. DIE MASTER .CLINERULES (INJECTION)
 Der Inhalt dieses Abschnitts ist in die .clinerules Datei zu schreiben:
 

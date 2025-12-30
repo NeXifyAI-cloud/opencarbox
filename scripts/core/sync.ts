@@ -97,7 +97,8 @@ export async function syncDocsToOracle() {
 
     if (fs.existsSync(fullPath)) {
       const content = fs.readFileSync(fullPath, 'utf-8');
-      await Oracle.optimizeContext(`Document: ${docPath}\n\n${content}`);
+      // Verarbeite Dokument mit quickThink statt nicht existierender optimizeContext-Methode
+      await Oracle.quickThink(`Memoriere folgendes Dokument:\nDocument: ${docPath}\n\n${content.slice(0, 2000)}`);
       console.log(`  ✅ ${docPath} -> Oracle`);
     }
   }

@@ -3,7 +3,7 @@
 > **PROJEKT-SETUP ÜBERSICHT**
 > Aktueller Stand der Initialisierung und nächste Schritte.
 
-**Stand:** 2024-12-05  
+**Stand:** 2024-12-05
 **Version:** 1.0.0-alpha
 
 ---
@@ -20,7 +20,7 @@
 
 ### 2. Supabase Integration
 
-- [x] **Supabase MCP** verbunden (`twkdrljfjkbypyhdnhyw` - BEZAHLT)
+- [x] **Supabase MCP** verbunden (`acclrhzzwdutbigxsxyq` - Production)
 - [x] **Datenbank-Schema** erstellt (12 Tabellen)
   - `profiles` - Benutzerprofile
   - `vehicles` - Meine Garage (HSN/TSN)
@@ -244,12 +244,11 @@ Keine kritischen Probleme bekannt.
 
 ## 🔗 Wichtige Links
 
-- **Supabase Dashboard:** https://supabase.com/dashboard/project/twkdrljfjkbypyhdnhyw
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/acclrhzzwdutbigxsxyq
 - **GitHub Repository:** https://github.com/u4231458123-droid/OpenCarBox_NEW
 - **Dokumentation:** `/docs`
 - **Master Plan:** `/docs/tasks/master_plan.md`
 
 ---
 
-**Letzte Aktualisierung:** 2024-12-05
-
+**Letzte Aktualisierung:** 2024-12-30

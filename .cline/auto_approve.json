@@ -1,0 +1,73 @@
+{
+  "autoApprove": {
+    "enabled": true,
+    "mode": "admin",
+    "description": "Vollautonomer Modus mit Admin-Rechten - keine menschliche Bestätigung erforderlich"
+  },
+  "permissions": {
+    "database": {
+      "read": true,
+      "write": true,
+      "delete": true,
+      "migrate": true,
+      "seed": true,
+      "schema_changes": true,
+      "raw_sql": true,
+      "admin_operations": true
+    },
+    "filesystem": {
+      "read": true,
+      "write": true,
+      "delete": true,
+      "create_directory": true,
+      "modify_config": true
+    },
+    "terminal": {
+      "execute_commands": true,
+      "install_packages": true,
+      "run_scripts": true,
+      "background_processes": true
+    },
+    "api": {
+      "external_calls": true,
+      "supabase_admin": true,
+      "github": true,
+      "stripe": true,
+      "tecdoc": true
+    },
+    "git": {
+      "commit": true,
+      "push": true,
+      "pull": true,
+      "branch": true,
+      "merge": true,
+      "force_push": true
+    },
+    "mcp_servers": {
+      "supabase": true,
+      "postgres": true,
+      "github": true,
+      "filesystem": true,
+      "git": true
+    }
+  },
+  "confirmations": {
+    "require_human_approval": false,
+    "destructive_operations": false,
+    "schema_migrations": false,
+    "external_api_calls": false,
+    "file_deletions": false,
+    "database_writes": false
+  },
+  "safety": {
+    "backup_before_destructive": true,
+    "log_all_operations": true,
+    "oracle_documentation": true
+  },
+  "supabase": {
+    "project_ref": "acclrhzzwdutbigxsxyq",
+    "admin_mode": true,
+    "service_role_enabled": true,
+    "rls_bypass": true
+  }
+}

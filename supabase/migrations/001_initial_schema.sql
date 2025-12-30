@@ -2,8 +2,9 @@
 -- OpenCarBox & Carvantooo - Initiales Datenbank-Schema
 -- Supabase PostgreSQL Migration
 -- ===========================================
--- Projekt: twkdrljfjkbypyhdnhyw (Production)
+-- Projekt: acclrhzzwdutbigxsxyq (Production)
 -- Erstellt: 2024-12-05
+-- Aktualisiert: 2024-12-30
 -- ===========================================
 
 -- Enable UUID extension
@@ -155,7 +156,7 @@ CREATE INDEX idx_products_active ON public.products(is_active) WHERE is_active =
 CREATE INDEX idx_products_featured ON public.products(is_featured) WHERE is_featured = TRUE;
 
 -- Volltext-Suche für Produkte
-CREATE INDEX idx_products_search ON public.products 
+CREATE INDEX idx_products_search ON public.products
   USING GIN (to_tsvector('german', name || ' ' || COALESCE(description, '')));
 
 -- RLS für products
@@ -208,7 +209,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
   order_number TEXT NOT NULL UNIQUE,
-  status TEXT NOT NULL DEFAULT 'pending' 
+  status TEXT NOT NULL DEFAULT 'pending'
     CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded')),
   payment_status TEXT NOT NULL DEFAULT 'pending'
     CHECK (payment_status IN ('pending', 'paid', 'failed', 'refunded')),
@@ -453,8 +454,8 @@ ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Benutzer können Nachrichten ihrer Chats sehen" ON public.chat_messages
   FOR SELECT USING (
     EXISTS (
-      SELECT 1 FROM public.chat_conversations 
-      WHERE chat_conversations.id = chat_messages.conversation_id 
+      SELECT 1 FROM public.chat_conversations
+      WHERE chat_conversations.id = chat_messages.conversation_id
       AND (chat_conversations.user_id = auth.uid() OR chat_conversations.user_id IS NULL)
     )
   );
@@ -472,7 +473,7 @@ RETURNS TEXT AS $$
 DECLARE
   new_number TEXT;
 BEGIN
-  new_number := 'OCB-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' || 
+  new_number := 'OCB-' || TO_CHAR(NOW(), 'YYYYMMDD') || '-' ||
                 LPAD(FLOOR(RANDOM() * 10000)::TEXT, 4, '0');
   RETURN new_number;
 END;
@@ -519,4 +520,3 @@ CREATE TRIGGER update_chat_conversations_updated_at BEFORE UPDATE ON public.chat
 -- FERTIG!
 -- ===========================================
 COMMENT ON SCHEMA public IS 'OpenCarBox & Carvantooo - E-Commerce & Services Platform';
-

@@ -1,6 +1,7 @@
 # 🔒 Sicherheits-Fixes & Bug-Korrekturen
 
-**Datum:** 2024-12-05  
+**Datum:** 2024-12-05 (Initial) | 2024-12-30 (Update)
+**Aktuelles Projekt:** acclrhzzwdutbigxsxyq
 **Status:** ✅ ALLE KRITISCHEN BUGS BEHOBEN
 
 ---
@@ -11,17 +12,16 @@
 Verschiedene Dateien verwendeten unterschiedliche Supabase-Projekt-IDs, was zu Verwirrung und falschen Verbindungen führen konnte.
 
 ### Behoben in:
-- ✅ `supabase/migrations/001_initial_schema.sql` → `twkdrljfjkbypyhdnhyw`
+- ✅ `supabase/migrations/001_initial_schema.sql` → `acclrhzzwdutbigxsxyq`
 - ✅ `docs/SETUP_STATUS.md` → korrigiert
 - ✅ `STATUS_REPORT.md` → korrigiert
 
-### ⚠️ Manuell noch zu tun:
-MCP-Server Konfiguration aktualisieren in `c:\Users\pcour\.cursor\mcp.json`:
+### MCP-Server Konfiguration:
 ```json
 {
   "mcpServers": {
     "supabase": {
-      "url": "https://mcp.supabase.com/mcp?project_ref=twkdrljfjkbypyhdnhyw&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage"
+      "url": "https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage"
     }
   }
 }
@@ -103,25 +103,20 @@ Found: react@18.3.1
 
 ## 📋 Nächste Schritte
 
-### Sofort (Du musst):
+### Konfiguriert:
 
-1. **MCP Server aktualisieren:**
-   - `c:\Users\pcour\.cursor\mcp.json` öffnen
-   - Projekt-Ref zu `twkdrljfjkbypyhdnhyw` ändern
-   - Cursor neustarten
+1. **MCP Server:**
+   - Projekt-Ref: `acclrhzzwdutbigxsxyq`
+   - Access Token: `sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb`
 
-2. **`.env.local` erstellen:**
-   ```bash
-   cp env.example .env.local
-   # Dann echte Werte eintragen
-   ```
-
-3. **Vercel Environment Variables:**
-   - Vercel Dashboard → Settings → Environment Variables
-   - Alle Keys setzen (aus Supabase Dashboard kopieren)
+2. **`.env` Werte:**
+   - NEXT_PUBLIC_SUPABASE_URL
+   - SUPABASE_SERVICE_ROLE_KEY
+   - SUPABASE_ACCESS_TOKEN
+   - DATABASE_URL
 
 ---
 
-**Erstellt:** 2024-12-05  
+**Erstellt:** 2024-12-05
+**Aktualisiert:** 2024-12-30
 **Alle kritischen Sicherheitslücken geschlossen!** ✅
-

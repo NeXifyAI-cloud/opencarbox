@@ -349,6 +349,9 @@ REGELN FÜR DEINE ANTWORT:
     // Cache invalidieren
     this.invalidateCache();
 
+    // Auto-Optimization prüfen (alle 10 Tasks)
+    await this.checkAndOptimize().catch(() => {});
+
     return task;
   }
 
@@ -599,6 +602,183 @@ REGELN FÜR DEINE ANTWORT:
   }
 
   // ==========================================================================
+  // SELF-OPTIMIZATION (META-LEARNING)
+  // ==========================================================================
+
+  /**
+   * Analysiert die eigene Performance und schlägt Verbesserungen vor
+   */
+  static async selfOptimize(): Promise<{
+    insights: string[];
+    improvements: string[];
+    rulesUpdated: boolean;
+  }> {
+    console.log('\n🧠 Oracle Self-Optimization gestartet...\n');
+
+    const state = await this.loadState();
+    const memStats = await Memory.getStats();
+
+    // Sammle Daten für Analyse
+    const analysisData = {
+      sessions: state.stats.totalSessions,
+      tasks: state.stats.totalTasks,
+      successRate: state.stats.successRate,
+      memories: memStats.total,
+      recentTasks: state.taskHistory.slice(0, 20),
+      failedTasks: state.taskHistory.filter(t => t.status === 'FAILED').slice(0, 10),
+    };
+
+    // Oracle analysiert sich selbst
+    const prompt = `
+SELBST-ANALYSE & OPTIMIERUNG
+
+Analysiere die bisherige Performance und identifiziere Verbesserungsmöglichkeiten:
+
+STATISTIKEN:
+- Sessions: ${analysisData.sessions}
+- Tasks: ${analysisData.tasks}
+- Success Rate: ${(analysisData.successRate * 100).toFixed(1)}%
+- Memories: ${analysisData.memories}
+
+LETZTE TASKS:
+${analysisData.recentTasks.map(t => `- ${t.status}: ${t.description}`).join('\n')}
+
+FEHLGESCHLAGENE TASKS:
+${analysisData.failedTasks.map(t => `- ${t.description}: ${t.result || 'Kein Ergebnis'}`).join('\n') || 'Keine'}
+
+FRAGEN:
+1. Welche Muster erkennst du bei erfolgreichen vs. fehlgeschlagenen Tasks?
+2. Was könnte die Effizienz steigern?
+3. Welche Regeln sollten hinzugefügt oder angepasst werden?
+4. Gibt es wiederkehrende Probleme die systematisch gelöst werden sollten?
+
+Antworte mit konkreten, umsetzbaren Verbesserungsvorschlägen.
+    `.trim();
+
+    const response = await this.think(prompt);
+
+    const insights: string[] = [];
+    const improvements: string[] = [];
+
+    // Extrahiere Insights aus der Analyse
+    if (response.analysis) {
+      insights.push(response.analysis);
+    }
+    if (response.recommendation) {
+      improvements.push(response.recommendation);
+    }
+    if (response.warnings && response.warnings.length > 0) {
+      insights.push(...response.warnings);
+    }
+
+    // Speichere Meta-Learning
+    await Memory.remember({
+      type: 'KNOWLEDGE',
+      category: 'meta_learning',
+      title: `Self-Optimization ${new Date().toISOString().split('T')[0]}`,
+      content: `Insights: ${insights.join('; ')}\nImprovements: ${improvements.join('; ')}`,
+      metadata: { ...analysisData, confidence: response.confidence },
+      tags: ['meta', 'optimization', 'self-improvement']
+    });
+
+    // Prüfe ob Rules aktualisiert werden sollten
+    let rulesUpdated = false;
+    if (response.confidence > 0.8 && improvements.length > 0) {
+      rulesUpdated = await this.suggestRuleUpdate(improvements);
+    }
+
+    console.log(`\n✅ Self-Optimization abgeschlossen:`);
+    console.log(`   Insights: ${insights.length}`);
+    console.log(`   Improvements: ${improvements.length}`);
+    console.log(`   Rules Updated: ${rulesUpdated}`);
+
+    return { insights, improvements, rulesUpdated };
+  }
+
+  /**
+   * Schlägt automatische Rule-Updates vor
+   */
+  private static async suggestRuleUpdate(improvements: string[]): Promise<boolean> {
+    const clinerules = await this.loadFile('.clinerules');
+
+    const prompt = `
+Basierend auf diesen Verbesserungsvorschlägen:
+${improvements.join('\n')}
+
+Und den aktuellen .clinerules:
+${clinerules.substring(0, 3000)}
+
+Soll eine neue Regel hinzugefügt werden? Wenn ja, formuliere sie kurz und prägnant.
+Antworte mit "KEINE ÄNDERUNG" wenn keine sinnvolle Regel ableitbar ist.
+    `.trim();
+
+    const suggestion = await this.quickThink(prompt);
+
+    if (!suggestion.includes('KEINE ÄNDERUNG') && suggestion.length > 20) {
+      // Speichere Vorschlag als TODO
+      await Memory.remember({
+        type: 'TODO',
+        category: 'rule_suggestion',
+        title: 'Vorgeschlagene Regel-Erweiterung',
+        content: suggestion,
+        tags: ['rules', 'optimization', 'suggestion']
+      });
+      console.log(`📝 Regel-Vorschlag gespeichert: ${suggestion.substring(0, 100)}...`);
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Automatische Workflow-Optimierung nach X Tasks
+   */
+  static async checkAndOptimize(): Promise<void> {
+    const state = await this.loadState();
+    const OPTIMIZE_THRESHOLD = 10; // Alle 10 Tasks
+
+    if (state.stats.totalTasks > 0 && state.stats.totalTasks % OPTIMIZE_THRESHOLD === 0) {
+      console.log(`\n🔄 Auto-Optimization Trigger (${state.stats.totalTasks} Tasks)...\n`);
+      await this.selfOptimize();
+    }
+  }
+
+  /**
+   * Analysiert Fehler-Patterns und schlägt Präventionsmaßnahmen vor
+   */
+  static async analyzeFailurePatterns(): Promise<string[]> {
+    const antipatterns = await Memory.getByType('ANTIPATTERN', 30);
+
+    if (antipatterns.length < 3) {
+      return ['Nicht genug Daten für Pattern-Analyse.'];
+    }
+
+    const prompt = `
+Analysiere diese Antipatterns/Fehler und identifiziere wiederkehrende Muster:
+
+${antipatterns.map((a: any) => `- ${a.title}: ${a.content?.substring(0, 200)}`).join('\n')}
+
+Gib konkrete Präventionsmaßnahmen an, um diese Fehler in Zukunft zu vermeiden.
+    `.trim();
+
+    const analysis = await this.quickThink(prompt);
+    const patterns = analysis.split('\n').filter(l => l.trim().length > 10);
+
+    // Speichere Erkenntnisse
+    if (patterns.length > 0) {
+      await Memory.remember({
+        type: 'KNOWLEDGE',
+        category: 'failure_patterns',
+        title: 'Fehler-Pattern Analyse',
+        content: patterns.join('\n'),
+        tags: ['patterns', 'prevention', 'analysis']
+      });
+    }
+
+    return patterns;
+  }
+
+  // ==========================================================================
   // HELPERS
   // ==========================================================================
 
@@ -614,9 +794,10 @@ REGELN FÜR DEINE ANTWORT:
     return '';
   }
 
+  // @ts-expect-error - Methode für Abwärtskompatibilität, wird durch loadAllMemories ersetzt
   private static async loadRecentMemories(): Promise<string> {
-    // Diese Methode wird durch loadAllMemories ersetzt
-    return this.loadAllMemories();
+    // Diese Methode wird durch loadAllMemories ersetzt, bleibt aber für Abwärtskompatibilität
+    return await this.loadAllMemories();
   }
 
   private static async loadPendingTasks(): Promise<string> {
@@ -917,6 +1098,24 @@ if (require.main === module) {
         }
         break;
 
+      case 'optimize':
+        console.log('\n🧠 Starte Self-Optimization...\n');
+        const optResult = await Oracle.selfOptimize();
+        console.log('\n📊 Ergebnis:');
+        console.log(`  Insights: ${optResult.insights.length}`);
+        optResult.insights.forEach(i => console.log(`    - ${i.substring(0, 200)}`));
+        console.log(`  Improvements: ${optResult.improvements.length}`);
+        optResult.improvements.forEach(i => console.log(`    - ${i.substring(0, 200)}`));
+        console.log(`  Rules Updated: ${optResult.rulesUpdated ? '✅' : '❌'}`);
+        break;
+
+      case 'analyze-failures':
+        console.log('\n🔍 Analysiere Fehler-Patterns...\n');
+        const patterns = await Oracle.analyzeFailurePatterns();
+        console.log('Erkannte Patterns:');
+        patterns.forEach(p => console.log(`  - ${p}`));
+        break;
+
       default:
         console.log(`
 🔮 Oracle CLI - Das zentrale KI-Gehirn für CLINE
@@ -925,20 +1124,23 @@ Das Oracle ist das LIVE-GEDÄCHTNIS des Projekts.
 Es kennt ALLES, dokumentiert ALLES, und gibt die nächste Aufgabe.
 
 Commands:
-  health         - Prüft Oracle, Memory und Context
-  status         - Zeigt Session, Tasks, Memory Stats
-  snapshot       - Erstellt vollständigen Status-Snapshot
-  think <prompt> - Oracle denkt über Prompt nach
-  next-task      - Holt nächste empfohlene Aufgabe
-  context        - Lädt und zeigt Projektkontext
+  health           - Prüft Oracle, Memory und Context
+  status           - Zeigt Session, Tasks, Memory Stats
+  snapshot         - Erstellt vollständigen Status-Snapshot
+  think <prompt>   - Oracle denkt über Prompt nach
+  next-task        - Holt nächste empfohlene Aufgabe
+  context          - Lädt und zeigt Projektkontext
   learn <type> <title> <content> - Neue Erkenntnis speichern
   session [start|end] - Session-Management
+  optimize         - Self-Optimization durchführen (Meta-Learning)
+  analyze-failures - Fehler-Patterns analysieren
 
 Types für 'learn': success, failure, pattern, knowledge
 
 Beispiele:
   npx tsx scripts/core/oracle.ts health
   npx tsx scripts/core/oracle.ts snapshot
+  npx tsx scripts/core/oracle.ts optimize
   npx tsx scripts/core/oracle.ts think "Wie implementiere ich Feature X?"
   npx tsx scripts/core/oracle.ts learn success "Auth Fix" "JWT Refresh implementiert"
   npx tsx scripts/core/oracle.ts session start

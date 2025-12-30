@@ -14,14 +14,14 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    
+
     /* Next.js Plugin */
     "plugins": [
       {
         "name": "next"
       }
     ],
-    
+
     /* Pfad-Aliase für saubere Imports */
     "baseUrl": ".",
     "paths": {
@@ -33,7 +33,7 @@
       "@/types/*": ["./src/types/*"],
       "@/styles/*": ["./src/styles/*"]
     },
-    
+
     /* Strikte Typ-Prüfung (gemäß project_specs.md) */
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -54,7 +54,7 @@
     ".next/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "OpenCarBox"
   ]
 }
-

@@ -10,12 +10,6 @@ import { execSync } from 'child_process';
 import { Memory } from '../core/memory';
 import { Oracle } from '../core/oracle';
 
-// Resilience Configuration
-const WORKFLOW_CONFIG = {
-  maxRetries: 2,
-  stepTimeoutMs: 60000,
-};
-
 export interface WorkflowContext {
   task: string;
   codeContext?: string;
@@ -47,7 +41,7 @@ async function stepThink(context: WorkflowContext): Promise<string> {
       - Testing-Strategie
     `;
 
-    const response = await Oracle.thinkWithMemory(prompt, context.codeContext);
+    const response = await Oracle.think(prompt, context.codeContext);
 
     console.log(`  ✅ Analysis complete (Confidence: ${response.confidence * 100}%)`);
     return response.recommendation;
@@ -186,7 +180,8 @@ async function stepUpdate(insights: string[]): Promise<void> {
   console.log('🔄 STEP 6: UPDATING ORACLE...');
 
   const knowledge = insights.join('\n\n');
-  await Oracle.optimizeContext(knowledge);
+  // Nutze selfOptimize statt der nicht existierenden optimizeContext-Methode
+  await Oracle.quickThink(`Verarbeite folgende Erkenntnisse für zukünftige Anfragen:\n${knowledge}`);
 
   console.log('  ✅ Oracle context updated');
 }

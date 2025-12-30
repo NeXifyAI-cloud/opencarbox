@@ -33,7 +33,7 @@ export async function analyzeChange(context: PreChangeContext): Promise<void> {
     .join('\n\n---\n\n');
 
   // Oracle denken lassen
-  const guidance = await Oracle.thinkWithMemory(
+  const guidance = await Oracle.think(
     `Ich plane folgende Änderungen: ${context.description}. Was muss ich beachten?`,
     filesContext
   );

@@ -2,10 +2,10 @@ import type { Config } from 'tailwindcss';
 
 /**
  * Tailwind CSS Konfiguration für OpenCarBox & Carvantooo
- * 
+ *
  * Dieses Designsystem implementiert die Premium "Automotive Premium" Ästhetik
  * mit dem Rot-Blau Farbkonzept gemäß project_specs.md
- * 
+ *
  * @see /docs/design-system/colors.md
  * @see /docs/design-system/typography.md
  */
@@ -42,6 +42,34 @@ const config: Config = {
           800: '#822727',
           900: '#63171B',
           DEFAULT: '#E53E3E',
+        },
+        /* Carvantooo Teal - Für Shop Akzente (finales_Design) */
+        teal: {
+          50: '#E6FFFA',
+          100: '#B2F5EA',
+          200: '#81E6D9',
+          300: '#4FD1C5', // Primary Light
+          400: '#38B2AC', // Hover
+          500: '#319795',
+          600: '#2C7A7B',
+          700: '#285E61',
+          800: '#234E52',
+          900: '#1D4044',
+          DEFAULT: '#4FD1C5',
+        },
+        /* Navy Blue - Header Background (finales_Design) */
+        navy: {
+          50: '#E8EDF4',
+          100: '#C5D3E8',
+          200: '#9FB5D8',
+          300: '#7997C8',
+          400: '#5A7FB8',
+          500: '#3B67A8',
+          600: '#2D5290',
+          700: '#1E3A5F', // Primary Header
+          800: '#162D47', // Top Bar
+          900: '#0E1F2F',
+          DEFAULT: '#1E3A5F',
         },
         /* OpenCarBox Blau - Für Services, Vertrauen, Navigation */
         opencarbox: {
@@ -339,4 +367,3 @@ const config: Config = {
 };
 
 export default config;
-

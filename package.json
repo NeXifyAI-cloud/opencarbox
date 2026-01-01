@@ -95,6 +95,7 @@
     "sonner": "^2.0.7",
     "stripe": "^14.20.0",
     "tailwind-merge": "^2.2.0",
+    "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.0",
     "zustand": "^4.5.0"
   },

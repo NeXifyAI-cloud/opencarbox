@@ -6,6 +6,8 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-img-element": "warn",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "@typescript-eslint/no-explicit-any": "error",
     "no-console": ["warn", { "allow": ["warn", "error"] }],
@@ -21,4 +23,3 @@
     "*.config.ts"
   ]
 }
-

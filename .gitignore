@@ -85,3 +85,5 @@ supabase/.temp/
 
 # Duplicate/Backup folders
 OpenCarBox/
+.vercel
+.env*.local

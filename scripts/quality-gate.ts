@@ -46,13 +46,23 @@ function checkTypeScript(): void {
     const output = error.stdout?.toString() || error.stderr?.toString() || '';
     const errorCount = (output.match(/error TS/g) || []).length;
 
-    issues.push({
-      type: 'error',
-      category: 'TypeScript',
-      message: `${errorCount} TypeScript-Fehler gefunden`,
-    });
-
-    console.log(`  ❌ ${errorCount} TypeScript-Fehler`);
+    if (errorCount > 0) {
+      issues.push({
+        type: 'error',
+        category: 'TypeScript',
+        message: `${errorCount} TypeScript-Fehler gefunden`,
+      });
+      console.log(`  ❌ ${errorCount} TypeScript-Fehler`);
+    } else {
+      // Falls tsc fehlschlägt aber keine "error TS" gefunden werden (z.B. Config Error)
+      issues.push({
+        type: 'error',
+        category: 'TypeScript',
+        message: `TypeScript Check fehlgeschlagen (Details im Output)`,
+      });
+      console.log(`  ❌ TypeScript Check fehlgeschlagen`);
+      console.log(output);
+    }
   }
 }
 

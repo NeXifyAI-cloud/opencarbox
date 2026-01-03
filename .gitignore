@@ -87,3 +87,4 @@ supabase/.temp/
 OpenCarBox/
 .vercel
 .env*.local
+.history/

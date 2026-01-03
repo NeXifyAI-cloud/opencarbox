@@ -32,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -62,7 +62,7 @@ jobs:
 
       - name: Comment on Commit
         if: github.event_name == 'push'
-        uses: peter-evans/commit-comment@v3
+        uses: peter-evans/commit-comment@v4
         with:
           body: |
             🚀 **Auto-Deployment erfolgreich!**
@@ -103,7 +103,7 @@ jobs:
 
     steps:
       - name: Create Issue on Failure
-        uses: peter-evans/create-issue-from-file@v5
+        uses: peter-evans/create-issue-from-file@v6
         with:
           title: "🚨 Auto-Deploy fehlgeschlagen - ${{ github.sha }}"
           content-filepath: .github/ISSUE_TEMPLATE/deploy-failure.md

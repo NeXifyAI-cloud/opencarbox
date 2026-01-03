@@ -80,7 +80,7 @@
 
 - [x] Supabase Setup ✅
 - [x] Design-System ✅
-- [ ] Provider einrichten (Theme, QueryClient)
+- [x] Provider einrichten (Theme, QueryClient) ✅
 - [ ] Scripts finalisieren (sync-docs, quality-gate)
 
 ---
@@ -89,45 +89,28 @@
 
 ### Sofort (Heute)
 
-1. **Provider einrichten**
-   - ThemeProvider (Dark Mode)
-   - QueryClientProvider (TanStack Query)
-   - Toaster (Benachrichtigungen)
+1. **Shop - Produktkatalog** (Task-022)
+   - Kategorieseiten
+   - Produktliste mit Filter
+   - Produktdetailseite
+   - Warenkorb-Logic
 
-2. **shadcn/ui installieren**
-   ```bash
-   npx shadcn-ui@latest init
-   ```
+2. **Organisms vervollständigen** (Task-013)
+   - ProductGrid
+   - ServiceList
+   - VehicleFinder (functional)
 
-3. **Erste UI-Komponenten**
-   - Button (6 Varianten)
-   - Card
-   - Input
-
-### Diese Woche
-
-4. **Multisite-Routing**
-   - `(shop)` Route Group
-   - `(werkstatt)` Route Group
-   - `(autohandel)` Route Group
-
-5. **Header & Footer**
-   - Marken-spezifisches Layout
-   - Navigation
-
-6. **Homepage**
-   - Hero Section
-   - Fahrzeug-Finder
-   - Drei Bereiche
+3. **Scripts finalisieren**
+   - sync-docs, quality-gate
 
 ---
 
 ## 📊 FORTSCHRITT
 
 ```
-Phase 1: Fundament         ████████░░ 70%
-Phase 2: UI-Komponenten    ░░░░░░░░░░  0%
-Phase 3: Core-Features     ░░░░░░░░░░  0%
+Phase 1: Fundament         ██████████ 100%
+Phase 2: UI-Komponenten    ████████░░ 80%
+Phase 3: Core-Features     ██░░░░░░░░ 20%
 Phase 4: Integrationen     ░░░░░░░░░░  0%
 Phase 5: Admin & Polish    ░░░░░░░░░░  0%
 Phase 6: Launch            ░░░░░░░░░░  0%
@@ -205,7 +188,7 @@ npm run dev
 
 Das Fundament ist gelegt. Alle Systeme sind konfiguriert und bereit für die Umsetzung der Features.
 
-**Nächster Schritt:** Provider einrichten → shadcn/ui → UI-Komponenten
+**Nächster Schritt:** Shop Produktkatalog → Warenkorb → Checkout
 
 ---
 

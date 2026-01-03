@@ -4,12 +4,35 @@ import { Button } from '@/components/ui/button';
 import { Filter } from 'lucide-react';
 import { useState } from 'react';
 
+export interface FilterState {
+  priceRange: string[];
+  brands: string[];
+  inStock: boolean;
+}
+
+interface ProductFilterProps {
+  onApply?: (filters: FilterState) => void;
+  initialFilters?: Partial<FilterState>;
+}
+
 /**
  * Filter Component for Shop
  */
-export function ProductFilter() {
-  const [priceRange, setPriceRange] = useState<string[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
+export function ProductFilter({ onApply, initialFilters }: ProductFilterProps) {
+  const [priceRange, setPriceRange] = useState<string[]>(initialFilters?.priceRange || []);
+  const [brands, setBrands] = useState<string[]>(initialFilters?.brands || []);
+  const [inStock, setInStock] = useState<boolean>(initialFilters?.inStock ?? true);
+
+  const handleApply = () => {
+    onApply?.({ priceRange, brands, inStock });
+  };
+
+  const handleReset = () => {
+    setPriceRange([]);
+    setBrands([]);
+    setInStock(true);
+    onApply?.({ priceRange: [], brands: [], inStock: true });
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
@@ -32,6 +55,7 @@ export function ProductFilter() {
                 <input
                   type="checkbox"
                   id={range.id}
+                  checked={priceRange.includes(range.id)}
                   className="rounded border-slate-300 text-carvantooo-500 focus:ring-carvantooo-500"
                   onChange={(e) => {
                     if (e.target.checked) setPriceRange([...priceRange, range.id]);
@@ -53,6 +77,7 @@ export function ProductFilter() {
                 <input
                   type="checkbox"
                   id={`brand-${brand}`}
+                  checked={brands.includes(brand)}
                   className="rounded border-slate-300 text-carvantooo-500 focus:ring-carvantooo-500"
                   onChange={(e) => {
                      if (e.target.checked) setBrands([...brands, brand]);
@@ -70,7 +95,13 @@ export function ProductFilter() {
           <h4 className="text-sm font-semibold mb-3">Verfügbarkeit</h4>
           <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="instock" className="rounded border-slate-300 text-carvantooo-500 focus:ring-carvantooo-500" defaultChecked />
+                <input
+                  type="checkbox"
+                  id="instock"
+                  checked={inStock}
+                  onChange={(e) => setInStock(e.target.checked)}
+                  className="rounded border-slate-300 text-carvantooo-500 focus:ring-carvantooo-500"
+                />
                 <label htmlFor="instock" className="text-sm text-slate-600 cursor-pointer">Auf Lager</label>
               </div>
           </div>
@@ -78,8 +109,8 @@ export function ProductFilter() {
 
         {/* Action Buttons */}
         <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
-           <Button className="w-full bg-carvantooo-500 hover:bg-carvantooo-600 text-white">Anwenden</Button>
-           <Button variant="ghost" className="w-full text-slate-500 hover:text-slate-700">Filter zurücksetzen</Button>
+           <Button onClick={handleApply} className="w-full bg-carvantooo-500 hover:bg-carvantooo-600 text-white">Anwenden</Button>
+           <Button onClick={handleReset} variant="ghost" className="w-full text-slate-500 hover:text-slate-700">Filter zurücksetzen</Button>
         </div>
       </div>
     </div>

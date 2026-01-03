@@ -1,13 +1,21 @@
 'use client';
 
-import { ProductFilter } from '@/components/shop/product-filter';
+import { ProductFilter, type FilterState } from '@/components/shop/product-filter';
 import { ProductGrid } from '@/components/shop/product-grid';
 import { ProductSort } from '@/components/shop/product-sort';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from '@/components/ui/sheet';
 import { featuredProducts } from '@/lib/mock-data';
 import { ChevronRight, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 interface CategoryPageProps {
   params: {
@@ -18,7 +26,34 @@ interface CategoryPageProps {
 export default function CategoryPage({ params }: CategoryPageProps) {
   // Mock data filtering
   const categoryName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1);
-  const products = featuredProducts; // In real app, filter by category
+
+  // State for filters and sorting (mock implementation)
+  const [filters, setFilters] = useState<FilterState>({
+    priceRange: [],
+    brands: ['BOSCH'], // Initial mock filter
+    inStock: true
+  });
+  const [sort, setSort] = useState('relevance');
+
+  // In real app, we would filter 'featuredProducts' based on 'filters' and 'sort'
+  const products = featuredProducts;
+
+  const handleFilterApply = (newFilters: FilterState) => {
+    setFilters(newFilters);
+    // console.log('Filters applied:', newFilters);
+  };
+
+  const handleSortChange = (newSort: string) => {
+    setSort(newSort);
+    // console.log('Sort changed:', newSort);
+  };
+
+  const removeBrandFilter = (brand: string) => {
+    setFilters(prev => ({
+      ...prev,
+      brands: prev.brands.filter(b => b !== brand)
+    }));
+  };
 
   return (
     <div className="container-content py-8">
@@ -32,9 +67,9 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Sidebar Filters */}
+        {/* Sidebar Filters - Desktop */}
         <aside className="w-full lg:w-64 flex-shrink-0 space-y-8 hidden lg:block">
-          <ProductFilter />
+          <ProductFilter onApply={handleFilterApply} initialFilters={filters} />
         </aside>
 
         {/* Product Grid */}
@@ -47,22 +82,43 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             </div>
 
             <div className="flex items-center gap-4">
-               <Button variant="outline" className="lg:hidden">
-                 <SlidersHorizontal className="w-4 h-4 mr-2" /> Filter
-               </Button>
-               <ProductSort />
+               {/* Mobile Filter Sheet */}
+               <Sheet>
+                 <SheetTrigger asChild>
+                   <Button variant="outline" className="lg:hidden">
+                     <SlidersHorizontal className="w-4 h-4 mr-2" /> Filter
+                   </Button>
+                 </SheetTrigger>
+                 <SheetContent side="left" className="w-[300px] sm:w-[400px] overflow-y-auto">
+                   <SheetHeader className="mb-6">
+                     <SheetTitle>Filter</SheetTitle>
+                   </SheetHeader>
+                   <ProductFilter onApply={handleFilterApply} initialFilters={filters} />
+                 </SheetContent>
+               </Sheet>
+
+               <ProductSort onSortChange={handleSortChange} />
             </div>
           </div>
 
-          {/* Active Filters */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            <Badge variant="secondary" className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">
-              BOSCH <span className="ml-1 cursor-pointer">×</span>
-            </Badge>
-            <Button variant="link" size="sm" className="text-carvantooo-500 h-auto p-0">
-              Alle Filter löschen
-            </Button>
-          </div>
+          {/* Active Filters Display */}
+          {(filters.brands.length > 0 || filters.priceRange.length > 0) && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {filters.brands.map(brand => (
+                <Badge key={brand} variant="secondary" className="bg-white border border-slate-200 text-slate-600 hover:bg-slate-50">
+                  {brand} <span className="ml-1 cursor-pointer" onClick={() => removeBrandFilter(brand)}>×</span>
+                </Badge>
+              ))}
+              <Button
+                variant="link"
+                size="sm"
+                className="text-carvantooo-500 h-auto p-0"
+                onClick={() => setFilters({ priceRange: [], brands: [], inStock: true })}
+              >
+                Alle Filter löschen
+              </Button>
+            </div>
+          )}
 
           {/* Grid */}
           <ProductGrid products={products} />

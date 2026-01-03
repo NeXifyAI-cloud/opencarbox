@@ -188,7 +188,7 @@ npm run dev
 
 Das Fundament ist gelegt. Alle Systeme sind konfiguriert und bereit für die Umsetzung der Features.
 
-**Nächster Schritt:** Shop Produktkatalog → Warenkorb → Checkout
+**Nächster Schritt:** Vercel Deployment Debugging → Shop Produktkatalog → Warenkorb
 
 ---
 

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Star, ChevronRight } from 'lucide-react';
@@ -48,10 +49,11 @@ export const ProductCard = ({
     >
       {/* Image Container */}
       <div className="relative aspect-square bg-slate-50 overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
 
         {/* Quick Add Button */}

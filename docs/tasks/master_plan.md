@@ -148,13 +148,13 @@
   - [x] Rating (mit RatingCompact)
 
 ### TASK-013: Organisms - Komplexe Komponenten
-- **Status:** ⬜ OFFEN
+- **Status:** 🔄 IN ARBEIT
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-012
 - **Beschreibung:** Komplexe UI-Einheiten
 - **Akzeptanzkriterien:**
-  - [ ] Header (mit Marken-Switching)
-  - [ ] Footer
+  - [x] Header (mit Marken-Switching)
+  - [x] Footer
   - [ ] ProductGrid
   - [ ] ServiceList
   - [ ] VehicleGallery
@@ -178,33 +178,33 @@
 ## 🏗️ Phase 3: Core-Features (Woche 3-5)
 
 ### TASK-020: Multisite-Routing
-- **Status:** ⬜ OFFEN
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-013
 - **Beschreibung:** Route Groups für die 3 Bereiche
 - **Akzeptanzkriterien:**
-  - [ ] (marketing) Route Group
-  - [ ] (werkstatt) Route Group mit Layout
-  - [ ] (autohandel) Route Group mit Layout
-  - [ ] (shop) Route Group mit Layout
-  - [ ] Marken-spezifisches Theming pro Bereich
+  - [x] (marketing) Route Group
+  - [x] (werkstatt) Route Group mit Layout
+  - [x] (autohandel) Route Group mit Layout
+  - [x] (shop) Route Group mit Layout
+  - [x] Marken-spezifisches Theming pro Bereich
 
 ### TASK-021: Homepage
-- **Status:** ⬜ OFFEN
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-020, TASK-013
 - **Beschreibung:** Premium Landing Page
 - **Akzeptanzkriterien:**
-  - [ ] Hero mit Glassmorphism
-  - [ ] Fahrzeug-Finder prominent
-  - [ ] Drei Bereiche vorgestellt
-  - [ ] Testimonials
-  - [ ] Partner-Logos
-  - [ ] CTA-Bereiche
-  - [ ] Animationen
+  - [x] Hero mit Glassmorphism
+  - [x] Fahrzeug-Finder prominent
+  - [x] Drei Bereiche vorgestellt
+  - [x] Testimonials
+  - [x] Partner-Logos
+  - [x] CTA-Bereiche
+  - [x] Animationen
 
 ### TASK-022: Shop - Produktkatalog
-- **Status:** ⬜ OFFEN
+- **Status:** 🔄 IN ARBEIT
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-020, TASK-005
 - **Beschreibung:** Produktlisten und -details
@@ -478,8 +478,8 @@
 | Phase | Tasks | Erledigt | In Arbeit | Offen |
 |-------|-------|----------|-----------|-------|
 | Phase 1: Fundament | 6 | 5 | 1 | 0 |
-| Phase 2: UI-Komponenten | 5 | 3 | 0 | 2 |
-| Phase 3: Core-Features | 9 | 0 | 0 | 9 |
+| Phase 2: UI-Komponenten | 5 | 3 | 1 | 1 |
+| Phase 3: Core-Features | 9 | 2 | 1 | 6 |
 | Phase 4: Integrationen | 6 | 0 | 0 | 6 |
 | Phase 5: Admin & Polish | 4 | 0 | 0 | 4 |
 | Phase 6: Launch | 3 | 0 | 0 | 3 |

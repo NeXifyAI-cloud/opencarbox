@@ -57,7 +57,7 @@ const variantClasses = {
  * // Einfache Suche
  * <SearchBar
  *   placeholder="Suche nach Ersatzteilen..."
- *   onSearch={(query) => console.log(query)}
+ *   onSearch={() => {}}
  * />
  *
  * @example

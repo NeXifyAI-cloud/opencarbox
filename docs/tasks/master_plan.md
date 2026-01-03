@@ -92,14 +92,14 @@
   - [ ] Seed-Daten (Optional)
 
 ### TASK-006: Scripts erstellen
-- **Status:** 🔄 IN ARBEIT
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** MITTEL
 - **Abhängigkeiten:** TASK-001
 - **Beschreibung:** Sync-Docs-to-Rules und Quality-Gate Scripts
 - **Akzeptanzkriterien:**
   - [x] sync-docs-to-rules.ts erstellt
   - [x] quality-gate.ts erstellt
-  - [ ] Husky pre-commit Hook konfigurieren
+  - [x] Husky pre-commit Hook konfigurieren
 
 ---
 

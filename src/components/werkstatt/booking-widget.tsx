@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, Clock, User, Wrench, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, User, Wrench, CheckCircle, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TurboBadge } from '@/components/ui/turbo-badge';
 import { cn } from '@/lib/utils';
 
 interface BookingWidgetProps {
@@ -19,6 +20,7 @@ export function BookingWidget({ serviceId, serviceName }: BookingWidgetProps) {
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [customerName, setCustomerName] = useState<string>('');
   const [customerPhone, setCustomerPhone] = useState<string>('');
+  const [isTurboMode, setIsTurboMode] = useState<boolean>(false);
   const [isBooking, setIsBooking] = useState(false);
   const [isBooked, setIsBooked] = useState(false);
 
@@ -144,6 +146,33 @@ export function BookingWidget({ serviceId, serviceName }: BookingWidgetProps) {
                 className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opencarbox-500 focus:border-transparent"
               />
             </div>
+          </div>
+        )}
+
+        {/* Turbo Mode Option */}
+        {selectedTime && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="turbo-mode"
+                    checked={isTurboMode}
+                    onChange={(e) => setIsTurboMode(e.target.checked)}
+                    className="w-4 h-4 text-yellow-600 bg-white border-gray-300 rounded focus:ring-yellow-500"
+                  />
+                  <label htmlFor="turbo-mode" className="text-sm font-medium text-slate-700 flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-yellow-500" />
+                    Turbo-Modus aktivieren
+                  </label>
+                </div>
+              </div>
+              <TurboBadge>+10€</TurboBadge>
+            </div>
+            <p className="text-xs text-slate-600 mt-2 ml-6">
+              Priorisierte Bearbeitung mit kürzeren Wartezeiten und schnelleren Service-Terminen.
+            </p>
           </div>
         )}
 

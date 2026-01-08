@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { featuredProducts } from '@/lib/mock-data';
 import { ChevronRight, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 interface CategoryPageProps {
   params: {
@@ -19,6 +20,8 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   // Mock data filtering
   const categoryName = params.slug.charAt(0).toUpperCase() + params.slug.slice(1);
   const products = featuredProducts; // In real app, filter by category
+
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   return (
     <div className="container-content py-8">

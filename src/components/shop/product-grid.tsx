@@ -6,14 +6,27 @@ import { type FeaturedProduct } from '@/lib/mock-data';
 interface ProductGridProps {
   products: FeaturedProduct[];
   isLoading?: boolean;
+  viewMode?: 'grid' | 'list';
+  onViewModeChange?: (mode: 'grid' | 'list') => void;
 }
 
-export function ProductGrid({ products, isLoading = false }: ProductGridProps) {
+export function ProductGrid({
+  products,
+  isLoading = false,
+  viewMode = 'grid',
+  onViewModeChange
+}: ProductGridProps) {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className={viewMode === 'grid'
+        ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+        : "space-y-6"
+      }>
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className="h-[400px] bg-slate-100 rounded-xl animate-pulse" />
+          <div key={i} className={viewMode === 'grid'
+            ? "h-[400px] bg-slate-100 rounded-xl animate-pulse"
+            : "h-[200px] bg-slate-100 rounded-xl animate-pulse"
+          } />
         ))}
       </div>
     );
@@ -29,7 +42,10 @@ export function ProductGrid({ products, isLoading = false }: ProductGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    <div className={viewMode === 'grid'
+      ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+      : "space-y-6"
+    }>
       {products.map((product) => (
         <ProductCard
           key={product.id}

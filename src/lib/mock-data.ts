@@ -279,3 +279,206 @@ export const topBrands = [
   { id: 'luk', name: 'LuK' },
   { id: 'valeo', name: 'Valeo' },
 ];
+
+export interface Service {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  priceFrom: number;
+  durationMinutes: number;
+  category: string;
+  image: string;
+  features: string[];
+}
+
+export const services: Service[] = [
+  {
+    id: 1,
+    name: 'Ölwechsel & Inspektion',
+    slug: 'oelwechsel-inspektion',
+    description: 'Kompletter Ölwechsel mit hochwertigem Motoröl und umfassende Fahrzeuginspektion nach Herstellervorgaben.',
+    priceFrom: 89.99,
+    durationMinutes: 120,
+    category: 'Inspektion',
+    image: 'https://images.unsplash.com/photo-1635784458812-1d4c2c3e8f8b?w=400&h=400&fit=crop',
+    features: [
+      'Motorölwechsel nach Spezifikation',
+      'Ölfilter ersetzen',
+      'Umfassende Inspektion aller Systeme',
+      'Dokumentierte Servicehistorie',
+      '12 Monate Garantie auf Arbeiten'
+    ]
+  },
+  {
+    id: 2,
+    name: 'Bremsen erneuern',
+    slug: 'bremsen-erneuern',
+    description: 'Professioneller Bremsenservice mit Original-Ersatzteilen und Sicherheitsprüfung.',
+    priceFrom: 149.99,
+    durationMinutes: 180,
+    category: 'Bremsen',
+    image: 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=400&fit=crop',
+    features: [
+      'Vorder- und Hinterradbremsen',
+      'Original BOSCH/BREMBO Bremsbeläge',
+      'Bremsflüssigkeit erneuern',
+      'ABS-System prüfen',
+      'Bremsentest auf Prüfstand'
+    ]
+  },
+  {
+    id: 3,
+    name: 'Klimaanlage Service',
+    slug: 'klimaanlage-service',
+    description: 'Komplette Wartung der Klimaanlage inklusive Desinfektion und Leistungsmessung.',
+    priceFrom: 79.99,
+    durationMinutes: 90,
+    category: 'Klima',
+    image: 'https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=400&h=400&fit=crop',
+    features: [
+      'Kältemittel auffüllen',
+      'Pollenfilter erneuern',
+      'Desinfektion des Systems',
+      'Leistungsprüfung',
+      '24 Monate Garantie'
+    ]
+  },
+  {
+    id: 4,
+    name: 'Reifenwechsel & Einlagerung',
+    slug: 'reifenwechsel-einlagerung',
+    description: 'Saisonaler Reifenwechsel mit professionellem Auswuchten und kostenloser Einlagerung.',
+    priceFrom: 39.99,
+    durationMinutes: 60,
+    category: 'Reifen',
+    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop',
+    features: [
+      'Alle 4 Reifen wechseln',
+      'Professionelles Auswuchten',
+      'Kostenlose Einlagerung',
+      'Reifendruck prüfen',
+      'Profiltiefe messen'
+    ]
+  },
+  {
+    id: 5,
+    name: 'HU/AU mit Vorbereitung',
+    slug: 'hu-au-vorbereitung',
+    description: 'Hauptuntersuchung und Abgasuntersuchung mit professioneller Vorbereitung.',
+    priceFrom: 99.99,
+    durationMinutes: 150,
+    category: 'Inspektion',
+    image: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=400&fit=crop',
+    features: [
+      'Vollständige HU/AU Vorbereitung',
+      'Alle Mängel beheben',
+      'Behördengänge übernehmen',
+      'Prüfplakette beantragen',
+      '12 Monate Gewährleistung'
+    ]
+  },
+  {
+    id: 6,
+    name: 'Auswechseln der Batterie',
+    slug: 'batterie-wechsel',
+    description: 'Austausch der Starterbatterie mit hochwertiger VARTA Premium-Batterie.',
+    priceFrom: 119.99,
+    durationMinutes: 45,
+    category: 'Elektronik',
+    image: 'https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&h=400&fit=crop',
+    features: [
+      'VARTA Premium Batterie',
+      'Professionelle Montage',
+      'Batterietest vor/nach',
+      'Korrosionsschutz',
+      '24 Monate Garantie'
+    ]
+  }
+];
+
+export interface Vehicle {
+  id: number;
+  make: string;
+  model: string;
+  year: number;
+  price: number;
+  mileage: number;
+  fuel: string;
+  transmission: string;
+  images: string[];
+  description: string;
+  features: string[];
+  location: string;
+}
+
+export const vehicles: Vehicle[] = [
+  {
+    id: 1,
+    make: 'BMW',
+    model: '3er Reihe',
+    year: 2020,
+    price: 28500,
+    mileage: 45000,
+    fuel: 'Benzin',
+    transmission: 'Automatik',
+    images: [
+      'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop',
+    ],
+    description: 'Ausgezeichnet erhaltener BMW 3er mit voller Servicehistorie. Klimaanlage, Navigation, Leder.',
+    features: ['Klimaanlage', 'Navigation', 'Leder', 'Xenon', 'PDC'],
+    location: 'Wien'
+  },
+  {
+    id: 2,
+    make: 'Audi',
+    model: 'A4 Avant',
+    year: 2019,
+    price: 26900,
+    mileage: 62000,
+    fuel: 'Diesel',
+    transmission: 'Manuell',
+    images: [
+      'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop',
+    ],
+    description: 'Geräumiger Kombi in Top-Zustand. Ideal für Familie. Vollausstattung inklusive Anhängerkupplung.',
+    features: ['Klimaanlage', 'Anhängerkupplung', 'Tempomat', 'Einparkhilfe', 'Sitzheizung'],
+    location: 'Graz'
+  },
+  {
+    id: 3,
+    make: 'Mercedes-Benz',
+    model: 'C-Klasse',
+    year: 2021,
+    price: 35900,
+    mileage: 28000,
+    fuel: 'Benzin',
+    transmission: 'Automatik',
+    images: [
+      'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop',
+    ],
+    description: 'Luxuriöse C-Klasse mit allen Mercedes-Extras. Wie neu, unfallfrei.',
+    features: ['Klimaanlage', 'Navigation', 'Leder', 'Sitzheizung', 'Distronic'],
+    location: 'Salzburg'
+  },
+  {
+    id: 4,
+    make: 'Volkswagen',
+    model: 'Golf GTI',
+    year: 2018,
+    price: 18900,
+    mileage: 85000,
+    fuel: 'Benzin',
+    transmission: 'Manuell',
+    images: [
+      'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=600&h=400&fit=crop',
+      'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=600&h=400&fit=crop',
+    ],
+    description: 'Sportlicher Golf GTI mit 2.0 TSI Motor. Perfekt für Fahrspaß.',
+    features: ['Klimaanlage', 'Tempomat', 'Sportfahrwerk', '17" Alu', 'Bluetooth'],
+    location: 'Linz'
+  }
+];

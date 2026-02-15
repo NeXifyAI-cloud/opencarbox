@@ -11,10 +11,16 @@ on:
         default: 'false'
         type: choice
         options: ['false', 'true']
+      safe_only:
+        description: 'Delete only branches with merged PR history (true/false)'
+        required: true
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
       threshold_days:
         description: 'Inactive threshold in days'
         required: true
-        default: '21'
+        default: '30'
 
 permissions:
   contents: write
@@ -41,11 +47,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+          APPLY: ${{ github.event_name == 'schedule' && 'true' || github.event.inputs.apply || 'false' }}
+          SAFE_ONLY: ${{ github.event_name == 'schedule' && 'true' || github.event.inputs.safe_only || 'true' }}
+          THRESHOLD_DAYS: ${{ github.event_name == 'schedule' && '30' || github.event.inputs.threshold_days || '30' }}
         run: |
           npx tsx scripts/ci/branch-hygiene.ts \
             --repo "${GITHUB_REPOSITORY}" \
-            --thresholdDays "${{ github.event.inputs.threshold_days || '21' }}" \
-            --apply "${{ github.event.inputs.apply || 'false' }}"
+            --thresholdDays "${THRESHOLD_DAYS}" \
+            --safeOnly "${SAFE_ONLY}" \
+            --apply "${APPLY}"
 
       - name: Upload branch hygiene artifact
         uses: actions/upload-artifact@v4

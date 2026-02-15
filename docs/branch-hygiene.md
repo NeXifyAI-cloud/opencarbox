@@ -5,16 +5,18 @@
 - Repository: `n/a`
 - Generated: `n/a`
 - Mode: **DRY-RUN**
-- Inactive threshold: **21 days**
+- Inactive threshold: **30 days**
+- Safety mode: **safe-only (merged-PR required)**
+- Deleted: **0** | Candidates: **0** | Skipped: **0**
 
-## Inactive branches
+## Deletion candidates / deleted
 
-| Branch | Age (days) | Open PR | Action |
-| ------ | ---------: | ------: | ------ |
-| _none_ |          - |       - | -      |
+| Branch | Age (days) | Open PR | Merged PR | Action | Reason |
+| ------ | ---------: | ------: | --------: | ------ | ------ |
+| _none_ |          - |       - |         - | -      | -      |
 
-## Active or exempt branches
+## Skipped branches
 
-| Branch | Age (days) | Open PR |
-| ------ | ---------: | ------: |
-| _none_ |          - |       - |
+| Branch | Age (days) | Open PR | Merged PR | Reason |
+| ------ | ---------: | ------: | --------: | ------ |
+| _none_ |          - |       - |         - | -      |

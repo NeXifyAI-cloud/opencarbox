@@ -7,7 +7,7 @@ Dieses Setup hält PRs, Kommentare und CI-Berichte **autonom** aktuell:
 - `oracle.yml`: Gatekeeper, Attempt-Loop-Limit, PR-Kommentare
 - `autofix.yml`: Scope-Guard, `needs-human`, Auto-Merge-Block
 - `ci-health.yml`: Nightly Trend-Report + Auto-Commit nach `docs/ci-health.md`
-- `branch-hygiene.yml`: Inaktive Branches erkennen (Dry-Run) und optional sicher bereinigen
+- `branch-hygiene.yml`: Inaktive Branches autonom bereinigen (Schedule: APPLY + safe-only), manuell steuerbar via Workflow-Inputs
 
 ## DeepSeek + NScale statt statischer Regeln für Analyse
 
@@ -44,3 +44,9 @@ NScale/DeepSeek übernehmen die **Entscheidungs- und Analyseebene** innerhalb de
 - Ohne KI-Keys laufen die Workflows mit deterministischen Fallback-Texten weiter.
 - Verbotene Pfade bleiben immer human-gated (`needs-human`).
 - Oracle limitiert Autofix-Schleifen (`Autofix-Attempt`).
+
+## Branch-Hygiene Sicherheitslogik
+
+- **Schedule-Lauf**: `apply=true`, `safe_only=true`, `threshold_days=30` (autonomes, konservatives Aufräumen).
+- **Safe-only** löscht nur Branches ohne offene PR und mit nachweisbar **gemergter PR-Historie**.
+- Branches ohne Merge-Historie werden als `skip` markiert (schuldenfrei und nachvollziehbar statt riskant).

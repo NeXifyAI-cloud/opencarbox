@@ -1,0 +1,143 @@
+name: Full Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: Full Gate / build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Restore Next cache (full)
+        uses: actions/cache/restore@v4
+        with:
+          path: .next/cache
+          key: next-full-cache-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ github.ref_name }}
+          restore-keys: |
+            next-full-cache-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_APP_URL: https://opencarbox.vercel.app
+
+      - name: Save Next cache (full)
+        if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork) }}
+        uses: actions/cache/save@v4
+        with:
+          path: .next/cache
+          key: next-full-cache-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ github.ref_name }}
+
+  tests:
+    name: Full Gate / tests (${{ matrix.shard_index }}/${{ matrix.shard_total }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard_index: [1, 2]
+        shard_total: [2]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Test attempt #1
+        id: test_attempt_1
+        shell: bash
+        run: |
+          set +e
+          npm run test -- --shard=${{ matrix.shard_index }}/${{ matrix.shard_total }} 2>&1 | tee test-output.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" -ne 0 ]; then
+            if rg -i "(timed out|timeout|econnreset|socket hang up|jest worker|worker exited|network error)" test-output.log >/dev/null; then
+              echo "flake_like=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "flake_like=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+          exit 0
+
+      - name: Test rerun once for flaky failures
+        id: test_attempt_2
+        if: steps.test_attempt_1.outputs.exit_code != '0' && steps.test_attempt_1.outputs.flake_like == 'true'
+        shell: bash
+        run: |
+          set +e
+          npm run test -- --shard=${{ matrix.shard_index }}/${{ matrix.shard_total }} 2>&1 | tee test-rerun.log
+          code=${PIPESTATUS[0]}
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Write flaky marker
+        if: steps.test_attempt_1.outputs.exit_code != '0' && steps.test_attempt_1.outputs.flake_like == 'true' && steps.test_attempt_2.outputs.exit_code == '0'
+        run: |
+          mkdir -p logs
+          cat > logs/flaky.json <<'JSON'
+          {
+            "status": "flaky-suspected",
+            "shard": "${{ matrix.shard_index }}/${{ matrix.shard_total }}",
+            "run_id": "${{ github.run_id }}",
+            "sha": "${{ github.sha }}"
+          }
+          JSON
+
+      - name: Upload flaky marker artifact
+        if: steps.test_attempt_1.outputs.exit_code != '0' && steps.test_attempt_1.outputs.flake_like == 'true' && steps.test_attempt_2.outputs.exit_code == '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-${{ matrix.shard_index }}
+          path: logs/flaky.json
+
+      - name: Fail for non-flaky or persistent failures
+        shell: bash
+        run: |
+          if [ "${{ steps.test_attempt_1.outputs.exit_code }}" = "0" ]; then
+            exit 0
+          fi
+
+          if [ "${{ steps.test_attempt_1.outputs.flake_like }}" = "true" ] && [ "${{ steps.test_attempt_2.outputs.exit_code }}" = "0" ]; then
+            echo "Flaky suspected: rerun succeeded."
+            exit 0
+          fi
+
+          if [ "${{ steps.test_attempt_1.outputs.flake_like }}" = "true" ]; then
+            echo "Flaky-like failure persisted after one rerun."
+          else
+            echo "Non-flaky test failure detected."
+          fi
+          exit 1

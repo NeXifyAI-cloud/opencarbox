@@ -1,0 +1,14 @@
+# Default owner
+* @OpenCarBox/maintainers
+
+# CI / Workflow security
+.github/workflows/* @OpenCarBox/maintainers
+scripts/ci-* @OpenCarBox/maintainers
+
+# Security / platform critical surfaces
+src/middleware.ts @OpenCarBox/security-platform
+src/lib/supabase/** @OpenCarBox/security-platform
+
+# Database ownership
+prisma/** @OpenCarBox/db-owners
+supabase/migrations/** @OpenCarBox/db-owners

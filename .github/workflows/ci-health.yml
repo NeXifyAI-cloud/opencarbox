@@ -1,0 +1,84 @@
+name: CI Health Report
+
+on:
+  schedule:
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Generate CI health markdown
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p docs
+
+          now_utc=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          runs_json=$(gh api "repos/$REPO/actions/runs?per_page=100")
+
+          report=$(echo "$runs_json" | jq -r '
+            .workflow_runs
+            | map(select(
+                (.name == "Fast Gate" or .name == "Full Gate" or .name == "Autofix Oracle Gatekeeper" or .name == "Workflow Lint")
+              ))
+            | group_by(.name)
+            | map({
+                name: .[0].name,
+                total: length,
+                success: map(select(.conclusion == "success")) | length,
+                failed: map(select(.conclusion == "failure")) | length,
+                cancelled: map(select(.conclusion == "cancelled")) | length,
+                last: (.[0].updated_at // "n/a")
+              })
+            | sort_by(.name)
+          ')
+
+          {
+            echo "# CI Health"
+            echo
+            echo "> Automatisch generiert am ${now_utc}."
+            echo
+            echo "| Workflow | Runs (latest 100 scanned) | Success | Failed | Cancelled | Last Update |"
+            echo "|---|---:|---:|---:|---:|---|"
+            echo "$report" | jq -r '.[] | "| \(.name) | \(.total) | \(.success) | \(.failed) | \(.cancelled) | \(.last) |"'
+            echo
+            echo "## Notes"
+            echo
+            echo "- Datenquelle: GitHub Actions API (Repository workflow runs)."
+            echo "- Zweck: Trend-/Flake-Früherkennung ohne externen SaaS-Dienst."
+          } > docs/ci-health.md
+
+      - name: Upload CI health artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-health
+          path: docs/ci-health.md
+
+      - name: Commit report if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/ci-health.md; then
+            echo "No changes in ci-health report"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/ci-health.md
+          git commit -m "chore(ci): update CI health report"
+          git push

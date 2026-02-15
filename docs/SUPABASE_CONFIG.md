@@ -125,6 +125,14 @@ RLS ist für alle Tabellen aktiviert. Policies:
 
 ## 🛠️ Verwendung im Code
 
+### Client vs Server vs Admin (Mapping)
+
+| Kontext | Funktion | Dateipfad |
+| --- | --- | --- |
+| Browser / Client Components | `createClient()` oder `supabase` Singleton | `src/lib/supabase/client.ts` |
+| Server Components / Server Actions / Route Handlers | `createServerClient()` | `src/lib/supabase/server.ts` |
+| Privilegierte Admin-Tasks (ohne RLS) | `createAdminClient()` | `src/lib/supabase/server.ts` |
+
 ### Browser-Side (Client Components)
 
 ```typescript
@@ -140,10 +148,9 @@ const { data, error } = await supabase
 ### Server-Side (Server Components)
 
 ```typescript
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase/server';
 
-const supabase = createClient(cookies());
+const supabase = await createServerClient();
 const { data, error } = await supabase
   .from('orders')
   .select('*')
@@ -155,11 +162,10 @@ const { data, error } = await supabase
 ```typescript
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase/server';
 
 export async function createOrder(orderData: OrderInput) {
-  const supabase = createClient(cookies());
+  const supabase = await createServerClient();
   const { data, error } = await supabase
     .from('orders')
     .insert(orderData)
@@ -167,6 +173,22 @@ export async function createOrder(orderData: OrderInput) {
     .single();
 
   return { data, error };
+}
+```
+
+### Sichere Admin-Nutzung (`createAdminClient`) 
+
+⚠️ **server-only:** `createAdminClient()` darf nur in Server-Code verwendet werden (z. B. Route Handler, Cronjobs, Backend-Services) und niemals in Client Components.
+
+```typescript
+import 'server-only';
+import { createAdminClient } from '@/lib/supabase/server';
+
+export async function deleteUserForCompliance(userId: string) {
+  const admin = createAdminClient();
+
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  if (error) throw error;
 }
 ```
 

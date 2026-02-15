@@ -3,20 +3,25 @@ import path from "node:path";
 import { execSync } from "node:child_process";
 
 const WF_DIR = path.join(process.cwd(), ".github", "workflows");
-const USES_RE = /^(\s*-\s*uses:\s*)([^\s#]+)(\s*(#.*)?)$/;
+const USES_RE = /^(\s*uses:\s*)([^\s#]+)(\s*(#.*)?)$/;
 const PINNED_RE = /^[^@\s]+@[0-9a-f]{40}$/;
 
 function sh(cmd) {
   return execSync(cmd, { stdio: "pipe", encoding: "utf8" }).trim();
 }
 
+function extractOwnerRepo(actionRef) {
+  const parts = actionRef.split("/");
+  if (parts.length < 2) {
+    throw new Error(`Invalid action reference: ${actionRef}`);
+  }
+  return `${parts[0]}/${parts[1]}`;
+}
+
 // Resolve tag/branch to SHA without GitHub APIs
 function resolveRef(ownerRepo, ref) {
-  // refs/tags/<ref> or refs/heads/<ref>
-  // Try tags first, then heads.
   const tagRef = `refs/tags/${ref}`;
   const headRef = `refs/heads/${ref}`;
-
   const url = `https://github.com/${ownerRepo}.git`;
 
   let out = "";
@@ -30,7 +35,6 @@ function resolveRef(ownerRepo, ref) {
     if (out) return out.split(/\s+/)[0];
   } catch {}
 
-  // Annotated tags sometimes require deref ^{}
   try {
     out = sh(`git ls-remote ${url} ${tagRef}^{}`);
     if (out) return out.split(/\s+/)[0];
@@ -54,12 +58,13 @@ function pinLine(line) {
     return { changed: false, line };
   }
 
-  const [ownerRepo, ref] = usesVal.split("@");
-  if (!ownerRepo || !ref) return { changed: false, line };
+  const [actionRef, ref] = usesVal.split("@");
+  if (!actionRef || !ref) return { changed: false, line };
 
+  const ownerRepo = extractOwnerRepo(actionRef);
   const sha = resolveRef(ownerRepo, ref);
   const comment = suffix.includes("#") ? suffix : `${suffix} # ${ref}`;
-  return { changed: true, line: `${prefix}${ownerRepo}@${sha}${comment}` };
+  return { changed: true, line: `${prefix}${actionRef}@${sha}${comment}` };
 }
 
 function main() {

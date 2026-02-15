@@ -56,7 +56,10 @@
     "security:scan-secrets": "node scripts/security-scan-secrets.js",
     "ai:autofix": "node scripts/ai/autofix-runner.mjs",
     "ci:pin-actions": "node scripts/pin-actions.mjs",
-    "ci:perf-budget": "node scripts/ci-perf-budget.js"
+    "ci:perf-budget": "node scripts/ci-perf-budget.js",
+    "bot:oracle:gitlab": "node scripts/gitlab/oracle-support-bot.mjs",
+    "bot:oracle:gitlab:once": "node scripts/gitlab/oracle-support-bot.mjs --once",
+    "bot:oracle:watch": "tsx scripts/core/watchdog.ts script bot:oracle:gitlab"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

@@ -21,6 +21,9 @@ on:
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_CLI_VERSION: '37.14.0'
+  CI: 'true'
+  TZ: 'UTC'
 
 jobs:
   deploy:
@@ -41,7 +44,7 @@ jobs:
           cache: 'npm'
 
       - name: Install Vercel CLI
-        run: npm install -g vercel@latest
+        run: npm install -g vercel@${{ env.VERCEL_CLI_VERSION }}
 
       - name: Pull Vercel Environment
         run: vercel pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ secrets.VERCEL_TOKEN }}

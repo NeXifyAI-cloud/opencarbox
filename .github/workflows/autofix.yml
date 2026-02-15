@@ -1,0 +1,112 @@
+name: Autofix Loop
+
+on:
+  workflow_run:
+    workflows: ["Fast Gate", "Full Gate"]
+    types: [completed]
+
+jobs:
+  autofix:
+    if: |
+      github.event.workflow_run.conclusion == 'failure' &&
+      !startsWith(github.event.workflow_run.head_branch, 'autofix/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      CI: "true"
+      TZ: "UTC"
+    steps:
+      - name: Checkout failing commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Build structured failure summary
+        run: |
+          mkdir -p logs
+          {
+            echo "workflow=${{ github.event.workflow_run.name }}"
+            echo "conclusion=${{ github.event.workflow_run.conclusion }}"
+            echo "head_sha=${{ github.event.workflow_run.head_sha }}"
+            echo "head_branch=${{ github.event.workflow_run.head_branch }}"
+          } | tee logs/workflow.log
+          node scripts/ci-classify-failure.js logs/workflow.log | tee logs/error-summary.json
+
+      - name: Stop on infra/network failures
+        id: classify
+        run: |
+          CLASSIFICATION=$(node -e "const d=require('./logs/error-summary.json');process.stdout.write(d.classification)")
+          ACTIONABLE=$(node -e "const d=require('./logs/error-summary.json');process.stdout.write(String(d.actionable))")
+          echo "classification=$CLASSIFICATION" >> "$GITHUB_OUTPUT"
+          echo "actionable=$ACTIONABLE" >> "$GITHUB_OUTPUT"
+
+      - name: Install dependencies
+        if: steps.classify.outputs.actionable == 'true'
+        run: npm ci 2>&1 | tee logs/install.log
+
+      - name: Apply safe autofixes
+        if: steps.classify.outputs.actionable == 'true'
+        run: |
+          npm run lint:fix 2>&1 | tee logs/lint-fix.log || true
+          npm run format 2>&1 | tee logs/format.log || true
+          npm run type-check 2>&1 | tee logs/typecheck.log || true
+
+      - name: Upload autofix diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: autofix-logs-${{ github.run_id }}
+          path: logs/*
+          if-no-files-found: warn
+
+      - name: Create or update Autofix PR
+        if: steps.classify.outputs.actionable == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if git diff --quiet; then
+            echo "No safe autofix changes generated."
+            exit 0
+          fi
+
+          SHORT_SHA=$(echo "${{ github.event.workflow_run.head_sha }}" | cut -c1-12)
+          BASE_BRANCH="${{ github.event.workflow_run.head_branch }}"
+          FIX_BRANCH="autofix/${SHORT_SHA}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git checkout -B "$FIX_BRANCH"
+          git add -A
+          git commit -m "autofix: safe ci fixes for ${SHORT_SHA}"
+          git push --force-with-lease origin "$FIX_BRANCH"
+
+          PR_URL=$(gh pr list --head "$FIX_BRANCH" --json url --jq '.[0].url')
+          BODY=$(cat <<'EOF'
+## Autofix summary
+- Root cause guess: `${{ steps.classify.outputs.classification }}`
+- Source workflow: `${{ github.event.workflow_run.name }}`
+- Source run id: `${{ github.event.workflow_run.id }}`
+- Changed files: generated from safe lint/format/typecheck fixes
+- Logs: see uploaded `autofix-logs` artifact (`error-summary.json` included)
+EOF
+)
+
+          if [ -n "$PR_URL" ] && [ "$PR_URL" != "null" ]; then
+            gh pr edit "$PR_URL" --body "$BODY" --add-label autofix
+          else
+            gh pr create \
+              --base "$BASE_BRANCH" \
+              --head "$FIX_BRANCH" \
+              --title "autofix: CI remediation for ${SHORT_SHA}" \
+              --body "$BODY" \
+              --label autofix
+          fi

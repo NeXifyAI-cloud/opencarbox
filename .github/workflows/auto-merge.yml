@@ -1,35 +1,19 @@
-# Auto-Merge Workflow für OpenCarBox
-# Automatisches Mergen von Dependabot PRs und approved PRs
-
 name: Auto-Merge
 
 on:
-  pull_request_target:
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
   pull_request_review:
-    types:
-      - submitted
-  check_suite:
-    types:
-      - completed
-  workflow_run:
-    workflows: ["Quality Gate & Deployment"]
-    types:
-      - completed
-
-permissions:
-  contents: write
-  pull-requests: write
+    types: [submitted]
 
 jobs:
   dependabot-auto-merge:
+    if: github.actor == 'dependabot[bot]'
     name: Auto-Merge Dependabot
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
       - name: Dependabot metadata
@@ -38,52 +22,9 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Auto-approve Dependabot PRs
+      - name: Enable auto-merge for patch/minor updates
         if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
-        run: gh pr review --approve "$PR_URL"
         env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable auto-merge for Dependabot PRs
-        if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
+          PR_URL: ${{ github.event.pull_request.html_url }}
         run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  auto-merge-approved:
-    name: Auto-Merge Approved PRs
-    runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'pull_request_review' &&
-      github.event.review.state == 'approved'
-
-    steps:
-      - name: Enable auto-merge
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  auto-merge-labeled:
-    name: Auto-Merge Labeled PRs
-    runs-on: ubuntu-latest
-    if: |
-      github.event_name == 'pull_request_target' &&
-      contains(github.event.pull_request.labels.*.name, 'auto-merge')
-
-    steps:
-      - name: Wait for checks
-        uses: lewagon/wait-on-check-action@3603e826ee561ea102b58accb5ea55a1a7482343 # v1.4.1
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-          running-workflow-name: "Auto-Merge Labeled PRs"
-
-      - name: Auto-merge labeled PR
-        run: gh pr merge --auto --squash "$PR_URL"
-        env:
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

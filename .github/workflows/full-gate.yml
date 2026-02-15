@@ -1,0 +1,107 @@
+name: Full Gate
+
+on:
+  pull_request:
+  push:
+    branches: [main, develop]
+
+jobs:
+  tests:
+    name: Tests (shard ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ['1/2', '2/2']
+    env:
+      CI: "true"
+      TZ: "UTC"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Cache Next.js
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .next/cache
+          key: next-cache-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('next.config.*', 'src/**', 'app/**', 'pages/**') }}
+          restore-keys: |
+            next-cache-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+            next-cache-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          mkdir -p logs
+          npm ci 2>&1 | tee logs/install-${{ matrix.shard }}.log
+
+      - name: Run tests (sharded)
+        run: npm run test -- --runInBand=false --shard=${{ matrix.shard }} 2>&1 | tee logs/tests-${{ matrix.shard }}.log
+
+      - name: Retry once on flaky test failure
+        if: failure()
+        run: npm run test -- --runInBand=false --shard=${{ matrix.shard }} 2>&1 | tee -a logs/tests-${{ matrix.shard }}.log
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: full-gate-test-logs-${{ matrix.shard }}-${{ github.run_id }}
+          path: logs/*.log
+          if-no-files-found: warn
+
+  build:
+    name: Full Build + Budget
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      CI: "true"
+      TZ: "UTC"
+      MAX_FIRST_LOAD_JS_KB: "250"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Cache Next.js
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            .next/cache
+            node_modules/.cache
+          key: next-build-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('next.config.*', 'src/**', 'app/**', 'pages/**') }}
+          restore-keys: |
+            next-build-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+            next-build-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: |
+          mkdir -p logs
+          npm ci 2>&1 | tee logs/build-install.log
+
+      - name: Build
+        run: npm run build 2>&1 | tee logs/build.log
+
+      - name: Performance budget
+        run: node scripts/ci-performance-budget.js 2>&1 | tee logs/perf-budget.log
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: full-gate-build-logs-${{ github.run_id }}
+          path: logs/*.log
+          if-no-files-found: warn

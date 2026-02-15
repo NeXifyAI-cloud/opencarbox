@@ -1,0 +1,58 @@
+name: Branch Maintenance
+
+on:
+  schedule:
+    - cron: '23 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  CI: 'true'
+  TZ: UTC
+
+jobs:
+  inventory-and-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Generate branch inventory
+        run: |
+          mkdir -p ci
+          npm run branch:inventory > ci/branch-inventory.json
+          cat ci/branch-inventory.json
+
+      - name: Upload inventory artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: branch-inventory
+          path: ci/branch-inventory.json
+
+      - name: Open maintenance issue when stale branches are detected
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          stale=$(jq '[.branches[] | select(.behindMain != null and .behindMain > 0)] | length' ci/branch-inventory.json)
+          if [ "$stale" -eq 0 ]; then
+            echo "No stale branches behind main detected."
+            exit 0
+          fi
+
+          gh issue create --repo "$REPO" \
+            --title "Nightly branch maintenance: $stale stale branches detected" \
+            --body "Siehe Artifact \`branch-inventory\` für die priorisierte Liste (nächstes Ziel: kleinste Drift zuerst)."

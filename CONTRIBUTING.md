@@ -21,13 +21,21 @@ Auto-Merge wird nur aktiviert (nicht sofort gemergt), wenn eine der folgenden Be
 
 Das tatsächliche Mergen erfolgt erst, wenn Branch-Protection-Bedingungen erfüllt sind.
 
+## Branch-Reparatur und Nightly Maintenance
+
+- Nightly läuft `.github/workflows/branch-maintenance.yml` und erstellt ein Branch-Inventar.
+- Reihenfolge für Reparaturen: Branches mit geringster Drift zu `main` zuerst.
+- Reparaturen erfolgen ausschließlich über `repair/<branch>/<date-sha>` + Pull Request.
+- Keine direkten Pushes auf fremde/alte Branches durch Automation.
+- Falls verbotene Pfade betroffen sind oder Risiko erhöht ist: Label `needs-human` setzen.
+
 ## Empfohlene Branch-Protection für `main`
 
 Damit Auto-Merge sicher ist, müssen in GitHub für `main` mindestens diese Regeln gesetzt sein:
 
 1. **Require a pull request before merging**.
 2. **Require approvals** mit mindestens **1 Review**.
-3. **Require status checks to pass before merging** (mindestens der CI-Workflow, z. B. `Quality Gate & Deployment`).
+3. **Require status checks to pass before merging** (`Fast Gate` und `Full Gate`).
 4. Optional: **Dismiss stale pull request approvals when new commits are pushed**.
 5. Optional: **Require conversation resolution before merging**.
 

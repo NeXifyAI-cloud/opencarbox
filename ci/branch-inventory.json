@@ -1,0 +1,9 @@
+
+> opencarbox-carvantooo@1.0.0 branch:inventory
+> node scripts/branch-inventory.js
+
+{
+  "generatedAt": "2026-02-15T19:21:43.522Z",
+  "mainRef": "",
+  "branches": []
+}

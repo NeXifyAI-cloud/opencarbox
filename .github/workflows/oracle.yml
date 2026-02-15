@@ -18,6 +18,7 @@ jobs:
       - name: Validate required checks + enforce attempt loop limit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -75,9 +76,33 @@ jobs:
             fi
           done
 
+          ai_reason=""
+          if [ -n "${DEEPSEEK_API_KEY:-}" ]; then
+            payload=$(jq -n \
+              --arg status "$([ "$failed" -eq 0 ] && echo "success" || echo "failure")" \
+              --arg report "$report" \
+              '{
+                model: "deepseek-chat",
+                temperature: 0.1,
+                messages: [
+                  {role: "system", content: "Du bist CI-Orakel. Antworte in genau 2 Bullet-Points auf Deutsch: 1) Fehlerklassifikation, 2) Fix-Reason."},
+                  {role: "user", content: ("Status: " + $status + "\nChecks:\n" + $report)}
+                ]
+              }')
+
+            ai_reason=$(curl -sS https://api.deepseek.com/chat/completions \
+              -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d "$payload" | jq -r '.choices[0].message.content // ""')
+          fi
+
+          if [ -z "$ai_reason" ]; then
+            ai_reason="- Fehlerklassifikation: Required checks nicht vollständig grün auf PR-Head.\n- Fix-Reason: Fast+Full Gate müssen auf dem aktuellen Head-SHA erfolgreich sein."
+          fi
+
           if [ "$failed" -ne 0 ]; then
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "❌ Oracle Gate blockiert Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\nFix-Reason: Required checks nicht vollständig grün auf PR-Head."
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "❌ Oracle Gate blockiert Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\n$ai_reason"
             exit 1
           fi
 
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "✅ Oracle Gate erlaubt Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\nFix-Reason: Fast+Full Gate vollständig erfolgreich auf PR-Head."
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "✅ Oracle Gate erlaubt Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\n$ai_reason"

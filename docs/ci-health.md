@@ -8,3 +8,7 @@
 | Full Gate                 |                       n/a |     n/a |    n/a |       n/a | n/a         |
 | Autofix Oracle Gatekeeper |                       n/a |     n/a |    n/a |       n/a | n/a         |
 | Workflow Lint             |                       n/a |     n/a |    n/a |       n/a | n/a         |
+
+## DeepSeek Insights
+
+- Wird automatisch über DeepSeek API erzeugt, sobald `DEEPSEEK_API_KEY` gesetzt ist.

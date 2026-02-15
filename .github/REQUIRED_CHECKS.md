@@ -14,3 +14,7 @@ Die folgenden Checks sollten als **required checks** in den GitHub-Branch-Protec
 - Autofix darf nur mergen, wenn alle Required Checks auf dem PR-Head erfolgreich sind.
 - Oracle Loop-Limit: maximal 2 automatische Fix-Versuche pro PR/SHA (`Autofix-Attempt`).
 - Bei Änderungen in verbotenen Pfaden wird `needs-human` gesetzt und Auto-Merge deaktiviert.
+
+## Secrets
+
+- `DEEPSEEK_API_KEY` für KI-gestützte Klassifikation/Trendanalyse in Oracle-, Autofix- und CI-Health-Workflows.

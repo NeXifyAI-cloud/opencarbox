@@ -55,7 +55,8 @@
     "watch:reset": "tsx scripts/core/watchdog.ts reset",
     "security:scan-secrets": "node scripts/security-scan-secrets.js",
     "ai:autofix": "node scripts/ai/autofix-runner.mjs",
-    "ci:pin-actions": "node scripts/pin-actions.mjs"
+    "ci:pin-actions": "node scripts/pin-actions.mjs",
+    "ci:perf-budget": "node scripts/ci-perf-budget.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

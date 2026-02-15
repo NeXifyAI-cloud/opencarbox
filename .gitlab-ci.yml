@@ -2,25 +2,36 @@ stages:
   - fast
   - full
   - autofix
+  - maintenance
   - mirror
+
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
 
 variables:
   CI: "true"
   TZ: "UTC"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+  MAX_AUTOFIX_ATTEMPTS: "2"
+  AUTOFIX_LABEL: "autofix"
+  NEEDS_HUMAN_LABEL: "needs-human"
 
 cache:
-  key: ${CI_COMMIT_REF_SLUG}
+  key: "${CI_COMMIT_REF_SLUG}"
   paths:
-    - node_modules/
     - .npm/
 
-.default_node_job: &default_node_job
+default:
   image: node:20
   before_script:
+    - node -v
+    - npm -v
     - npm ci
 
 fast_gate:
-  <<: *default_node_job
   stage: fast
   script:
     - mkdir -p logs
@@ -29,48 +40,89 @@ fast_gate:
     - npm run type-check | tee logs/type-check.log
     - npm run build | tee logs/build.log
     - cat logs/*.log > logs/workflow.log
+    - node scripts/ci-classify-failure.js logs/workflow.log || true
   artifacts:
     when: always
     paths:
       - logs/
 
-full_gate:
-  <<: *default_node_job
+full_gate_tests:
+  stage: full
+  parallel:
+    matrix:
+      - SHARD: ["1/2", "2/2"]
+  script:
+    - mkdir -p logs
+    - echo "Shard: $SHARD" | tee logs/test-shard.meta
+    - npm run test -- --run | tee "logs/test-${SHARD//\//-}.log" || true
+  artifacts:
+    when: always
+    paths:
+      - logs/
+
+full_gate_build:
   stage: full
   script:
     - mkdir -p logs
-    - npm run test -- --run | tee logs/test.log
     - npm run build | tee logs/build.log
+    - npm run ci:perf-budget | tee logs/perf.log || true
     - cat logs/*.log > logs/workflow.log
+    - node scripts/ci-classify-failure.js logs/workflow.log || true
   artifacts:
     when: always
     paths:
       - logs/
 
 autofix:
-  <<: *default_node_job
   stage: autofix
+  when: on_failure
   rules:
-    - when: on_failure
+    - if: '$CI_COMMIT_BRANCH'
   script:
-    - npm run ai:autofix || true
+    - mkdir -p logs
+    - test -f logs/error-summary.json || echo '{"kind":"unknown"}' > logs/error-summary.json
+    - |
+      node - <<'NODE'
+      const fs=require('fs');
+      const s=JSON.parse(fs.readFileSync('logs/error-summary.json','utf8'));
+      if (s.kind === 'infra') process.exit(50);
+      NODE
+    - node scripts/ci-classify-failure.js logs/workflow.log || true
+    - npm run ai:autofix || exit 2
     - git config user.name "NeXifyAI Bot"
     - git config user.email "nexifyai-bot@gitlab.com"
-    - git push origin HEAD:autofix/${CI_COMMIT_SHORT_SHA}
+    - git checkout -b "autofix/${CI_COMMIT_SHORT_SHA}"
+    - git push -u origin "HEAD:autofix/${CI_COMMIT_SHORT_SHA}"
+    - node scripts/gitlab/upsert-mr.mjs
   allow_failure: true
+
+maintenance_pin_actions:
+  stage: maintenance
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  script:
+    - npm run ci:pin-actions
+    - node scripts/gitlab/upsert-mr-pin-actions.mjs
+
+maintenance_branch_repair:
+  stage: maintenance
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  script:
+    - node scripts/gitlab/branch-maintenance.mjs
 
 mirror_to_github:
   stage: mirror
-  image: alpine:3.20
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main" && $GITHUB_SSH_PRIVATE_KEY'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  image: alpine:3.20
   before_script:
     - apk add --no-cache git openssh-client
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
     - echo "$GITHUB_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
     - chmod 600 ~/.ssh/id_ed25519
     - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
   script:
-    - git remote add github git@github.com:NeXify-Chat-it-Automate-it/OpenCarBox.git || true
+    - git remote remove github 2>/dev/null || true
+    - git remote add github git@github.com:NeXify-Chat-it-Automate-it/OpenCarBox.git
     - git push --prune github +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*

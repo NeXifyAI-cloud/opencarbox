@@ -8,27 +8,37 @@ Dieses Setup hält PRs, Kommentare und CI-Berichte **autonom** aktuell:
 - `autofix.yml`: Scope-Guard, `needs-human`, Auto-Merge-Block
 - `ci-health.yml`: Nightly Trend-Report + Auto-Commit nach `docs/ci-health.md`
 
-## DeepSeek statt statischer Regeln für Analyse
+## DeepSeek + NScale statt statischer Regeln für Analyse
 
-Die CI nutzt DeepSeek API für:
+Die CI nutzt einen KI-Router (`scripts/ci/ai-decision.ts`) mit Priorität **NScale (OSS-Modelle)** -> **DeepSeek** -> **Fallback** für:
 
 1. **Fehlerklassifikation + Fix-Reason** im Oracle-Gate
 2. **Risiko-/Empfehlungs-Kommentare** im Autofix-Scope-Guard
 3. **Trend-/Flake-Insights** im CI-Health-Report
 
-Erforderliches Secret:
+Erforderliche Secrets:
 
 ```env
+NSCALE_API_KEY=<your_nscale_api_key>
 DEEPSEEK_API_KEY=<your_deepseek_api_key>
+```
+
+Optionale Modelle/Endpoints:
+
+```env
+NSCALE_MODEL=openai/gpt-oss-120b
+NSCALE_BASE_URL=https://inference.api.nscale.com/v1
+DEEPSEEK_MODEL=deepseek-chat
+DEEPSEEK_BASE_URL=https://api.deepseek.com
 ```
 
 ## Wichtiger Hinweis zur Plattform
 
 GitHub Actions verarbeitet weiterhin die Repository-Ereignisse (PR, Check Runs, Workflow Runs).
-DeepSeek übernimmt die **Entscheidungs- und Analyseebene** innerhalb der Workflows.
+NScale/DeepSeek übernehmen die **Entscheidungs- und Analyseebene** innerhalb der Workflows.
 
 ## Betriebsregeln
 
-- Ohne `DEEPSEEK_API_KEY` laufen die Workflows mit regelbasierten Fallback-Texten weiter.
+- Ohne KI-Keys laufen die Workflows mit deterministischen Fallback-Texten weiter.
 - Verbotene Pfade bleiben immer human-gated (`needs-human`).
 - Oracle limitiert Autofix-Schleifen (`Autofix-Attempt`).

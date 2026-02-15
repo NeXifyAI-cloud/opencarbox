@@ -14,47 +14,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
       - name: Block forbidden path changes for auto-merge
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
-
           files=$(gh api "repos/$REPO/pulls/$PR_NUMBER/files?per_page=200" --paginate | jq -r '.[].filename')
           echo "$files" > changed-files.txt
-          files_for_prompt=$(cat changed-files.txt)
 
-          ai_msg=""
-          if [ -n "${DEEPSEEK_API_KEY:-}" ]; then
-            payload=$(jq -n \
-              --arg files "$files_for_prompt" \
-              '{
-                model: "deepseek-chat",
-                temperature: 0.1,
-                messages: [
-                  {role: "system", content: "Du bewertest Autofix-Diffs. Antworte in genau 2 Bullet-Points: 1) Risikoklasse, 2) Empfehlung."},
-                  {role: "user", content: ("Geänderte Dateien:\n" + $files)}
-                ]
-              }')
-
-            ai_msg=$(curl -sS https://api.deepseek.com/chat/completions \
-              -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
-              -H "Content-Type: application/json" \
-              -d "$payload" | jq -r '.choices[0].message.content // ""')
-          fi
-
-          if [ -z "$ai_msg" ]; then
-            ai_msg="- Risikoklasse: regelbasiert bewertet.\n- Empfehlung: Verbotene Pfade niemals automatisch mergen."
-          fi
+          ai_msg=$(npx tsx scripts/ci/ai-decision.ts autofix "$files")
 
           if rg -n "^(prisma/migrations/|supabase/migrations/|\.env|vercel\.json$)" changed-files.txt >/dev/null; then
             gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label needs-human
             gh pr merge --disable-auto "https://github.com/$REPO/pull/$PR_NUMBER" || true
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "⚠️ Autofix Scope Guard: Verbotene Pfade geändert (z. B. Migrationen/.env/vercel.json). Auto-Merge deaktiviert, Label \\`needs-human\\` gesetzt.\n\n$ai_msg"
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "⚠️ Autofix Scope Guard: Verbotene Pfade geändert. Auto-Merge deaktiviert, Label \`needs-human\` gesetzt.\n\n$ai_msg"
             exit 1
           fi
 

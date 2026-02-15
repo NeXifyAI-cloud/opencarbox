@@ -17,4 +17,5 @@ Die folgenden Checks sollten als **required checks** in den GitHub-Branch-Protec
 
 ## Secrets
 
-- `DEEPSEEK_API_KEY` für KI-gestützte Klassifikation/Trendanalyse in Oracle-, Autofix- und CI-Health-Workflows.
+- `NSCALE_API_KEY` für priorisierte KI-Analyse mit OSS-Modellen (z. B. `openai/gpt-oss-120b`).
+- `DEEPSEEK_API_KEY` als sekundärer KI-Provider/Fallback für Klassifikation und Trendanalyse.

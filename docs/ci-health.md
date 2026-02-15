@@ -11,4 +11,4 @@
 
 ## DeepSeek Insights
 
-- Wird automatisch über DeepSeek API erzeugt, sobald `DEEPSEEK_API_KEY` gesetzt ist.
+- Wird automatisch über NScale/DeepSeek erzeugt (`NSCALE_API_KEY` priorisiert, `DEEPSEEK_API_KEY` fallback).

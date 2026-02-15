@@ -15,10 +15,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
       - name: Validate required checks + enforce attempt loop limit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -29,21 +42,16 @@ jobs:
           pr_json=$(gh api "repos/$REPO/pulls/$PR_NUMBER")
           body=$(echo "$pr_json" | jq -r '.body // ""')
           attempts=$(echo "$body" | sed -n 's/.*Autofix-Attempt:[[:space:]]*\([0-9][0-9]*\).*/\1/p' | tail -1)
-          if [ -z "$attempts" ]; then
-            attempts=0
-          fi
+          if [ -z "$attempts" ]; then attempts=0; fi
           next_attempt=$((attempts + 1))
 
           if echo "$body" | rg -q "Autofix-Attempt:"; then
             new_body=$(echo "$body" | sed -E "s/Autofix-Attempt:[[:space:]]*[0-9]+/Autofix-Attempt: $next_attempt/")
           elif [ -n "$body" ]; then
-            new_body="$body"
-            new_body+=$'\n\n'
-            new_body+="Autofix-Attempt: $next_attempt"
+            new_body="$body"$'\n\n'"Autofix-Attempt: $next_attempt"
           else
             new_body="Autofix-Attempt: $next_attempt"
           fi
-
           gh pr edit "$PR_NUMBER" --repo "$REPO" --body "$new_body"
 
           if [ "$next_attempt" -gt 2 ]; then
@@ -54,10 +62,10 @@ jobs:
           fi
 
           checks=$(gh api "repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100")
-
           req=("Fast Gate" "Full Gate / build" "Full Gate / tests (1/2)" "Full Gate / tests (2/2)")
           failed=0
           report=""
+
           for check in "${req[@]}"; do
             row=$(echo "$checks" | jq -r --arg n "$check" '.check_runs[] | select(.name==$n) | [.name,.status,.conclusion] | @tsv' | tail -1)
             if [ -z "$row" ]; then
@@ -76,33 +84,11 @@ jobs:
             fi
           done
 
-          ai_reason=""
-          if [ -n "${DEEPSEEK_API_KEY:-}" ]; then
-            payload=$(jq -n \
-              --arg status "$([ "$failed" -eq 0 ] && echo "success" || echo "failure")" \
-              --arg report "$report" \
-              '{
-                model: "deepseek-chat",
-                temperature: 0.1,
-                messages: [
-                  {role: "system", content: "Du bist CI-Orakel. Antworte in genau 2 Bullet-Points auf Deutsch: 1) Fehlerklassifikation, 2) Fix-Reason."},
-                  {role: "user", content: ("Status: " + $status + "\nChecks:\n" + $report)}
-                ]
-              }')
-
-            ai_reason=$(curl -sS https://api.deepseek.com/chat/completions \
-              -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
-              -H "Content-Type: application/json" \
-              -d "$payload" | jq -r '.choices[0].message.content // ""')
-          fi
-
-          if [ -z "$ai_reason" ]; then
-            ai_reason="- Fehlerklassifikation: Required checks nicht vollständig grün auf PR-Head.\n- Fix-Reason: Fast+Full Gate müssen auf dem aktuellen Head-SHA erfolgreich sein."
-          fi
+          ai_reason=$(npx tsx scripts/ci/ai-decision.ts oracle "Status: $([ \"$failed\" -eq 0 ] && echo success || echo failure)\nChecks:\n$report")
 
           if [ "$failed" -ne 0 ]; then
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "❌ Oracle Gate blockiert Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\n$ai_reason"
+            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "❌ Oracle Gate blockiert Auto-Merge auf \`$HEAD_SHA\`.\n\n$report\n$ai_reason"
             exit 1
           fi
 
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "✅ Oracle Gate erlaubt Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\n$ai_reason"
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "✅ Oracle Gate erlaubt Auto-Merge auf \`$HEAD_SHA\`.\n\n$report\n$ai_reason"

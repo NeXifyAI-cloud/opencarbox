@@ -17,24 +17,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
       - name: Generate CI health markdown
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
           REPO: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p docs
-
           now_utc=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           runs_json=$(gh api "repos/$REPO/actions/runs?per_page=100")
 
           report=$(echo "$runs_json" | jq -r '
             .workflow_runs
-            | map(select(
-                (.name == "Fast Gate" or .name == "Full Gate" or .name == "Autofix Oracle Gatekeeper" or .name == "Workflow Lint")
-              ))
+            | map(select((.name == "Fast Gate" or .name == "Full Gate" or .name == "Autofix Oracle Gatekeeper" or .name == "Workflow Lint")))
             | group_by(.name)
             | map({
                 name: .[0].name,
@@ -47,29 +54,7 @@ jobs:
             | sort_by(.name)
           ')
 
-          ai_insights="- DEEPSEEK_API_KEY nicht gesetzt: nur tabellarischer Report generiert."
-          if [ -n "${DEEPSEEK_API_KEY:-}" ]; then
-            prompt_input=$(echo "$report" | jq -c .)
-            payload=$(jq -n \
-              --arg runs "$prompt_input" \
-              '{
-                model: "deepseek-chat",
-                temperature: 0.1,
-                messages: [
-                  {role: "system", content: "Du bist ein CI Reliability Analyst. Antworte in maximal 4 Bullet-Points mit Trends, Flake-Hinweisen und 1 konkreten Optimierung."},
-                  {role: "user", content: ("Workflow-Statistik (JSON): " + $runs)}
-                ]
-              }')
-
-            ai_reply=$(curl -sS https://api.deepseek.com/chat/completions \
-              -H "Authorization: Bearer $DEEPSEEK_API_KEY" \
-              -H "Content-Type: application/json" \
-              -d "$payload" | jq -r '.choices[0].message.content // ""')
-
-            if [ -n "$ai_reply" ]; then
-              ai_insights="$ai_reply"
-            fi
-          fi
+          ai_insights=$(npx tsx scripts/ci/ai-decision.ts ci-health "$(echo "$report" | jq -c .)")
 
           {
             echo "# CI Health"
@@ -86,8 +71,7 @@ jobs:
             echo
             echo "## Notes"
             echo
-            echo "- Operative Metadaten (PRs/Checks/Runs) kommen aus GitHub Events/API; Analyse und Klassifikation über DeepSeek API."
-            echo "- Zweck: autonome Trend-/Flake-Früherkennung ohne manuelle Auswertung."
+            echo "- Operative Metadaten kommen aus GitHub Events/API; Analyse über NSCALE/DeepSeek Router."
           } > docs/ci-health.md
 
       - name: Upload CI health artifact
@@ -104,7 +88,6 @@ jobs:
             echo "No changes in ci-health report"
             exit 0
           fi
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/ci-health.md

@@ -14,18 +14,59 @@ Eine Premium Automotive Multisite Platform für:
 
 ## 🚀 Quick Start
 
-```bash
-# Dependencies installieren
-npm install
+### Voraussetzungen
 
+- Node.js >= 18.17.0
+- npm >= 9.0.0
+- Git
+
+### Installation
+
+```bash
+# Repository klonen
+git clone https://github.com/NeXify-Chat-it-Automate-it/OpenCarBox.git
+cd OpenCarBox
+
+# Dependencies installieren (legacy-peer-deps erforderlich)
+npm install --legacy-peer-deps
+
+# Prisma Client generieren
+npm run db:generate
+
+# Environment konfigurieren
+cp .env.example .env.local
+# → Trage deine Supabase-Credentials in .env.local ein
+```
+
+### Entwicklung
+
+```bash
 # Development Server starten
 npm run dev
+# → http://localhost:3000
 
 # Type-Check
 npm run type-check
 
+# Linting
+npm run lint
+npm run lint:fix
+
+# Tests
+npm run test
+
 # Quality Gate (vor Commit)
 npm run quality-gate
+```
+
+### Build & Deployment
+
+```bash
+# Production Build
+npm run build
+
+# Start Production Server
+npm start
 ```
 
 ## 🛠️ Tech Stack
@@ -120,6 +161,38 @@ npm run oracle:status
 
 # Nächste Aufgabe
 npx tsx scripts/core/oracle.ts next-task
+```
+
+## 🔧 Troubleshooting
+
+### npm install schlägt fehl
+
+```bash
+# Mit legacy-peer-deps
+npm install --legacy-peer-deps
+
+# Falls Symlink-Fehler
+npm install --legacy-peer-deps --no-bin-links
+```
+
+### Prisma Client Fehler
+
+```bash
+# Client neu generieren
+npm run db:generate
+
+# Schema validieren
+npx prisma validate
+```
+
+### TypeScript Fehler
+
+```bash
+# Type-Check ohne Emit
+npm run type-check
+
+# TSC neu installieren
+npm install -D typescript --legacy-peer-deps
 ```
 
 ## 📄 Lizenz

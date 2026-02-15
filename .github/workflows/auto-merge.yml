@@ -4,7 +4,7 @@
 name: Auto-Merge
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - synchronize
@@ -13,13 +13,6 @@ on:
   pull_request_review:
     types:
       - submitted
-  check_suite:
-    types:
-      - completed
-  workflow_run:
-    workflows: ["Quality Gate & Deployment"]
-    types:
-      - completed
 
 permissions:
   contents: write
@@ -29,7 +22,14 @@ jobs:
   dependabot-auto-merge:
     name: Auto-Merge Dependabot
     runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]'
+    if: |
+      github.event_name == 'pull_request' &&
+      github.actor == 'dependabot[bot]' &&
+      github.event.pull_request.head.repo.fork == false &&
+      (
+        github.event.pull_request.head.repo.owner.login == github.repository_owner ||
+        contains(format(',{0},', vars.AUTO_MERGE_TRUSTED_ACTORS), format(',{0},', github.actor))
+      )
 
     steps:
       - name: Dependabot metadata
@@ -57,7 +57,12 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'pull_request_review' &&
-      github.event.review.state == 'approved'
+      github.event.review.state == 'approved' &&
+      github.event.pull_request.head.repo.fork == false &&
+      (
+        github.event.pull_request.head.repo.owner.login == github.repository_owner ||
+        contains(format(',{0},', vars.AUTO_MERGE_TRUSTED_ACTORS), format(',{0},', github.actor))
+      )
 
     steps:
       - name: Enable auto-merge
@@ -70,8 +75,13 @@ jobs:
     name: Auto-Merge Labeled PRs
     runs-on: ubuntu-latest
     if: |
-      github.event_name == 'pull_request_target' &&
-      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'auto-merge') &&
+      github.event.pull_request.head.repo.fork == false &&
+      (
+        github.event.pull_request.head.repo.owner.login == github.repository_owner ||
+        contains(format(',{0},', vars.AUTO_MERGE_TRUSTED_ACTORS), format(',{0},', github.actor))
+      )
 
     steps:
       - name: Wait for checks

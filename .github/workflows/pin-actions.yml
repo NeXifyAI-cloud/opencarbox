@@ -1,0 +1,80 @@
+name: Pin GitHub Actions (immutable SHAs)
+
+on:
+  schedule:
+    - cron: "11 3 * * 1" # weekly Monday UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pin-actions
+  cancel-in-progress: false
+
+env:
+  CI: "true"
+  TZ: "UTC"
+
+jobs:
+  pin:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v6
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps (if needed)
+        run: npm ci
+        continue-on-error: true
+
+      - name: Pin workflow actions
+        run: node scripts/pin-actions.mjs
+
+      - name: Detect changes
+        id: diff
+        run: |
+          if git diff --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name "NeXifyAI Bot"
+          git config user.email "nexifyai-bot@users.noreply.github.com"
+          git checkout -B chore/pin-actions
+          git add -A
+          git commit -m "ci(security): pin GitHub Actions to immutable SHAs"
+
+      - name: Push
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        run: |
+          git push -u "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" chore/pin-actions --force
+
+      - name: Create/Update PR
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        run: |
+          if gh pr list --head chore/pin-actions --json number -q '.[0].number' >/dev/null 2>&1; then
+            n="$(gh pr list --head chore/pin-actions --json number -q '.[0].number')"
+            gh pr edit "$n" --title "ci(security): pin actions to SHAs" --body "Automated pinning of actions to immutable SHAs."
+          else
+            gh pr create --head chore/pin-actions --base main \
+              --title "ci(security): pin actions to SHAs" \
+              --body "Automated pinning of actions to immutable SHAs." \
+              --label "maintenance" -f
+          fi

@@ -2,13 +2,13 @@ name: PR Backlog Worker (queue + autofix via NSCALE/DeepSeek)
 
 on:
   pull_request:
-    types: [labeled, synchronize, reopened, ready_for_review]
+    types: [opened, reopened, synchronize, ready_for_review, labeled]
   schedule:
-    - cron: "*/30 * * * *" # alle 30 Minuten
+    - cron: "*/20 * * * *"
   workflow_dispatch:
     inputs:
       pr_number:
-        description: "Optional: process a single PR number (e.g. 45)"
+        description: "Process a single PR number (e.g. 45)"
         required: false
         default: ""
       max_prs:
@@ -30,11 +30,10 @@ env:
   TZ: "UTC"
   QUEUE_LABEL: "nexifyai:queue"
   NEEDS_HUMAN_LABEL: "needs-human"
-  AUTOFIX_LABEL: "autofix"
   MAX_AUTOFIX_ATTEMPTS: "2"
 
 jobs:
-  pick:
+  select:
     runs-on: ubuntu-latest
     outputs:
       prs: ${{ steps.sel.outputs.prs }}
@@ -52,27 +51,30 @@ jobs:
             exit 0
           fi
 
-          # pick queued PRs (oldest first)
-          max="${{ inputs.max_prs }}"
-          if ! [[ "$max" =~ ^[0-9]+$ ]]; then max="3"; fi
+          # Event-driven: if labeled/opened and has queue label, process just that PR.
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            pr="${{ github.event.pull_request.number }}"
+            labels="$(echo '${{ toJson(github.event.pull_request.labels) }}' | jq -r '.[].name' || true)"
+            if echo "$labels" | grep -qx "${QUEUE_LABEL}"; then
+              echo "prs=[$pr]" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          fi
 
-          # List open PRs with queue label, sort by createdAt asc
+          # Scheduled: process oldest queued PRs
+          max="${{ inputs.max_prs }}"
           prs="$(gh pr list --state open --label "${QUEUE_LABEL}" --json number,createdAt \
                 -q 'sort_by(.createdAt) | .[0:'"$max"'] | map(.number)')"
-          if [ -z "$prs" ] || [ "$prs" = "[]" ]; then
-            echo "prs=[]" >> $GITHUB_OUTPUT
-            exit 0
-          fi
           echo "prs=$prs" >> $GITHUB_OUTPUT
 
   process:
-    needs: pick
-    if: needs.pick.outputs.prs != '[]'
+    needs: select
+    if: needs.select.outputs.prs != '[]'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        pr: ${{ fromJson(needs.pick.outputs.prs) }}
+        pr: ${{ fromJson(needs.select.outputs.prs) }}
 
     steps:
       - name: Load PR metadata
@@ -83,54 +85,44 @@ jobs:
         run: |
           set -euo pipefail
           pr="${{ matrix.pr }}"
-          gh pr view "$pr" --json headRefName,baseRefName,headRepositoryOwner,headRepositoryName,isCrossRepository,authorAssociation,title \
-            > pr.json
+          gh pr view "$pr" --json headRefName,baseRefName,isCrossRepository,authorAssociation,title > pr.json
+          echo "head=$(jq -r .headRefName pr.json)" >> $GITHUB_OUTPUT
+          echo "base=$(jq -r .baseRefName pr.json)" >> $GITHUB_OUTPUT
+          echo "cross=$(jq -r .isCrossRepository pr.json)" >> $GITHUB_OUTPUT
+          echo "assoc=$(jq -r .authorAssociation pr.json)" >> $GITHUB_OUTPUT
 
-          head="$(jq -r .headRefName pr.json)"
-          base="$(jq -r .baseRefName pr.json)"
-          cross="$(jq -r .isCrossRepository pr.json)"
-          assoc="$(jq -r .authorAssociation pr.json)"
-
-          echo "head=$head" >> $GITHUB_OUTPUT
-          echo "base=$base" >> $GITHUB_OUTPUT
-          echo "cross=$cross" >> $GITHUB_OUTPUT
-          echo "assoc=$assoc" >> $GITHUB_OUTPUT
-
-      - name: Trust boundary guard (no forks / only trusted associations)
+      - name: Trust boundary guard
         id: trust
         shell: bash
         run: |
           set -euo pipefail
-          cross="${{ steps.meta.outputs.cross }}"
-          assoc="${{ steps.meta.outputs.assoc }}"
-          if [ "$cross" = "true" ]; then
-            echo "allowed=false" >> $GITHUB_OUTPUT
-            exit 0
+          if [ "${{ steps.meta.outputs.cross }}" = "true" ]; then
+            echo "allowed=false" >> $GITHUB_OUTPUT; exit 0
           fi
-          case "$assoc" in
+          case "${{ steps.meta.outputs.assoc }}" in
             MEMBER|COLLABORATOR|OWNER) echo "allowed=true" >> $GITHUB_OUTPUT ;;
             *) echo "allowed=false" >> $GITHUB_OUTPUT ;;
           esac
 
-      - name: Comment + mark needs-human if untrusted
+      - name: Mark needs-human if untrusted
         if: steps.trust.outputs.allowed != 'true'
         env:
           GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
         run: |
           pr="${{ matrix.pr }}"
           gh pr edit "$pr" --add-label "${NEEDS_HUMAN_LABEL}" >/dev/null 2>&1 || true
-          gh pr comment "$pr" --body "NeXifyAI: PR cannot be auto-processed (fork or untrusted association). Marked needs-human." >/dev/null 2>&1 || true
+          gh pr comment "$pr" --body "NeXifyAI: PR cannot be auto-processed (fork or untrusted). Marked needs-human." >/dev/null 2>&1 || true
 
       - name: Checkout PR head
         if: steps.trust.outputs.allowed == 'true'
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v6
         with:
           ref: ${{ steps.meta.outputs.head }}
           fetch-depth: 0
 
       - name: Setup Node
         if: steps.trust.outputs.allowed == 'true'
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v6
         with:
           node-version: "20"
           cache: "npm"
@@ -139,7 +131,7 @@ jobs:
         if: steps.trust.outputs.allowed == 'true'
         run: npm ci
 
-      - name: Run fast checks (collect logs)
+      - name: Run fast checks (logs)
         if: steps.trust.outputs.allowed == 'true'
         shell: bash
         run: |
@@ -150,13 +142,13 @@ jobs:
           npm run type-check | tee logs/type-check.log
           npm run build | tee logs/build.log
 
-      - name: Classify failure (error-summary.json)
+      - name: Create error summary on failure
         if: failure() && steps.trust.outputs.allowed == 'true'
         run: |
           node scripts/ci-classify-failure.js logs/build.log || true
           test -f logs/error-summary.json || echo '{"kind":"unknown"}' > logs/error-summary.json
 
-      - name: Attempt limiter
+      - name: Attempt limiter (per PR)
         if: failure() && steps.trust.outputs.allowed == 'true'
         id: limit
         env:
@@ -175,11 +167,9 @@ jobs:
           else
             echo "allowed=true" >> $GITHUB_OUTPUT
           fi
-          # update PR body with attempt counter (best effort)
-          newbody=$'Autofix-Attempt: '"$n"$'\n\n'"$body"
-          gh pr edit "$pr" --body "$newbody" >/dev/null 2>&1 || true
+          gh pr edit "$pr" --body $'Autofix-Attempt: '"$n"$'\n\n'"$body" >/dev/null 2>&1 || true
 
-      - name: Stop + needs-human if attempts exceeded
+      - name: Stop if attempts exceeded
         if: failure() && steps.limit.outputs.allowed != 'true' && steps.trust.outputs.allowed == 'true'
         env:
           GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
@@ -188,32 +178,34 @@ jobs:
           gh pr edit "$pr" --add-label "${NEEDS_HUMAN_LABEL}" >/dev/null 2>&1 || true
           gh pr comment "$pr" --body "NeXifyAI: Autofix stopped (attempt limit exceeded). Marked needs-human." >/dev/null 2>&1 || true
 
-      - name: Run AI autofix (NSCALE + DeepSeek only)
+      - name: AI Autofix (NSCALE + DeepSeek only)
         if: failure() && steps.limit.outputs.allowed == 'true' && steps.trust.outputs.allowed == 'true'
         env:
           NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
           NSCALE_BASE_URL: ${{ vars.NSCALE_BASE_URL }}
+          NSCALE_MODEL: ${{ vars.NSCALE_MODEL }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_BASE_URL: ${{ vars.DEEPSEEK_BASE_URL }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
         run: node scripts/ai/autofix-runner.mjs
 
-      - name: Push fixes back to PR head
-        if: steps.trust.outputs.allowed == 'true' && (success() || failure())
+      - name: Push back to PR head (same-repo only)
+        if: steps.trust.outputs.allowed == 'true'
         env:
           GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          # push only if we created commits
+          # Push only if there are new commits
           if git log -1 --pretty=%B | grep -q '^fix(ci):'; then
             git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${{ steps.meta.outputs.head }}"
           fi
 
-      - name: Unqueue when green
+      - name: Remove from queue when green
         if: success() && steps.trust.outputs.allowed == 'true'
         env:
           GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
         run: |
           pr="${{ matrix.pr }}"
           gh pr edit "$pr" --remove-label "${QUEUE_LABEL}" >/dev/null 2>&1 || true
-          gh pr comment "$pr" --body "NeXifyAI: Checks green. Removed from queue." >/dev/null 2>&1 || true
+          gh pr comment "$pr" --body "NeXifyAI: Green. Removed from queue." >/dev/null 2>&1 || true

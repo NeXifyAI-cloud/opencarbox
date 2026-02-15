@@ -6,14 +6,21 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: '20'
-  PNPM_VERSION: '8'
 
 jobs:
   quality-gate:
     name: Quality Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -43,7 +50,7 @@ jobs:
         run: npm run format:check
 
       - name: Run Tests
-        run: npm run test
+        run: npm run test -- --run
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -60,13 +67,15 @@ jobs:
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
 
       - name: Run Snyk Security Scan
-        uses: snyk/actions/node@master
+        if: ${{ secrets.SNYK_TOKEN != '' }}
+        uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04 # v1.0.0
         continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -76,6 +85,7 @@ jobs:
   oracle-sync:
     name: Oracle Knowledge Sync
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: [quality-gate]
     if: github.ref == 'refs/heads/main'
 
@@ -121,6 +131,7 @@ jobs:
   deploy-preview:
     name: Deploy Preview (Vercel)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [quality-gate]
     if: github.event_name == 'pull_request'
 
@@ -139,6 +150,7 @@ jobs:
   deploy-production:
     name: Deploy Production (Vercel)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     needs: [quality-gate, security-scan]
     if: github.ref == 'refs/heads/main'
 

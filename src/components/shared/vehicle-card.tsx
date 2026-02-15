@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Gauge, Zap, ChevronRight } from 'lucide-react';
@@ -60,10 +61,12 @@ export const VehicleCard = ({
     >
       {/* Image Container */}
       <div className="relative aspect-[16/10] overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute top-4 left-4 flex gap-2">
           <span className="px-3 py-1 rounded-lg bg-white/90 backdrop-blur-md text-slate-900 text-[10px] font-bold uppercase tracking-wider shadow-sm">

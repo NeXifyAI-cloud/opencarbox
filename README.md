@@ -16,7 +16,7 @@ Eine Premium Automotive Multisite Platform für:
 
 ### Voraussetzungen
 
-- Node.js >= 18.17.0
+- Node.js 20 (empfohlen, siehe `.nvmrc`)
 - npm >= 9.0.0
 - Git
 
@@ -26,6 +26,9 @@ Eine Premium Automotive Multisite Platform für:
 # Repository klonen
 git clone https://github.com/NeXify-Chat-it-Automate-it/OpenCarBox.git
 cd OpenCarBox
+
+# Node-Version setzen
+nvm use
 
 # Dependencies installieren (legacy-peer-deps erforderlich)
 npm install --legacy-peer-deps
@@ -128,7 +131,8 @@ Für CI/CD müssen folgende Secrets im Repository gesetzt werden:
 ### CI/CD Workflows
 - **Quality Gate** - TypeScript, ESLint, Tests bei jedem Push/PR
 - **Auto-Merge** - Dependabot PRs automatisch gemergt
-- **Auto-Deploy** - Vercel Production bei Push auf main
+- **Auto-Deploy (CI)** - Vercel Preview bei PRs und Production bei `main` über `ci-cd.yml`
+- **Manual Deploy (Fallback)** - Manueller Notfall-Deploy via GitHub Actions `workflow_dispatch`
 - **Security Scan** - Snyk Vulnerability Check
 
 ### Dependabot
@@ -143,9 +147,12 @@ Für CI/CD müssen folgende Secrets im Repository gesetzt werden:
 
 ## 📚 Dokumentation
 
+- [Architekturüberblick](ARCHITECTURE.md)
 - [System Overview](docs/architecture/system-overview.md)
 - [API Endpoints](docs/api/endpoints.md)
 - [Design System](docs/design-system/colors.md)
+- [Contributing Guide](CONTRIBUTING.md)
+- [Release Checklist](RELEASE_CHECKLIST.md)
 
 ## 🧠 Oracle System
 

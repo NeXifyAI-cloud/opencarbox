@@ -4,47 +4,49 @@
 
 Gehe zu: `https://github.com/NeXify-Chat-it-Automate-it/OpenCarBox/settings/secrets/actions`
 
+> ⚠️ **Wichtig:** Trage echte Werte ausschließlich in GitHub Secrets ein. Keine Tokens/Keys im Repository committen.
+
 ### 🗄️ Supabase Secrets
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL
-# Wert: https://acclrhzzwdutbigxsxyq.supabase.co
+# Wert: https://<project-ref>.supabase.co
 
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-# Wert: aus .env kopieren (eyJhbGciOiJIUzI1NiIsInR5cCI6...)
+# Wert: <supabase-anon-key>
 
 SUPABASE_SERVICE_ROLE_KEY
-# Wert: aus .env kopieren (Service Role Key)
+# Wert: <supabase-service-role-key>
 
 DATABASE_URL
-# Wert: postgresql://postgres:PASSWORD@db.acclrhzzwdutbigxsxyq.supabase.co:5432/postgres
+# Wert: postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres
 ```
 
 ### 🤖 Google AI (Oracle)
 
 ```bash
 GOOGLE_GENERATIVE_AI_API_KEY
-# Wert: aus .env kopieren (AIzaSy...)
+# Wert: <google-generative-ai-api-key>
 ```
 
 ### ☁️ Vercel Deployment
 
 ```bash
 VERCEL_TOKEN
-# Wert: pPwzP0jhHYgwXhpS5P0aCLWO
+# Wert: <vercel-token>
 
 VERCEL_PROJECT_ID
-# Wert: prj_hJUOVM8ETLfdGvSlxzlBkuqCgx86
+# Wert: <vercel-project-id>
 
 VERCEL_ORG_ID
-# Wert: team_nexifyai
+# Wert: <vercel-org-id-or-team-id>
 ```
 
 ### 🔒 Security Scanning (Optional)
 
 ```bash
 SNYK_TOKEN
-# Wert: Snyk Account Token (falls vorhanden)
+# Wert: <snyk-token>
 ```
 
 ### 💳 Stripe (wenn implementiert)
@@ -74,7 +76,7 @@ RESEND_API_KEY
 2. **Für jedes Secret:**
    - Klicke "New repository secret"
    - Name: (wie oben)
-   - Value: (aus .env kopieren)
+   - Value: (aus sicherer Quelle kopieren)
    - Klicke "Add secret"
 
 3. **Verifizieren:**

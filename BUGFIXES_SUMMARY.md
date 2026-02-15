@@ -100,7 +100,7 @@ npm install schlug fehl wegen Peer-Dependency-Konflikt:
 | Variable | Wert |
 |----------|------|
 | `PROJECT_ID` | `acclrhzzwdutbigxsxyq` |
-| `SUPABASE_ACCESS_TOKEN` | `sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb` |
+| `SUPABASE_ACCESS_TOKEN` | `<SUPABASE_ACCESS_TOKEN>` |
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://acclrhzzwdutbigxsxyq.supabase.co` |
 | `MCP_SERVER_URL` | `https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&...` |
 

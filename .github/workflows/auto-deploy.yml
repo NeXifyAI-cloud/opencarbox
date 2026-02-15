@@ -1,21 +1,23 @@
-# Manueller Fallback-Workflow für Vercel Deployments.
-# Der reguläre automatische Deploy läuft über .github/workflows/ci-cd.yml
-
 name: Manual Deploy (Fallback)
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Deployment Environment'
+        description: Deployment environment
         required: true
-        default: 'production'
+        default: production
         type: choice
         options:
           - production
           - preview
 
+permissions:
+  contents: read
+
 env:
+  NODE_VERSION: '20'
+  VERCEL_CLI_VERSION: '37.14.0'
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
@@ -33,22 +35,22 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel@latest
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
 
       - name: Pull Vercel Environment
-        run: vercel pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${{ env.VERCEL_CLI_VERSION }} pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Build Project
-        run: vercel build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${{ env.VERCEL_CLI_VERSION }} build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -57,8 +59,8 @@ jobs:
       - name: Deploy to Vercel
         id: deploy
         run: |
-          URL=$(vercel deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$URL" >> $GITHUB_OUTPUT
+          URL=$(npx --yes vercel@${{ env.VERCEL_CLI_VERSION }} deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "🚀 Deployed to: $URL"
 
       - name: Notify Oracle

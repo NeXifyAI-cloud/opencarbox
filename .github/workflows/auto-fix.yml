@@ -1,0 +1,113 @@
+name: AutoFix on CI Failure
+
+on:
+  workflow_run:
+    workflows: ["Quality Gate & Deployment"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: autofix-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: false
+
+jobs:
+  autofix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Guard: only main repo, no forks
+        run: |
+          echo "Repo: $GITHUB_REPOSITORY"
+
+      - name: Checkout failing revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Download CI logs artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ci-logs
+          path: logs
+        continue-on-error: true
+
+      - name: Create fix branch name
+        id: branch
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+          echo "name=autofix/${SHA:0:7}" >> "$GITHUB_OUTPUT"
+
+      - name: Run Codex autofix (if available)
+        env:
+          CODEX_API_KEY: ${{ secrets.CODEX_API_KEY }}
+        run: |
+          set -e
+          mkdir -p logs
+          if command -v codex >/dev/null 2>&1; then
+            codex run --prompt-file .github/codex/autofix.prompt --non-interactive
+          else
+            echo "Codex CLI not available in runner." | tee logs/codex-missing.log
+          fi
+
+      - name: Detect changes
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure git
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "NeXifyAI Bot"
+          git config user.email "nexifyai-bot@users.noreply.github.com"
+
+      - name: Commit changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git checkout -b "${{ steps.branch.outputs.name }}"
+          git add -A
+          git commit -m "fix(ci): automated fix for failing Quality Gate" -m "source: workflow_run=${{ github.event.workflow_run.id }}"
+
+      - name: Push branch
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        run: |
+          git push -u "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "${{ steps.branch.outputs.name }}"
+
+      - name: Create PR
+        if: steps.changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        run: |
+          gh pr create \
+            --title "fix(ci): autofix for failing Quality Gate (${{ github.event.workflow_run.head_sha }})" \
+            --body "Automated fix attempt based on CI logs. If this PR fails, see attached logs in workflow run ${{ github.event.workflow_run.id }}." \
+            --base "${{ github.event.workflow_run.head_branch }}" \
+            --head "${{ steps.branch.outputs.name }}" \
+            --label "autofix"
+
+      - name: If no changes, open issue with logs summary
+        if: steps.changes.outputs.has_changes != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        run: |
+          echo "No changes produced (or Codex unavailable). Creating issue."
+          gh issue create \
+            --title "CI failing: needs manual intervention (${{ github.event.workflow_run.head_sha }})" \
+            --body "Quality Gate failed for ${{ github.event.workflow_run.head_sha }}. Codex did not produce changes or was unavailable. Check workflow run: ${{ github.event.workflow_run.html_url }}" \
+            --label "ci-failure"

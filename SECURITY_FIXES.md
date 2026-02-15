@@ -107,7 +107,7 @@ Found: react@18.3.1
 
 1. **MCP Server:**
    - Projekt-Ref: `acclrhzzwdutbigxsxyq`
-   - Access Token: `sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb`
+   - Access Token: `<SUPABASE_ACCESS_TOKEN>`
 
 2. **`.env` Werte:**
    - NEXT_PUBLIC_SUPABASE_URL

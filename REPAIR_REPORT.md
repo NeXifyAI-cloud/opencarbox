@@ -80,11 +80,11 @@ OpenCarBox & Carvantooo - Premium Automotive Platform
 # SUPABASE
 NEXT_PUBLIC_SUPABASE_URL=https://cwebcfgdraghzeqgfsty.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=sb_publishable_Ngq9B_-BAqbOlcJMSTI7JQ_e6lOvwtb
+SUPABASE_SERVICE_ROLE_KEY=<SUPABASE_SERVICE_ROLE_KEY>
 
 # DATABASE
-DATABASE_URL=postgresql://postgres:1def!xO2022!!@db.cwebcfgdraghzeqgfsty.supabase.co:5432/postgres
-DIRECT_URL=postgresql://postgres:1def!xO2022!!@db.cwebcfgdraghzeqgfsty.supabase.co:5432/postgres
+DATABASE_URL=postgresql://postgres:<DB_PASSWORD>@db.cwebcfgdraghzeqgfsty.supabase.co:5432/postgres
+DIRECT_URL=postgresql://postgres:<DB_PASSWORD>@db.cwebcfgdraghzeqgfsty.supabase.co:5432/postgres
 
 # PROJECT
 PROJECT_ID=cwebcfgdraghzeqgfsty

@@ -24,7 +24,7 @@ Die Supabase-Datenbankverbindung ist aktuell ein BLOCKER für die weitere Entwic
 
 1. **DNS-Auflösung**: Hostname wird korrekt aufgelöst (IPv6)
 2. **API-Zugriff**: Supabase API-Token funktionieren nicht (JWT failed verification)
-3. **Supabase CLI**: Access Token `sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb` führt zu "Unauthorized"
+3. **Supabase CLI**: Access Token `<SUPABASE_ACCESS_TOKEN>` führt zu "Unauthorized"
 4. **Alternative Verbindung**: Lokale PostgreSQL-Instanz via Docker (Docker Desktop nicht gestartet)
 5. **SQLite-Fallback**: Nicht möglich wegen PostgreSQL-spezifischer Features im Schema
 
@@ -41,7 +41,7 @@ Die Supabase-Datenbankverbindung ist aktuell ein BLOCKER für die weitere Entwic
 ### 3. Connection Pooling prüfen
 - Connection String für Prisma verwenden:
   ```
-  postgresql://postgres:1def!xO2022!!@db.acclrhzzwdutbigxsxyq.supabase.co:5432/postgres
+  postgresql://postgres:<DB_PASSWORD>@db.acclrhzzwdutbigxsxyq.supabase.co:5432/postgres
   ```
 
 ### 4. Prisma Schema synchronisieren

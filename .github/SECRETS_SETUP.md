@@ -2,6 +2,8 @@
 
 ## 📋 Required Secrets für CI/CD
 
+> 🚫 **Keine secret-ähnlichen Beispielwerte committen:** Auch in Doku/Beispielen nur Platzhalter verwenden (z. B. `<set-in-local-env>` statt echter Token/Connection-Strings).
+
 Gehe zu: `https://github.com/NeXify-Chat-it-Automate-it/OpenCarBox/settings/secrets/actions`
 
 ### 🗄️ Supabase Secrets
@@ -11,27 +13,27 @@ NEXT_PUBLIC_SUPABASE_URL
 # Wert: https://acclrhzzwdutbigxsxyq.supabase.co
 
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-# Wert: aus .env kopieren (eyJhbGciOiJIUzI1NiIsInR5cCI6...)
+# Wert: <set-in-local-env>
 
 SUPABASE_SERVICE_ROLE_KEY
 # Wert: aus .env kopieren (Service Role Key)
 
 DATABASE_URL
-# Wert: postgresql://postgres:PASSWORD@db.acclrhzzwdutbigxsxyq.supabase.co:5432/postgres
+# Wert: <set-in-local-env>
 ```
 
 ### 🤖 Google AI (Oracle)
 
 ```bash
 GOOGLE_GENERATIVE_AI_API_KEY
-# Wert: aus .env kopieren (AIzaSy...)
+# Wert: <set-in-local-env>
 ```
 
 ### ☁️ Vercel Deployment
 
 ```bash
 VERCEL_TOKEN
-# Wert: pPwzP0jhHYgwXhpS5P0aCLWO
+# Wert: <set-in-local-env>
 
 VERCEL_PROJECT_ID
 # Wert: prj_hJUOVM8ETLfdGvSlxzlBkuqCgx86
@@ -51,10 +53,10 @@ SNYK_TOKEN
 
 ```bash
 STRIPE_SECRET_KEY
-# Wert: sk_test_... oder sk_live_...
+# Wert: <set-in-local-env>
 
 STRIPE_WEBHOOK_SECRET
-# Wert: whsec_...
+# Wert: <set-in-local-env>
 ```
 
 ### 📧 Resend Email (wenn implementiert)
@@ -103,6 +105,7 @@ graph LR
 - ✅ Build
 
 ### Security Scan:
+- 🔒 Gitleaks Secret Detection (blocking)
 - 🔒 Snyk Vulnerability Check
 
 ### Oracle Sync (nur main):
@@ -112,6 +115,15 @@ graph LR
 ### Deployment:
 - 🌐 Vercel Preview (PRs)
 - 🚀 Vercel Production (main)
+
+## 🛡️ Required Checks aktivieren
+
+1. Gehe zu: `Settings` → `Branches` → Branch Protection Rule für `main`.
+2. Aktiviere **Require status checks to pass before merging**.
+3. Wähle mindestens diese Checks:
+   - `Quality Gate`
+   - `Secret Scan (Gitleaks)`
+4. Speichern.
 
 ## 🔧 Troubleshooting
 

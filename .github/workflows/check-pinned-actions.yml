@@ -1,0 +1,38 @@
+name: check-pinned-actions
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Fail if any uses: is not pinned to 40-char SHA
+        shell: bash
+        run: |
+          python - <<'PY'
+          import pathlib,re,sys
+          uses_re=re.compile(r'^\s*-?\s*uses:\s*([^\s#]+)')
+          pinned_re=re.compile(r'^[^@\s]+@[0-9a-f]{40}$')
+          viol=[]
+          for wf in sorted(pathlib.Path(".github/workflows").glob("*.yml")):
+            for i,l in enumerate(wf.read_text().splitlines(),1):
+              m=uses_re.match(l)
+              if not m: continue
+              v=m.group(1)
+              if v.startswith("./") or v.startswith("docker://"): continue
+              if not pinned_re.match(v):
+                viol.append((str(wf),i,v))
+          if viol:
+            print("Unpinned actions found:")
+            for wf,i,v in viol:
+              print(wf,i,v)
+            sys.exit(1)
+          print("All actions pinned.")
+          PY

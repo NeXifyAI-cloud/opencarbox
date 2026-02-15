@@ -1,52 +1,49 @@
-name: Fast Gate
+name: fast-gate
 
 on:
-  pull_request:
-    branches: [main, develop]
   push:
-    branches: [develop]
+    branches: ["**"]
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
 
+concurrency:
+  group: fast-gate-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
-  NODE_VERSION: '20'
+  CI: "true"
+  TZ: "UTC"
 
 jobs:
-  fast-gate:
-    name: Fast Gate
+  fast:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          node-version: "20"
+          cache: "npm"
 
-      - name: Restore Next cache (fast)
-        uses: actions/cache/restore@v4
+      - run: npm ci
+
+      - name: Run fast checks (logs)
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p logs
+          npm run security:scan-secrets | tee logs/secret-scan.log
+          npm run lint | tee logs/lint.log
+          npm run type-check | tee logs/type-check.log
+          # smoke build (optional): use build as smoke in baseline
+          npm run build | tee logs/build.log
+          cat logs/*.log > logs/workflow.log
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          path: .next/cache
-          key: next-fast-cache-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ github.ref_name }}
-          restore-keys: |
-            next-fast-cache-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Save Next cache (fast)
-        if: ${{ !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork) }}
-        uses: actions/cache/save@v4
-        with:
-          path: .next/cache
-          key: next-fast-cache-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json') }}-${{ github.ref_name }}
+          name: ci-logs
+          path: logs/

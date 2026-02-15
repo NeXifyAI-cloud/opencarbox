@@ -1,0 +1,7 @@
+.github/workflows/ @NeXify-Chat-it-Automate-it/platform
+scripts/ai/ @NeXify-Chat-it-Automate-it/platform
+scripts/ci-* @NeXify-Chat-it-Automate-it/platform
+src/lib/supabase/ @NeXify-Chat-it-Automate-it/security
+src/middleware.ts @NeXify-Chat-it-Automate-it/security
+prisma/ @NeXify-Chat-it-Automate-it/db
+supabase/migrations/ @NeXify-Chat-it-Automate-it/db

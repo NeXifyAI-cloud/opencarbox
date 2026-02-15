@@ -1,83 +1,31 @@
-name: Autofix Oracle Gatekeeper
+name: Oracle (merge safety)
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened, labeled, edited]
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
-  contents: read
   pull-requests: write
-  checks: read
+  contents: read
 
 jobs:
   oracle:
-    if: contains(github.event.pull_request.labels.*.name, 'autofix')
     runs-on: ubuntu-latest
-
     steps:
-      - name: Validate required checks + enforce attempt loop limit
+      - name: Block needs-human
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        shell: bash
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
         run: |
-          set -euo pipefail
-
-          pr_json=$(gh api "repos/$REPO/pulls/$PR_NUMBER")
-          body=$(echo "$pr_json" | jq -r '.body // ""')
-          attempts=$(echo "$body" | sed -n 's/.*Autofix-Attempt:[[:space:]]*\([0-9][0-9]*\).*/\1/p' | tail -1)
-          if [ -z "$attempts" ]; then
-            attempts=0
-          fi
-          next_attempt=$((attempts + 1))
-
-          if echo "$body" | rg -q "Autofix-Attempt:"; then
-            new_body=$(echo "$body" | sed -E "s/Autofix-Attempt:[[:space:]]*[0-9]+/Autofix-Attempt: $next_attempt/")
-          elif [ -n "$body" ]; then
-            new_body="$body"
-            new_body+=$'\n\n'
-            new_body+="Autofix-Attempt: $next_attempt"
-          else
-            new_body="Autofix-Attempt: $next_attempt"
-          fi
-
-          gh pr edit "$PR_NUMBER" --repo "$REPO" --body "$new_body"
-
-          if [ "$next_attempt" -gt 2 ]; then
-            gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label needs-human
-            gh pr merge --disable-auto "https://github.com/$REPO/pull/$PR_NUMBER" || true
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "❌ Oracle Gate blockiert: Loop-Limit erreicht (Autofix-Attempt: $next_attempt). Bitte manuell übernehmen."
+          pr="${{ github.event.pull_request.number }}"
+          labels="$(gh pr view "$pr" --json labels -q '.labels[].name' || true)"
+          if echo "$labels" | grep -qx "needs-human"; then
+            gh pr comment "$pr" --body "Oracle: needs-human present → merge blocked."
             exit 1
           fi
 
-          checks=$(gh api "repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100")
-
-          req=("Fast Gate" "Full Gate / build" "Full Gate / tests (1/2)" "Full Gate / tests (2/2)")
-          failed=0
-          report=""
-          for check in "${req[@]}"; do
-            row=$(echo "$checks" | jq -r --arg n "$check" '.check_runs[] | select(.name==$n) | [.name,.status,.conclusion] | @tsv' | tail -1)
-            if [ -z "$row" ]; then
-              report+="- ⚠️ $check: missing\n"
-              failed=1
-              continue
-            fi
-            name=$(echo "$row" | cut -f1)
-            status=$(echo "$row" | cut -f2)
-            conclusion=$(echo "$row" | cut -f3)
-            if [ "$status" = "completed" ] && [ "$conclusion" = "success" ]; then
-              report+="- ✅ $name: success\n"
-            else
-              report+="- ❌ $name: status=$status, conclusion=$conclusion\n"
-              failed=1
-            fi
-          done
-
-          if [ "$failed" -ne 0 ]; then
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "❌ Oracle Gate blockiert Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\nFix-Reason: Required checks nicht vollständig grün auf PR-Head."
-            exit 1
-          fi
-
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "✅ Oracle Gate erlaubt Auto-Merge auf \\`$HEAD_SHA\\`.\n\n$report\nFix-Reason: Fast+Full Gate vollständig erfolgreich auf PR-Head."
+      - name: Ensure required checks green
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        run: |
+          pr="${{ github.event.pull_request.number }}"
+          gh pr checks "$pr" --required --watch

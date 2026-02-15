@@ -34,8 +34,10 @@ SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
 
 Für die Supabase CLI und MCP-Integration:
 
+> 🔐 Falls jemals ein Token im Repository auftaucht: im Supabase Dashboard sofort **rotieren/revoken** und lokal neu setzen.
+
 ```env
-SUPABASE_ACCESS_TOKEN=sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb
+SUPABASE_ACCESS_TOKEN=<set-in-local-env>
 MCP_SERVER_URL=https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage
 ```
 

@@ -129,6 +129,7 @@ Für CI/CD müssen folgende Secrets im Repository gesetzt werden:
 - **Quality Gate** - TypeScript, ESLint, Tests bei jedem Push/PR
 - **Auto-Merge** - Dependabot PRs automatisch gemergt
 - **Auto-Deploy** - Vercel Production bei Push auf main
+- **Secret Scan** - Gitleaks Secret Detection (blocking)
 - **Security Scan** - Snyk Vulnerability Check
 
 ### Dependabot
@@ -162,6 +163,14 @@ npm run oracle:status
 # Nächste Aufgabe
 npx tsx scripts/core/oracle.ts next-task
 ```
+
+
+### Keine Secret-ähnlichen Beispielwerte im Repository
+
+- In Dokumentation und Beispiel-Dateien dürfen **keine echten oder secret-ähnlichen Werte** stehen (z. B. `sbp_`, `sk_`, `whsec_`, oder komplette DB-Credentials).
+- Verwende ausschließlich Platzhalter wie `<set-in-local-env>` oder `<your-secret-here>`.
+- Leaks immer sofort rotieren/revoken und aus dem Repo entfernen.
+- **Required Check in Branch Protection:** `Secret Scan (Gitleaks)` muss als Pflicht-Check aktiviert sein.
 
 ## 🔧 Troubleshooting
 

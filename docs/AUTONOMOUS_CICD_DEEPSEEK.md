@@ -7,6 +7,7 @@ Dieses Setup hält PRs, Kommentare und CI-Berichte **autonom** aktuell:
 - `oracle.yml`: Gatekeeper, Attempt-Loop-Limit, PR-Kommentare
 - `autofix.yml`: Scope-Guard, `needs-human`, Auto-Merge-Block
 - `ci-health.yml`: Nightly Trend-Report + Auto-Commit nach `docs/ci-health.md`
+- `branch-hygiene.yml`: Inaktive Branches erkennen (Dry-Run) und optional sicher bereinigen
 
 ## DeepSeek + NScale statt statischer Regeln für Analyse
 
@@ -15,6 +16,7 @@ Die CI nutzt einen KI-Router (`scripts/ci/ai-decision.ts`) mit Priorität **NSca
 1. **Fehlerklassifikation + Fix-Reason** im Oracle-Gate
 2. **Risiko-/Empfehlungs-Kommentare** im Autofix-Scope-Guard
 3. **Trend-/Flake-Insights** im CI-Health-Report
+4. **Branch-Hygiene-Empfehlungen**/Klassifikation für Stale-Branches
 
 Erforderliche Secrets:
 

@@ -1,0 +1,67 @@
+name: Branch Hygiene Autopilot
+
+on:
+  schedule:
+    - cron: '11 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: 'Delete inactive branches (true/false)'
+        required: true
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      threshold_days:
+        description: 'Inactive threshold in days'
+        required: true
+        default: '21'
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  branch-hygiene:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Run branch hygiene
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          npx tsx scripts/ci/branch-hygiene.ts \
+            --repo "${GITHUB_REPOSITORY}" \
+            --thresholdDays "${{ github.event.inputs.threshold_days || '21' }}" \
+            --apply "${{ github.event.inputs.apply || 'false' }}"
+
+      - name: Upload branch hygiene artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: branch-hygiene-report
+          path: docs/branch-hygiene.md
+
+      - name: Commit report if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/branch-hygiene.md; then
+            echo "No changes in branch hygiene report"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/branch-hygiene.md
+          git commit -m "chore(ci): update branch hygiene report"
+          git push

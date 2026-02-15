@@ -1,36 +1,105 @@
-name: Autofix Scope Guard
+name: AutoFix on gate failure (NSCALE/DeepSeek only)
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened, labeled]
+  workflow_run:
+    workflows: ["fast-gate", "full-gate"]
+    types: [completed]
 
 permissions:
   contents: read
+  actions: read
   pull-requests: write
 
+concurrency:
+  group: autofix-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+env:
+  CI: "true"
+  TZ: "UTC"
+  MAX_AUTOFIX_ATTEMPTS: "2"
+
 jobs:
-  scope-guard:
-    if: contains(github.event.pull_request.labels.*.name, 'autofix')
+  autofix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Block forbidden path changes for auto-merge
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
+      - name: Checkout failing SHA
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Download artifacts (logs)
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: ci-logs
+          path: logs
+        continue-on-error: true
+
+      - name: Ensure error summary exists
+        run: |
+          mkdir -p logs
+          if [ -f logs/workflow.log ]; then
+            node scripts/ci-classify-failure.js logs/workflow.log || true
+          fi
+          test -f logs/error-summary.json || echo '{"kind":"unknown"}' > logs/error-summary.json
+
+      - name: Guard: infra-only failures -> stop
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const p='logs/error-summary.json';
+          const s=JSON.parse(fs.readFileSync(p,'utf8'));
+          if (s.kind === 'infra') process.exit(50);
+          NODE
+        continue-on-error: true
+
+      - name: Create/update autofix branch
+        id: br
         shell: bash
         run: |
-          set -euo pipefail
+          sha="${{ github.event.workflow_run.head_sha }}"
+          short="${sha:0:7}"
+          echo "name=autofix/${short}" >> $GITHUB_OUTPUT
+          git checkout -B "autofix/${short}"
 
-          files=$(gh api "repos/$REPO/pulls/$PR_NUMBER/files?per_page=200" --paginate | jq -r '.[].filename')
-          echo "$files" > changed-files.txt
+      - name: Run AI autofix (NSCALE + DeepSeek only)
+        env:
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+          NSCALE_BASE_URL: ${{ vars.NSCALE_BASE_URL }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_BASE_URL: ${{ vars.DEEPSEEK_BASE_URL }}
+        run: node scripts/ai/autofix-runner.mjs
 
-          if rg -n "^(prisma/migrations/|supabase/migrations/|\.env|vercel\.json$)" changed-files.txt >/dev/null; then
-            gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label needs-human
-            gh pr merge --disable-auto "https://github.com/$REPO/pull/$PR_NUMBER" || true
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "⚠️ Autofix Scope Guard: Verbotene Pfade geändert (z. B. Migrationen/.env/vercel.json). Auto-Merge deaktiviert, Label \\`needs-human\\` gesetzt."
-            exit 1
+      - name: Push branch
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        run: |
+          git push -u "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "${{ steps.br.outputs.name }}"
+
+      - name: Create or update PR
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        shell: bash
+        run: |
+          head="${{ steps.br.outputs.name }}"
+          base="${{ github.event.workflow_run.head_branch }}"
+          title="fix(ci): autofix for ${base} (${head})"
+          body="Automated fix based on gate failure.\n\nSource run: ${{ github.event.workflow_run.html_url }}\nProvider policy: NSCALE + DeepSeek only.\n"
+          if gh pr list --head "$head" --json number -q '.[0].number' >/dev/null 2>&1; then
+            n="$(gh pr list --head "$head" --json number -q '.[0].number')"
+            gh pr edit "$n" --title "$title" --body "$body" || true
+          else
+            gh pr create --head "$head" --base "$base" --title "$title" --body "$body" --label "autofix" -f
           fi
-
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "✅ Autofix Scope Guard: Änderungen innerhalb des sicheren Envelopes."

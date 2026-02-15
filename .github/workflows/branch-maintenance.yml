@@ -1,0 +1,91 @@
+name: Branch maintenance (repair all branches)
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: branch-maintenance
+  cancel-in-progress: false
+
+env:
+  CI: "true"
+  TZ: "UTC"
+  BASE_BRANCH: "main"
+  EXCLUDE: "dependabot/*,autofix/*,repair/*"
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history)
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Fetch all branches
+        run: git fetch --all --prune
+
+      - name: Build branch list
+        shell: bash
+        run: |
+          set -euo pipefail
+          IFS=',' read -r -a EXC <<< "${EXCLUDE}"
+          git for-each-ref --format='%(refname:short)' refs/remotes/origin \
+            | sed 's#^origin/##' | grep -v '^HEAD$' | sort > all.txt
+          > branches.txt
+          while IFS= read -r b; do
+            [ "$b" = "${BASE_BRANCH}" ] && continue
+            skip=0
+            for p in "${EXC[@]}"; do
+              [[ "$b" == $p ]] && skip=1
+            done
+            [ $skip -eq 0 ] && echo "$b" >> branches.txt
+          done < all.txt
+          echo "Selected $(wc -l < branches.txt) branches."
+          head -n 50 branches.txt
+
+      - name: Create repair PRs
+        env:
+          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          date_tag="$(date -u +%Y%m%d)"
+          base="${BASE_BRANCH}"
+
+          while IFS= read -r br; do
+            echo "---- $br"
+            repair="repair/${br//\//-}/${date_tag}"
+            git checkout -B "$repair" "origin/$br"
+
+            if ! git merge --no-edit "origin/$base"; then
+              git merge --abort || true
+              git push -u origin "$repair"
+              gh pr create --head "$repair" --base "$base" \
+                --title "fix(branch): repair $br (merge conflict)" \
+                --body "Automated maintenance hit a merge conflict. Human resolution required.\n\nOriginal: $br\nBase: $base" \
+                --label "maintenance" --label "needs-human" -f || true
+              continue
+            fi
+
+            git push -u origin "$repair"
+            gh pr create --head "$repair" --base "$base" \
+              --title "fix(branch): repair $br (sync with $base)" \
+              --body "Automated branch maintenance: merged $base into branch.\n\nOriginal: $br\nBase: $base\n\nIf CI fails, autofix loop may update an autofix PR." \
+              --label "maintenance" -f || true
+          done < branches.txt

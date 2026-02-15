@@ -1,0 +1,28 @@
+name: check-pinned-actions
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  pinned:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Validate all actions are pinned to full SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad=$(rg -nP "uses:\s+(?:[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)?)@(?![a-f0-9]{40})" .github/workflows || true)
+          if [ -n "$bad" ]; then
+            echo "Found unpinned actions:"
+            echo "$bad"
+            exit 1
+          fi
+          echo "All actions are pinned."

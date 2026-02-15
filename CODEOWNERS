@@ -1,0 +1,7 @@
+.github/workflows/ @your-org/platform
+scripts/ai/ @your-org/platform
+scripts/ci-* @your-org/platform
+src/lib/supabase/ @your-org/security
+src/middleware.ts @your-org/security
+prisma/ @your-org/db
+supabase/migrations/ @your-org/db

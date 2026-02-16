@@ -8,6 +8,8 @@ on:
     - cron: '0 4 * * 1'
 
 env:
+  KPI_CI_FAILURE_RATE_WARN: '5% (7d rolling)'
+  KPI_CI_FAILURE_RATE_CRITICAL: '10% (7d rolling)'
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
   NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -38,3 +40,44 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       - name: Dependency audit
         run: pnpm audit --prod
+
+  notify-failure:
+    name: Notify on Security Failure
+    runs-on: ubuntu-latest
+    needs: audit
+    if: failure()
+    permissions:
+      contents: read
+      issues: write
+
+    steps:
+      - name: Create standardized incident issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `[Incident][Security] Audit failed on ${context.ref.replace('refs/heads/', '')} (${context.sha.substring(0, 7)})`;
+            const body = [
+              '## Incident Summary',
+              '- **Category:** Security / CI',
+              '- **Priority:** high',
+              '- **KPI:** CI-Fehlerrate',
+              `- **Thresholds:** warn >= ${process.env.KPI_CI_FAILURE_RATE_WARN}, critical >= ${process.env.KPI_CI_FAILURE_RATE_CRITICAL}`,
+              '',
+              '## Context',
+              `- **Workflow:** ${context.workflow}`,
+              `- **Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              `- **Commit:** ${context.sha}`,
+              '',
+              '## Action Required',
+              '1. Ursache analysieren und reproduzieren.',
+              '2. Fix in PR bereitstellen und verlinken.',
+              '3. Postmortem mit Root Cause und Gegenmaßnahmen ergänzen.'
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['incident', 'security', 'kpi:ci-failure-rate', 'priority:high', 'status:triage', 'automated']
+            });

@@ -19,6 +19,10 @@ on:
           - preview
 
 env:
+  KPI_DEPLOY_FAILURE_WARN: '>=2 failures / 24h'
+  KPI_DEPLOY_FAILURE_CRITICAL: '>=3 failures / 24h'
+  KPI_API_HEALTH_FAILURE_WARN: '>=3 failed checks / 15m'
+  KPI_API_HEALTH_FAILURE_CRITICAL: '>=5 failed checks / 15m or >5m outage'
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
   NODE_VERSION: '20.19.0'
@@ -123,12 +127,34 @@ jobs:
       issues: write
 
     steps:
-      - name: Create Issue on Failure
-        uses: peter-evans/create-issue-from-file@fca9117c27cdc29c6c4db3b86c48e4115a786710 # v6
+      - name: Create standardized incident issue
+        uses: actions/github-script@v7
         with:
-          title: "🚨 Auto-Deploy fehlgeschlagen - ${{ github.sha }}"
-          content-filepath: .github/ISSUE_TEMPLATE/deploy-failure.md
-          labels: |
-            bug
-            deployment
-            automated
+          script: |
+            const title = `[Incident][Deployment] Auto-Deploy failed on ${context.ref.replace('refs/heads/', '')} (${context.sha.substring(0, 7)})`;
+            const body = [
+              '## Incident Summary',
+              '- **Category:** Deployment',
+              '- **Priority:** high',
+              '- **KPI:** Deployment-Fails / API-Health-Failure',
+              `- **Thresholds:** deploy warn ${process.env.KPI_DEPLOY_FAILURE_WARN}, deploy critical ${process.env.KPI_DEPLOY_FAILURE_CRITICAL}`,
+              `- **Thresholds:** api warn ${process.env.KPI_API_HEALTH_FAILURE_WARN}, api critical ${process.env.KPI_API_HEALTH_FAILURE_CRITICAL}`,
+              '',
+              '## Context',
+              `- **Workflow:** ${context.workflow}`,
+              `- **Run:** ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              `- **Commit:** ${context.sha}`,
+              '',
+              '## Action Required',
+              '1. Vercel Build/Deploy-Logs analysieren.',
+              '2. API-Health (`/api/health`) verifizieren.',
+              '3. Recovery, Ticket-Updates und Postmortem dokumentieren.'
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['incident', 'deployment', 'kpi:deployment-fail', 'kpi:api-health-failure', 'priority:high', 'status:triage', 'automated']
+            });

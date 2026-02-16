@@ -1,7 +1,10 @@
 ---
 name: Security report
 about: Report a security issue privately
-labels: type:security,status:triage
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 Please do **not** disclose vulnerabilities publicly.

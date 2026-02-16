@@ -57,7 +57,8 @@
     "watch:status": "tsx scripts/core/watchdog.ts status",
     "watch:reset": "tsx scripts/core/watchdog.ts reset",
     "autofix:problems": "tsx scripts/core/autonomous-problem-solver.ts",
-    "report:plan-status": "tsx scripts/report-plan-status.ts"
+    "report:plan-status": "tsx scripts/report-plan-status.ts",
+    "report:weekly-status": "tsx scripts/report-weekly-status.ts"
   },
   "packageManager": "pnpm@9.12.3",
   "dependencies": {

@@ -325,17 +325,26 @@ export async function healthCheck(): Promise<HealthCheckResult> {
   };
 
   // Check Environment Variables
-  const requiredEnvVars = [
-    'NEXT_PUBLIC_SUPABASE_URL',
-    'SUPABASE_SERVICE_ROLE_KEY',
-    'GOOGLE_GENERATIVE_AI_API_KEY',
-  ];
+  const requiredEnvVars = ['AI_PROVIDER', 'DEEPSEEK_API_KEY', 'NSCALE_API_KEY'];
+  const optionalEnvVars = ['DEEPSEEK_BASE_URL', 'NSCALE_HEADER_NAME'];
 
   const missingEnvVars = requiredEnvVars.filter(v => !process.env[v]);
-  result.services.env = missingEnvVars.length === 0;
+  const missingOptionalEnvVars = optionalEnvVars.filter(v => !process.env[v]);
+  const isProviderValid = process.env.AI_PROVIDER === 'deepseek';
+
+  result.services.env = missingEnvVars.length === 0 && isProviderValid;
   if (!result.services.env) {
-    result.details.push(`Missing env vars: ${missingEnvVars.join(', ')}`);
+    if (missingEnvVars.length > 0) {
+      result.details.push(`Missing required AI env vars: ${missingEnvVars.join(', ')}`);
+    }
+    if (!isProviderValid) {
+      result.details.push(`Invalid AI_PROVIDER: expected "deepseek", got "${process.env.AI_PROVIDER || 'undefined'}"`);
+    }
     result.healthy = false;
+  }
+
+  if (missingOptionalEnvVars.length > 0) {
+    result.details.push(`Optional AI env vars not set: ${missingOptionalEnvVars.join(', ')}`);
   }
 
   // Check Filesystem
@@ -362,15 +371,15 @@ export async function healthCheck(): Promise<HealthCheckResult> {
     result.healthy = false;
   }
 
-  // Check Oracle (Gemini)
+  // Check Oracle (DeepSeek/NSCALE)
   try {
-    if (result.services.env && process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    if (result.services.env) {
       // Simple check - just verify the module loads
       result.services.oracle = true;
     }
   } catch (error) {
     result.services.oracle = false;
-    result.details.push('Oracle (Gemini) connection failed');
+    result.details.push('Oracle (DeepSeek/NSCALE) connection failed');
     result.healthy = false;
   }
 

@@ -30,16 +30,18 @@
 
 ```mermaid
 flowchart TD
-  A[push/pull_request] --> B[ci.yml: lint + typecheck + test + build]
-  B -->|success on main| C[auto-deploy.yml via workflow_run]
-  C --> D[Vercel production deploy]
+  A[push main / pull_request] --> B[ci.yml: quick-checks]
+  B -->|lint + typecheck OK| C[ci.yml: test-and-build]
+  C -->|success on main| D[auto-deploy.yml via workflow_run]
+  D --> E[Vercel production deploy]
 ```
 
 ### Workflow Responsibilities
 
 - **CI (`.github/workflows/ci.yml`)**
   - Trigger: `push` auf `main` und `pull_request`
-  - Validierung: `lint`, `typecheck`, `test`, `build`
+  - Stufe 1 (schnell): `quick-checks` mit `lint` + `typecheck`
+  - Stufe 2 (langsam): `test-and-build` mit `test` + `build` (nur wenn Stufe 1 erfolgreich)
   - Paketmanager/Cache: **pnpm** + `actions/setup-node` cache `pnpm`
   - Concurrency: ein Lauf pro Branch/PR-Ref, ältere Läufe werden abgebrochen
 
@@ -51,9 +53,9 @@ flowchart TD
   - Paketmanager/Cache: **pnpm** + `pnpm dlx`
   - Concurrency: ein Deployment-Lauf pro Branch-Ref
 
-- **Deprecated (`.github/workflows/ci-cd.yml`)**
-  - deaktiviert (nur `workflow_dispatch`, keine aktiven Jobs)
-  - bleibt als Platzhalter mit Verweis auf den konsolidierten Pfad erhalten
+- **Konsolidierung**
+  - Es gibt nur noch einen primären CI-Workflow: `.github/workflows/ci.yml`
+  - Doppelte Checks aus `.github/workflows/ci-cd.yml` wurden entfernt
 
 ## Rollback
 

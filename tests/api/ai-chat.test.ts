@@ -15,11 +15,12 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-function createRequest(body: unknown) {
+function createRequest(body: unknown, ip = '203.0.113.10') {
   return new Request('http://localhost/api/ai/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-forwarded-for': ip,
     },
     body: JSON.stringify(body),
   });
@@ -34,18 +35,20 @@ describe('POST /api/ai/chat', () => {
         messages: [{ role: 'user', content: 'Hallo' }],
       })
     );
-
-    expect(response.status).toBe(503);
-  });
-
-  it('returns 400 for invalid payload', async () => {
-    process.env.FEATURE_AI_CHAT = 'true';
-
-    const response = await POST(createRequest({ messages: [] }));
     const json = await response.json();
 
-    expect(response.status).toBe(400);
-    expect(json.error).toBe('Validation failed.');
+    expect(response.status).toBe(503);
+    expect(json.error.code).toBe('FEATURE_DISABLED');
+  });
+
+  it('returns 422 for invalid payload', async () => {
+    process.env.FEATURE_AI_CHAT = 'true';
+
+    const response = await POST(createRequest({ messages: [] }, '203.0.113.11'));
+    const json = await response.json();
+
+    expect(response.status).toBe(422);
+    expect(json.error.code).toBe('VALIDATION_ERROR');
   });
 
   it('proxies valid payload to deepseek client', async () => {
@@ -57,10 +60,13 @@ describe('POST /api/ai/chat', () => {
     });
 
     const response = await POST(
-      createRequest({
-        model: 'deepseek-chat',
-        messages: [{ role: 'user', content: 'Frage' }],
-      })
+      createRequest(
+        {
+          model: 'deepseek-chat',
+          messages: [{ role: 'user', content: 'Frage' }],
+        },
+        '203.0.113.12'
+      )
     );
     const json = await response.json();
 
@@ -69,24 +75,28 @@ describe('POST /api/ai/chat', () => {
       model: 'deepseek-chat',
       messages: [{ role: 'user', content: 'Frage' }],
     });
-    expect(json.provider).toBe('deepseek');
-    expect(json.id).toBe('cmpl-1');
+    expect(json.success).toBe(true);
+    expect(json.data.provider).toBe('deepseek');
+    expect(json.data.id).toBe('cmpl-1');
   });
 
   it('maps provider errors to 502', async () => {
     process.env.FEATURE_AI_CHAT = 'true';
 
-    vi.mocked(deepseekChatCompletion).mockRejectedValue(new Error('upstream failed'));
+    vi.mocked(deepseekChatCompletion).mockRejectedValue(new Error('DeepSeek error 500: upstream failed'));
 
     const response = await POST(
-      createRequest({
-        messages: [{ role: 'user', content: 'Frage' }],
-      })
+      createRequest(
+        {
+          messages: [{ role: 'user', content: 'Frage' }],
+        },
+        '203.0.113.13'
+      )
     );
     const json = await response.json();
 
     expect(response.status).toBe(502);
-    expect(json.error).toBe('AI provider request failed.');
-    expect(json.message).toContain('upstream failed');
+    expect(json.error.code).toBe('UPSTREAM_ERROR');
+    expect(json.error.details.message).toContain('upstream failed');
   });
 });

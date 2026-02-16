@@ -18,7 +18,9 @@ describe('GET /api/health', () => {
 
     expect(response.status).toBe(200);
     expect(json.status).toBe('ok');
-    expect(json.checks.env.ok).toBe(true);
+    expect(json.version).toBeTruthy();
+    expect(json.dependencies.supabase.status).toBe('up');
+    expect(json.dependencies.supabase.missingEnv).toEqual([]);
   });
 
   it('returns degraded when required env vars are missing', async () => {
@@ -30,8 +32,8 @@ describe('GET /api/health', () => {
 
     expect(response.status).toBe(503);
     expect(json.status).toBe('degraded');
-    expect(json.checks.env.ok).toBe(false);
-    expect(json.checks.env.missing).toContain('NEXT_PUBLIC_SUPABASE_URL');
-    expect(json.checks.env.missing).toContain('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+    expect(json.dependencies.supabase.status).toBe('degraded');
+    expect(json.dependencies.supabase.missingEnv).toContain('NEXT_PUBLIC_SUPABASE_URL');
+    expect(json.dependencies.supabase.missingEnv).toContain('NEXT_PUBLIC_SUPABASE_ANON_KEY');
   });
 });

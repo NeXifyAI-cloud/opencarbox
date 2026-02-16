@@ -51,7 +51,7 @@ const nextConfig = {
       /* Beispiel-Weiterleitungen */
       {
         source: '/produkte',
-        destination: '/shop/produkte',
+        destination: '/shop',
         permanent: true,
       },
       {

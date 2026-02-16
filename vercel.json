@@ -39,7 +39,7 @@
   "redirects": [
     {
       "source": "/produkte",
-      "destination": "/shop/produkte",
+      "destination": "/shop",
       "permanent": true
     },
     {

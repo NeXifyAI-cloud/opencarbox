@@ -2,7 +2,16 @@ name: failure-orchestrator
 
 on:
   workflow_run:
-    workflows: ["*"]
+    workflows:
+      - ci
+      - Security
+      - Auto-Deploy Production
+      - autofix
+      - conflict-resolver
+      - auto-improve
+      - bootstrap
+      - Auto-Merge
+      - auto-reply
     types: [completed]
 
 concurrency:

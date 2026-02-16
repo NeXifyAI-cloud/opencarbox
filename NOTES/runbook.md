@@ -120,6 +120,11 @@ flowchart TD
 3. Capture metadata-only logs (no prompts/PII/secrets).
 4. Create backlog item with acceptance criteria before closing incident.
 
+### Incident-Handling: Label-Robustheit im Autofix-Fallback
+
+- Der Step `Incident/Issue fallback for failed required checks` in `.github/workflows/autofix.yml` stellt vor `gh issue create` sicher, dass sowohl `incident` als auch `autofix` Label existieren.
+- Label-Erstellung ist race-condition-resistent umgesetzt (zweiter Existenzcheck nach fehlgeschlagenem `gh label create`), damit der Fallback nicht an Label-Metadaten scheitert.
+
 ## Failure-Orchestrator Ablauf
 
 1. `failure-orchestrator.yml` reagiert auf **alle** fehlgeschlagenen `workflow_run`-Events (außer auf sich selbst).

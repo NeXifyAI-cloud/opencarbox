@@ -109,9 +109,19 @@ jobs:
         run: |
           RUN_REF="run:${{ github.event.workflow_run.id }} branch:${{ github.event.workflow_run.head_branch }} workflow:autofix"
 
-          if [ "$(gh label list --search incident --json name --jq 'length')" = "0" ]; then
-            gh label create incident --color b60205 --description "Incident requiring manual follow-up"
-          fi
+          ensure_label() {
+            local name="$1"
+            local color="$2"
+            local description="$3"
+
+            if [ "$(gh label list --search "$name" --json name --jq 'map(select(.name == "'"$name"'")) | length')" = "0" ]; then
+              gh label create "$name" --color "$color" --description "$description" || \
+                gh label list --search "$name" --json name --jq 'map(select(.name == "'"$name"'")) | length' | grep -q '^1$'
+            fi
+          }
+
+          ensure_label incident b60205 "Incident requiring manual follow-up"
+          ensure_label autofix 1d76db "Automated safe autofix PR"
 
           gh issue create \
             --title "Incident: autofix required checks failed for run ${{ github.event.workflow_run.id }}" \

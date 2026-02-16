@@ -14,13 +14,33 @@ function getArg(name: string): string | undefined {
 }
 
 function isBinaryLike(content: Buffer): boolean {
+  const binaryHeuristicThreshold = Number(
+    process.env.binary_heuristic_threshold || process.env.BINARY_HEURISTIC_THRESHOLD || 0.15,
+  );
+  if (!Number.isFinite(binaryHeuristicThreshold) || binaryHeuristicThreshold <= 0) {
+    throw new Error('binary_heuristic_threshold must be a positive number when set');
+  }
+
   const sample = content.subarray(0, Math.min(content.length, 4096));
   let control = 0;
   for (const b of sample) {
     if (b === 0) return true;
     if (b < 9 || (b > 13 && b < 32)) control += 1;
   }
-  return sample.length > 0 && control / sample.length > 0.15;
+  return sample.length > 0 && control / sample.length > binaryHeuristicThreshold;
+}
+
+function getPositiveIntEnv(...names: string[]): number | undefined {
+  for (const name of names) {
+    const raw = process.env[name];
+    if (!raw) continue;
+    const value = Number(raw);
+    if (!Number.isInteger(value) || value <= 0) {
+      throw new Error(`${name} must be a positive integer when set`);
+    }
+    return value;
+  }
+  return undefined;
 }
 
 function unwrapContent(content: string): string {
@@ -39,7 +59,7 @@ async function resolveFile(path: string, base: string, head: string) {
     throw new Error(`Refusing AI conflict resolution for binary-like file: ${path}`);
   }
 
-  const maxBytes = Number(process.env.MAX_FILE_BYTES || 200000);
+  const maxBytes = getPositiveIntEnv('max_file_bytes', 'MAX_FILE_BYTES') || 200000;
   if (raw.length > maxBytes) {
     throw new Error(`Refusing AI conflict resolution for file larger than MAX_FILE_BYTES (${maxBytes}): ${path}`);
   }
@@ -90,7 +110,7 @@ async function main() {
     return;
   }
 
-  const maxConflictFiles = Number(process.env.MAX_CONFLICT_FILES || 10);
+  const maxConflictFiles = getPositiveIntEnv('max_conflict_files', 'MAX_CONFLICT_FILES') || 10;
   if (conflicts.length > maxConflictFiles) {
     throw new Error(`Too many conflict files (${conflicts.length}); MAX_CONFLICT_FILES=${maxConflictFiles}`);
   }

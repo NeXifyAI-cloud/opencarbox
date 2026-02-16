@@ -161,6 +161,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AI_MAX_CALLS: '20'
-          MAX_CONFLICT_FILES: '10'
-          MAX_FILE_BYTES: '200000'
+          max_conflict_files: '10'
+          max_file_bytes: '200000'
+          binary_heuristic_threshold: '0.15'
           FORBID_WORKFLOW_EDITS: '1'

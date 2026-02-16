@@ -41,6 +41,6 @@ jobs:
           node-version: 20
           cache: pnpm
       - name: Install
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm i --frozen-lockfile
       - name: Dependency audit
         run: pnpm audit --prod

@@ -95,6 +95,9 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Run lint check
+        run: pnpm lint
+
       - name: Run auto-improve (DeepSeek)
         run: |
           source tools/export_env.sh
@@ -103,6 +106,7 @@ jobs:
           AI_MAX_CALLS: '5'
 
       - name: Open PR with improvements
+        if: ${{ success() }}
         run: |
           if git diff --quiet; then
             echo "No changes."
@@ -120,7 +124,7 @@ jobs:
 - Regelmäßige, risikoarme Verbesserungsimpulse für Doku/Backlog.
 
 ## Wie getestet
-- \\`pnpm lint\\`
+- \\`pnpm lint\\` (im Workflow vor PR-Erstellung ausgeführt)
 
 ## Risiko/Backout
 - Risiko: Niedrig (nur Dokumentation).

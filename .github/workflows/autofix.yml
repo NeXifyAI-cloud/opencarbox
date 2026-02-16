@@ -60,15 +60,91 @@ jobs:
         run: |
           pnpm -s prettier --write . || true
           pnpm -s eslint . --fix || true
-      - name: Lint check
-        run: pnpm lint
-      - name: Create PR if changes
+      - name: Classify changed files
+        id: classify
         run: |
           if git diff --quiet; then
-            echo "No changes to commit."
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "check_profile=none" >> "$GITHUB_OUTPUT"
+            echo "changed_files<<EOF" >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
+          CHANGED_FILES="$(git diff --name-only)"
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "changed_files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          if echo "$CHANGED_FILES" | rg -q '^(app/|lib/|components/|tools/|supabase/|\.github/workflows/)'; then
+            echo "check_profile=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "check_profile=lint-only" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run required checks
+        id: required_checks
+        run: |
+          PROFILE="${{ steps.classify.outputs.check_profile }}"
+          PASSED=true
+
+          if [ "$PROFILE" = "none" ]; then
+            echo "No changes after safe fixes; skipping checks."
+          elif [ "$PROFILE" = "full" ]; then
+            pnpm lint || PASSED=false
+            pnpm typecheck || PASSED=false
+            pnpm test || PASSED=false
+            pnpm build || PASSED=false
+          else
+            pnpm lint || PASSED=false
+          fi
+
+          echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
+
+      - name: Incident/Issue fallback for failed required checks
+        if: ${{ steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true' }}
+        run: |
+          RUN_REF="run:${{ github.event.workflow_run.id }} branch:${{ github.event.workflow_run.head_branch }} workflow:autofix"
+
+          if [ "$(gh label list --search incident --json name --jq 'length')" = "0" ]; then
+            gh label create incident --color b60205 --description "Incident requiring manual follow-up"
+          fi
+
+          gh issue create \
+            --title "Incident: autofix required checks failed for run ${{ github.event.workflow_run.id }}" \
+            --body "## Was passiert ist
+Safe-Autofix hat Änderungen erstellt, aber die zur Änderungsklasse erforderlichen Checks sind fehlgeschlagen.
+
+## Änderungsklasse
+- Profile: \`${{ steps.classify.outputs.check_profile }}\`
+- Betroffene Dateien:
+\`
+${{ steps.classify.outputs.changed_files }}
+\`
+
+## Erforderliche Checks
+- Bei Code-/Workflow-Änderungen: \`pnpm lint\`, \`pnpm typecheck\`, \`pnpm test\`, \`pnpm build\`
+- Bei reinen Doku-/Whitespace-Änderungen: mindestens \`pnpm lint\`
+
+## Nächste Schritte
+- Ursache der fehlgeschlagenen Checks analysieren
+- Manuellen Fix-PR erstellen
+
+<!-- ${RUN_REF} -->" \
+            --label incident --label autofix
+
+      - name: Stop when required checks fail
+        if: ${{ steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true' }}
+        run: |
+          echo "Required checks for profile '${{ steps.classify.outputs.check_profile }}' failed. Skipping PR creation."
+          exit 1
+
+      - name: Create PR if changes
+        if: ${{ steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed == 'true' }}
+        run: |
           BR="codex/autofix-safe-${{ github.event.workflow_run.id }}"
 
           # FIFO + max-2 guardrail for open autofix PRs
@@ -103,6 +179,9 @@ jobs:
 - \\`pnpm -s prettier --write .\\`
 - \\`pnpm -s eslint . --fix\\`
 - \\`pnpm lint\\`
+- \\`pnpm typecheck\\` (bei Änderungen in app/lib/components/tools/supabase/.github/workflows)
+- \\`pnpm test\\` (bei Änderungen in app/lib/components/tools/supabase/.github/workflows)
+- \\`pnpm build\\` (bei Änderungen in app/lib/components/tools/supabase/.github/workflows)
 
 ## Risiko/Backout
 - Risiko: Niedrig (stilistische Änderungen).

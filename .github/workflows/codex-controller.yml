@@ -1,0 +1,68 @@
+name: codex-controller
+
+on:
+  repository_dispatch:
+    types:
+      - codex.run_autofix
+      - codex.run_conflict_resolver
+      - codex.run_auto_improve
+      - codex.open_triage_issue
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+env:
+  AI_PROVIDER: deepseek
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Export normalized env names
+        run: source tools/export_env.sh
+
+      - name: Preflight AI (fail-closed)
+        run: |
+          source tools/export_env.sh
+          node tools/preflight.ts ai
+
+      - name: Install system tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh jq
+
+      - name: Route dispatch action
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EVENT_TYPE="${{ github.event.action }}"
+
+          case "$EVENT_TYPE" in
+            codex.run_autofix)
+              gh workflow run autofix.yml
+              ;;
+            codex.run_conflict_resolver)
+              gh workflow run conflict-resolver.yml
+              ;;
+            codex.run_auto_improve)
+              gh workflow run auto-improve.yml
+              ;;
+            codex.open_triage_issue)
+              gh issue create \
+                --title "AI-Triage requested by codex-controller" \
+                --body "Triggered by repository_dispatch event: $EVENT_TYPE\nSource: webhook controller\nRun: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+                --label failure-routing || true
+              ;;
+            *)
+              echo "Unsupported event: $EVENT_TYPE"
+              exit 1
+              ;;
+          esac

@@ -120,3 +120,33 @@ flowchart TD
 2. Für `ci`-Fehlschläge bleibt `autofix.yml` für Safe-Autofix-PRs zuständig; der Orchestrator übernimmt das zentrale Routing/Issue-Tracking ohne Secrets im Klartext zu loggen.
 3. AI-Triage ist strikt fail-closed und nur aktiv bei erfolgreichem `tools/preflight.ts ai` (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`).
 4. Wenn AI-Triage nicht möglich/ausreichend ist, wird ein Incident-/Routing-Issue mit Run-Marker erstellt und Backlog/Runbook werden aktualisiert.
+
+## Codex Controller Webhook
+
+### Zweck
+- Zentraler Eingangs-Punkt für externe Events zur autonomen Steuerung von `autofix`, `conflict-resolver`, `auto-improve` und Triage-Issue-Erstellung.
+
+### Endpoint
+- `POST /api/webhooks/codex-controller`
+- Pflicht-Header:
+  - `x-codex-signature-256`: `sha256=<hmac>` auf Basis von `CODEX_WEBHOOK_SECRET`
+  - `x-codex-event`: Ereignistyp (z. B. `workflow_run.failed`)
+
+### Erforderliche Variablen
+- `CODEX_WEBHOOK_SECRET`
+- `AI_PROVIDER=deepseek`
+- `DEEPSEEK_API_KEY`
+- `NSCALE_API_KEY`
+- `GH_PAT` (oder `GITHUB_TOKEN`)
+- `GITHUB_REPOSITORY` (Format `owner/repo`)
+
+### Betriebslogik
+1. Signatur validieren (fail-closed).
+2. DeepSeek entscheidet Routing-Aktion (`run_autofix`, `run_conflict_resolver`, `run_auto_improve`, `open_triage_issue`, `ignore`).
+3. Bei Aktion ≠ `ignore`: `repository_dispatch` an GitHub senden.
+4. Workflow `.github/workflows/codex-controller.yml` startet den passenden Folgeprozess.
+
+### Troubleshooting
+- **401 Invalid webhook signature**: Secret-Mismatch zwischen Sender und `CODEX_WEBHOOK_SECRET`.
+- **502 ROUTING_FAILED**: Prüfe `GH_PAT/GITHUB_TOKEN` und `GITHUB_REPOSITORY`.
+- **Kein Folgeworkflow**: Prüfe `repository_dispatch`-Typ gegen erlaubte Typen in `codex-controller.yml`.

@@ -1,0 +1,45 @@
+name: autofix
+
+on:
+  workflow_run:
+    workflows: ["ci"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  safe_autofix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
+      - run: pnpm i --frozen-lockfile
+      - name: Safe fixes
+        run: |
+          pnpm -s prettier --write . || true
+          pnpm -s eslint . --fix || true
+      - name: Create PR if changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          BR="autofix/${{ github.run_id }}"
+          git checkout -b "$BR"
+          git add -A
+          git commit -m "chore: safe autofix (format/lint)"
+          git push origin "$BR"
+          gh pr create --title "chore: safe autofix" --body "CI failed; applied safe autofixes (format/lint). Please review." --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

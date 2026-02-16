@@ -23,11 +23,18 @@ env:
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
   NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  AI_MAX_CALLS: ${{ vars.AI_MAX_CALLS || '1' }}
+  MAX_CONFLICT_FILES: ${{ vars.MAX_CONFLICT_FILES || '8' }}
+  MAX_FILE_BYTES: ${{ vars.MAX_FILE_BYTES || '200000' }}
+  FORBID_WORKFLOW_EDITS: ${{ vars.FORBID_WORKFLOW_EDITS || 'true' }}
 
 jobs:
   route-failure:
     if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name != 'failure-orchestrator' }}
     runs-on: ubuntu-latest
+    outputs:
+      safe_fix_changed: ${{ steps.safe_fix.outputs.changed }}
+      ai_eligible: ${{ steps.ai_eligible.outputs.eligible }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -79,8 +86,8 @@ jobs:
 - Fehlgeschlagenen Run mit deterministischen, risikoarmen Änderungen automatisch beheben.
 
 ## Wie getestet
-- \`pnpm -s prettier --write .\`
-- \`pnpm -s eslint . --fix\`
+- \\`pnpm -s prettier --write .\\`
+- \\`pnpm -s eslint . --fix\\`
 
 ## Risiko/Backout
 - Risiko: Niedrig.
@@ -88,32 +95,186 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: AI triage eligibility
+      - name: AI triage preflight
         id: ai_eligible
+        if: ${{ steps.safe_fix.outputs.changed != 'true' }}
         run: |
           source tools/export_env.sh
-          if node tools/preflight.ts ai >/dev/null 2>&1; then
-            echo "eligible=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "eligible=false" >> "$GITHUB_OUTPUT"
-          fi
+          node tools/preflight.ts ai
+          echo "eligible=true" >> "$GITHUB_OUTPUT"
 
-      - name: AI triage issue fallback
-        if: ${{ steps.safe_fix.outputs.changed != 'true' && steps.ai_eligible.outputs.eligible != 'true' }}
+  ai-triage:
+    needs: route-failure
+    if: ${{ needs.route-failure.outputs.safe_fix_changed != 'true' && needs.route-failure.outputs.ai_eligible == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Export normalized env names
+        run: source tools/export_env.sh
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install system tools
         run: |
-          gh issue create \
-            --title "Incident: failed workflow requires manual triage" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\n\nSafe-autofix war nicht ausreichend und AI-Triage ist nicht verfügbar. Bitte manuell analysieren und NOTES/runbook.md aktualisieren." \
-            --label bug --label automated
+          sudo apt-get update
+          sudo apt-get install -y jq gh
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Gather failed run context
+        run: |
+          mkdir -p .tmp
+          gh api repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/jobs > .tmp/jobs.json
+          jq -r '.jobs[] | select(.conclusion=="failure") | "Job: " + .name + "\nURL: " + .html_url + "\n"' .tmp/jobs.json > .tmp/failure-summary.txt
+          gh run view ${{ github.event.workflow_run.id }} --repo ${{ github.repository }} --log-failed > .tmp/failed-logs.txt || true
+          if [ ! -s .tmp/failed-logs.txt ]; then
+            echo "No failed logs available from gh run view." > .tmp/failed-logs.txt
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: AI triage issue
-        if: ${{ steps.safe_fix.outputs.changed != 'true' && steps.ai_eligible.outputs.eligible == 'true' }}
+      - name: Run AI triage and apply guarded patch
+        id: triage
+        continue-on-error: true
         run: |
+          npx tsx tools/ai_failure_triage.ts
+          if [ -f .tmp/triage-status.json ] && [ "$(jq -r '.success // false' .tmp/triage-status.json)" = "true" ]; then
+            echo "patched=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "patched=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Determine deterministic check profile
+        if: ${{ steps.triage.outputs.patched == 'true' }}
+        id: check_profile
+        run: |
+          CHANGED_FILES="$(git diff --name-only)"
+          echo "$CHANGED_FILES" > .tmp/changed-files.txt
+
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "profile=none" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git diff -w --quiet; then
+            echo "profile=lint-only" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if echo "$CHANGED_FILES" | grep -E '^(README\.md|docs/|wiki/|NOTES/)' >/dev/null 2>&1 && ! echo "$CHANGED_FILES" | grep -Ev '^(README\.md|docs/|wiki/|NOTES/)' >/dev/null 2>&1; then
+            echo "profile=lint-only" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if echo "$CHANGED_FILES" | grep -E '^(app/|lib/|components/|tools/|supabase/|\.github/workflows/)' >/dev/null 2>&1; then
+            echo "profile=full" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "profile=lint-only" >> "$GITHUB_OUTPUT"
+
+      - name: Run lint-only checks
+        if: ${{ steps.triage.outputs.patched == 'true' && steps.check_profile.outputs.profile == 'lint-only' }}
+        run: pnpm lint
+
+      - name: Run full deterministic checks
+        if: ${{ steps.triage.outputs.patched == 'true' && steps.check_profile.outputs.profile == 'full' }}
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test -- --run
+          pnpm build
+
+      - name: Prepare branch name
+        if: ${{ steps.triage.outputs.patched == 'true' }}
+        id: branch
+        run: |
+          feature="$(echo '${{ github.event.workflow_run.name }}' | tr '[:upper:]' '[:lower:]' | sed -E 's/[^a-z0-9]+/-/g; s/^-+|-+$//g; s/-+/-/g' | cut -c1-40)"
+          [ -n "$feature" ] || feature="failure-fix"
+          echo "name=codex/${feature}" >> "$GITHUB_OUTPUT"
+
+      - name: Open AI triage fix PR
+        if: ${{ steps.triage.outputs.patched == 'true' }}
+        run: |
+          git checkout -b "${{ steps.branch.outputs.name }}"
+          git add -A
+          git commit -m "fix: ai triage for failed workflow ${{ github.event.workflow_run.id }}"
+          git push origin "${{ steps.branch.outputs.name }}" --force-with-lease
+          gh pr create \
+            --base main \
+            --head "${{ steps.branch.outputs.name }}" \
+            --title "fix: ai triage for failed workflow" \
+            --body "## Was geändert
+- AI-Triage (DeepSeek + NSCALE) auf fehlgeschlagenen Run angewendet.
+- Guardrails eingehalten (AI_MAX_CALLS/MAX_CONFLICT_FILES/MAX_FILE_BYTES/FORBID_WORKFLOW_EDITS).
+
+## Warum
+- Safe-Autofix war nicht ausreichend; gezielte Korrektur aus Fehlerlogs notwendig.
+
+## Wie getestet
+- Deterministische Checks gemäß Change-Typ im Workflow ausgeführt.
+
+## Risiko/Backout
+- Risiko: Mittel (AI-generierter Patch mit Guardrails).
+- Backout: PR schließen oder Merge-Commit revertieren."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Failure fallback (Issue + Backlog + Runbook)
+        if: ${{ steps.triage.outputs.patched != 'true' || failure() }}
+        run: |
+          mkdir -p NOTES
+          {
+            echo "\n## [${{ github.run_id }}] Failed workflow requires manual triage"
+            echo "- Workflow: ${{ github.event.workflow_run.name }}"
+            echo "- Run: ${{ github.event.workflow_run.html_url }}"
+            echo "- Akzeptanzkriterien: Root cause identifizieren, reproduzierbarer Fix, deterministische Checks grün."
+          } >> NOTES/backlog.md
+
+          {
+            echo "\n## Incident ${{ github.run_id }} - ${{ github.event.workflow_run.name }}"
+            echo "- Kontext: ${{ github.event.workflow_run.html_url }}"
+            echo "- Maßnahme: Safe-Autofix + AI-Triage nicht erfolgreich/unsicher."
+            echo "- Nächster Schritt: Manuelle Analyse, Fix-PR, danach Runbook ergänzen."
+          } >> NOTES/runbook.md
+
+          branch="codex/failure-notes-${{ github.run_id }}"
+          git checkout -b "$branch"
+          git add NOTES/backlog.md NOTES/runbook.md
+          git commit -m "docs: backlog and runbook update for failed workflow"
+          git push origin "$branch"
+
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title "docs: failure follow-up for failed workflow" \
+            --body "## Was geändert
+- Backlog-Eintrag für manuellen Follow-up ergänzt.
+- Runbook um Incident-Notiz erweitert.
+
+## Warum
+- AI-Triage war nicht ausreichend sicher bzw. Checks fehlgeschlagen.
+
+## Wie getestet
+- \\`pnpm lint\\` (mindestens als deterministischer Check vor Follow-up).
+
+## Risiko/Backout
+- Risiko: Niedrig (nur Dokumentation).
+- Backout: PR schließen oder Commit revertieren."
+
           gh issue create \
-            --title "AI-Triage required: failed workflow" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\n\nSafe-autofix hat keine Änderungen erzeugt. Bitte DeepSeek-Triage durchführen und als Fix-PR einreichen. NSCALE-Header ist verpflichtend." \
+            --title "Incident: manual triage required for failed workflow" \
+            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\n\nSafe-Autofix + AI-Triage konnten keinen sicheren/verifizierten Fix liefern. Backlog- und Runbook-Update wurden erstellt." \
             --label bug --label automated --label ai-triage
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -657,6 +657,69 @@ export interface Database {
           created_at?: string
         }
       }
+
+      ai_settings: {
+        Row: {
+          user_id: string
+          provider: string
+          base_url: string | null
+          model: string | null
+          key_status_flags: Json
+          api_key_preview: string | null
+          updated_at: string
+        }
+        Insert: {
+          user_id: string
+          provider?: string
+          base_url?: string | null
+          model?: string | null
+          key_status_flags?: Json
+          api_key_preview?: string | null
+          updated_at?: string
+        }
+        Update: {
+          user_id?: string
+          provider?: string
+          base_url?: string | null
+          model?: string | null
+          key_status_flags?: Json
+          api_key_preview?: string | null
+          updated_at?: string
+        }
+      }
+
+      ai_logs: {
+        Row: {
+          id: number
+          user_id: string
+          provider: string
+          model: string
+          latency_ms: number
+          success: boolean
+          error_code: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: never
+          user_id: string
+          provider: string
+          model: string
+          latency_ms: number
+          success: boolean
+          error_code?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: never
+          user_id?: string
+          provider?: string
+          model?: string
+          latency_ms?: number
+          success?: boolean
+          error_code?: string | null
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

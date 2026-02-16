@@ -47,9 +47,9 @@
 
 ## Runner Policy
 
-- CI in `.github/workflows/ci.yml` läuft standardmäßig auf `ubuntu-latest` (GitHub-hosted), damit PR-Checks nicht von lokaler Runner-Verfügbarkeit abhängen.
+- CI in `.github/workflows/ci.yml` läuft standardmäßig auf `ubuntu-latest` (GitHub-hosted); der Workflow benötigt dafür keine AI-/Deploy-Secrets.
 - `actions/setup-node@v4` nutzt `cache: pnpm` + `cache-dependency-path: pnpm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
-- Self-hosted Runner können optional für andere Workflows verwendet werden, sind aber nicht Voraussetzung für den Standard-CI-Pfad.
+- Self-hosted Runner können optional für andere Workflows verwendet werden, sind aber keine Voraussetzung für den Standard-CI-Pfad.
 
 ### Troubleshooting: Runner unavailable
 

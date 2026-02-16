@@ -66,3 +66,12 @@
   - Die Checklist ist in regulären PRs nutzbar, ohne den normalen Entwicklungsfluss übermäßig zu belasten.
   - Dokumentation beschreibt, wann die Release-Checklist vollständig abgearbeitet werden muss.
 - **Zieltermin:** 2026-04-03
+
+### A6 — Optionaler Umstieg von CI auf self-hosted Runner (separate ADR) — Priorität: Mittel
+- **Akzeptanzkriterien:**
+  - Eine neue ADR dokumentiert Anlass, Risiko, Kosten und Rollback für den Umstieg von `ubuntu-latest` auf `self-hosted` in `ci.yml`.
+  - Es existiert ein reproduzierbarer Runner-Betriebsnachweis (Provisioning, Labels, Monitoring, Patch-Management, Ausfallprozess).
+  - Ein Validierungslauf zeigt, dass `pnpm lint`, `pnpm typecheck`, `pnpm test` und `pnpm build` auf self-hosted stabil durchlaufen.
+  - Rollback auf `ubuntu-latest` ist als einzelner, dokumentierter Workflow-Change möglich und getestet.
+- **Zieltermin:** 2026-04-10
+

@@ -25,5 +25,11 @@ jobs:
         run: pnpm typecheck
       - name: Unit tests
         run: pnpm test -- --run
+      - name: Guard: forbid OpenAI env usage
+        run: |
+          if rg -n "OPENAI_" .; then
+            echo "Found OPENAI_ usage. Forbidden."
+            exit 1
+          fi
       - name: Build
         run: pnpm build

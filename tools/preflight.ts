@@ -24,6 +24,19 @@ function optionalInt(name: string) {
   return value;
 }
 
+function optionalIntAny(...names: string[]) {
+  for (const name of names) {
+    const raw = optional(name);
+    if (!raw) continue;
+    const value = Number(raw);
+    if (!Number.isInteger(value) || value <= 0) {
+      throw new Error(`${name} must be a positive integer when set`);
+    }
+    return value;
+  }
+  return undefined;
+}
+
 function main() {
   const mode = process.argv[2] || "ci";
 
@@ -53,8 +66,9 @@ function main() {
     optional("DEEPSEEK_BASE_URL");
     optional("NSCALE_HEADER_NAME");
     optionalInt("AI_MAX_CALLS");
-    optionalInt("MAX_CONFLICT_FILES");
-    optionalInt("MAX_FILE_BYTES");
+    optionalIntAny("max_conflict_files", "MAX_CONFLICT_FILES");
+    optionalIntAny("max_file_bytes", "MAX_FILE_BYTES");
+    optionalIntAny("binary_heuristic_threshold", "BINARY_HEURISTIC_THRESHOLD");
     optional("FORBID_WORKFLOW_EDITS");
 
     console.log("Preflight(ai): OK");

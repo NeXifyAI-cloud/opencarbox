@@ -87,3 +87,16 @@
 - **Consequences**:
   - OpenAI/sonstige Provider sind operativ ausgeschlossen, solange keine explizite neue ADR dies ändert.
   - Abnahmekriterien für AI-Tasks müssen DeepSeek-only und NSCALE-Pflicht explizit prüfen.
+
+## ADR-006: Vereinheitlichte Guardrail-Variablen für AI-Konfliktauflösung
+- **Decision**: Guardrail-Umgebungsvariablen für die AI-Konfliktauflösung akzeptieren standardisiert `max_conflict_files`, `max_file_bytes` und `binary_heuristic_threshold` (zusätzlich rückwärtskompatibel zu bisherigen UPPERCASE-Varianten).
+- **Alternatives**:
+  - Ausschließlich UPPERCASE-Variablen weiterführen.
+  - Harte Umstellung ohne Rückwärtskompatibilität.
+- **Reasoning**:
+  - Entspricht der dokumentierten Guardrail-Benennung für AI-Workflows.
+  - Vermeidet Konfigurationsdrift zwischen Workflow-Definitionen und Tooling.
+- **Consequences**:
+  - Bestehende Automationen bleiben kompatibel, neue Workflows können konsistent lowercase-Guardrails setzen.
+  - Binärdatei-Erkennung kann über `binary_heuristic_threshold` explizit gesteuert werden.
+

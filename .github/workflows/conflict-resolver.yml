@@ -92,52 +92,55 @@ jobs:
             exit 0
           fi
 
-          echo '${{ steps.prs.outputs.prs }}' | jq -c '.[]' | while read pr; do
-            num=$(echo "$pr" | jq -r .number)
-            head=$(echo "$pr" | jq -r .headRefName)
-            base=$(echo "$pr" | jq -r .baseRefName)
+          DIRTY_FIFO="$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url,createdAt --jq '[.[] | select(.mergeStateStatus=="DIRTY")] | sort_by(.createdAt)')"
+          CANDIDATE_COUNT="$(echo "$DIRTY_FIFO" | jq 'length')"
+          if [ "$CANDIDATE_COUNT" -eq 0 ]; then
+            echo "No DIRTY PRs found after FIFO refresh."
+            exit 0
+          fi
 
-            git fetch origin "$base" "$head"
-            git checkout -B "codex/conflictfix-$num" "origin/$head"
+          pr="$(echo "$DIRTY_FIFO" | jq '.[0]')"
+          num="$(echo "$pr" | jq -r .number)"
+          head="$(echo "$pr" | jq -r .headRefName)"
+          base="$(echo "$pr" | jq -r .baseRefName)"
+          created="$(echo "$pr" | jq -r .createdAt)"
+          url="$(echo "$pr" | jq -r .url)"
+          echo "FIFO selected DIRTY PR #$num ($head, created $created): $url"
 
-            if git rebase "origin/$base"; then
-              echo "Rebase OK for #$num"
-            else
-              echo "Rebase conflict. Attempting AI merge via DeepSeek..."
-              git rebase --abort || true
-              pnpm tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head"
-            fi
+          git fetch origin "$base" "$head"
+          git checkout -B "codex/conflictfix-$num" "origin/$head"
 
-            pnpm lint
-            pnpm typecheck
-            pnpm test -- --run
-            pnpm build
+          if git rebase "origin/$base"; then
+            echo "Rebase OK for #$num"
+          else
+            echo "Rebase conflict. Attempting AI merge via DeepSeek..."
+            git rebase --abort || true
+            pnpm tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head"
+          fi
 
-            git add -A
-            if git diff --cached --quiet; then
-              echo "No changes; skip #$num"
-              continue
-            fi
+          pnpm lint
+          pnpm typecheck
+          pnpm test -- --run
+          pnpm build
 
-            git commit -m "chore: resolve conflicts for #$num"
-            git push -u origin "codex/conflictfix-$num" --force-with-lease
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes; skip #$num"
+            exit 0
+          fi
 
-            PLANNED_BRANCH="codex/conflictfix-$num"
-            OLDEST_PR="$(echo "$OPEN_CODEX_PRS" | jq '.[0] // empty')"
-            if [ -n "$OLDEST_PR" ]; then
-              OLDEST_HEAD="$(echo "$OLDEST_PR" | jq -r '.headRefName')"
-              if [ "$OLDEST_HEAD" != "$PLANNED_BRANCH" ]; then
-                OLDEST_NUMBER="$(echo "$OLDEST_PR" | jq -r '.number')"
-                OLDEST_CREATED_AT="$(echo "$OLDEST_PR" | jq -r '.createdAt')"
-                OLDEST_URL="$(echo "$OLDEST_PR" | jq -r '.url')"
-                echo "Skipping PR creation for #$num due to FIFO guardrail: oldest open codex/* PR #$OLDEST_NUMBER ($OLDEST_HEAD, created $OLDEST_CREATED_AT) blocks planned branch $PLANNED_BRANCH. Blocking PR: $OLDEST_URL"
-                continue
-              fi
-            fi
+          git commit -m "chore: resolve conflicts for #$num"
+          git push -u origin "codex/conflictfix-$num" --force-with-lease
 
-            gh pr create \
-              --title "chore: resolve conflicts for #$num" \
-              --body "## Was geändert
+          OPEN_COUNT_BEFORE_CREATE="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
+          if [ "$OPEN_COUNT_BEFORE_CREATE" -ge 2 ]; then
+            echo "Race guard: skipping gh pr create because open codex/* PR count is now $OPEN_COUNT_BEFORE_CREATE (max 2)."
+            exit 0
+          fi
+
+          gh pr create \
+            --title "chore: resolve conflicts for #$num" \
+            --body "## Was geändert
 - Rebase des PR-Branches auf den aktuellen Base-Branch.
 - Bei Konflikten wurden ausschließlich Konfliktdateien mit DeepSeek (inkl. NSCALE-Header) gemerged.
 
@@ -153,9 +156,8 @@ jobs:
 ## Risiko/Backout
 - Risiko: Niedrig bis mittel (konfliktbezogene Änderungen).
 - Backout: Fix-PR schließen und Branch \\`$head\\` erneut manuell rebasen." \
-              --base "$base" \
-              --head "codex/conflictfix-$num" || true
-          done
+            --base "$base" \
+            --head "codex/conflictfix-$num" || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AI_MAX_CALLS: '20'

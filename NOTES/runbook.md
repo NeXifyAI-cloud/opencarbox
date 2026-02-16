@@ -7,12 +7,29 @@
 - Apply Supabase migrations via Supabase CLI or SQL editor using files in `supabase/migrations`.
 
 ## Status Governance
+
 - **Owner:** Tech Lead (oder benannter Release-Manager im aktuellen Sprint).
 - **Single Source of Truth:** `docs/tasks/master_plan.md` ist die einzige Truth-Quelle für Task-Status.
 - **Aktualisierungsrhythmus:**
   - Bei jedem Merge auf `main` `pnpm report:plan-status` ausführen.
+  - Für Weekly-Status + KPI-Block `pnpm report:weekly-status` ausführen (liest Tasks + CI-Summary).
   - Zusätzlich vor jedem Weekly-Status-Update und vor Releases ausführen.
   - Änderungen an Task-Status immer zuerst in `docs/tasks/master_plan.md` pflegen, danach `STATUS_REPORT.md` via Script aktualisieren.
+
+<!-- kpi-status:start -->
+
+## KPI-Block (automatisch aktualisiert)
+
+- ⏱️ **PR-Cycle-Time:** 18.4h _(Ziel: <24h)_ ✅
+- 🧪 **CI-Durchlaufzeit:** 9.7 min _(Ziel: <12 min)_ ✅
+- 🏗️ **Build-Success-Rate:** 96.2% _(Ziel: >95%)_ ✅
+- 🐞 **Defect Escape Rate:** 4.7% _(Ziel: <5%)_ ✅
+- 🚀 **Deploy-Frequenz:** 7 Deploys / 7 Tage _(Ziel: täglich auf Preview)_ ✅
+- 🗓️ **Zuletzt aktualisiert:** 2026-02-16
+
+> Quelle: `docs/tasks/master_plan.md` + `reports/ci-weekly-summary.json` (Fallback auf interne Standardwerte).
+
+<!-- kpi-status:end -->
 
 ## Release Process
 

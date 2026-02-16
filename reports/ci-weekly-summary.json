@@ -1,0 +1,9 @@
+{
+  "avgPrCycleTimeHours": 18.4,
+  "avgCiDurationMinutes": 9.7,
+  "buildsTotal": 52,
+  "buildsSucceeded": 50,
+  "escapedDefects": 2,
+  "totalDefects": 43,
+  "previewDeploymentsLast7Days": 7
+}

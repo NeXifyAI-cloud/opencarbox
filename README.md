@@ -57,3 +57,13 @@ Enable these repository rules for `main`:
 - Architecture decisions and ADRs: `NOTES/brain.md`.
 - Backlog and milestones: `NOTES/backlog.md`.
 - Operations runbook: `NOTES/runbook.md`.
+
+## Autonomous problem solver
+
+Run the autonomous reliability workflow (DeepSeek + NSCALE headers mandatory):
+
+```bash
+npm run autofix:problems
+```
+
+The workflow executes lint/typecheck/test/build, asks DeepSeek for iterative remediation commands, applies allowlisted fixes automatically, and stores a run report at `.cline/autonomous-problem-report.json`.

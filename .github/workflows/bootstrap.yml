@@ -19,11 +19,14 @@ jobs:
       - name: Run bootstrap (idempotent)
         run: |
           bash tools/setup/00_prereq_check.sh
-          # In CI fehlen meist system gh; nutze GH_TOKEN via gh CLI install:
           sudo apt-get update && sudo apt-get install -y gh
+          bash tools/setup/10_github_bootstrap.sh
           bash tools/setup/20_vercel_bootstrap.sh
           bash tools/setup/30_supabase_bootstrap.sh
         env:
+          GH_TOKEN: ${{ secrets.BOOTSTRAP_ADMIN_TOKEN }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}

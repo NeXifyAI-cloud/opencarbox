@@ -1,0 +1,95 @@
+name: conflict-resolver
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gh jq
+          corepack enable
+
+      - name: Find PRs with conflicts
+        id: prs
+        run: |
+          prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
+            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]')
+          echo "prs=$prs" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve each PR (rebase -> AI merge -> test -> PR)
+        if: ${{ steps.prs.outputs.prs != '[]' }}
+        run: |
+          echo '${{ steps.prs.outputs.prs }}' | jq -c '.[]' | while read -r pr; do
+            num=$(echo "$pr" | jq -r .number)
+            head=$(echo "$pr" | jq -r .headRefName)
+            base=$(echo "$pr" | jq -r .baseRefName)
+
+            echo "Processing PR #$num ($head -> $base)"
+
+            git fetch origin "$base" "$head"
+            git checkout -B "conflictfix/$num" "origin/$head"
+
+            if git rebase "origin/$base"; then
+              echo "Rebase OK for PR #$num"
+            else
+              echo "Rebase conflicts. Attempting AI merge..."
+              git rebase --abort || true
+              node tools/ai_merge_conflicts.mjs
+            fi
+
+            pnpm install --no-frozen-lockfile
+            pnpm lint
+            pnpm typecheck
+            pnpm test -- --run
+            pnpm build
+
+            git add -A
+            if git diff --cached --quiet; then
+              echo "No changes produced for PR #$num; skipping."
+              continue
+            fi
+
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            git commit -m "chore: resolve conflicts for PR #$num"
+            git push -u origin "conflictfix/$num" --force-with-lease
+
+            gh pr create \
+              --title "chore: resolve conflicts for #$num" \
+              --body "Automated conflict resolution (rebase + validated by CI)." \
+              --base "$base" \
+              --head "conflictfix/$num" || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          OPENAI_COMPAT_API_KEY: ${{ secrets.OPENAI_COMPAT_API_KEY }}
+          OPENAI_COMPAT_BASE_URL: ${{ secrets.OPENAI_COMPAT_BASE_URL }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+          NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+
+      - name: Create diagnostics issue when resolver fails
+        if: failure()
+        run: |
+          gh issue create \
+            --title "Conflict resolver failed on $(date -u +'%Y-%m-%d %H:%M UTC')" \
+            --body "Automated conflict resolver failed. Please inspect workflow logs. Secrets are never printed by the workflow." \
+            --label "automation" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,88 +1,39 @@
-# Dependabot Konfiguration für OpenCarBox
-# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
-
 version: 2
 
 updates:
-  # NPM Dependencies (Frontend & Backend)
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "09:00"
-      timezone: "Europe/Vienna"
+      interval: 'weekly'
     open-pull-requests-limit: 10
-    commit-message:
-      prefix: "deps"
-      include: "scope"
+    rebase-strategy: 'auto'
     labels:
-      - "dependencies"
-      - "automated"
-    reviewers:
-      - "NeXify-Chat-it-Automate-it"
+      - 'dependencies'
+      - 'automated'
     groups:
-      # Next.js Ecosystem
       nextjs:
         patterns:
-          - "next"
-          - "next-*"
-          - "@next/*"
-        update-types:
-          - "minor"
-          - "patch"
-      # React Ecosystem
-      react:
+          - 'next'
+          - 'react'
+          - 'react-dom'
+          - '@types/react*'
+          - '@types/node'
+      tooling:
         patterns:
-          - "react"
-          - "react-dom"
-          - "@types/react"
-          - "@types/react-dom"
-      # Supabase
-      supabase:
-        patterns:
-          - "@supabase/*"
-          - "supabase"
-      # Testing
-      testing:
-        patterns:
-          - "vitest"
-          - "@vitest/*"
-          - "playwright"
-          - "@playwright/*"
-      # Linting & Formatting
-      linting:
-        patterns:
-          - "eslint"
-          - "eslint-*"
-          - "@eslint/*"
-          - "prettier"
-          - "@typescript-eslint/*"
-      # UI Components
-      ui:
-        patterns:
-          - "@radix-ui/*"
-          - "tailwindcss"
-          - "tailwind-*"
-          - "class-variance-authority"
-          - "clsx"
-    ignore:
-      # Major Updates manuell prüfen
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
+          - 'eslint*'
+          - 'prettier*'
+          - 'typescript*'
+          - 'vitest*'
+          - 'playwright*'
 
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
-      day: "monday"
-    commit-message:
-      prefix: "ci"
+      interval: 'weekly'
     labels:
-      - "github-actions"
-      - "automated"
+      - 'github-actions'
+      - 'automated'
     groups:
       actions:
         patterns:
-          - "*"
+          - '*'

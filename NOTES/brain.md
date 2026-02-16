@@ -18,17 +18,18 @@
   - App fails fast if env values are missing/invalid.
 - New environment variables must be added to the schema.
 
-## ADR-002: Failure-Orchestrator als zentrale Failure-Route
-- **Decision**: Ein zentraler Workflow `failure-orchestrator.yml` verarbeitet fehlgeschlagene Workflow-Runs in drei Stufen: Safe-Autofix, AI-Triage-Gating (DeepSeek + NSCALE) und Incident-Issue-Fallback.
+## ADR-002: Klare Failure-Zuständigkeit zwischen `autofix.yml` und `failure-orchestrator.yml`
+- **Decision**: `autofix.yml` ist ausschließlich für Safe-Autofix-PRs bei fehlgeschlagenen `ci`-Runs zuständig. `failure-orchestrator.yml` übernimmt ausschließlich Routing/Issue/AI-Triage für fehlgeschlagene Nicht-`ci`-Runs.
 - **Alternatives**:
-  - Einzelne, voneinander getrennte Autofix-/Triage-Workflows ohne zentrale Steuerung.
-  - Ausschließlich manuelle Incident-Bearbeitung.
+  - Vollständige Zentralisierung inklusive Safe-Autofix im `failure-orchestrator`.
+  - Parallele Zuständigkeit beider Workflows ohne harte Trennung.
 - **Reasoning**:
-  - Deterministische, wiederholbare Behandlung jedes Fehlschlags.
-  - Fail-closed Verhalten für AI-Pfade durch verpflichtendes Preflight (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`).
+  - Verhindert doppelte Schreibpfade (PR/Issue) pro fehlgeschlagenem Run.
+  - Hält Safe-Autofix deterministisch, während Triage-Fälle klar im Orchestrator landen.
+  - Erlaubt fail-closed AI-Gating im Orchestrator (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`).
 - **Consequences**:
-  - Schnellere Erstreaktion bei CI-/Workflow-Fehlern.
-  - Höhere Transparenz durch standardisierte PR-/Issue-Erstellung.
+  - Pro Run schreibt nur ein Workflow Artefakte (PR oder Issue).
+  - Eindeutigere Incident-Nachverfolgung über Routing-Labels und Run-Marker.
 
 ## Security & Privacy Notes
 - Never store or log API keys in plain text.

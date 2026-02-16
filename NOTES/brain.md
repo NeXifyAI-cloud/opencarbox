@@ -65,3 +65,16 @@
 - **Consequences**:
   - Self-hosted Runner-Verfügbarkeit wird zur Betriebsvoraussetzung für CI.
   - AI-/Deploy-Variablen bleiben in spezialisierten Workflows statt in Basis-CI.
+
+## ADR-004: Webhook-basierter Codex-Controller für autonome Pipeline-Steuerung
+- **Decision**: Einführung eines signierten Webhook-Endpunkts `POST /api/webhooks/codex-controller`, der DeepSeek-only Routing-Entscheidungen trifft und über `repository_dispatch` die zuständigen Automationspfade startet.
+- **Alternatives**:
+  - Direkte Entscheidung ausschließlich in einzelnen GitHub Workflows ohne zentralen Router.
+  - Polling statt Event/Webhook-Steuerung.
+- **Reasoning**:
+  - Ein zentraler Router reduziert Duplikate bei Triggerlogik und ermöglicht konsistente Guardrails.
+  - Webhooks liefern reaktive, niedrig-latente Steuerung ohne permanente Polling-Kosten.
+  - DeepSeek + NSCALE bleibt erzwungen, da Entscheidungslogik dieselbe AI-Policy nutzt.
+- **Consequences**:
+  - Für produktiven Betrieb sind `CODEX_WEBHOOK_SECRET`, `GH_PAT`/`GITHUB_TOKEN` und korrektes `GITHUB_REPOSITORY` erforderlich.
+  - Externe Systeme müssen den HMAC-Header `x-codex-signature-256` liefern.

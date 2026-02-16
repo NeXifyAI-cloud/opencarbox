@@ -77,8 +77,8 @@ NEXT_PUBLIC_SUPABASE_URL=... \
 NEXT_PUBLIC_SUPABASE_ANON_KEY=... \
 SUPABASE_SERVICE_ROLE_KEY=... \
 DEEPSEEK_API_KEY=... \
-OPENAI_COMPAT_API_KEY=... \
-OPENAI_COMPAT_BASE_URL=... \
+AI_PROVIDER=deepseek \
+DEEPSEEK_BASE_URL=https://api.deepseek.com \
 NSCALE_API_KEY=... \
 ./scripts/set-deployment-secrets.sh
 ```

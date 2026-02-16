@@ -54,19 +54,19 @@
 - Provider-specific headers and retry behavior must remain encapsulated in adapter files.
 
 
-## ADR-002: CI auf self-hosted Runner ohne AI-Secrets
-- **Decision**: Der primäre CI-Workflow (`.github/workflows/ci.yml`) läuft auf `runs-on: self-hosted` und enthält keine AI-/Deploy-Secrets im globalen Env-Block.
+## ADR-004: CI auf GitHub-hosted `ubuntu-latest` ohne AI-Secrets
+- **Decision**: Der primäre CI-Workflow (`.github/workflows/ci.yml`) läuft in beiden Jobs auf `runs-on: ubuntu-latest` (GitHub-hosted) und enthält keine AI-/Deploy-Secrets als Voraussetzung.
 - **Alternatives**:
-  - Weiterbetrieb auf `ubuntu-latest` mit gemischten Secrets im CI-Workflow.
-  - Separate Secret-Injektion pro Job ohne Runner-Umstellung.
+  - Betrieb auf `self-hosted` als Standard-Runner für CI.
+  - Gemischtes Modell mit optionalem Fallback zwischen `self-hosted` und `ubuntu-latest`.
 - **Reasoning**:
-  - Entkoppelt Build/Test-Checks von AI-Secret-Verfügbarkeit.
-  - Nutzt dedizierte Runner-Kapazität gemäß Betriebsvorgabe.
+  - PR- und Main-Checks bleiben unabhängig von lokaler Runner-Verfügbarkeit.
+  - Build/Test-Checks sind weiterhin klar von AI-/Deploy-Workflows getrennt.
 - **Consequences**:
-  - Self-hosted Runner-Verfügbarkeit wird zur Betriebsvoraussetzung für CI.
-  - AI-/Deploy-Variablen bleiben in spezialisierten Workflows statt in Basis-CI.
+  - CI ist sofort lauffähig ohne eigene Runner-Infrastruktur.
+  - Eine mögliche Rückkehr zu `self-hosted` wird als separate zukünftige Backlog-/ADR-Entscheidung geführt (siehe `NOTES/backlog.md`, A6).
 
-## ADR-004: Webhook-basierter Codex-Controller für autonome Pipeline-Steuerung
+## ADR-005: Webhook-basierter Codex-Controller für autonome Pipeline-Steuerung
 - **Decision**: Einführung eines signierten Webhook-Endpunkts `POST /api/webhooks/codex-controller`, der DeepSeek-only Routing-Entscheidungen trifft und über `repository_dispatch` die zuständigen Automationspfade startet.
 - **Alternatives**:
   - Direkte Entscheidung ausschließlich in einzelnen GitHub Workflows ohne zentralen Router.

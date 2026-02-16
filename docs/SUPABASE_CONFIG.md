@@ -19,7 +19,7 @@ Diese Keys sind sicher für den Browser und können in `.env.local` verwendet we
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://acclrhzzwdutbigxsxyq.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjY2xyaHp6d2R1dGJpZ3hzeHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0NzA0MTgsImV4cCI6MjA4MjA0NjQxOH0.EipGXl9SLxMcsMnnmvnN8dBqiM3j3CoIen1GrXas_NE
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<SUPABASE_ANON_KEY_PLACEHOLDER>
 ```
 
 ### Private Keys (NUR Server-side!)
@@ -35,7 +35,7 @@ SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
 Für die Supabase CLI und MCP-Integration:
 
 ```env
-SUPABASE_ACCESS_TOKEN=sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb
+SUPABASE_ACCESS_TOKEN=<SUPABASE_ACCESS_TOKEN_PLACEHOLDER>
 MCP_SERVER_URL=https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage
 ```
 
@@ -125,7 +125,13 @@ RLS ist für alle Tabellen aktiviert. Policies:
 
 ## 🛠️ Verwendung im Code
 
-### Browser-Side (Client Components)
+Die Implementierung im Repository nutzt **@supabase/ssr** mit klarer Trennung:
+
+- `src/lib/supabase/client.ts` exportiert `supabase` (Singleton) und `createClient()` für Browser/Client Components.
+- `src/lib/supabase/server.ts` exportiert `createServerClient()` (nutzt `cookies()` aus Next.js) und `createAdminClient()`.
+- `src/lib/supabase/middleware.ts` exportiert `updateSession(request)` für Session-Refresh in `src/middleware.ts`.
+
+### Client Components (Browser)
 
 ```typescript
 import { createClient } from '@/lib/supabase/client';
@@ -137,36 +143,43 @@ const { data, error } = await supabase
   .limit(10);
 ```
 
-### Server-Side (Server Components)
+Alternativ kann direkt der Singleton verwendet werden:
 
 ```typescript
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
+import { supabase } from '@/lib/supabase/client';
+```
 
-const supabase = createClient(cookies());
+### Server Components / Route Handlers
+
+```typescript
+import { createServerClient } from '@/lib/supabase/server';
+
+const supabase = await createServerClient();
 const { data, error } = await supabase
   .from('orders')
   .select('*')
   .eq('user_id', userId);
 ```
 
-### Server Actions
+### Server-only Admin Aufgaben (umgeht RLS)
 
 ```typescript
-'use server';
+import { createAdminClient } from '@/lib/supabase/server';
 
-import { createClient } from '@/lib/supabase/server';
-import { cookies } from 'next/headers';
+const admin = createAdminClient();
+await admin.from('users').delete().eq('id', userId);
+```
 
-export async function createOrder(orderData: OrderInput) {
-  const supabase = createClient(cookies());
-  const { data, error } = await supabase
-    .from('orders')
-    .insert(orderData)
-    .select()
-    .single();
+### Middleware-Hinweis
 
-  return { data, error };
+Die Auth-Session wird in der Middleware aktualisiert. Zwischen `createServerClient(...)` und `supabase.auth.getUser()` in der Middleware darf kein zusätzlicher Code eingefügt werden, da sonst Session-Refresh/Debugging problematisch werden kann.
+
+```typescript
+import { updateSession } from '@/lib/supabase/middleware';
+import type { NextRequest } from 'next/server';
+
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
 }
 ```
 

@@ -473,6 +473,51 @@
 
 ---
 
+## 🌊 Execution Waves
+
+### Welle A (Core Commerce)
+- **Tasks:** TASK-022, TASK-024, TASK-025
+- **Harte Exit-Kriterien:** Produktkatalog inkl. Filter/Sortierung live, Warenkorb mit Persistenz stabil, Checkout inkl. Stripe-Webhook + E2E Happy Path (Produktdetail → Warenkorb → Zahlung → Bestellbestätigung) erfolgreich.
+- **Messgrößen:**
+  - Checkout-Conversion im Staging ≥ 60% für Testnutzer
+  - Technische Fehlerquote im Checkout < 1% (5xx/4xx ohne User-Fehler)
+  - Warenkorbabbruchrate im Testbetrieb < 35%
+- **Blocker/Abhängigkeiten:** TASK-020 Routing, TASK-005 Datenmodell, Stripe-Testkonto + Webhook-Endpunkt, Seed-/Testdaten für Produkte.
+- **Zieltermin:** 2025-01-10
+
+### Welle B (Service Business)
+- **Tasks:** TASK-026, TASK-027, TASK-034
+- **Harte Exit-Kriterien:** Service-Übersicht vollständig, Terminbuchung Ende-zu-Ende inkl. Slot-Auswahl/Bestätigung, transaktionale E-Mails (Termin- & Bestellkontext) produktionsnah versendbar.
+- **Messgrößen:**
+  - Buchungsabschlussrate im Staging ≥ 70%
+  - E-Mail-Zustellrate ≥ 98% bei Testsendungen
+  - No-Show-relevante Datenvollständigkeit (Fahrzeug + Kontakt + Slot) = 100%
+- **Blocker/Abhängigkeiten:** Verfügbarkeit freier Slot-Logik/Kalender, Resend-Domain-Verifizierung, Vorlagenfreigabe für E-Mail-Templates.
+- **Zieltermin:** 2025-01-24
+
+### Welle C (Search & Integrations)
+- **Tasks:** TASK-023, TASK-031, TASK-030
+- **Harte Exit-Kriterien:** HSN/TSN-Suche liefert belastbare Teiletreffer, Meilisearch mit Facetten + Instant Search produktiv nutzbar, Stripe-Integration mit Webhook-Robustheit und Retry-Handling abgenommen.
+- **Messgrößen:**
+  - Suchrelevanz: Top-3-Trefferquote ≥ 80% für definierte Testfälle
+  - P95 Suchlatenz < 400 ms
+  - Zahlungsstatus-Synchronisierung (Webhook → Order-Status) < 30 Sekunden
+- **Blocker/Abhängigkeiten:** TecDoc/Alternativdatenquelle, Suchindex-Pipeline, Stripe-Event-Signing-Secret + Retry-Strategie.
+- **Zieltermin:** 2025-02-07
+
+### Welle D (Launch Readiness)
+- **Tasks:** TASK-041, TASK-042, TASK-043, TASK-050, TASK-051, TASK-052
+- **Harte Exit-Kriterien:** SEO-Baseline vollständig, Performance- und Accessibility-Ziele erreicht, Testpaket für kritische Flows grün, Staging sign-off, Production-Launch mit Monitoring/Backup aktiv.
+- **Messgrößen:**
+  - Core Web Vitals: LCP < 2.5s, INP < 200ms, CLS < 0.1
+  - Accessibility: WCAG 2.1 AA ohne blocker-severity Findings
+  - E2E-Passrate kritischer Journeys = 100% vor Go-Live
+  - Uptime in der ersten Launch-Woche ≥ 99.9%
+- **Blocker/Abhängigkeiten:** DNS/SSL-Freigaben, Observability-Stack (Logs/Metrics/Alerts), Freigabe durch Stakeholder nach Staging-Abnahme.
+- **Zieltermin:** 2025-02-15
+
+---
+
 ## 📊 Status-Übersicht
 
 | Phase | Tasks | Erledigt | In Arbeit | Offen |

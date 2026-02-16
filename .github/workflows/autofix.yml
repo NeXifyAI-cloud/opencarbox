@@ -60,6 +60,8 @@ jobs:
         run: |
           pnpm -s prettier --write . || true
           pnpm -s eslint . --fix || true
+      - name: Lint check
+        run: pnpm lint
       - name: Create PR if changes
         run: |
           if git diff --quiet; then
@@ -100,6 +102,7 @@ jobs:
 ## Wie getestet
 - \\`pnpm -s prettier --write .\\`
 - \\`pnpm -s eslint . --fix\\`
+- \\`pnpm lint\\`
 
 ## Risiko/Backout
 - Risiko: Niedrig (stilistische Änderungen).

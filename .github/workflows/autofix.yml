@@ -28,7 +28,7 @@ env:
 
 jobs:
   safe_autofix:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name == 'ci' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -65,11 +65,31 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          BR="codex/autofix-${{ github.run_id }}"
+
+          BR="codex/autofix-safe-${{ github.event.workflow_run.id }}"
+
+          # FIFO + max-2 guardrail for open autofix PRs
+          OPEN_AUTOFIX_PRS="$(gh pr list --state open --label autofix --json number,headRefName,createdAt --jq 'sort_by(.createdAt)')"
+          OPEN_COUNT="$(echo "$OPEN_AUTOFIX_PRS" | jq 'length')"
+
+          if [ "$OPEN_COUNT" -ge 2 ]; then
+            echo "Skipping new autofix PR: already $OPEN_COUNT open autofix PR(s) (max 2)."
+            exit 0
+          fi
+
+          OLDEST_HEAD="$(echo "$OPEN_AUTOFIX_PRS" | jq -r '.[0].headRefName // ""')"
+          if [ -n "$OLDEST_HEAD" ] && [ "$OLDEST_HEAD" != "$BR" ]; then
+            echo "Skipping new autofix PR due to FIFO guardrail; oldest open autofix PR is $OLDEST_HEAD."
+            exit 0
+          fi
+
           git checkout -b "$BR"
           git add -A
           git commit -m "chore: safe autofix (format/lint)"
           git push origin "$BR"
+          if [ "$(gh label list --search autofix --json name --jq 'length')" = "0" ]; then
+            gh label create autofix --color 1d76db --description "Automated safe autofix PR"
+          fi
           gh pr create --title "chore: safe autofix" --body "## Was geändert
 - Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet.
 
@@ -82,6 +102,6 @@ jobs:
 
 ## Risiko/Backout
 - Risiko: Niedrig (stilistische Änderungen).
-- Backout: PR schließen oder Commit revertieren." --base main
+- Backout: PR schließen oder Commit revertieren." --base main --label autofix
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

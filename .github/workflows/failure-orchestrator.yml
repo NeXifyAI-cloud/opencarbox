@@ -19,8 +19,8 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
   issues: write
 
 env:
@@ -35,12 +35,10 @@ env:
 
 jobs:
   route-failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name != 'failure-orchestrator' }}
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name != 'failure-orchestrator' && github.event.workflow_run.name != 'autofix' && github.event.workflow_run.name != 'ci' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
 
       - name: Export normalized env names
         run: source tools/export_env.sh
@@ -61,42 +59,6 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
-      - name: Safe autofix attempt
-        id: safe_fix
-        continue-on-error: true
-        run: |
-          pnpm -s prettier --write . || true
-          pnpm -s eslint . --fix || true
-          if git diff --quiet; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Open safe-fix PR
-        if: ${{ steps.safe_fix.outputs.changed == 'true' }}
-        run: |
-          BR="codex/failure-autofix-${{ github.run_id }}"
-          git checkout -b "$BR"
-          git add -A
-          git commit -m "chore: safe autofix for failed workflow"
-          git push origin "$BR"
-          gh pr create --title "chore: safe autofix for failed workflow" --body "## Was geändert
-- Safe-Autofix (Format/Lint/Imports) für fehlgeschlagenen Workflow durchgeführt.
-
-## Warum
-- Fehlgeschlagenen Run mit deterministischen, risikoarmen Änderungen automatisch beheben.
-
-## Wie getestet
-- \`pnpm -s prettier --write .\`
-- \`pnpm -s eslint . --fix\`
-
-## Risiko/Backout
-- Risiko: Niedrig.
-- Backout: PR schließen oder commit revertieren." --base main
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: AI triage eligibility
         id: ai_eligible
         run: |
@@ -107,22 +69,45 @@ jobs:
             echo "eligible=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: AI triage issue fallback
-        if: ${{ steps.safe_fix.outputs.changed != 'true' && steps.ai_eligible.outputs.eligible != 'true' }}
+      - name: Ensure routing labels exist
         run: |
-          gh issue create \
-            --title "Incident: failed workflow requires manual triage" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\n\nSafe-autofix war nicht ausreichend und AI-Triage ist nicht verfügbar. Bitte manuell analysieren und NOTES/runbook.md aktualisieren." \
-            --label bug --label automated
+          if [ "$(gh label list --search failure-routing --json name --jq 'length')" = "0" ]; then
+            gh label create failure-routing --color d93f0b --description "Failure orchestrator routing issue"
+          fi
+          if [ "$(gh label list --search ai-triage --json name --jq 'length')" = "0" ]; then
+            gh label create ai-triage --color 5319e7 --description "AI triage is required"
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: AI triage issue
-        if: ${{ steps.safe_fix.outputs.changed != 'true' && steps.ai_eligible.outputs.eligible == 'true' }}
+      - name: Prevent duplicate routing issue per failed run
+        id: existing_issue
+        run: |
+          RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          if gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create AI triage routing issue
+        if: ${{ steps.existing_issue.outputs.exists != 'true' && steps.ai_eligible.outputs.eligible == 'true' }}
         run: |
           gh issue create \
-            --title "AI-Triage required: failed workflow" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\n\nSafe-autofix hat keine Änderungen erzeugt. Bitte DeepSeek-Triage durchführen und als Fix-PR einreichen. NSCALE-Header ist verpflichtend." \
-            --label bug --label automated --label ai-triage
+            --title "AI-Triage required: failed workflow ${{ github.event.workflow_run.name }}" \
+            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\nMarker: run-id:${{ github.event.workflow_run.id }}\n\nSafe-Autofix wird in \`autofix.yml\` für CI-Fehlschläge verarbeitet. Dieser Run wird zentral durch den failure-orchestrator nur für Routing/AI-Triage gesteuert.\n\nNächste Schritte:\n1. DeepSeek-Diagnose mit NSCALE-Header ausführen.\n2. Fix als Branch \`codex/{feature}\` bereitstellen.\n3. Runbook/Backlog aktualisieren, falls nötig." \
+            --label failure-routing --label ai-triage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create manual triage routing issue
+        if: ${{ steps.existing_issue.outputs.exists != 'true' && steps.ai_eligible.outputs.eligible != 'true' }}
+        run: |
+          gh issue create \
+            --title "Incident: manual triage required for failed workflow ${{ github.event.workflow_run.name }}" \
+            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\nMarker: run-id:${{ github.event.workflow_run.id }}\n\nSafe-Autofix wird in \`autofix.yml\` für CI-Fehlschläge verarbeitet. Dieser Run wird zentral durch den failure-orchestrator nur für Routing/Issue-Triage gesteuert.\n\nAI-Preflight ist fail-closed (DeepSeek + NSCALE erforderlich) und war nicht erfüllt. Bitte manuell analysieren, Backlog ergänzen und NOTES/runbook.md aktualisieren." \
+            --label failure-routing
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

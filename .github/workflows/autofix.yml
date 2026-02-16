@@ -1,5 +1,4 @@
 name: autofix
-
 on:
   workflow_run:
     workflows: ["ci"]
@@ -25,21 +24,17 @@ jobs:
           node-version: 20
           cache: "pnpm"
       - run: pnpm i --frozen-lockfile
-      - name: Safe fixes
-        run: |
+      - run: |
           pnpm -s prettier --write . || true
           pnpm -s eslint . --fix || true
-      - name: Create PR if changes
+      - name: PR if changes
         run: |
-          if git diff --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
+          if git diff --quiet; then exit 0; fi
           BR="autofix/${{ github.run_id }}"
           git checkout -b "$BR"
           git add -A
           git commit -m "chore: safe autofix (format/lint)"
           git push origin "$BR"
-          gh pr create --title "chore: safe autofix" --body "CI failed; applied safe autofixes (format/lint). Please review." --base main
+          gh pr create --title "chore: safe autofix" --body "Safe autofix (format/lint). Review & merge." --base main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

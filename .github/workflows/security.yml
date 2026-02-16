@@ -1,11 +1,8 @@
-name: Security
-
+name: security
 on:
-  pull_request:
-  push:
-    branches: [main]
   schedule:
-    - cron: '0 4 * * 1'
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
 
 jobs:
   audit:
@@ -18,8 +15,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-      - name: Install
-        run: pnpm install --no-frozen-lockfile
-      - name: Dependency audit
-        run: pnpm audit --prod
+          cache: "pnpm"
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm audit --audit-level=high

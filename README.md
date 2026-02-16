@@ -18,8 +18,8 @@ See `.env.example` for the full list. Core values:
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `DEEPSEEK_API_KEY`
-- `OPENAI_COMPAT_API_KEY`
-- `OPENAI_COMPAT_BASE_URL`
+- `AI_PROVIDER` (must be `deepseek`)
+- `DEEPSEEK_BASE_URL` (optional)
 - `NSCALE_API_KEY`
 - `NSCALE_HEADER_NAME`
 
@@ -49,7 +49,7 @@ Workflows:
 Enable these repository rules for `main`:
 1. Require pull request before merge.
 2. Require at least one approving review.
-3. Require status checks to pass (`CI`, `Security`).
+3. Require status checks to pass (`ci`).
 4. Block direct pushes to `main`.
 
 ## Project notes

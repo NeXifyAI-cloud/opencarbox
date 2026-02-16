@@ -1,9 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
+resolve_github_token() {
+  if [[ -n "${GH_TOKEN:-}" ]]; then
+    return 0
+  fi
+
+  if [[ -n "${CLASSIC_TOKEN_GITHUB:-}" ]]; then
+    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB"
+    return 0
+  fi
+
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    export GH_TOKEN="$GITHUB_TOKEN"
+    return 0
+  fi
+
+  return 1
+}
+
+resolve_github_token || true
+
 : "${GITHUB_OWNER:?}"
 : "${REPO_NAME:?}"
-: "${GH_TOKEN:?}"
+: "${GH_TOKEN:?Set GH_TOKEN (or CLASSIC_TOKEN_GITHUB/GITHUB_TOKEN)}"
 
 # App/Supabase public
 : "${NEXT_PUBLIC_SUPABASE_URL:?}"

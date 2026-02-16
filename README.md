@@ -131,3 +131,23 @@ Proprietär - OpenCarBox GmbH © 2025
 **OpenCarBox GmbH**  
 Rennweg 76, 1030 Wien  
 office@opencarbox.co.at
+
+
+## NeXifyAI Setup Autopilot (M1 Scaffold)
+
+Run the setup scripts in order (idempotent):
+
+```bash
+bash tools/setup/00_prereq_check.sh
+bash tools/setup/10_github_bootstrap.sh
+bash tools/setup/20_vercel_bootstrap.sh
+bash tools/setup/30_supabase_bootstrap.sh
+bash tools/setup/40_seed_env_and_secrets.sh
+bash tools/setup/50_verify.sh
+```
+
+If tokens are missing, export them first in your shell and rerun only the failed step. See `NOTES/runbook.md` for operational procedures.
+
+### New API endpoints
+- `GET /api/health`
+- `POST /api/ai/chat` (Bearer auth required, zod validated payload, rate limiting, retries/timeouts, telemetry metadata only)

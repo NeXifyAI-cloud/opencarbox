@@ -1,0 +1,48 @@
+name: autofix
+
+on:
+  workflow_run:
+    workflows: ['ci']
+    types: [completed]
+
+jobs:
+  autofix:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint:fix || true
+      - run: npm run format || true
+      - name: Commit autofixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          branch="autofix/${{ github.run_id }}"
+          git checkout -b "$branch"
+          git add -A
+          git commit -m "chore: automated safe autofix" || exit 0
+          git push origin "$branch"
+      - name: Open PR
+        uses: peter-evans/create-pull-request@v6
+        with:
+          title: "chore: automated safe autofix"
+          body: "Automated safe autofix after CI failure. Please review before merge."
+          branch: "autofix/${{ github.run_id }}"
+          base: ${{ github.event.workflow_run.head_branch }}
+      - name: Fallback issue
+        if: failure()
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "Autofix failed"
+          content-filepath: .github/ISSUE_TEMPLATE/deploy-failure.md

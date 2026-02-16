@@ -2,6 +2,7 @@
 
 import { ProductCard } from '@/components/shared/product-card';
 import { type FeaturedProduct } from '@/lib/mock-data';
+import { getProductSlug } from '@/lib/shop-products';
 
 interface ProductGridProps {
   products: FeaturedProduct[];
@@ -35,7 +36,7 @@ export function ProductGrid({ products, isLoading = false }: ProductGridProps) {
           key={product.id}
           id={product.id}
           name={product.name}
-          slug={product.name.toLowerCase().replace(/ /g, '-')}
+          slug={getProductSlug(product.name)}
           brand={product.brand}
           price={product.price}
           rating={product.rating}

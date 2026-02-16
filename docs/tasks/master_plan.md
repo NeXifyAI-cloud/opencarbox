@@ -263,6 +263,17 @@
   - [ ] AGB-Bestätigung
   - [ ] Bestellbestätigung
 
+### Fast-Track Core Commerce (10 Arbeitstage)
+
+| Tag | Fokus | Messbares Deliverable | Abnahmebedingung |
+|---|---|---|---|
+| **Tag 1–2** | **TASK-022** (Produktliste, Filter, Sortierung, Produktdetail) | Shop-Katalog mit produktiver Produktliste, kombinierbaren Filtern (Preis/Marke/Verfügbarkeit), Sortierung (mind. Preis auf/absteigend) und funktionaler Produktdetailseite für 100% der Seed-Produkte. | Product Owner kann in Staging mindestens 10 Produkte über Filter+Sortierung reproduzierbar finden; jede Detailseite lädt ohne 404/500 und zeigt Preis, Verfügbarkeit und CTA „In den Warenkorb“. |
+| **Tag 3–4** | **TASK-024** (Cart-State, Mini-Cart, Cart-Page, Persistenz) | Vollständiger Warenkorb-Flow inkl. globalem Cart-State, Mini-Cart im Header, Cart-Page mit Mengenänderung/Entfernen und localStorage-Persistenz über Browser-Reload hinweg. | Für 3 definierte Testprodukte bleibt der Warenkorb nach Reload erhalten; Mengenänderungen und Entfernen aktualisieren Summe + Positionen korrekt (0 Rechenfehler in Testfällen). |
+| **Tag 5–7** | **TASK-025** (Checkout Steps, Adressen, Versand/Zahlung, Summary) | Multi-Step-Checkout mit validierten Adressformularen, Auswahl von Versand- und Zahlungsart sowie finaler Summary vor Bestätigung. | E2E-Testfall „Warenkorb → Checkout Summary“ läuft in Staging ohne Blocker durch; Pflichtfelder, Fehlermeldungen und Schritt-Navigation funktionieren in allen Checkout-Schritten. |
+| **Tag 8** | Stripe-Stub und Fehlerpfade | Stripe-Stub (Test-Provider) integriert inkl. simulierten Erfolgs-, Abbruch- und Fehlerfällen (z. B. Timeout/Decline) mit sauberer UI-Fehlerkommunikation. | Für jeden Fehlerpfad existiert ein reproduzierbarer Testfall; System erzeugt keinen Datenverlust im Warenkorb und setzt Bestellstatus auf klaren, nachvollziehbaren Zustand (`pending`/`failed`). |
+| **Tag 9** | E2E Happy Path | Vollautomatisierter End-to-End-Test für den Hauptkaufprozess: Produktdetail → Warenkorb → Checkout → Zahlungsstub → Bestellbestätigung. | E2E-Suite läuft in CI mindestens 3x hintereinander grün (keine Flakes) und erzeugt einen eindeutig nachverfolgbaren Bestell-Record im Testsystem. |
+| **Tag 10** | Stabilisierung + Release Candidate | Release-Candidate-Build mit behobenen kritischen/hohen Bugs, aktualisierter Doku und finaler Smoke-Test-Checkliste. | Keine offenen Sev-1/Sev-2 Bugs, Smoke-Tests für Katalog/Cart/Checkout bestanden und RC ist als deploybares Artefakt im Staging markiert. |
+
 ### TASK-026: Werkstatt - Service-Übersicht
 - **Status:** ⬜ OFFEN
 - **Priorität:** HOCH

@@ -131,3 +131,34 @@ Proprietär - OpenCarBox GmbH © 2025
 **OpenCarBox GmbH**  
 Rennweg 76, 1030 Wien  
 office@opencarbox.co.at
+
+## ⚙️ Phase-1 AI Slice
+
+Neue Minimalfunktionen für die NeXifyAI-Architektur:
+
+- **Settings UI:** `/settings`
+  - Provider-Auswahl (`mock`, `deepseek`, `openai_compat`)
+  - Modell-Konfiguration
+  - Test-Call Button gegen `/api/ai/chat`
+- **Status UI:** `/status`
+  - Liest Live-Status von `/api/health`
+- **API Endpoints:**
+  - `GET /api/health`
+  - `POST /api/ai/models`
+  - `POST /api/ai/chat`
+
+### Relevante ENV-Variablen
+
+```bash
+DEEPSEEK_API_KEY=
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-chat
+
+OPENAI_COMPAT_API_KEY=
+OPENAI_COMPAT_BASE_URL=https://api.openai.com/v1
+OPENAI_COMPAT_MODEL=gpt-4o-mini
+
+NSCALE_API_KEY=
+```
+
+Details zu Betrieb und Debugging: `NOTES/runbook.md`.

@@ -20,6 +20,12 @@
 2. Ensure required CI checks are green.
 3. Deploy to Vercel Preview, then Production.
 
+## Quality Gates by Milestone
+
+- **M1 – Katalog:** `lint` + `typecheck` + `build` sind Pflicht.
+- **M2 – Checkout live:** Zusätzlich sind Integrations-Tests für die API und ein E2E Happy Path Pflicht.
+- **M3 – Launch:** Zusätzlich sind eine Coverage-Schwelle sowie Performance- und A11y-Checks Pflicht.
+
 ## CI/CD Pipeline (final)
 
 ```mermaid

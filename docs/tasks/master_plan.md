@@ -208,6 +208,7 @@
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-020, TASK-005
 - **Beschreibung:** Produktlisten und -details
+- **Gate:** M1
 - **Akzeptanzkriterien:**
   - [ ] Kategorieseiten
   - [ ] Produktliste mit Grid/List-Toggle
@@ -236,6 +237,7 @@
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-022
 - **Beschreibung:** Warenkorb-Funktionalität
+- **Gate:** M2
 - **Akzeptanzkriterien:**
   - [ ] Warenkorb-State (Zustand)
   - [ ] Mini-Cart im Header
@@ -250,6 +252,7 @@
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-024
 - **Beschreibung:** Checkout-Prozess
+- **Gate:** M2
 - **Akzeptanzkriterien:**
   - [ ] Multi-Step Checkout
   - [ ] Lieferadresse
@@ -308,6 +311,7 @@
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-025
 - **Beschreibung:** Zahlungsabwicklung
+- **Gate:** M2
 - **Akzeptanzkriterien:**
   - [ ] Stripe Checkout Session
   - [ ] Webhook-Handler
@@ -412,6 +416,7 @@
 - **Priorität:** HOCH
 - **Abhängigkeiten:** Alle Core-Tasks
 - **Beschreibung:** Core Web Vitals optimieren
+- **Gate:** M3
 - **Akzeptanzkriterien:**
   - [ ] LCP < 2.5s
   - [ ] FID < 100ms
@@ -425,6 +430,7 @@
 - **Priorität:** HOCH
 - **Abhängigkeiten:** Alle UI-Tasks
 - **Beschreibung:** WCAG 2.1 AA Compliance
+- **Gate:** M3
 - **Akzeptanzkriterien:**
   - [ ] Alle Seiten geprüft
   - [ ] Screenreader-Test
@@ -441,6 +447,7 @@
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** Alle Tasks
 - **Beschreibung:** Umfassende Tests
+- **Gate:** M3
 - **Akzeptanzkriterien:**
   - [ ] Unit Tests (80%+ Coverage)
   - [ ] Integration Tests
@@ -453,6 +460,7 @@
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-050
 - **Beschreibung:** Staging-Umgebung
+- **Gate:** M3
 - **Akzeptanzkriterien:**
   - [ ] Vercel Staging aufgesetzt
   - [ ] Umgebungsvariablen konfiguriert
@@ -464,6 +472,7 @@
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-051
 - **Beschreibung:** Go-Live
+- **Gate:** M3
 - **Akzeptanzkriterien:**
   - [ ] Production-Deployment
   - [ ] DNS konfiguriert

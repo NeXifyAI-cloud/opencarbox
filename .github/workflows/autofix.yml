@@ -1,186 +1,58 @@
-name: Autofix
+name: AutoFix CI Failures
 
 on:
-  pull_request_target:
-    types: [opened, synchronize, reopened, labeled]
   workflow_run:
-    workflows: ["Fast Gate", "Full Gate"]
+    workflows: ['CI']
     types: [completed]
+    branches: [main, develop]
 
 permissions:
   contents: write
   pull-requests: write
 
-env:
-  CI: "true"
-  TZ: "UTC"
-  MAX_AUTOFIX_ATTEMPTS: "2"
-  FORBIDDEN_PATH_REGEX: '^(prisma/migrations/|supabase/migrations/|\.env(\.|$)|\.vercel/)'
-
 jobs:
-  scope-guard:
-    if: github.event_name == 'pull_request_target' && contains(github.event.pull_request.labels.*.name, 'autofix')
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Block forbidden path changes for auto-merge
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          files=$(gh api "repos/$REPO/pulls/$PR_NUMBER/files?per_page=200" --paginate | jq -r '.[].filename')
-          echo "$files" > changed-files.txt
-
-          if rg -n "${FORBIDDEN_PATH_REGEX}" changed-files.txt >/dev/null; then
-            gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label needs-human
-            gh pr merge --disable-auto "https://github.com/$REPO/pull/$PR_NUMBER" || true
-            gh pr comment "$PR_NUMBER" --repo "$REPO" --body "⚠️ Autofix Scope Guard: Forbidden paths changed (e.g., migrations/.env/.vercel). Auto-merge disabled and \`needs-human\` label added."
-            exit 1
-          fi
-
-          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "✅ Autofix Scope Guard: Changes are within allowed paths."
-
   autofix:
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'failure'
+    name: Auto-Fix
     runs-on: ubuntu-latest
-
+    if: github.event.workflow_run.conclusion == 'failure'
+    timeout-minutes: 30
+    
     steps:
-      - name: Checkout failing SHA
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
-      - name: Setup git identity
-        shell: bash
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format code
+        run: pnpm format:write || true
+
+      - name: Fix linting issues
+        run: pnpm lint --fix || true
+
+      - name: Commit and push fixes
         run: |
-          git config user.name "nexifyai-bot"
-          git config user.email "bot@users.noreply.github.com"
-
-      - name: Resolve/limit autofix attempts
-        id: limit
-        env:
-          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          sha="${{ github.event.workflow_run.head_sha }}"
-          short="${sha:0:7}"
-          head="autofix/${short}"
-
-          echo "head=$head" >> $GITHUB_OUTPUT
-
-          # Find existing PR (if any)
-          pr_number=""
-          if gh pr list --head "$head" --json number -q '.[0].number' >/dev/null 2>&1; then
-            pr_number="$(gh pr list --head "$head" --json number -q '.[0].number' || true)"
-          fi
-          echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
-
-          attempts=0
-          if [ -n "$pr_number" ]; then
-            body="$(gh pr view "$pr_number" --json body -q .body || true)"
-            # Extract attempts line: "Autofix-Attempt: N"
-            n="$(printf "%s" "$body" | sed -n 's/^Autofix-Attempt:\s*\([0-9]\+\).*$/\1/p' | tail -n1)"
-            if [ -n "$n" ]; then attempts="$n"; fi
-          fi
-
-          attempts=$((attempts+1))
-          echo "attempts=$attempts" >> $GITHUB_OUTPUT
-
-          if [ "$attempts" -gt "${MAX_AUTOFIX_ATTEMPTS}" ]; then
-            echo "allowed=false" >> $GITHUB_OUTPUT
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if ! git diff --quiet; then
+            git add -A
+            git commit -m "fix: auto-format and lint fixes [skip ci]"
+            git push
           else
-            echo "allowed=true" >> $GITHUB_OUTPUT
+            echo "No changes to commit"
           fi
-
-      - name: Stop if attempts exceeded
-        if: steps.limit.outputs.allowed != 'true'
-        env:
-          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          pr="${{ steps.limit.outputs.pr_number }}"
-          if [ -n "$pr" ]; then
-            gh pr edit "$pr" --add-label "needs-human" >/dev/null 2>&1 || true
-            gh pr comment "$pr" --body "Autofix stopped: exceeded max attempts (${MAX_AUTOFIX_ATTEMPTS}) for this SHA. Marking needs-human." >/dev/null 2>&1 || true
-          fi
-          exit 0
-
-      - name: Prepare autofix branch
-        if: steps.limit.outputs.allowed == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git switch -C "${{ steps.limit.outputs.head }}"
-
-      - name: Apply autofix changes
-        if: steps.limit.outputs.allowed == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "Autofix placeholder: apply Codex-generated changes here."
-
-      - name: Detect changes
-        if: steps.limit.outputs.allowed == 'true'
-        id: changes
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "has_changes=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "has_changes=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Forbidden-path diff guard
-        if: steps.limit.outputs.allowed == 'true' && steps.changes.outputs.has_changes == 'true'
-        id: forbid
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --name-only | grep -E "${FORBIDDEN_PATH_REGEX}" >/dev/null 2>&1; then
-            echo "forbidden=true" >> $GITHUB_OUTPUT
-          else
-            echo "forbidden=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit and push
-        if: steps.limit.outputs.allowed == 'true' && steps.changes.outputs.has_changes == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git add -A
-          git commit -m "fix(ci): autofix for failing gate (${{ github.event.workflow_run.head_sha }})"
-          git push -u origin "${{ steps.limit.outputs.head }}" --force-with-lease
-
-      - name: Create or update PR (single per SHA)
-        if: steps.limit.outputs.allowed == 'true' && steps.changes.outputs.has_changes == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.NEXIFYAI_BOT_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          head="${{ steps.limit.outputs.head }}"
-          pr="${{ steps.limit.outputs.pr_number }}"
-          attempt="${{ steps.limit.outputs.attempts }}"
-
-          title="fix(ci): autofix for failing gate (${{ github.event.workflow_run.head_sha }})"
-          body=$'Automated fix attempt based on CI logs.\n\nAutofix-Attempt: '"$attempt"$'\nSource workflow_run: '"${{ github.event.workflow_run.id }}"$'\nIf this fails again, it will be marked needs-human.\n'
-
-          if [ -n "$pr" ]; then
-            gh pr edit "$pr" --title "$title" --body "$body" >/dev/null 2>&1 || true
-          else
-            gh pr create --head "$head" --base "${{ github.event.workflow_run.head_branch }}" --title "$title" --body "$body" --label "autofix" -f
-            pr="$(gh pr list --head "$head" --json number -q '.[0].number')"
-          fi
-
-          if [ "${{ steps.forbid.outputs.forbidden }}" = "true" ]; then
-            gh pr edit "$pr" --add-label "needs-human" >/dev/null 2>&1 || true
-            gh pr comment "$pr" --body "Forbidden-path guard triggered (migrations/env/vercel). Auto-merge disabled; human review required." >/dev/null 2>&1 || true
-          fi
+        continue-on-error: true

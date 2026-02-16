@@ -31,7 +31,7 @@ test('Frontend Image Verification', async ({ page }) => {
   }
 
   // 2. Visit Shop Page (Product Cards - assuming route exists or we can check a known page)
-  // Note: /shop/produkte might be the list
+  // Note: /shop might be the list
   console.log('Visiting /shop...');
   await page.goto('http://localhost:3000/shop');
   await page.waitForLoadState('networkidle');

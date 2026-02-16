@@ -518,6 +518,55 @@
 
 ---
 
+## 🧭 Sprint-Plan (operativ)
+
+### Sprint A (Commerce Core)
+- **Tasks:** TASK-022, TASK-024, TASK-025
+- **Owner-Rollen (Lead / Mitwirkung):** Lead BE, Mitwirkung FE + QA + DevOps
+- **Definition of Done (DoD):** Produktkatalog, Warenkorb und Checkout sind funktional integriert, gegen reale Testdaten validiert und mit stabilen API-Contracts dokumentiert.
+- **Harte Exit-Kriterien:**
+  - Produktliste inkl. Filter/Sortierung und Produktdetailseite ist auf Staging freigegeben.
+  - Warenkorb-Persistenz (localStorage + Server-Sync sofern vorhanden) funktioniert über Browser-Neustarts.
+  - Checkout-Happy-Path (Produktdetail → Warenkorb → Zahlung → Bestellbestätigung) läuft als E2E-Test stabil grün.
+  - Stripe-Webhook verarbeitet mindestens `checkout.session.completed` und setzt Bestellstatus idempotent.
+- **Risiken + Mitigation:**
+  - **Risiko:** Unklare Produktdaten/Variantenlogik verzögert Frontend-Umsetzung. **Mitigation:** Frühzeitiger Datenvertrag (JSON-Schema + Beispielpayloads) zwischen FE/BE.
+  - **Risiko:** Stripe-Fehlerfälle (Timeouts, doppelte Events) führen zu inkonsistenten Orders. **Mitigation:** Idempotency-Key-Strategie + Retry-Handling + Dead-Letter-Logging.
+  - **Risiko:** Performance-Einbruch bei großen Katalogen. **Mitigation:** Pagination, serverseitige Filterung und Bildoptimierung ab erstem Inkrement.
+- **Geschätzte Dauer:** 12 Arbeitstage
+
+### Sprint B (Service & Termine)
+- **Tasks:** TASK-026, TASK-027, TASK-034
+- **Owner-Rollen (Lead / Mitwirkung):** Lead FE, Mitwirkung BE + QA + DevOps
+- **Definition of Done (DoD):** Service-Navigation, Terminbuchung und transaktionale E-Mails sind Ende-zu-Ende produktionsnah abgebildet; relevante Betriebsmetriken (Buchungsrate, Zustellrate) sind messbar.
+- **Harte Exit-Kriterien:**
+  - Service-Kategorien und Service-Detailseiten sind vollständig und inhaltlich freigegeben.
+  - Terminbuchung inkl. Slot-Auswahl, Validierung und Bestätigungsansicht ist E2E-testbar.
+  - Termin- und Bestell-E-Mails werden über Resend in Staging mit verifizierter Domain zugestellt.
+  - Fehlerpfade (keine Slots, ungültige Eingaben, Mailversandfehler) sind mit klaren User-Meldungen behandelt.
+- **Risiken + Mitigation:**
+  - **Risiko:** Slot-Logik kollidiert bei Parallelbuchungen. **Mitigation:** Serverseitige Sperrmechanik (optimistic/pessimistic locking) + Konflikt-Tests.
+  - **Risiko:** E-Mail-Zustellung scheitert wegen DNS/SPF/DKIM. **Mitigation:** Domain-Setup im Sprint-Start, Zustelltests mit Seed-Empfängerlisten.
+  - **Risiko:** Hohe Formularabbruchrate bei Terminfluss. **Mitigation:** Schrittweise Formulare, Auto-Save und UX-Review nach erstem Usability-Test.
+- **Geschätzte Dauer:** 10 Arbeitstage
+
+### Sprint C (Launch Readiness)
+- **Tasks:** TASK-041, TASK-042, TASK-043, TASK-050
+- **Owner-Rollen (Lead / Mitwirkung):** Lead QA, Mitwirkung FE + BE + DevOps
+- **Definition of Done (DoD):** SEO, Performance, Accessibility und Testabdeckung erfüllen die definierten Launch-Schwellen; Abweichungen sind dokumentiert, priorisiert und ohne blocker offen.
+- **Harte Exit-Kriterien:**
+  - SEO-Basis (Meta, Sitemap, robots, Canonical, strukturierte Daten) ist vollständig und geprüft.
+  - Core Web Vitals auf Staging erfüllen Zielwerte: LCP < 2.5s, INP < 200ms, CLS < 0.1.
+  - Accessibility-Audit erreicht WCAG 2.1 AA ohne blocker-severity Findings.
+  - Kritische E2E-Journeys laufen im CI stabil mit 100% Passrate über mindestens 3 aufeinanderfolgende Runs.
+- **Risiken + Mitigation:**
+  - **Risiko:** Späte Performance-Regression durch letzte Feature-Änderungen. **Mitigation:** Performance-Budget im CI + Freeze-Fenster vor Sprint-Ende.
+  - **Risiko:** Accessibility-Fixes erfordern tiefe UI-Refactors. **Mitigation:** Frühzeitiger Audit-Slice pro Hauptseite statt Big-Bang-Audit.
+  - **Risiko:** Flaky E2E-Tests blockieren Freigabe. **Mitigation:** Test-Stabilisierung (deterministische Testdaten, Retries nur gezielt, klare Quarantäne-Regeln).
+- **Geschätzte Dauer:** 9 Arbeitstage
+
+---
+
 ## 📊 Status-Übersicht
 
 | Phase | Tasks | Erledigt | In Arbeit | Offen |

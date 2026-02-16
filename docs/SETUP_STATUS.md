@@ -1,5 +1,7 @@
 # Setup-Status - OpenCarBox & Carvantooo
 
+> **Single Source of Truth:** Status wird aus `docs/tasks/master_plan.md` abgeleitet.
+
 > **PROJEKT-SETUP ÜBERSICHT**
 > Aktueller Stand der Initialisierung und nächste Schritte.
 
@@ -82,34 +84,23 @@
 
 ## 🔄 IN ARBEIT
 
-### Phase 1: Fundament
+> Diese Liste wird gegen `docs/tasks/master_plan.md` gespiegelt.
 
-- [ ] **TASK-004:** Design-System-Tokens finalisieren
-- [ ] **TASK-006:** Scripts erstellen (sync-docs, quality-gate)
-- [ ] **TASK-003:** Vollständige Dokumentationsstruktur
+### Aktive Tasks
+
+- [ ] **TASK-013:** Organisms - Komplexe Komponenten
+- [ ] **TASK-022:** Shop - Produktkatalog
 
 ---
 
 ## ⬜ AUSSTEHEND
 
-### Phase 1: Fundament (Rest)
-
-- [ ] **TASK-001:** Next.js Setup finalisieren (Provider, etc.)
-- [ ] **TASK-005:** Prisma Schema (optional, da Supabase direkt genutzt wird)
-
 ### Phase 2: UI-Komponenten
 
-- [ ] **TASK-010:** shadcn/ui Setup
-- [ ] **TASK-011:** Atoms - Basis-Komponenten
-- [ ] **TASK-012:** Molecules - Zusammengesetzte Komponenten
-- [ ] **TASK-013:** Organisms - Komplexe Komponenten
 - [ ] **TASK-014:** Storybook Setup
 
 ### Phase 3: Core-Features
 
-- [ ] **TASK-020:** Multisite-Routing
-- [ ] **TASK-021:** Homepage
-- [ ] **TASK-022:** Shop - Produktkatalog
 - [ ] **TASK-023:** HSN/TSN Fahrzeugsuche
 - [ ] **TASK-024:** Warenkorb
 - [ ] **TASK-025:** Checkout

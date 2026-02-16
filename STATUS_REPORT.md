@@ -1,5 +1,19 @@
 # 🚀 STATUS-REPORT: OpenCarBox & Carvantooo Platform
 
+<!-- plan-status:start -->
+## 📌 Plan-Status (automatisch aus `docs/tasks/master_plan.md`)
+
+- ✅ **Erledigt:** 11
+- 🔄 **In Arbeit:** 2
+- ⬜ **Offen:** 20
+- 📊 **Gesamtfortschritt:** 33% (11/33)
+- 🗓️ **Zuletzt aktualisiert:** 2026-02-16
+
+> Quelle: `docs/tasks/master_plan.md` ist die einzige Truth-Quelle für Task-Status.
+<!-- plan-status:end -->
+
+> **Single Source of Truth:** Task-Status wird ausschließlich aus `docs/tasks/master_plan.md` abgeleitet.
+
 **Datum:** 2024-12-05
 **Phase:** 1 - Fundament (70% abgeschlossen)
 **Status:** ✅ SETUP ERFOLGREICH - BEREIT FÜR ENTWICKLUNG

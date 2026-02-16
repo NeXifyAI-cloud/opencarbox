@@ -1,115 +1,74 @@
-# Automatisches Deployment nach erfolgreichem Merge
-# Dieses Workflow deployed automatisch zu Vercel Production
-
-name: Auto-Deploy Production
+name: Deploy to Production
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment Environment'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - preview
 
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-  VERCEL_CLI_VERSION: 50.17.1
+permissions:
+  contents: read
+  deployments: write
 
 jobs:
-  deploy:
-    name: Deploy to Vercel
+  verify-ci:
+    name: Verify CI Success
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.event.inputs.environment || 'production' }}
-      url: ${{ steps.deploy.outputs.url }}
-
+    
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - name: Check latest CI status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci.yml',
+              branch: 'main',
+              per_page: 1
+            });
+            
+            if (runs.data.workflow_runs.length === 0) {
+              throw new Error('No CI runs found');
+            }
+            
+            const latestRun = runs.data.workflow_runs[0];
+            if (latestRun.conclusion !== 'success') {
+              throw new Error(`Latest CI run failed with status: ${latestRun.conclusion}`);
+            }
+            
+            console.log('✅ Latest CI run succeeded');
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: verify-ci
+    environment:
+      name: production
+      url: https://opencarbox.vercel.app
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install Vercel CLI
-        run: npm install -g vercel@${{ env.VERCEL_CLI_VERSION }}
-
-      - name: Pull Vercel Environment
-        run: vercel pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ secrets.VERCEL_TOKEN }}
-
-      - name: Build Project
-        run: vercel build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          node-version: 20
 
       - name: Deploy to Vercel
-        id: deploy
-        run: |
-          echo "Using Vercel CLI version: $(vercel --version)"
-          URL=$(vercel deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }})
-          echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "🚀 Deployed to: $URL"
-
-      - name: Comment on Commit
-        if: github.event_name == 'push'
-        uses: peter-evans/commit-comment@f6d60c65d05bb59f750fa51ad3de1d443ba0eb52 # v4
-        with:
-          body: |
-            🚀 **Auto-Deployment erfolgreich!**
-
-            | Environment | URL |
-            |-------------|-----|
-            | Production | ${{ steps.deploy.outputs.url }} |
-
-            Commit: `${{ github.sha }}`
-
-      - name: Notify Oracle
-        if: success()
-        run: |
-          npx tsx -e "
-          import { Memory } from './scripts/core/memory.ts';
-          await Memory.audit({
-            action: 'auto_deploy',
-            resource: 'vercel_production',
-            status: 'SUCCESS',
-            details: {
-              url: '${{ steps.deploy.outputs.url }}',
-              commit: '${{ github.sha }}',
-              branch: 'main'
-            }
-          });
-          console.log('✅ Deployment an Oracle gemeldet');
-          "
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          npm install -g vercel
+          vercel --prod --token $VERCEL_TOKEN
         continue-on-error: true
 
-  notify-failure:
-    name: Notify on Failure
-    runs-on: ubuntu-latest
-    needs: deploy
-    if: failure()
-
-    steps:
-      - name: Create Issue on Failure
-        uses: peter-evans/create-issue-from-file@fca9117c27cdc29c6c4db3b86c48e4115a786710 # v6
+      - name: Notify deployment
+        if: always()
+        uses: actions/github-script@v7
         with:
-          title: "🚨 Auto-Deploy fehlgeschlagen - ${{ github.sha }}"
-          content-filepath: .github/ISSUE_TEMPLATE/deploy-failure.md
-          labels: |
-            bug
-            deployment
-            automated
+          script: |
+            const deploymentStatus = context.job.status === 'success' ? '✅ Success' : '⚠️ Check logs';
+            console.log(`Deployment ${deploymentStatus}`);

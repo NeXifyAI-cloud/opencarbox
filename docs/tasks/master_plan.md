@@ -13,12 +13,22 @@
 
 | Status | Bedeutung |
 |--------|-----------|
-| ⬜ OFFEN | Task noch nicht begonnen |
+| ⬜ GEPLANT | Task priorisiert, aber noch nicht gestartet |
 | 🔄 IN ARBEIT | Task wird aktuell bearbeitet |
 | ✅ ERLEDIGT | Task abgeschlossen |
 | 🔍 REVIEW | Task wartet auf Review |
 | ❌ ABGEBROCHEN | Task nicht mehr relevant |
-| ⏸️ PAUSIERT | Task temporär gestoppt |
+| ⏸️ BLOCKED BY CORE COMMERCE | Task wartet auf Abschluss der Core-Commerce-Welle |
+
+## 🚦 Operatives WIP-Limit
+
+- **Maximal 3 aktive Tasks gleichzeitig** (harte Grenze).
+- **Slot-Verteilung:** 1x FE, 1x BE/API, 1x DevOps/QA.
+- **Aktive Tasks (aktuelle Welle):**
+  - **FE:** TASK-022 (Shop - Produktkatalog)
+  - **BE/API:** TASK-024 (Shop - Warenkorb)
+  - **DevOps/QA:** TASK-025 (Shop - Checkout)
+- Alle übrigen nicht abgeschlossenen Tasks bleiben auf **⬜ GEPLANT** oder **⏸️ BLOCKED BY CORE COMMERCE**.
 
 ---
 
@@ -148,7 +158,7 @@
   - [x] Rating (mit RatingCompact)
 
 ### TASK-013: Organisms - Komplexe Komponenten
-- **Status:** 🔄 IN ARBEIT
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-012
 - **Beschreibung:** Komplexe UI-Einheiten
@@ -163,7 +173,7 @@
   - [ ] VehicleFinder (HSN/TSN)
 
 ### TASK-014: Storybook Setup
-- **Status:** ⬜ OFFEN
+- **Status:** ⬜ GEPLANT
 - **Priorität:** MITTEL
 - **Abhängigkeiten:** TASK-011
 - **Beschreibung:** Storybook für Komponenten-Dokumentation
@@ -220,7 +230,7 @@
   - [ ] "Häufig zusammen gekauft"
 
 ### TASK-023: Shop - HSN/TSN Fahrzeugsuche
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-022
 - **Beschreibung:** Kernfeature Fahrzeugsuche
@@ -233,7 +243,7 @@
   - [ ] API-Integration (TecDoc oder eigene)
 
 ### TASK-024: Shop - Warenkorb
-- **Status:** ⬜ OFFEN
+- **Status:** 🔄 IN ARBEIT
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-022
 - **Beschreibung:** Warenkorb-Funktionalität
@@ -248,7 +258,7 @@
   - [ ] Persistenz (localStorage)
 
 ### TASK-025: Shop - Checkout
-- **Status:** ⬜ OFFEN
+- **Status:** 🔄 IN ARBEIT
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-024
 - **Beschreibung:** Checkout-Prozess
@@ -264,7 +274,7 @@
   - [ ] Bestellbestätigung
 
 ### TASK-026: Werkstatt - Service-Übersicht
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-020
 - **Beschreibung:** Service-Seiten für OpenCarBox
@@ -276,7 +286,7 @@
   - [ ] Vorher-Nachher Galerie
 
 ### TASK-027: Werkstatt - Terminbuchung
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-026
 - **Beschreibung:** Online-Terminbuchung
@@ -290,7 +300,7 @@
   - [ ] E-Mail-Benachrichtigung
 
 ### TASK-028: Autohandel - Fahrzeugkatalog
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** MITTEL
 - **Abhängigkeiten:** TASK-020
 - **Beschreibung:** Fahrzeug-Listings
@@ -316,7 +326,7 @@
 | TASK-034 E-Mail Integration | **Mittel** – Zustellbarkeit (SPF/DKIM/DMARC), Template-Rendering und Provider-Limits können Kommunikation blockieren. | **Mittel-Hoch** – Transaktions- und ggf. Marketing-Mails mit DSGVO-Anforderungen (Double-Opt-in, Abmeldelink, Datenminimierung). | **Unit:** Template-Rendering/Snapshot, Token-Generierung. **Int:** Versandpipeline mit Resend in Testmodus. **E2E:** Bestellung/Termin/Reset-Mail inkl. Links und Ablaufzeiten. | Wiederholte Zustellung per Queue, alternativer SMTP/Provider-Connector, kritische Infos im Account-Dashboard bereitstellen. | **Go**, wenn Auth-DNS korrekt, Bounces überwacht und Kernmails Ende-zu-Ende verifiziert sind. **No-Go**, wenn Reset-/Bestellmails nicht zuverlässig oder compliance-konform zugestellt werden. |
 
 ### TASK-030: Stripe Integration
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-025
 - **Beschreibung:** Zahlungsabwicklung
@@ -329,7 +339,7 @@
   - [ ] Fehlerbehandlung
 
 ### TASK-031: Meilisearch Integration
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-022
 - **Beschreibung:** Produktsuche
@@ -341,7 +351,7 @@
   - [ ] Instant-Search UI
 
 ### TASK-032: Chatbot Integration
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** MITTEL
 - **Abhängigkeiten:** TASK-013
 - **Beschreibung:** Botpress Chatbot
@@ -353,7 +363,7 @@
   - [ ] Fallback zu Live-Chat
 
 ### TASK-033: WhatsApp Integration
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** MITTEL
 - **Abhängigkeiten:** TASK-025, TASK-027
 - **Beschreibung:** WhatsApp Business API
@@ -365,7 +375,7 @@
   - [ ] Template-Messages
 
 ### TASK-034: E-Mail Integration
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-025, TASK-027
 - **Beschreibung:** React Email + Resend
@@ -378,7 +388,7 @@
   - [ ] Newsletter-Anmeldung
 
 ### TASK-035: Preisvergleichsportale
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** MITTEL
 - **Abhängigkeiten:** TASK-022, TASK-030
 - **Beschreibung:** Portal-Anbindungen
@@ -394,7 +404,7 @@
 ## 👨‍💼 Phase 5: Admin & Polish (Woche 8-9)
 
 ### TASK-040: Admin-Dashboard
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-022, TASK-027
 - **Beschreibung:** Backend-Verwaltung
@@ -408,7 +418,7 @@
   - [ ] Content-Management
 
 ### TASK-041: SEO-Optimierung
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** TASK-022, TASK-026, TASK-028
 - **Beschreibung:** Suchmaschinenoptimierung
@@ -421,7 +431,7 @@
   - [ ] Open Graph Tags
 
 ### TASK-042: Performance-Optimierung
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** Alle Core-Tasks
 - **Beschreibung:** Core Web Vitals optimieren
@@ -435,7 +445,7 @@
   - [ ] Caching-Strategien
 
 ### TASK-043: Accessibility-Audit
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** HOCH
 - **Abhängigkeiten:** Alle UI-Tasks
 - **Beschreibung:** WCAG 2.1 AA Compliance
@@ -452,7 +462,7 @@
 ## 🚀 Phase 6: Launch (Woche 10)
 
 ### TASK-050: Testing
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** Alle Tasks
 - **Beschreibung:** Umfassende Tests
@@ -465,7 +475,7 @@
   - [ ] Mobile Tests
 
 ### TASK-051: Staging-Deployment
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-050
 - **Beschreibung:** Staging-Umgebung
@@ -477,7 +487,7 @@
   - [ ] End-to-End getestet
 
 ### TASK-052: Production-Launch
-- **Status:** ⬜ OFFEN
+- **Status:** ⏸️ BLOCKED BY CORE COMMERCE
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-051
 - **Beschreibung:** Go-Live

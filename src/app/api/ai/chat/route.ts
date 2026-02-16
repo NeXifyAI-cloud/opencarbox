@@ -1,71 +1,117 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 
+import { aiChatRequestSchema } from '@/lib/api/contracts/ai-chat';
+import {
+  ApiError,
+  FeatureDisabledError,
+  InvalidJsonError,
+  RateLimitExceededError,
+  UpstreamAiError,
+  ValidationError,
+} from '@/lib/api/errors';
+import { consumeRateLimit } from '@/lib/api/rate-limit';
 import { deepseekChatCompletion } from '@/lib/ai/deepseekClient';
 
-const chatMessageSchema = z.object({
-  role: z.enum(['system', 'user', 'assistant']),
-  content: z.string().min(1).max(8_000),
-});
+const RATE_LIMIT_WINDOW_MS = 60_000;
 
-const chatRequestSchema = z.object({
-  model: z.string().min(1).default('deepseek-chat'),
-  temperature: z.number().min(0).max(2).optional(),
-  max_tokens: z.number().int().positive().max(4_096).optional(),
-  messages: z.array(chatMessageSchema).min(1).max(50),
-});
+function getRateLimitMaxRequests() {
+  const parsed = Number(process.env.AI_CHAT_RATE_LIMIT_PER_MINUTE ?? 20);
+
+  return Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : 20;
+}
 
 function isAiChatEnabled() {
   const flag = process.env.FEATURE_AI_CHAT;
   return flag === undefined || flag === 'true';
 }
 
+function getClientIdentifier(request: Request): string {
+  const forwardedFor = request.headers.get('x-forwarded-for');
+
+  if (forwardedFor) {
+    return forwardedFor.split(',')[0]?.trim() || 'unknown';
+  }
+
+  return request.headers.get('x-real-ip') ?? 'unknown';
+}
+
+function toErrorResponse(error: unknown) {
+  if (error instanceof ApiError) {
+    return NextResponse.json(
+      {
+        error: error.message,
+        code: error.code,
+        ...(error.details ? { details: error.details } : {}),
+      },
+      {
+        status: error.statusCode,
+        headers:
+          error instanceof RateLimitExceededError
+            ? {
+                'Retry-After': String(
+                  (error.details as { retryAfterSeconds: number }).retryAfterSeconds
+                ),
+              }
+            : undefined,
+      }
+    );
+  }
+
+  const message = error instanceof Error ? error.message : 'Unknown AI provider error.';
+
+  return NextResponse.json(
+    {
+      error: 'AI provider request failed.',
+      code: 'AI_UPSTREAM_ERROR',
+      details: message,
+    },
+    { status: 502 }
+  );
+}
+
 export async function POST(request: Request) {
-  if (!isAiChatEnabled()) {
-    return NextResponse.json(
-      {
-        error: 'AI chat is disabled by FEATURE_AI_CHAT flag.',
-      },
-      { status: 503 }
-    );
-  }
-
-  let body: unknown;
-
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body.' }, { status: 400 });
-  }
+    if (!isAiChatEnabled()) {
+      throw new FeatureDisabledError();
+    }
 
-  const parsed = chatRequestSchema.safeParse(body);
-
-  if (!parsed.success) {
-    return NextResponse.json(
-      {
-        error: 'Validation failed.',
-        details: parsed.error.flatten(),
-      },
-      { status: 400 }
+    const clientId = getClientIdentifier(request);
+    const rateLimit = consumeRateLimit(
+      clientId,
+      getRateLimitMaxRequests(),
+      RATE_LIMIT_WINDOW_MS
     );
-  }
 
-  try {
-    const response = await deepseekChatCompletion(parsed.data);
+    if (!rateLimit.allowed) {
+      throw new RateLimitExceededError(rateLimit.retryAfterSeconds);
+    }
 
-    return NextResponse.json({
-      provider: 'deepseek',
-      ...response,
-    });
+    let body: unknown;
+
+    try {
+      body = await request.json();
+    } catch {
+      throw new InvalidJsonError();
+    }
+
+    const parsed = aiChatRequestSchema.safeParse(body);
+
+    if (!parsed.success) {
+      throw new ValidationError(parsed.error.flatten());
+    }
+
+    try {
+      const response = await deepseekChatCompletion(parsed.data);
+
+      return NextResponse.json({
+        provider: 'deepseek',
+        ...response,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown AI provider error.';
+      throw new UpstreamAiError(message);
+    }
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown AI provider error.';
-
-    return NextResponse.json(
-      {
-        error: 'AI provider request failed.',
-        message,
-      },
-      { status: 502 }
-    );
+    return toErrorResponse(error);
   }
 }

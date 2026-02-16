@@ -3,9 +3,110 @@
 > **API-Dokumentation**
 > Alle verfügbaren API-Endpunkte der Plattform.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Basis-URL:** `/api`  
-**Aktualisiert:** 2024-12-05
+**Aktualisiert:** 2026-02-16
+
+---
+
+## System- und AI-Endpunkte
+
+### `GET /api/health`
+
+Liefert den technischen Gesundheitsstatus für API + Abhängigkeiten in einer festen Struktur.
+
+**Response (200 / 503):**
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-16T11:20:00.000Z",
+  "dependencies": {
+    "database": {
+      "status": "up",
+      "latencyMs": 34,
+      "details": "Supabase auth health reachable."
+    },
+    "aiService": {
+      "status": "up",
+      "latencyMs": 0,
+      "details": "AI provider configuration is present."
+    }
+  }
+}
+```
+
+**Status-Codes:**
+- `200` = alle Dependencies `up`
+- `503` = mindestens eine Dependency `degraded` oder `down`
+
+---
+
+### `POST /api/ai/chat`
+
+Proxied AI Chat Completion gegen den konfigurierten DeepSeek Provider.
+
+**Request-Body (Zod-validiert):**
+
+```json
+{
+  "model": "deepseek-chat",
+  "temperature": 0.7,
+  "max_tokens": 512,
+  "messages": [
+    { "role": "user", "content": "Wie wechsle ich Bremsbeläge?" }
+  ]
+}
+```
+
+**Regeln:**
+- `messages`: 1..50 Einträge
+- `role`: `system | user | assistant`
+- `content`: nicht leer, max. 8000 Zeichen
+- `max_tokens`: positive Ganzzahl, max. 4096
+- `temperature`: 0..2
+
+**Rate Limit:**
+- pro Client (`x-forwarded-for` / `x-real-ip`)
+- Standard: `20` Requests / 60 Sekunden
+- konfigurierbar via `AI_CHAT_RATE_LIMIT_PER_MINUTE`
+
+**Success Response (200):**
+
+```json
+{
+  "provider": "deepseek",
+  "id": "cmpl-123",
+  "choices": [
+    {
+      "message": {
+        "role": "assistant",
+        "content": "..."
+      }
+    }
+  ]
+}
+```
+
+**Fehler-Response (Beispiel):**
+
+```json
+{
+  "error": "Validation failed.",
+  "code": "VALIDATION_ERROR",
+  "details": {
+    "fieldErrors": {
+      "messages": ["Array must contain at least 1 element(s)"]
+    }
+  }
+}
+```
+
+**Status-Codes:**
+- `400` `INVALID_JSON` / `VALIDATION_ERROR`
+- `429` `RATE_LIMIT_EXCEEDED` (inkl. `Retry-After` Header)
+- `502` `AI_UPSTREAM_ERROR`
+- `503` `FEATURE_DISABLED`
 
 ---
 
@@ -122,49 +223,4 @@ Authorization: Bearer <supabase-jwt-token>
 
 ---
 
-## Response-Format
-
-### Erfolg
-
-```json
-{
-  "success": true,
-  "data": { ... },
-  "meta": {
-    "total": 100,
-    "page": 1,
-    "limit": 20
-  }
-}
-```
-
-### Fehler
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Beschreibung des Fehlers",
-    "details": { ... }
-  }
-}
-```
-
----
-
-## Fehler-Codes
-
-| Code | HTTP | Beschreibung |
-|------|------|--------------|
-| `VALIDATION_ERROR` | 400 | Ungültige Eingabedaten |
-| `UNAUTHORIZED` | 401 | Nicht authentifiziert |
-| `FORBIDDEN` | 403 | Keine Berechtigung |
-| `NOT_FOUND` | 404 | Ressource nicht gefunden |
-| `CONFLICT` | 409 | Konflikt (z.B. Duplikat) |
-| `INTERNAL_ERROR` | 500 | Server-Fehler |
-
----
-
-**Letzte Aktualisierung:** 2024-12-05
-
+**Letzte Aktualisierung:** 2026-02-16

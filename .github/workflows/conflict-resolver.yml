@@ -8,6 +8,19 @@ permissions:
   contents: write
   pull-requests: write
 
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  AI_PROVIDER: deepseek
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+
 jobs:
   resolve:
     runs-on: ubuntu-latest
@@ -15,6 +28,11 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Preflight (AI + Oracle)
+        run: |
+          node tools/preflight.ts ai
+          node tools/preflight.ts oracle
 
       - uses: pnpm/action-setup@v4
         with:
@@ -33,7 +51,6 @@ jobs:
             sudo apt-get install -y gh
           fi
 
-
       - name: Install deps
         run: pnpm i --frozen-lockfile
 
@@ -45,17 +62,6 @@ jobs:
           echo "prs=$prs" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: AI preflight (DeepSeek+NSCALE required)
-        run: |
-          test -n "${AI_PROVIDER}"
-          test "${AI_PROVIDER}" = "deepseek"
-          test -n "${DEEPSEEK_API_KEY}"
-          test -n "${NSCALE_API_KEY}"
-        env:
-          AI_PROVIDER: deepseek
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
 
       - name: Resolve conflicts (rebase -> DeepSeek merge -> validate -> PR)
         if: ${{ steps.prs.outputs.prs != '[]' }}
@@ -98,8 +104,3 @@ jobs:
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AI_PROVIDER: deepseek
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
-          NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}

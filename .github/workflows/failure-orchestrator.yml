@@ -139,11 +139,12 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - name: Install dependencies and system tools
+      - name: Install system tools
         run: |
-          pnpm i --frozen-lockfile
           sudo apt-get update
           sudo apt-get install -y jq gh
+
+      - run: pnpm i --frozen-lockfile
 
       - name: Enforce PR backlog guardrail (FIFO, max 2 codex PRs)
         id: pr_guardrail
@@ -383,6 +384,11 @@ Hinweis: pro fehlgeschlagenem Run wird über den Marker dedupliziert, um PR-/Iss
       issues: write
       pull-requests: read
     steps:
+      - name: Install system tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq gh
+
       - name: Create manual triage routing issue
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"

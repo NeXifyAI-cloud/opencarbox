@@ -26,7 +26,13 @@ jobs:
           cache: 'pnpm'
 
       - name: Install system tools
-        run: sudo apt-get update && sudo apt-get install -y gh jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          if ! command -v gh >/dev/null 2>&1; then
+            sudo apt-get install -y gh
+          fi
+
 
       - name: Install deps
         run: pnpm i --frozen-lockfile
@@ -39,6 +45,17 @@ jobs:
           echo "prs=$prs" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: AI preflight (DeepSeek+NSCALE required)
+        run: |
+          test -n "${AI_PROVIDER}"
+          test "${AI_PROVIDER}" = "deepseek"
+          test -n "${DEEPSEEK_API_KEY}"
+          test -n "${NSCALE_API_KEY}"
+        env:
+          AI_PROVIDER: deepseek
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
 
       - name: Resolve conflicts (rebase -> DeepSeek merge -> validate -> PR)
         if: ${{ steps.prs.outputs.prs != '[]' }}

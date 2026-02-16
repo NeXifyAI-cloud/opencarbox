@@ -1,35 +1,31 @@
-name: CI
+name: ci
 
 on:
-  pull_request:
   push:
     branches: [main]
+  pull_request:
 
 jobs:
-  quality:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
         with:
           version: 9
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: pnpm
-      - name: Install
-        run: pnpm install --no-frozen-lockfile
-      - name: Lint
-        run: pnpm lint
-      - name: Typecheck
-        run: pnpm typecheck
-      - name: Unit tests
-        run: pnpm test -- --run
-      - name: Guard: forbid OpenAI env usage
-        run: |
-          if rg -n "OPENAI_" .; then
-            echo "Found OPENAI_ usage. Forbidden."
-            exit 1
-          fi
-      - name: Build
-        run: pnpm build
+          cache: "pnpm"
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Guard: forbid OpenAI usage
+        run: bash tools/guard_no_openai.sh
+
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build

@@ -5,6 +5,10 @@ on:
     workflows: ["ci"]
     types: [completed]
 
+concurrency:
+  group: autofix-${{ github.event.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
   pull-requests: write
@@ -30,8 +34,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
+      - name: Export normalized env names
+        run: source tools/export_env.sh
       - name: Preflight
-        run: node tools/preflight.ts ci
+        run: |
+          source tools/export_env.sh
+          node tools/preflight.ts ci
       - uses: pnpm/action-setup@v4
         with:
           version: 9
@@ -57,11 +65,23 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          BR="autofix/${{ github.run_id }}"
+          BR="codex/autofix-${{ github.run_id }}"
           git checkout -b "$BR"
           git add -A
           git commit -m "chore: safe autofix (format/lint)"
           git push origin "$BR"
-          gh pr create --title "chore: safe autofix" --body "CI failed; applied safe autofixes (format/lint). Please review." --base main
+          gh pr create --title "chore: safe autofix" --body "## Was geändert
+- Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet.
+
+## Warum
+- Fehlgeschlagener Workflow-Lauf wurde automatisch mit risikoarmen Änderungen behandelt.
+
+## Wie getestet
+- \\`pnpm -s prettier --write .\\`
+- \\`pnpm -s eslint . --fix\\`
+
+## Risiko/Backout
+- Risiko: Niedrig (stilistische Änderungen).
+- Backout: PR schließen oder Commit revertieren." --base main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

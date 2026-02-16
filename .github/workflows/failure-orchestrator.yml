@@ -1,0 +1,119 @@
+name: failure-orchestrator
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types: [completed]
+
+concurrency:
+  group: failure-orchestrator-${{ github.event.workflow_run.id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  AI_PROVIDER: deepseek
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+
+jobs:
+  route-failure:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name != 'failure-orchestrator' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+      - name: Export normalized env names
+        run: source tools/export_env.sh
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install system tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq gh
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Safe autofix attempt
+        id: safe_fix
+        continue-on-error: true
+        run: |
+          pnpm -s prettier --write . || true
+          pnpm -s eslint . --fix || true
+          if git diff --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open safe-fix PR
+        if: ${{ steps.safe_fix.outputs.changed == 'true' }}
+        run: |
+          BR="codex/failure-autofix-${{ github.run_id }}"
+          git checkout -b "$BR"
+          git add -A
+          git commit -m "chore: safe autofix for failed workflow"
+          git push origin "$BR"
+          gh pr create --title "chore: safe autofix for failed workflow" --body "## Was geändert
+- Safe-Autofix (Format/Lint/Imports) für fehlgeschlagenen Workflow durchgeführt.
+
+## Warum
+- Fehlgeschlagenen Run mit deterministischen, risikoarmen Änderungen automatisch beheben.
+
+## Wie getestet
+- \`pnpm -s prettier --write .\`
+- \`pnpm -s eslint . --fix\`
+
+## Risiko/Backout
+- Risiko: Niedrig.
+- Backout: PR schließen oder commit revertieren." --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: AI triage eligibility
+        id: ai_eligible
+        run: |
+          source tools/export_env.sh
+          if node tools/preflight.ts ai >/dev/null 2>&1; then
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: AI triage issue fallback
+        if: ${{ steps.safe_fix.outputs.changed != 'true' && steps.ai_eligible.outputs.eligible != 'true' }}
+        run: |
+          gh issue create \
+            --title "Incident: failed workflow requires manual triage" \
+            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\n\nSafe-autofix war nicht ausreichend und AI-Triage ist nicht verfügbar. Bitte manuell analysieren und NOTES/runbook.md aktualisieren." \
+            --label bug --label automated
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: AI triage issue
+        if: ${{ steps.safe_fix.outputs.changed != 'true' && steps.ai_eligible.outputs.eligible == 'true' }}
+        run: |
+          gh issue create \
+            --title "AI-Triage required: failed workflow" \
+            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\n\nSafe-autofix hat keine Änderungen erzeugt. Bitte DeepSeek-Triage durchführen und als Fix-PR einreichen. NSCALE-Header ist verpflichtend." \
+            --label bug --label automated --label ai-triage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

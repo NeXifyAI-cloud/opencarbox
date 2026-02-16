@@ -27,6 +27,11 @@
 
 ## Automation Backlog
 
+### A0 — Zentraler Failure-Orchestrator für fehlgeschlagene Runs — Priorität: Hoch
+- **Status:** ✅ Erledigt
+- **Ergebnis:** `.github/workflows/failure-orchestrator.yml` führt Safe-Autofix, AI-Triage-Gating (DeepSeek+NSCALE) und Incident-Issue-Fallback aus.
+- **Abnahmedatum:** 2026-02-16
+
 ### A1 — Workflow-Konsolidierung (`ci.yml` vs `ci-cd.yml`) — Priorität: Hoch
 - **Akzeptanzkriterien:**
   - Es existiert ein klarer, dokumentierter Verantwortungszuschnitt zwischen `ci.yml` und `ci-cd.yml` (oder ein konsolidierter Workflow).

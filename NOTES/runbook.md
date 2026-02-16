@@ -6,6 +6,24 @@
 - Validate quality gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 - Apply Supabase migrations via Supabase CLI or SQL editor using files in `supabase/migrations`.
 
+## API Monitoring (Health + AI Chat)
+
+- **Health Check Polling:** `/api/health` mindestens alle 60 Sekunden abfragen.
+  - Alert bei `status !== "ok"` oder HTTP `>= 500`.
+  - Dashboard-Felder: `status`, `version`, `dependencies.supabase.status`, `dependencies.supabase.missingEnv`.
+- **AI Chat Error Budget:** `/api/ai/chat` nach Error-Codes aufschlüsseln.
+  - `VALIDATION_ERROR` (422) und `INVALID_JSON` (400) als Client-Fehler tracken (kein Pager).
+  - `RATE_LIMITED` (429) bei Peak-Last monitoren (Warnung, kein Pager).
+  - `UPSTREAM_ERROR` (502), `UPSTREAM_TIMEOUT` (504), `INTERNAL_ERROR` (500) pagern bei erhöhtem Anteil.
+- **SLO-Vorschlag (Startwert):**
+  - p95 Latenz `/api/ai/chat` < 2.5s (ohne Retries), < 8s mit Retries.
+  - Fehlerquote `5xx` < 2% pro 10-Minuten-Fenster.
+- **Runbook-Hinweis bei Incidents:**
+  1. Prüfe `/api/health` und `dependencies.supabase`.
+  2. Prüfe Anteil von `UPSTREAM_TIMEOUT` vs. `UPSTREAM_ERROR`.
+  3. Falls Timeout-Spike: `AI_CHAT_TIMEOUT_MS` / `AI_CHAT_RETRY_COUNT` temporär absenken.
+  4. Falls 429-Spike: `AI_CHAT_RATE_LIMIT_MAX_REQUESTS` und Window prüfen, ggf. Edge-Rate-Limit ergänzen.
+
 ## Status Governance
 - **Owner:** Tech Lead (oder benannter Release-Manager im aktuellen Sprint).
 - **Single Source of Truth:** `docs/tasks/master_plan.md` ist die einzige Truth-Quelle für Task-Status.

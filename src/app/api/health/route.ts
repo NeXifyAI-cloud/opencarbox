@@ -1,29 +1,34 @@
 import { NextResponse } from 'next/server';
 
-const REQUIRED_ENV_VARS = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+const REQUIRED_ENV_VARS = ['NEXT_PUBLIC_SUPABASE_URL', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'] as const;
 
 function getMissingEnvVars() {
   return REQUIRED_ENV_VARS.filter((key) => !process.env[key]);
 }
 
+function resolveVersion() {
+  return process.env.npm_package_version ?? '0.0.0-dev';
+}
+
 export async function GET() {
   const missingEnvVars = getMissingEnvVars();
-  const status = missingEnvVars.length === 0 ? 'ok' : 'degraded';
+  const supabaseStatus = missingEnvVars.length === 0 ? 'up' : 'degraded';
+  const overallStatus = supabaseStatus === 'up' ? 'ok' : 'degraded';
 
   return NextResponse.json(
     {
-      status,
-      service: 'opencarbox-api',
-      timestamp: new Date().toISOString(),
-      checks: {
-        env: {
-          ok: missingEnvVars.length === 0,
-          missing: missingEnvVars,
+      status: overallStatus,
+      version: resolveVersion(),
+      dependencies: {
+        supabase: {
+          status: supabaseStatus,
+          missingEnv: missingEnvVars,
         },
       },
+      timestamp: new Date().toISOString(),
     },
     {
-      status: missingEnvVars.length === 0 ? 200 : 503,
+      status: overallStatus === 'ok' ? 200 : 503,
       headers: {
         'Cache-Control': 'no-store',
       },

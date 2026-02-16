@@ -85,7 +85,7 @@ jobs:
         run: |
           source tools/export_env.sh
 
-          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,createdAt --jq 'sort_by(.createdAt)')"
+          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,headRefName,createdAt,url --jq 'sort_by(.createdAt)')"
           OPEN_COUNT="$(echo "$OPEN_CODEX_PRS" | jq 'length')"
           if [ "$OPEN_COUNT" -ge 2 ]; then
             echo "Skipping conflict resolution PR creation: already $OPEN_COUNT open codex/* PRs (max 2)."
@@ -121,6 +121,19 @@ jobs:
 
             git commit -m "chore: resolve conflicts for #$num"
             git push -u origin "codex/conflictfix-$num" --force-with-lease
+
+            PLANNED_BRANCH="codex/conflictfix-$num"
+            OLDEST_PR="$(echo "$OPEN_CODEX_PRS" | jq '.[0] // empty')"
+            if [ -n "$OLDEST_PR" ]; then
+              OLDEST_HEAD="$(echo "$OLDEST_PR" | jq -r '.headRefName')"
+              if [ "$OLDEST_HEAD" != "$PLANNED_BRANCH" ]; then
+                OLDEST_NUMBER="$(echo "$OLDEST_PR" | jq -r '.number')"
+                OLDEST_CREATED_AT="$(echo "$OLDEST_PR" | jq -r '.createdAt')"
+                OLDEST_URL="$(echo "$OLDEST_PR" | jq -r '.url')"
+                echo "Skipping PR creation for #$num due to FIFO guardrail: oldest open codex/* PR #$OLDEST_NUMBER ($OLDEST_HEAD, created $OLDEST_CREATED_AT) blocks planned branch $PLANNED_BRANCH. Blocking PR: $OLDEST_URL"
+                continue
+              fi
+            fi
 
             gh pr create \
               --title "chore: resolve conflicts for #$num" \

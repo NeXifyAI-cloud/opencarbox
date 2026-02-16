@@ -53,11 +53,25 @@ jobs:
 
       - name: Enforce PR backlog guardrail (max 2 open codex PRs)
         run: |
-          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,createdAt --jq 'sort_by(.createdAt)')"
+          PLANNED_BRANCH="codex/auto-improve-${{ github.run_id }}"
+          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,headRefName,createdAt,url --jq 'sort_by(.createdAt)')"
           OPEN_COUNT="$(echo "$OPEN_CODEX_PRS" | jq 'length')"
+
           if [ "$OPEN_COUNT" -ge 2 ]; then
             echo "Skipping auto-improve: already $OPEN_COUNT open codex/* PRs (max 2)."
             exit 0
+          fi
+
+          OLDEST_PR="$(echo "$OPEN_CODEX_PRS" | jq '.[0] // empty')"
+          if [ -n "$OLDEST_PR" ]; then
+            OLDEST_HEAD="$(echo "$OLDEST_PR" | jq -r '.headRefName')"
+            if [ "$OLDEST_HEAD" != "$PLANNED_BRANCH" ]; then
+              OLDEST_NUMBER="$(echo "$OLDEST_PR" | jq -r '.number')"
+              OLDEST_CREATED_AT="$(echo "$OLDEST_PR" | jq -r '.createdAt')"
+              OLDEST_URL="$(echo "$OLDEST_PR" | jq -r '.url')"
+              echo "Skipping auto-improve due to FIFO guardrail: oldest open codex/* PR #$OLDEST_NUMBER ($OLDEST_HEAD, created $OLDEST_CREATED_AT) blocks planned branch $PLANNED_BRANCH. Blocking PR: $OLDEST_URL"
+              exit 0
+            fi
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

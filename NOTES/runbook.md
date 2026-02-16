@@ -112,3 +112,10 @@ flowchart TD
 2. Check `/api/health` and CI status.
 3. Capture metadata-only logs (no prompts/PII/secrets).
 4. Create backlog item with acceptance criteria before closing incident.
+
+## Failure-Orchestrator Ablauf
+
+1. `failure-orchestrator.yml` reagiert auf `workflow_run` mit `conclusion == failure` (außer auf sich selbst).
+2. Stufe 1: Safe-Autofix (`prettier` + `eslint --fix`) und bei Änderungen automatischer Fix-PR.
+3. Stufe 2: Wenn keine Änderungen, AI-Triage nur bei erfolgreichem `tools/preflight.ts ai` (DeepSeek + NSCALE fail-closed).
+4. Stufe 3: Wenn AI-Triage nicht möglich oder nicht ausreichend, automatisches Incident-Issue mit Run-Link.

@@ -14,6 +14,16 @@ function optional(name: string) {
   return (process.env[name] || "").trim();
 }
 
+function optionalInt(name: string) {
+  const raw = optional(name);
+  if (!raw) return undefined;
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new Error(`${name} must be a positive integer when set`);
+  }
+  return value;
+}
+
 function main() {
   const mode = process.argv[2] || "ci";
 
@@ -36,6 +46,10 @@ function main() {
     must("NSCALE_API_KEY");
     optional("DEEPSEEK_BASE_URL");
     optional("NSCALE_HEADER_NAME");
+    optionalInt("AI_MAX_CALLS");
+    optionalInt("MAX_CONFLICT_FILES");
+    optionalInt("MAX_FILE_BYTES");
+    optional("FORBID_WORKFLOW_EDITS");
 
     console.log("Preflight(ai): OK");
     return;

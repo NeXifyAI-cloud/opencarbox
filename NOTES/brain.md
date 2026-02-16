@@ -16,7 +16,19 @@
   - Enables explicit defaults and required field errors.
 - **Consequences**:
   - App fails fast if env values are missing/invalid.
-  - New environment variables must be added to the schema.
+- New environment variables must be added to the schema.
+
+## ADR-002: Failure-Orchestrator als zentrale Failure-Route
+- **Decision**: Ein zentraler Workflow `failure-orchestrator.yml` verarbeitet fehlgeschlagene Workflow-Runs in drei Stufen: Safe-Autofix, AI-Triage-Gating (DeepSeek + NSCALE) und Incident-Issue-Fallback.
+- **Alternatives**:
+  - Einzelne, voneinander getrennte Autofix-/Triage-Workflows ohne zentrale Steuerung.
+  - Ausschließlich manuelle Incident-Bearbeitung.
+- **Reasoning**:
+  - Deterministische, wiederholbare Behandlung jedes Fehlschlags.
+  - Fail-closed Verhalten für AI-Pfade durch verpflichtendes Preflight (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`).
+- **Consequences**:
+  - Schnellere Erstreaktion bei CI-/Workflow-Fehlern.
+  - Höhere Transparenz durch standardisierte PR-/Issue-Erstellung.
 
 ## Security & Privacy Notes
 - Never store or log API keys in plain text.

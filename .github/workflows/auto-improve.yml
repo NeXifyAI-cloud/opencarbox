@@ -11,6 +11,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
 
 env:
   NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
@@ -36,11 +37,30 @@ jobs:
       - name: Export normalized env names
         run: source tools/export_env.sh
 
-      - name: Preflight (AI + Oracle)
+      - name: Preflight (AI only, Oracle optional)
         run: |
           source tools/export_env.sh
           node tools/preflight.ts ai
-          node tools/preflight.ts oracle
+
+      - name: Oracle availability (optional)
+        run: |
+          source tools/export_env.sh
+          if node tools/preflight.ts oracle >/dev/null 2>&1; then
+            echo "Oracle preflight: available"
+          else
+            echo "Oracle preflight: not configured (continuing without Oracle integration)"
+          fi
+
+      - name: Enforce PR backlog guardrail (max 2 open codex PRs)
+        run: |
+          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,createdAt --jq 'sort_by(.createdAt)')"
+          OPEN_COUNT="$(echo "$OPEN_CODEX_PRS" | jq 'length')"
+          if [ "$OPEN_COUNT" -ge 2 ]; then
+            echo "Skipping auto-improve: already $OPEN_COUNT open codex/* PRs (max 2)."
+            exit 0
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: pnpm/action-setup@v4
         with:

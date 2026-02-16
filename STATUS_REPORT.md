@@ -10,15 +10,16 @@
 
 ### 1. Supabase Backend ✅
 
-| Komponente | Status | Details |
-|------------|--------|---------|
-| **Datenbank** | ✅ | 12 Tabellen mit RLS erstellt |
-| **Storage** | ✅ | 6 Buckets konfiguriert |
-| **Auth** | ✅ | Profile-Trigger aktiviert |
-| **Typen** | ✅ | TypeScript-Typen generiert |
-| **Clients** | ✅ | Browser, Server, Middleware |
+| Komponente    | Status | Details                      |
+| ------------- | ------ | ---------------------------- |
+| **Datenbank** | ✅     | 12 Tabellen mit RLS erstellt |
+| **Storage**   | ✅     | 6 Buckets konfiguriert       |
+| **Auth**      | ✅     | Profile-Trigger aktiviert    |
+| **Typen**     | ✅     | TypeScript-Typen generiert   |
+| **Clients**   | ✅     | Browser, Server, Middleware  |
 
 **Datenbank-Tabellen:**
+
 - ✅ `profiles` - Benutzerprofile
 - ✅ `vehicles` - Meine Garage (HSN/TSN Support)
 - ✅ `categories` - Produktkategorien
@@ -33,6 +34,7 @@
 - ✅ `chat_messages` - Chat-Nachrichten
 
 **Storage Buckets:**
+
 - ✅ `product-images` (5MB, öffentlich)
 - ✅ `vehicle-images` (10MB, öffentlich)
 - ✅ `category-images` (2MB, öffentlich)
@@ -42,15 +44,15 @@
 
 ### 2. Design-System ✅
 
-| Komponente | Status |
-|------------|--------|
-| **Tailwind Config** | ✅ Vollständig konfiguriert |
-| **Farbpalette** | ✅ Rot/Blau Premium-Palette |
-| **Typografie** | ✅ Fluid Typography System |
-| **Spacing** | ✅ 8px Grid System |
-| **Animationen** | ✅ Premium Keyframes |
-| **Globals CSS** | ✅ CSS-Variablen & Utilities |
-| **Fonts** | ✅ Plus Jakarta Sans, Inter, JetBrains Mono |
+| Komponente          | Status                                      |
+| ------------------- | ------------------------------------------- |
+| **Tailwind Config** | ✅ Vollständig konfiguriert                 |
+| **Farbpalette**     | ✅ Rot/Blau Premium-Palette                 |
+| **Typografie**      | ✅ Fluid Typography System                  |
+| **Spacing**         | ✅ 8px Grid System                          |
+| **Animationen**     | ✅ Premium Keyframes                        |
+| **Globals CSS**     | ✅ CSS-Variablen & Utilities                |
+| **Fonts**           | ✅ Plus Jakarta Sans, Inter, JetBrains Mono |
 
 ### 3. Projekt-Grundlagen ✅
 
@@ -63,14 +65,14 @@
 
 ### 4. Dokumentation ✅
 
-| Dokument | Status | Beschreibung |
-|----------|--------|--------------|
-| `project_specs.md` | ✅ | Gesetzbuch (550 Zeilen) |
-| `.cursorrules` | ✅ | AI-Agenten-Konfiguration |
-| `master_plan.md` | ✅ | 33 Tasks definiert |
-| `docs/architecture/` | ✅ | System-Übersicht, Data-Flow |
-| `docs/design-system/` | ✅ | Colors, Typography |
-| `docs/changelog/` | ✅ | CHANGELOG.md |
+| Dokument              | Status | Beschreibung                |
+| --------------------- | ------ | --------------------------- |
+| `project_specs.md`    | ✅     | Gesetzbuch (550 Zeilen)     |
+| `.cursorrules`        | ✅     | AI-Agenten-Konfiguration    |
+| `master_plan.md`      | ✅     | 33 Tasks definiert          |
+| `docs/architecture/`  | ✅     | System-Übersicht, Data-Flow |
+| `docs/design-system/` | ✅     | Colors, Typography          |
+| `docs/changelog/`     | ✅     | CHANGELOG.md                |
 
 ---
 
@@ -82,6 +84,21 @@
 - [x] Design-System ✅
 - [x] Provider einrichten (Theme, QueryClient) ✅
 - [ ] Scripts finalisieren (sync-docs, quality-gate)
+
+---
+
+## ⚡ 48h-MAX Priorität (Sofortplan)
+
+Da die Fertigstellung in max. 2 Tagen erfolgen muss, gilt ab sofort nur der kritische Pfad:
+
+1. **Tag 1:** Produktkatalog (TASK-022) + Warenkorb (TASK-024) funktionsfähig.
+2. **Tag 2:** Checkout (TASK-025) + Stabilisierung + Go/No-Go.
+
+### Harte Regeln
+
+- Max. 3 parallele Workstreams (FE / BE-API / QA-DevOps)
+- Scope-Freeze für Nicht-Kernfeatures
+- Keine Freigabe ohne grüne Qualitäts-Gates (Lint, Typecheck, Test, Build)
 
 ---
 
@@ -156,13 +173,13 @@ npm run dev
 
 ## 📁 WICHTIGE DATEIEN
 
-| Datei | Zweck |
-|-------|-------|
-| `project_specs.md` | **Gesetzbuch** - Alle Spezifikationen |
-| `.cursorrules` | AI-Agenten-Regeln |
-| `docs/tasks/master_plan.md` | Arbeitsplan mit 33 Tasks |
-| `docs/SETUP_STATUS.md` | Detaillierter Setup-Status |
-| `env.example` | Umgebungsvariablen-Vorlage |
+| Datei                       | Zweck                                 |
+| --------------------------- | ------------------------------------- |
+| `project_specs.md`          | **Gesetzbuch** - Alle Spezifikationen |
+| `.cursorrules`              | AI-Agenten-Regeln                     |
+| `docs/tasks/master_plan.md` | Arbeitsplan mit 33 Tasks              |
+| `docs/SETUP_STATUS.md`      | Detaillierter Setup-Status            |
+| `env.example`               | Umgebungsvariablen-Vorlage            |
 
 ---
 

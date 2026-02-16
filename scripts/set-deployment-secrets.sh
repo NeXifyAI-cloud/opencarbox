@@ -12,10 +12,13 @@ set -euo pipefail
 # Server-only
 : "${SUPABASE_SERVICE_ROLE_KEY:?}"
 : "${DEEPSEEK_API_KEY:?}"
-: "${OPENAI_COMPAT_API_KEY:?}"
-: "${OPENAI_COMPAT_BASE_URL:?}"
 : "${NSCALE_API_KEY:?}"
 NSCALE_HEADER_NAME="${NSCALE_HEADER_NAME:-X-NSCALE-API-KEY}"
+AI_PROVIDER="${AI_PROVIDER:-deepseek}"
+if [[ "$AI_PROVIDER" != "deepseek" ]]; then
+  echo "AI_PROVIDER must be deepseek" >&2
+  exit 1
+fi
 
 # GitHub Secrets
 set_secret() {
@@ -26,10 +29,9 @@ set_secret NEXT_PUBLIC_SUPABASE_URL "$NEXT_PUBLIC_SUPABASE_URL"
 set_secret NEXT_PUBLIC_SUPABASE_ANON_KEY "$NEXT_PUBLIC_SUPABASE_ANON_KEY"
 set_secret SUPABASE_SERVICE_ROLE_KEY "$SUPABASE_SERVICE_ROLE_KEY"
 set_secret DEEPSEEK_API_KEY "$DEEPSEEK_API_KEY"
-set_secret OPENAI_COMPAT_API_KEY "$OPENAI_COMPAT_API_KEY"
-set_secret OPENAI_COMPAT_BASE_URL "$OPENAI_COMPAT_BASE_URL"
 set_secret NSCALE_API_KEY "$NSCALE_API_KEY"
 set_secret NSCALE_HEADER_NAME "$NSCALE_HEADER_NAME"
+set_secret AI_PROVIDER "$AI_PROVIDER"
 
 echo "GitHub secrets set."
 
@@ -39,9 +41,8 @@ if [[ -n "${VERCEL_TOKEN:-}" ]]; then
   vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY production --token "$VERCEL_TOKEN" <<<"$NEXT_PUBLIC_SUPABASE_ANON_KEY" >/dev/null || true
   vercel env add SUPABASE_SERVICE_ROLE_KEY production --token "$VERCEL_TOKEN" <<<"$SUPABASE_SERVICE_ROLE_KEY" >/dev/null || true
   vercel env add DEEPSEEK_API_KEY production --token "$VERCEL_TOKEN" <<<"$DEEPSEEK_API_KEY" >/dev/null || true
-  vercel env add OPENAI_COMPAT_API_KEY production --token "$VERCEL_TOKEN" <<<"$OPENAI_COMPAT_API_KEY" >/dev/null || true
-  vercel env add OPENAI_COMPAT_BASE_URL production --token "$VERCEL_TOKEN" <<<"$OPENAI_COMPAT_BASE_URL" >/dev/null || true
   vercel env add NSCALE_API_KEY production --token "$VERCEL_TOKEN" <<<"$NSCALE_API_KEY" >/dev/null || true
   vercel env add NSCALE_HEADER_NAME production --token "$VERCEL_TOKEN" <<<"$NSCALE_HEADER_NAME" >/dev/null || true
+  vercel env add AI_PROVIDER production --token "$VERCEL_TOKEN" <<<"$AI_PROVIDER" >/dev/null || true
   echo "Vercel env set (production)."
 fi

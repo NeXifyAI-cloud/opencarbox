@@ -1,0 +1,88 @@
+name: conflict-resolver
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
+      - name: Install deps
+        run: pnpm i --frozen-lockfile
+
+      - name: Find PRs with conflicts (DIRTY)
+        id: prs
+        run: |
+          prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
+            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]')
+          echo "prs=$prs" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve conflicts (rebase -> DeepSeek merge -> validate -> PR)
+        if: ${{ steps.prs.outputs.prs != '[]' }}
+        run: |
+          echo '${{ steps.prs.outputs.prs }}' | jq -c '.[]' | while read pr; do
+            num=$(echo "$pr" | jq -r .number)
+            head=$(echo "$pr" | jq -r .headRefName)
+            base=$(echo "$pr" | jq -r .baseRefName)
+
+            git fetch origin "$base" "$head"
+            git checkout -B "conflictfix/$num" "origin/$head"
+
+            if git rebase "origin/$base"; then
+              echo "Rebase OK for #$num"
+            else
+              echo "Rebase conflict. Attempting AI merge via DeepSeek..."
+              git rebase --abort || true
+              pnpm tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head"
+            fi
+
+            pnpm lint
+            pnpm typecheck
+            pnpm test -- --run
+            pnpm build
+
+            git add -A
+            if git diff --cached --quiet; then
+              echo "No changes; skip #$num"
+              continue
+            fi
+
+            git commit -m "chore: resolve conflicts for #$num"
+            git push -u origin "conflictfix/$num" --force-with-lease
+
+            gh pr create \
+              --title "chore: resolve conflicts for #$num" \
+              --body "Automated conflict resolution using DeepSeek (+ NSCALE). Validated by CI." \
+              --base "$base" \
+              --head "conflictfix/$num" || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_PROVIDER: deepseek
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+          NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}

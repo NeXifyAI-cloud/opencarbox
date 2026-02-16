@@ -10,15 +10,16 @@ echo "== 40_seed_env_and_secrets =="
 ENV_FILE=".env.local"
 touch "$ENV_FILE"
 
+AI_PROVIDER="${AI_PROVIDER:-deepseek}"
+
 declare -a vars=(
   NEXT_PUBLIC_SUPABASE_URL
   NEXT_PUBLIC_SUPABASE_ANON_KEY
   SUPABASE_SERVICE_ROLE_KEY
   DEEPSEEK_API_KEY
-  OPENAI_COMPAT_API_KEY
-  OPENAI_COMPAT_BASE_URL
   NSCALE_API_KEY
   NSCALE_HEADER_NAME
+  AI_PROVIDER
 )
 
 for var in "${vars[@]}"; do

@@ -1,0 +1,137 @@
+name: Failure Orchestrator
+
+on:
+  workflow_run:
+    workflows:
+      - Auto-Deploy Production
+      - auto-improve
+      - Auto-Merge
+      - autofix
+      - bootstrap
+      - Quality Gate & Deployment
+      - CI
+      - conflict-resolver
+      - Security
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+
+jobs:
+  handle_failure:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name != 'Failure Orchestrator' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq unzip
+          sudo apt-get install -y gh || true
+          corepack enable
+
+      - name: Checkout failing commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: 'Guard: forbid OpenAI usage'
+        run: bash tools/guard_no_openai.sh
+
+      - name: Download workflow logs
+        id: logs
+        run: |
+          RUN_ID="${{ github.event.workflow_run.id }}"
+          gh api \
+            -H "Accept: application/vnd.github+json" \
+            "/repos/${{ github.repository }}/actions/runs/${RUN_ID}/logs" \
+            > run-logs.zip
+          echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract logs
+        run: |
+          mkdir -p .tmp/logs
+          unzip -o run-logs.zip -d .tmp/logs >/dev/null || true
+
+      - name: Attempt SAFE autofix (format/lint only)
+        run: |
+          pnpm -s prettier --write . || true
+          pnpm -s eslint . --fix || true
+
+      - name: Re-run local checks after safe autofix
+        id: safecheck
+        run: |
+          set +e
+          pnpm lint
+          L=$?
+          pnpm typecheck
+          T=$?
+          pnpm test
+          S=$?
+          pnpm build
+          B=$?
+          echo "lint=$L typecheck=$T test=$S build=$B"
+          if [ "$L" -eq 0 ] && [ "$T" -eq 0 ] && [ "$S" -eq 0 ] && [ "$B" -eq 0 ]; then
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          fi
+          exit 0
+
+      - name: Open PR when SAFE autofix succeeded
+        if: ${{ steps.safecheck.outputs.ok == 'true' }}
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          BRANCH="autofix/${{ steps.logs.outputs.run_id }}"
+          git checkout -b "$BRANCH"
+          git add -A
+          git commit -m "chore: safe autofix after workflow failure"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "chore: safe autofix after failed workflow run" \
+            --body "Automated safe autofix (format/lint) after failure run ${{ steps.logs.outputs.run_id }}." \
+            --base main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run AI diagnose+fix/issue flow
+        if: ${{ steps.safecheck.outputs.ok != 'true' }}
+        run: |
+          pnpm -s tsx tools/triage_failure.ts \
+            --run-id "${{ steps.logs.outputs.run_id }}" \
+            --workflow "${{ github.event.workflow_run.name }}" \
+            --head-sha "${{ github.event.workflow_run.head_sha }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_PROVIDER: deepseek
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+          NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ORACLE_RUN_SOURCE: github-actions

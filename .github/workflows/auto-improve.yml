@@ -87,6 +87,18 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Run lint
+        run: pnpm lint
+
+      - name: Run typecheck
+        run: pnpm typecheck
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Run build
+        run: pnpm build
+
       - name: Install system tools
         run: |
           sudo apt-get update
@@ -121,6 +133,9 @@ jobs:
 
 ## Wie getestet
 - \\`pnpm lint\\`
+- \\`pnpm typecheck\\`
+- \\`pnpm test\\`
+- \\`pnpm build\\`
 
 ## Risiko/Backout
 - Risiko: Niedrig (nur Dokumentation).

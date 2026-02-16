@@ -19,7 +19,7 @@
 - New environment variables must be added to the schema.
 
 ## ADR-002: Klare Failure-Zuständigkeit zwischen `autofix.yml` und `failure-orchestrator.yml`
-- **Decision**: `autofix.yml` ist ausschließlich für Safe-Autofix-PRs bei fehlgeschlagenen `ci`-Runs zuständig. `failure-orchestrator.yml` übernimmt ausschließlich Routing/Issue/AI-Triage für fehlgeschlagene Nicht-`ci`-Runs.
+- **Decision**: `autofix.yml` ist ausschließlich für Safe-Autofix-PRs bei fehlgeschlagenen `ci`-Runs zuständig. `failure-orchestrator.yml` übernimmt zentrales Routing/Issue/AI-Triage für fehlgeschlagene Runs aller Workflows.
 - **Alternatives**:
   - Vollständige Zentralisierung inklusive Safe-Autofix im `failure-orchestrator`.
   - Parallele Zuständigkeit beider Workflows ohne harte Trennung.
@@ -30,6 +30,19 @@
 - **Consequences**:
   - Pro Run schreibt nur ein Workflow Artefakte (PR oder Issue).
   - Eindeutigere Incident-Nachverfolgung über Routing-Labels und Run-Marker.
+
+## ADR-003: Einheitliche Env-Normalisierung und fail-closed AI-Gating in allen Automations-Workflows
+- **Decision**: Nicht-CI-Workflows führen zu Beginn `source tools/export_env.sh` aus und prüfen anschließend via `tools/preflight.ts` den jeweiligen Modus (`ci`, `ai`, `oracle`, `deploy`).
+- **Alternatives**:
+  - Legacy-Secret-Namen direkt in jedem Workflow duplizieren.
+  - Preflight nur in ausgewählten Workflows nutzen.
+- **Reasoning**:
+  - Reduziert Drift zwischen alten Secret-Namen und standardisierten Runtime-Variablen.
+  - Erzwingt DeepSeek-only inklusive NSCALE-Header ohne implizite Fallbacks.
+  - Macht Deploy-/Oracle-Schritte deterministischer, da fehlende Pflichtvariablen früh scheitern.
+- **Consequences**:
+  - Workflows schlagen früher und klarer fehl, wenn Secrets unvollständig sind.
+  - Operationales Verhalten ist über alle Automations-Workflows konsistent.
 
 ## Security & Privacy Notes
 - Never store or log API keys in plain text.

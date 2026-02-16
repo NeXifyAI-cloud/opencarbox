@@ -116,7 +116,7 @@ flowchart TD
 
 ## Failure-Orchestrator Ablauf
 
-1. `failure-orchestrator.yml` reagiert auf `workflow_run` mit `conclusion == failure` (außer auf sich selbst).
-2. Stufe 1: Safe-Autofix (`prettier` + `eslint --fix`) und bei Änderungen automatischer Fix-PR.
-3. Stufe 2: Wenn keine Änderungen, AI-Triage nur bei erfolgreichem `tools/preflight.ts ai` (DeepSeek + NSCALE fail-closed).
-4. Stufe 3: Wenn AI-Triage nicht möglich oder nicht ausreichend, automatisches Incident-Issue mit Run-Link.
+1. `failure-orchestrator.yml` reagiert auf **alle** fehlgeschlagenen `workflow_run`-Events (außer auf sich selbst).
+2. Für `ci`-Fehlschläge bleibt `autofix.yml` für Safe-Autofix-PRs zuständig; der Orchestrator übernimmt das zentrale Routing/Issue-Tracking ohne Secrets im Klartext zu loggen.
+3. AI-Triage ist strikt fail-closed und nur aktiv bei erfolgreichem `tools/preflight.ts ai` (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`).
+4. Wenn AI-Triage nicht möglich/ausreichend ist, wird ein Incident-/Routing-Issue mit Run-Marker erstellt und Backlog/Runbook werden aktualisiert.

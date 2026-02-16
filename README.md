@@ -43,6 +43,7 @@ pnpm build
 Workflows:
 - `.github/workflows/ci.yml`: lint, typecheck, test, build.
 - `.github/workflows/security.yml`: dependency audit.
+- `.github/workflows/auto-reply.yml`: beantwortet Issues, PRs, Reviews und Kommentare automatisch (DeepSeek mit Fallback-Antwort).
 
 ## Branch protection (recommended)
 

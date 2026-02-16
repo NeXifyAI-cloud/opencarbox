@@ -1,0 +1,188 @@
+name: auto-reply
+
+on:
+  issue_comment:
+    types: [created, edited]
+  issues:
+    types: [opened, edited, reopened]
+  pull_request:
+    types: [opened, edited, reopened]
+  pull_request_review_comment:
+    types: [created, edited]
+  pull_request_review:
+    types: [submitted, edited]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+env:
+  AI_PROVIDER: deepseek
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
+jobs:
+  reply:
+    if: ${{ github.actor != 'github-actions[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate and post autonomous reply
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const event = context.eventName;
+            const action = context.payload.action;
+            const sender = context.payload.sender?.login || 'unknown';
+
+            if (!sender || sender.endsWith('[bot]')) {
+              core.info('Skipping bot-originated event.');
+              return;
+            }
+
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const resolveTarget = () => {
+              const issueComment = context.payload.comment?.body;
+              const issueTitle = context.payload.issue?.title;
+              const issueBody = context.payload.issue?.body;
+              const prTitle = context.payload.pull_request?.title;
+              const prBody = context.payload.pull_request?.body;
+              const reviewBody = context.payload.review?.body;
+
+              if (event === 'issue_comment') {
+                return {
+                  issueNumber: context.payload.issue?.number,
+                  kind: context.payload.issue?.pull_request ? 'pull_request_comment' : 'issue_comment',
+                  sourceText: issueComment || '',
+                  title: issueTitle || prTitle || 'Untitled',
+                  body: issueBody || prBody || '',
+                };
+              }
+
+              if (event === 'issues') {
+                return {
+                  issueNumber: context.payload.issue?.number,
+                  kind: 'issue',
+                  sourceText: `${issueTitle || ''}\n\n${issueBody || ''}`.trim(),
+                  title: issueTitle || 'Untitled',
+                  body: issueBody || '',
+                };
+              }
+
+              if (event === 'pull_request') {
+                return {
+                  issueNumber: context.payload.pull_request?.number,
+                  kind: 'pull_request',
+                  sourceText: `${prTitle || ''}\n\n${prBody || ''}`.trim(),
+                  title: prTitle || 'Untitled',
+                  body: prBody || '',
+                };
+              }
+
+              if (event === 'pull_request_review_comment') {
+                return {
+                  issueNumber: context.payload.pull_request?.number,
+                  kind: 'pull_request_review_comment',
+                  sourceText: issueComment || '',
+                  title: prTitle || 'Untitled',
+                  body: prBody || '',
+                };
+              }
+
+              if (event === 'pull_request_review') {
+                return {
+                  issueNumber: context.payload.pull_request?.number,
+                  kind: 'pull_request_review',
+                  sourceText: reviewBody || '',
+                  title: prTitle || 'Untitled',
+                  body: prBody || '',
+                };
+              }
+
+              return null;
+            };
+
+            const target = resolveTarget();
+            if (!target?.issueNumber) {
+              core.warning('No issue/PR target found for this event.');
+              return;
+            }
+
+            const content = (target.sourceText || '').trim();
+            if (!content) {
+              core.info('No message content to answer.');
+              return;
+            }
+
+            const fallback = [
+              `Danke @${sender} für die Nachricht.`,
+              `Ereignis: **${event}** (${action}).`,
+              '',
+              'Wir haben deine Meldung automatisch erfasst und antworten autonom:',
+              '- Verständnis: Wir haben den Inhalt gelesen und priorisiert.',
+              '- Nächster Schritt: Wir prüfen Auswirkungen auf Code, CI und Deployment.',
+              '- Status: Wir melden konkrete Ergebnisse oder Rückfragen direkt hier im Thread.',
+            ].join('\n');
+
+            const apiKey = process.env.DEEPSEEK_API_KEY;
+            const baseUrl = process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com';
+
+            let reply = fallback;
+
+            if (apiKey) {
+              try {
+                const prompt = [
+                  'Du bist ein technischer Maintainer-Assistent für GitHub.',
+                  'Antworte kurz, konkret, professionell und auf Deutsch.',
+                  'Ziel: die Meldung vollständig autonom beantworten (Verständnis, Plan, nächster Schritt).',
+                  'Keine Halluzinationen, keine Zusagen ohne Daten. Maximal 8 Bulletpoints.',
+                  '',
+                  `Event: ${event}`,
+                  `Action: ${action}`,
+                  `Typ: ${target.kind}`,
+                  `Titel: ${target.title}`,
+                  `Beschreibung: ${target.body || '(leer)'}`,
+                  `Nachricht von @${sender}: ${content}`,
+                ].join('\n');
+
+                const res = await fetch(`${baseUrl.replace(/\/$/, '')}/chat/completions`, {
+                  method: 'POST',
+                  headers: {
+                    Authorization: `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    temperature: 0.2,
+                    max_tokens: 300,
+                    messages: [
+                      { role: 'system', content: 'Du beantwortest GitHub-Meldungen zuverlässig und präzise.' },
+                      { role: 'user', content: prompt },
+                    ],
+                  }),
+                });
+
+                if (!res.ok) {
+                  throw new Error(`DeepSeek API error ${res.status}`);
+                }
+
+                const data = await res.json();
+                const aiText = data?.choices?.[0]?.message?.content?.trim();
+                if (aiText) {
+                  reply = `${aiText}\n\n_Auto-Reply: ${event}/${action}_`;
+                }
+              } catch (error) {
+                core.warning(`AI reply generation failed: ${error instanceof Error ? error.message : String(error)}`);
+              }
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: target.issueNumber,
+              body: reply,
+            });
+
+            core.info(`Posted autonomous reply on #${target.issueNumber} (${event}/${action}).`);

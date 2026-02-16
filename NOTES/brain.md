@@ -78,3 +78,12 @@
 - **Consequences**:
   - Für produktiven Betrieb sind `CODEX_WEBHOOK_SECRET`, `GH_PAT`/`GITHUB_TOKEN` und korrektes `GITHUB_REPOSITORY` erforderlich.
   - Externe Systeme müssen den HMAC-Header `x-codex-signature-256` liefern.
+
+## ADR-004-Nachtrag: DeepSeek-only + NSCALE-Pflicht als verbindliche Provider-Policy
+- **Decision**: Alle AI-bezogenen Backlog- und Implementierungsaufgaben sind DeepSeek-only; gültige Requests erfordern `AI_PROVIDER=deepseek` und `NSCALE_API_KEY` ohne alternative Providerpfade.
+- **Reasoning**:
+  - Hält Architektur- und Backlog-Policy konsistent und auditierbar.
+  - Erzwingt fail-closed Verhalten bei fehlendem NSCALE-Header-Secret.
+- **Consequences**:
+  - OpenAI/sonstige Provider sind operativ ausgeschlossen, solange keine explizite neue ADR dies ändert.
+  - Abnahmekriterien für AI-Tasks müssen DeepSeek-only und NSCALE-Pflicht explizit prüfen.

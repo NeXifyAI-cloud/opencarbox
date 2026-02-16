@@ -15,9 +15,21 @@
 
 ## Milestone 3 — Providers + NSCALE
 - [ ] DeepSeek provider adapter.
-- [ ] OpenAI-compatible adapter with NSCALE header.
-- [ ] Retry/timeout/rate-limit/circuit-breaker utilities.
-- [ ] AI telemetry and `ai_logs` metadata persistence.
+- [ ] DeepSeek adapter hardening (strict request schema, header enforcement, deterministic error mapping).
+  - **Akzeptanzkriterien:**
+    - Laufzeitvalidierung blockiert alle Provider außer `AI_PROVIDER=deepseek`.
+    - Jeder AI-Request wird abgebrochen, wenn `NSCALE_API_KEY` fehlt.
+    - `OPENAI_*`-Variablen und OpenAI-Fallbackpfade sind in Adapter-/Config-Checks explizit ausgeschlossen.
+- [ ] Retry/timeout/rate-limit/circuit-breaker utilities (DeepSeek-only).
+  - **Akzeptanzkriterien:**
+    - Retry/Circuit-Breaker werden nur für DeepSeek-Aufrufe aktiviert (`AI_PROVIDER=deepseek` vorausgesetzt).
+    - Bei fehlendem `NSCALE_API_KEY` erfolgt fail-closed vor dem ersten Netzwerkaufruf.
+    - Integrationstests decken Timeout-, Retry- und Open-Circuit-Fälle ohne alternativen Provider ab.
+- [ ] AI telemetry and `ai_logs` metadata persistence (DeepSeek-only).
+  - **Akzeptanzkriterien:**
+    - Telemetrie schreibt ausschließlich Metadaten für DeepSeek-Requests und speichert den gesetzten NSCALE-Headernamen.
+    - Events ohne `AI_PROVIDER=deepseek` oder ohne `NSCALE_API_KEY` werden verworfen und als Policy-Verstoß markiert.
+    - Dashboards/Reports zeigen keine OpenAI- oder sonstigen Provider-Metriken.
 
 ## Milestone 4 — Docs + Autofix
 - [ ] Complete docs structure and wiki sync script.

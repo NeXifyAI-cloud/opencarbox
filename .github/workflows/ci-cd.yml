@@ -9,6 +9,17 @@ on:
 env:
   NODE_VERSION: '20'
   PNPM_VERSION: '8'
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  AI_PROVIDER: deepseek
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   quality-gate:
@@ -18,6 +29,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Preflight
+        run: node tools/preflight.ts ci
 
       - name: Setup Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
@@ -49,15 +63,11 @@ jobs:
         run: npm run test
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Build Check
         run: npm run build
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           NEXT_PUBLIC_APP_URL: https://opencarbox.vercel.app
 
   security-scan:
@@ -86,6 +96,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Preflight (Oracle)
+        run: node tools/preflight.ts oracle
+
       - name: Setup Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
@@ -98,8 +111,6 @@ jobs:
         run: npx tsx scripts/core/sync.ts
         env:
           GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Audit Success
@@ -117,9 +128,6 @@ jobs:
             }
           });
           "
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
   deploy-preview:
     name: Deploy Preview (Vercel)
@@ -131,12 +139,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Preflight (Deploy)
+        run: node tools/preflight.ts deploy
+
       - name: Deploy to Vercel Preview
         uses: amondnet/vercel-action@16e87c0a08142b0d0d33b76aeaf20823c381b9b9 # v25
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-token: ${{ env.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
           scope: ${{ secrets.VERCEL_ORG_ID }}
 
   deploy-production:
@@ -149,11 +160,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
+      - name: Preflight (Deploy)
+        run: node tools/preflight.ts deploy
+
       - name: Deploy to Vercel Production
         uses: amondnet/vercel-action@16e87c0a08142b0d0d33b76aeaf20823c381b9b9 # v25
         with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-token: ${{ env.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
           scope: ${{ secrets.VERCEL_ORG_ID }}

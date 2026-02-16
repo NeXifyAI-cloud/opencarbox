@@ -26,3 +26,16 @@
 ## Extensibility Notes
 - New AI providers should be added behind a provider interface in `src/lib/ai/providers/*`.
 - Provider-specific headers and retry behavior must remain encapsulated in adapter files.
+
+
+## ADR-002: CI auf self-hosted Runner ohne AI-Secrets
+- **Decision**: Der primäre CI-Workflow (`.github/workflows/ci.yml`) läuft auf `runs-on: self-hosted` und enthält keine AI-/Deploy-Secrets im globalen Env-Block.
+- **Alternatives**:
+  - Weiterbetrieb auf `ubuntu-latest` mit gemischten Secrets im CI-Workflow.
+  - Separate Secret-Injektion pro Job ohne Runner-Umstellung.
+- **Reasoning**:
+  - Entkoppelt Build/Test-Checks von AI-Secret-Verfügbarkeit.
+  - Nutzt dedizierte Runner-Kapazität gemäß Betriebsvorgabe.
+- **Consequences**:
+  - Self-hosted Runner-Verfügbarkeit wird zur Betriebsvoraussetzung für CI.
+  - AI-/Deploy-Variablen bleiben in spezialisierten Workflows statt in Basis-CI.

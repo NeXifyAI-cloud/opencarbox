@@ -4,7 +4,7 @@
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage",
       "headers": {
-        "Authorization": "Bearer sbp_abfe7a627cff1e0f3e8a93545a1ccc2f1f99a5cb"
+        "Authorization": "Bearer <SUPABASE_ACCESS_TOKEN_PLACEHOLDER>"
       },
       "description": "Supabase MCP Server - Database, Auth, Storage, Edge Functions, Branching"
     },
@@ -20,7 +20,7 @@
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-postgres"],
       "env": {
-        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:1def%21xO2022%21%21@db.acclrhzzwdutbigxsxyq.supabase.co:5432/postgres"
+        "POSTGRES_CONNECTION_STRING": "postgresql://postgres:<PASSWORD>@db.acclrhzzwdutbigxsxyq.supabase.co:5432/postgres"
       },
       "description": "PostgreSQL MCP Server - Direct database access"
     },

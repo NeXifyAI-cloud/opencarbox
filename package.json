@@ -13,6 +13,7 @@
     "format:check": "prettier --check .",
     "secret:scan": "bash scripts/secret-scan.sh",
     "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
@@ -53,9 +54,9 @@
     "watch:dev": "tsx scripts/core/watchdog.ts dev",
     "watch:script": "tsx scripts/core/watchdog.ts script",
     "watch:status": "tsx scripts/core/watchdog.ts status",
-    "watch:reset": "tsx scripts/core/watchdog.ts reset",
-    "prepare": "husky"
+    "watch:reset": "tsx scripts/core/watchdog.ts reset"
   },
+  "packageManager": "pnpm@9.12.3",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.3.0",

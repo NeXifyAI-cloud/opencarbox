@@ -65,13 +65,14 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          BR="codex/autofix-${{ github.run_id }}"
+          BR="$(tools/branch_name.sh 'autofix' "${{ github.event.workflow_run.id }}")"
           git checkout -b "$BR"
           git add -A
           git commit -m "chore: safe autofix (format/lint)"
           git push origin "$BR"
           gh pr create --title "chore: safe autofix" --body "## Was geändert
 - Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet.
+- Deterministischer Branchname im Format \`codex/{feature}\`: \`$BR\`.
 
 ## Warum
 - Fehlgeschlagener Workflow-Lauf wurde automatisch mit risikoarmen Änderungen behandelt.

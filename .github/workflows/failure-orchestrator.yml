@@ -67,13 +67,14 @@ jobs:
       - name: Open safe-fix PR
         if: ${{ steps.safe_fix.outputs.changed == 'true' }}
         run: |
-          BR="codex/failure-autofix-${{ github.run_id }}"
+          BR="$(tools/branch_name.sh 'failure-autofix' "${{ github.event.workflow_run.id }}")"
           git checkout -b "$BR"
           git add -A
           git commit -m "chore: safe autofix for failed workflow"
           git push origin "$BR"
           gh pr create --title "chore: safe autofix for failed workflow" --body "## Was geändert
 - Safe-Autofix (Format/Lint/Imports) für fehlgeschlagenen Workflow durchgeführt.
+- Deterministischer Branchname im Format \`codex/{feature}\`: \`$BR\`.
 
 ## Warum
 - Fehlgeschlagenen Run mit deterministischen, risikoarmen Änderungen automatisch beheben.

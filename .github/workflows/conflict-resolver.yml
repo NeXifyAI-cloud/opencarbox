@@ -81,7 +81,8 @@ jobs:
             base=$(echo "$pr" | jq -r .baseRefName)
 
             git fetch origin "$base" "$head"
-            git checkout -B "codex/conflictfix-$num" "origin/$head"
+            BR="$(tools/branch_name.sh "conflictfix" "$num")"
+            git checkout -B "$BR" "origin/$head"
 
             if git rebase "origin/$base"; then
               echo "Rebase OK for #$num"
@@ -103,13 +104,14 @@ jobs:
             fi
 
             git commit -m "chore: resolve conflicts for #$num"
-            git push -u origin "codex/conflictfix-$num" --force-with-lease
+            git push -u origin "$BR" --force-with-lease
 
             gh pr create \
               --title "chore: resolve conflicts for #$num" \
               --body "## Was geändert
 - Rebase des PR-Branches auf den aktuellen Base-Branch.
 - Bei Konflikten wurden ausschließlich Konfliktdateien mit DeepSeek (inkl. NSCALE-Header) gemerged.
+- Deterministischer Branchname im Format \\`codex/{feature}\\`: \\`$BR\\`.
 
 ## Warum
 - Der ursprüngliche PR war im Status \\`DIRTY\\` und nicht mergebar.
@@ -124,7 +126,7 @@ jobs:
 - Risiko: Niedrig bis mittel (konfliktbezogene Änderungen).
 - Backout: Fix-PR schließen und Branch \\`$head\\` erneut manuell rebasen." \
               --base "$base" \
-              --head "codex/conflictfix-$num" || true
+              --head "$BR" || true
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

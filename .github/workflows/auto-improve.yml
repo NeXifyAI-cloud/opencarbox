@@ -74,13 +74,14 @@ jobs:
             echo "No changes."
             exit 0
           fi
-          BR="codex/auto-improve-${{ github.run_id }}"
+          BR="$(tools/branch_name.sh 'auto-improve' "${{ github.run_id }}")"
           git checkout -b "$BR"
           git add -A
           git commit -m "docs: auto-improve notes/wiki"
           git push origin "$BR"
           gh pr create --title "docs: auto-improve notes/wiki" --body "## Was geändert
 - Vorschlagssektion in \\`NOTES/backlog.md\\` aktualisiert.
+- Deterministischer Branchname im Format \\`codex/{feature}\\`: \\`$BR\\`.
 
 ## Warum
 - Regelmäßige, risikoarme Verbesserungsimpulse für Doku/Backlog.

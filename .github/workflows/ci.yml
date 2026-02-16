@@ -23,6 +23,24 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
 jobs:
+  core-commerce-e2e:
+    name: core-commerce-e2e
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm test:core-commerce-e2e
+
   build:
     runs-on: ubuntu-latest
     steps:
@@ -48,4 +66,5 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
+      - run: pnpm test:core-commerce-e2e
       - run: pnpm build

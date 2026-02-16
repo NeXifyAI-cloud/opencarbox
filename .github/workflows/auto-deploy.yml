@@ -44,6 +44,29 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: Export standardized env from secrets
+        run: bash tools/export_env.sh
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+          NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_PROJEKT_URL: ${{ secrets.SUPABASE_PROJEKT_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_PROJEKT_ID: ${{ secrets.VERCEL_PROJEKT_ID }}
+          CLASSIC_TOKEN_GITHUB: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
+
+      - name: Preflight (Deploy + Oracle)
+        run: |
+          node tools/preflight.ts deploy
+          node tools/preflight.ts oracle
+
       - name: Show deterministic toolchain
         run: |
           node --version
@@ -51,19 +74,17 @@ jobs:
           echo "Using vercel@${VERCEL_CLI_VERSION}"
 
       - name: Pull Vercel Environment
-        run: npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${VERCEL_TOKEN}
 
       - name: Build Project
-        run: npx --yes vercel@${VERCEL_CLI_VERSION} build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${VERCEL_TOKEN}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - name: Deploy to Vercel
         id: deploy
         run: |
-          URL=$(npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${VERCEL_TOKEN})
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "🚀 Deployed to: $URL"
 
@@ -97,9 +118,6 @@ jobs:
           });
           console.log('✅ Deployment an Oracle gemeldet');
           "
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         continue-on-error: true
 
   notify-failure:

@@ -35,25 +35,26 @@ jobs:
             sudo apt-get install -y gh
           fi
 
-      - name: AI preflight (DeepSeek+NSCALE required)
-        run: |
-          test -n "${AI_PROVIDER}"
-          test "${AI_PROVIDER}" = "deepseek"
-          test -n "${DEEPSEEK_API_KEY}"
-          test -n "${NSCALE_API_KEY}"
-        env:
-          AI_PROVIDER: deepseek
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
 
-      - name: Run auto-improve (DeepSeek)
-        run: pnpm tsx tools/auto_improve.ts
+      - name: Export standardized env from secrets
+        run: bash tools/export_env.sh
         env:
-          AI_PROVIDER: deepseek
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
           NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
           NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+          DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+          SUPABASE_PROJEKT_URL: ${{ secrets.SUPABASE_PROJEKT_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID }}
+          CLASSIC_TOKEN_GITHUB: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
+
+      - name: Preflight (AI)
+        run: node tools/preflight.ts ai
+      - name: Run auto-improve (DeepSeek)
+        run: pnpm tsx tools/auto_improve.ts
 
       - name: Open PR with improvements
         run: |

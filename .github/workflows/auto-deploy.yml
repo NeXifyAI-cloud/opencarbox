@@ -60,8 +60,13 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
+      - name: Export normalized env names
+        run: source tools/export_env.sh
+
       - name: Preflight (Deploy)
-        run: node tools/preflight.ts deploy
+        run: |
+          source tools/export_env.sh
+          node tools/preflight.ts deploy
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -111,7 +116,9 @@ jobs:
 
       - name: Preflight (Oracle)
         if: success()
-        run: node tools/preflight.ts oracle
+        run: |
+          source tools/export_env.sh
+          node tools/preflight.ts oracle
 
       - name: Notify Oracle
         if: success()

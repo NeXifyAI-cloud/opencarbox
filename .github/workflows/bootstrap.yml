@@ -20,8 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Export normalized env names
+        run: source tools/export_env.sh
+
       - name: Preflight
-        run: node tools/preflight.ts ci
+        run: |
+          source tools/export_env.sh
+          node tools/preflight.ts ci
       - uses: pnpm/action-setup@v4
         with:
           version: 9

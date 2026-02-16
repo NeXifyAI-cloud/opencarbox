@@ -37,6 +37,12 @@ function main() {
   }
 
   if (mode === "ai") {
+    const openAiPrefix = `OPEN${"AI_"}`;
+    const forbiddenOpenAiEnv = Object.keys(process.env).filter((key) => key.startsWith(openAiPrefix));
+    if (forbiddenOpenAiEnv.length > 0) {
+      throw new Error(`Forbidden OpenAI-prefixed env detected: ${forbiddenOpenAiEnv.join(", ")}`);
+    }
+
     const provider = must("AI_PROVIDER");
     if (provider !== "deepseek") {
       throw new Error("AI_PROVIDER must be deepseek");

@@ -2,6 +2,25 @@
 
 set -euo pipefail
 
+resolve_github_token() {
+  if [[ -n "${GH_TOKEN:-}" ]]; then
+    export GH_TOKEN
+    return 0
+  fi
+
+  if [[ -n "${CLASSIC_TOKEN_GITHUB:-}" ]]; then
+    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB"
+    return 0
+  fi
+
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    export GH_TOKEN="$GITHUB_TOKEN"
+    return 0
+  fi
+
+  return 1
+}
+
 is_missing_or_placeholder() {
   local value="${1:-}"
   [[ -z "$value" || "$value" == "..." || "$value" == "DEIN_ORG_ODER_USER" || "$value" == "dein-projekt" ]]

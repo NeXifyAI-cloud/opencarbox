@@ -7,6 +7,8 @@ source "$SCRIPT_DIR/lib.sh"
 
 echo "== 10_github_bootstrap =="
 
+resolve_github_token || true
+
 if ! require_or_warn GH_TOKEN || ! require_or_warn GITHUB_OWNER || ! require_or_warn REPO_NAME; then
   echo "⚠️  GitHub-Setup übersprungen (fehlende echte Werte)."
   exit 0

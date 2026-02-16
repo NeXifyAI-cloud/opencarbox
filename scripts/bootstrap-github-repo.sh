@@ -1,11 +1,35 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
+resolve_github_token() {
+  if [[ -n "${GH_TOKEN:-}" ]]; then
+    return 0
+  fi
+
+  if [[ -n "${CLASSIC_TOKEN_GITHUB:-}" ]]; then
+    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB"
+    return 0
+  fi
+
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    export GH_TOKEN="$GITHUB_TOKEN"
+    return 0
+  fi
+
+  return 1
+}
+
+resolve_github_token || true
+
 : "${GITHUB_OWNER:?Set GITHUB_OWNER (user or org)}"
 : "${REPO_NAME:?Set REPO_NAME}"
-: "${GH_TOKEN:?Set GH_TOKEN}"
+: "${GH_TOKEN:?Set GH_TOKEN (or CLASSIC_TOKEN_GITHUB/GITHUB_TOKEN)}"
 
-gh auth status >/dev/null
+if ! gh auth status >/dev/null 2>&1; then
+  echo "$GH_TOKEN" | gh auth login --with-token >/dev/null
+fi
+
 
 if ! gh repo view "$GITHUB_OWNER/$REPO_NAME" >/dev/null 2>&1; then
   gh repo create "$GITHUB_OWNER/$REPO_NAME" --private --confirm

@@ -166,27 +166,29 @@ jobs:
           source tools/export_env.sh
           set +e
           WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+
+          declare -A WORKFLOW_REPRO_PROFILES
+          WORKFLOW_REPRO_PROFILES["ci"]=$'pnpm lint\npnpm typecheck\npnpm test\npnpm build'
+          WORKFLOW_REPRO_PROFILES["bootstrap"]=$'pnpm lint\npnpm typecheck\npnpm test\npnpm build'
+          WORKFLOW_REPRO_PROFILES["Security"]=$'pnpm audit --prod'
+          WORKFLOW_REPRO_PROFILES["Auto-Deploy Production"]=$'pnpm lint\npnpm typecheck\npnpm build'
+          WORKFLOW_REPRO_PROFILES["__default__"]=$'pnpm lint\npnpm typecheck'
+
+          REPRO_COMMANDS="${WORKFLOW_REPRO_PROFILES[$WORKFLOW_NAME]:-${WORKFLOW_REPRO_PROFILES["__default__"]}}"
+          STATUS=0
           {
             echo "workflow=$WORKFLOW_NAME"
-            case "$WORKFLOW_NAME" in
-              "ci"|"Security"|"bootstrap")
-                pnpm lint
-                pnpm typecheck
-                pnpm test
-                pnpm build
-                ;;
-              "Auto-Deploy Production")
-                pnpm lint
-                pnpm typecheck
-                pnpm build
-                ;;
-              *)
-                pnpm lint
-                pnpm typecheck
-                ;;
-            esac
+            while IFS= read -r command; do
+              [ -z "$command" ] && continue
+              echo "+ $command"
+              bash -lc "$command"
+              COMMAND_STATUS="$?"
+              if [ "$COMMAND_STATUS" -ne 0 ]; then
+                STATUS="$COMMAND_STATUS"
+                break
+              fi
+            done <<< "$REPRO_COMMANDS"
           } > triage-repro.log 2>&1
-          STATUS="$?"
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
           tail -n 200 triage-repro.log || true
           exit 0

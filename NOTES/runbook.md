@@ -136,6 +136,18 @@ flowchart TD
   2. Deduplizierung prüfen: Marker `run-id:<id>` verhindert doppelte offene PRs/Issues.
   3. Fail-closed prüfen: ohne `AI_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` + `NSCALE_API_KEY` darf keine AI-Triage laufen; stattdessen Routing-Issue.
 
+### Workflow-Repro-Profile
+
+- Der Step `Reproduce failed checks` in `.github/workflows/failure-orchestrator.yml` nutzt eine zentrale Mapping-Tabelle (`WORKFLOW_REPRO_PROFILES`) statt `case`-Verzweigung.
+- Jedes Profil enthält die deterministische Befehlsfolge zur Reproduktion je Workflow-Name.
+- Aktuelle Profile:
+  - `ci`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+  - `bootstrap`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+  - `Security`: nur sicherheitsrelevanter Check `pnpm audit --prod` (entspricht `security.yml`)
+  - `Auto-Deploy Production`: `pnpm lint`, `pnpm typecheck`, `pnpm build`
+  - `__default__`: `pnpm lint`, `pnpm typecheck`
+- Pflege-Regel: Bei neuen produktiven Workflows sowohl `on.workflow_run.workflows` als auch das Repro-Profil in derselben PR ergänzen.
+
 ## Codex Controller Webhook
 
 ### Zweck

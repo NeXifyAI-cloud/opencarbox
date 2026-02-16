@@ -64,6 +64,27 @@ RESEND_API_KEY
 # Wert: re_...
 ```
 
+## ⚡ Automatisiertes Setzen via CLI
+
+Wenn du `gh` (GitHub CLI) und optional `vercel` CLI installiert hast, kannst du die Secrets direkt aus Umgebungsvariablen setzen:
+
+```bash
+chmod +x scripts/set-deployment-secrets.sh
+GITHUB_OWNER=NeXify-Chat-it-Automate-it \
+REPO_NAME=OpenCarBox \
+GH_TOKEN=... \
+NEXT_PUBLIC_SUPABASE_URL=... \
+NEXT_PUBLIC_SUPABASE_ANON_KEY=... \
+SUPABASE_SERVICE_ROLE_KEY=... \
+DEEPSEEK_API_KEY=... \
+OPENAI_COMPAT_API_KEY=... \
+OPENAI_COMPAT_BASE_URL=... \
+NSCALE_API_KEY=... \
+./scripts/set-deployment-secrets.sh
+```
+
+Optional: mit `VERCEL_TOKEN` setzt das Script zusätzlich die `production`-Envs in Vercel.
+
 ## ✅ Setup-Schritte
 
 1. **GitHub öffnen:**

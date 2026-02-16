@@ -2,6 +2,8 @@ name: failure-orchestrator
 
 on:
   workflow_run:
+    # Pflegehinweis: Diese Liste muss alle produktiven Workflows (außer diesem Orchestrator)
+    # enthalten und bei jedem neuen Workflow in derselben PR aktualisiert werden.
     workflows:
       - ci
       - Security
@@ -12,6 +14,7 @@ on:
       - bootstrap
       - Auto-Merge
       - auto-reply
+      - codex-controller
     types: [completed]
 
 concurrency:
@@ -333,6 +336,14 @@ $(cat triage-ai.md 2>/dev/null || echo "Keine AI-Ausgabe verfügbar.")"
         if: ${{ steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0' }}
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          if gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
+            echo "An issue with marker ${RUN_REF} already exists. Skipping issue creation."
+            exit 0
+          fi
+          if gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
+            echo "A PR with marker ${RUN_REF} already exists. Skipping issue creation."
+            exit 0
+          fi
           gh issue create \
             --title "Incident: AI triage could not auto-fix workflow ${{ github.event.workflow_run.name }}" \
             --body "Workflow: ${{ github.event.workflow_run.name }}
@@ -362,11 +373,20 @@ Hinweis: pro fehlgeschlagenem Run wird über den Marker dedupliziert, um PR-/Iss
     steps:
       - name: Create manual triage routing issue
         run: |
+          RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          if gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
+            echo "An issue with marker ${RUN_REF} already exists. Skipping issue creation."
+            exit 0
+          fi
+          if gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
+            echo "A PR with marker ${RUN_REF} already exists. Skipping issue creation."
+            exit 0
+          fi
           gh issue create \
             --title "Incident: manual triage required for failed workflow ${{ github.event.workflow_run.name }}" \
             --body "Workflow: ${{ github.event.workflow_run.name }}
 Run: ${{ github.event.workflow_run.html_url }}
-Marker: run-id:${{ github.event.workflow_run.id }}
+Marker: ${RUN_REF}
 
 Safe-Autofix wird in \`autofix.yml\` für CI-Fehlschläge verarbeitet. Dieser Run wird zentral durch den failure-orchestrator für Routing/Issue-Triage gesteuert.
 

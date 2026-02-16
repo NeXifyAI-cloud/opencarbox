@@ -121,6 +121,15 @@ flowchart TD
 3. AI-Triage ist strikt fail-closed und nur aktiv bei erfolgreichem `tools/preflight.ts ai` (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`).
 4. Wenn AI-Triage nicht möglich/ausreichend ist, wird ein Incident-/Routing-Issue mit Run-Marker erstellt und Backlog/Runbook werden aktualisiert.
 
+### Pflegeprozess: Workflow-Liste synchron halten (Pflicht)
+
+- Bei **jedem neuen produktiven Workflow** muss in derselben PR auch `.github/workflows/failure-orchestrator.yml` unter `on.workflow_run.workflows` ergänzt werden.
+- Die Liste enthält alle produktiven Workflows **außer** `failure-orchestrator` selbst.
+- Pflicht-Check vor Merge:
+  1. Workflow-Name (`name:`) des neuen Workflows in die Orchestrator-Liste übernehmen.
+  2. Deduplizierung prüfen: Marker `run-id:<id>` verhindert doppelte offene PRs/Issues.
+  3. Fail-closed prüfen: ohne `AI_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` + `NSCALE_API_KEY` darf keine AI-Triage laufen; stattdessen Routing-Issue.
+
 ## Codex Controller Webhook
 
 ### Zweck

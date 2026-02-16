@@ -509,3 +509,18 @@
 ---
 
 **Letzte Aktualisierung:** 2024-12-06
+
+---
+
+## 🧪 Test-Matrix (3-Stufen-Strategie)
+
+| Stufe | Scope | Artefakte | Pflicht in CI | Owner |
+|------|-------|-----------|---------------|-------|
+| 1. Unit-Tests | Stores, Hooks, Utils in `src/**/__tests__` | `src/stores/__tests__/*`, `src/hooks/__tests__/*`, `src/lib/__tests__/*` | ✅ Ja (Coverage-Gate) | Frontend-Team |
+| 2. Integration-Tests | API-Routen inkl. Fehlerpfade | `tests/api/health.test.ts`, `tests/api/ai-chat.test.ts` | ✅ Ja (Coverage-Gate) | Platform/API-Team |
+| 3. E2E (kritische Flows) | Checkout- und Terminbuchungs-Happy-Path | `tests/e2e/critical-checkout-happy-path.spec.ts`, `tests/e2e/critical-appointment-happy-path.spec.ts` | ✅ Ja (Pflichtjob `e2e-critical-flows`) | QA + Produkt |
+
+### CI-Gates (ab sofort)
+- `pnpm test:coverage` ist verpflichtend mit Mindestabdeckung (Vitest Thresholds in `vitest.config.ts`).
+- `pnpm test:e2e -- tests/e2e/critical-*.spec.ts` ist verpflichtend für geschäftskritische Journeys.
+- Merge in `main` nur bei grünen Checks für `quality-gate` und `e2e-critical-flows`.

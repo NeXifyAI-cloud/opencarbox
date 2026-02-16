@@ -19,7 +19,7 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
 jobs:
-  build:
+  quality-gate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,14 +34,35 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: pnpm
 
       - run: pnpm i --frozen-lockfile
 
-      - name: "Guard: forbid OpenAI usage"
+      - name: Guard: forbid OpenAI usage
         run: bash tools/guard_no_openai.sh
 
       - run: pnpm lint
       - run: pnpm typecheck
-      - run: pnpm test
+      - name: Unit + Integration coverage gate
+        run: pnpm test:coverage
       - run: pnpm build
+
+  e2e-critical-flows:
+    runs-on: ubuntu-latest
+    needs: quality-gate
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Mandatory E2E for business critical flows
+        run: pnpm test:e2e -- tests/e2e/critical-*.spec.ts

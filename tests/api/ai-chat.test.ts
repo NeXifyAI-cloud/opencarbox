@@ -48,6 +48,24 @@ describe('POST /api/ai/chat', () => {
     expect(json.error).toBe('Validation failed.');
   });
 
+  it('returns 400 when body is not valid JSON', async () => {
+    process.env.FEATURE_AI_CHAT = 'true';
+
+    const response = await POST(
+      new Request('http://localhost/api/ai/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: '{invalid',
+      })
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(400);
+    expect(json.error).toBe('Invalid JSON body.');
+  });
+
   it('proxies valid payload to deepseek client', async () => {
     process.env.FEATURE_AI_CHAT = 'true';
 
@@ -88,5 +106,22 @@ describe('POST /api/ai/chat', () => {
     expect(response.status).toBe(502);
     expect(json.error).toBe('AI provider request failed.');
     expect(json.message).toContain('upstream failed');
+  });
+
+  it('maps non-Error provider failures to fallback message', async () => {
+    process.env.FEATURE_AI_CHAT = 'true';
+
+    vi.mocked(deepseekChatCompletion).mockRejectedValue('provider unavailable');
+
+    const response = await POST(
+      createRequest({
+        messages: [{ role: 'user', content: 'Frage' }],
+      })
+    );
+    const json = await response.json();
+
+    expect(response.status).toBe(502);
+    expect(json.error).toBe('AI provider request failed.');
+    expect(json.message).toBe('Unknown AI provider error.');
   });
 });

@@ -17,7 +17,9 @@ describe('GET /api/health', () => {
     const json = await response.json();
 
     expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
     expect(json.status).toBe('ok');
+    expect(typeof json.timestamp).toBe('string');
     expect(json.checks.env.ok).toBe(true);
   });
 

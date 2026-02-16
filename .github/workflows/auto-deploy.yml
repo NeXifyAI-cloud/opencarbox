@@ -1,12 +1,13 @@
-# Automatisches Deployment nach erfolgreichem Merge
-# Dieses Workflow deployed automatisch zu Vercel Production
+# Automatisches Deployment nach erfolgreichem CI auf main
+# Dieser Workflow deployed nur nach erfolgreicher CI-Pipeline
 
 name: Auto-Deploy Production
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -17,6 +18,10 @@ on:
         options:
           - production
           - preview
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.event.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: true
 
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -37,6 +42,11 @@ env:
 jobs:
   deploy:
     name: Deploy to Vercel
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -47,41 +57,49 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Preflight (Deploy)
         run: node tools/preflight.ts deploy
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Setup Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: pnpm
 
       - name: Show deterministic toolchain
         run: |
           node --version
-          npm --version
+          pnpm --version
           echo "Using vercel@${VERCEL_CLI_VERSION}"
 
       - name: Pull Vercel Environment
-        run: npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ env.VERCEL_TOKEN }}
 
       - name: Build Project
-        run: npx --yes vercel@${VERCEL_CLI_VERSION} build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy to Vercel
         id: deploy
         run: |
-          URL=$(npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }})
+          URL=$(pnpm dlx vercel@${VERCEL_CLI_VERSION} deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }})
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "🚀 Deployed to: $URL"
 
       - name: Comment on Commit
-        if: github.event_name == 'push'
+        if: github.event_name == 'workflow_run'
         uses: peter-evans/commit-comment@f6d60c65d05bb59f750fa51ad3de1d443ba0eb52 # v4
         with:
+          sha: ${{ github.event.workflow_run.head_sha }}
           body: |
             🚀 **Auto-Deployment erfolgreich!**
 
@@ -89,7 +107,7 @@ jobs:
             |-------------|-----|
             | Production | ${{ steps.deploy.outputs.url }} |
 
-            Commit: `${{ github.sha }}`
+            Commit: `${{ github.event.workflow_run.head_sha || github.sha }}`
 
       - name: Preflight (Oracle)
         if: success()
@@ -98,7 +116,7 @@ jobs:
       - name: Notify Oracle
         if: success()
         run: |
-          npx tsx -e "
+          pnpm dlx tsx -e "
           import { Memory } from './scripts/core/memory.ts';
           await Memory.audit({
             action: 'auto_deploy',
@@ -106,7 +124,7 @@ jobs:
             status: 'SUCCESS',
             details: {
               url: '${{ steps.deploy.outputs.url }}',
-              commit: '${{ github.sha }}',
+              commit: '${{ github.event.workflow_run.head_sha || github.sha }}',
               branch: 'main'
             }
           });
@@ -126,7 +144,7 @@ jobs:
       - name: Create Issue on Failure
         uses: peter-evans/create-issue-from-file@fca9117c27cdc29c6c4db3b86c48e4115a786710 # v6
         with:
-          title: "🚨 Auto-Deploy fehlgeschlagen - ${{ github.sha }}"
+          title: '🚨 Auto-Deploy fehlgeschlagen - ${{ github.event.workflow_run.head_sha || github.sha }}'
           content-filepath: .github/ISSUE_TEMPLATE/deploy-failure.md
           labels: |
             bug

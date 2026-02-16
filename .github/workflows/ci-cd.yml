@@ -1,157 +1,16 @@
-name: Quality Gate & Deployment
+name: CI/CD (deprecated)
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  workflow_dispatch:
 
-env:
-  NODE_VERSION: '20'
-  PNPM_VERSION: '8'
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-  AI_PROVIDER: deepseek
-  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
-  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+concurrency:
+  group: ci-cd-deprecated-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  quality-gate:
-    name: Quality Gate
+  disabled:
+    if: ${{ false }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Preflight
-        run: node tools/preflight.ts ci
-
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Secret hygiene scan
-        run: npm run secret:scan
-
-      - name: Generate Prisma Client
-        run: npm run db:generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: TypeScript Type Check
-        run: npm run type-check
-
-      - name: ESLint
-        run: npm run lint
-
-      - name: Prettier Check
-        run: npm run format:check
-
-      - name: Run Tests
-        run: npm run test
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Build Check
-        run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXT_PUBLIC_APP_URL: https://opencarbox.vercel.app
-
-  oracle-sync:
-    name: Oracle Knowledge Sync
-    runs-on: ubuntu-latest
-    needs: [quality-gate]
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Preflight (Oracle)
-        run: node tools/preflight.ts oracle
-
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Sync Documentation to Memory
-        run: npx tsx scripts/core/sync.ts
-        env:
-          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
-      - name: Audit Success
-        run: |
-          npx tsx -e "
-          import { Memory } from './scripts/core/memory.ts';
-          await Memory.audit({
-            action: 'ci_cd_pipeline',
-            resource: 'github_actions',
-            status: 'SUCCESS',
-            details: {
-              branch: '${{ github.ref }}',
-              commit: '${{ github.sha }}',
-              actor: '${{ github.actor }}'
-            }
-          });
-          "
-
-  deploy-preview:
-    name: Deploy Preview (Vercel)
-    runs-on: ubuntu-latest
-    needs: [quality-gate]
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Preflight (Deploy)
-        run: node tools/preflight.ts deploy
-
-      - name: Deploy to Vercel Preview
-        uses: amondnet/vercel-action@16e87c0a08142b0d0d33b76aeaf20823c381b9b9 # v25
-        with:
-          vercel-token: ${{ env.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
-          scope: ${{ secrets.VERCEL_ORG_ID }}
-
-  deploy-production:
-    name: Deploy Production (Vercel)
-    runs-on: ubuntu-latest
-    needs: [quality-gate]
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-
-      - name: Preflight (Deploy)
-        run: node tools/preflight.ts deploy
-
-      - name: Deploy to Vercel Production
-        uses: amondnet/vercel-action@16e87c0a08142b0d0d33b76aeaf20823c381b9b9 # v25
-        with:
-          vercel-token: ${{ env.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ env.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          scope: ${{ secrets.VERCEL_ORG_ID }}
+      - run: |
+          echo "Deprecated: use ci.yml (validation) + auto-deploy.yml (deployment)."

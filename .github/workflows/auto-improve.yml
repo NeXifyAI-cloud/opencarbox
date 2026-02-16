@@ -42,6 +42,14 @@ jobs:
           source tools/export_env.sh
           node tools/preflight.ts ai
 
+      - name: Install system tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+          if ! command -v gh >/dev/null 2>&1; then
+            sudo apt-get install -y gh
+          fi
+
       - name: Oracle availability (optional)
         run: |
           source tools/export_env.sh
@@ -86,14 +94,6 @@ jobs:
           cache: 'pnpm'
 
       - run: pnpm i --frozen-lockfile
-
-      - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          if ! command -v gh >/dev/null 2>&1; then
-            sudo apt-get install -y gh
-          fi
 
       - name: Run auto-improve (DeepSeek)
         run: |

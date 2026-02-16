@@ -6,6 +6,12 @@
 - Validate quality gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
 - Apply Supabase migrations via Supabase CLI or SQL editor using files in `supabase/migrations`.
 
+## AI Provider Policy (Production + CI)
+
+- Zulässig sind ausschließlich **DeepSeek + NSCALE** (`AI_PROVIDER=deepseek`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`).
+- `OPENAI_*` und andere Provider-SDKs (z. B. Google GenAI) sind nicht freigegeben.
+- `tools/guard_no_openai.sh` blockiert Provider-Drift in CI fail-closed.
+
 ## API Monitoring (Health + AI Chat)
 
 - **Health Check Polling:** `/api/health` mindestens alle 60 Sekunden abfragen.

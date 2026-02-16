@@ -10,8 +10,8 @@
 ## Milestone 2 — Vertical Slice
 - [ ] Auth flow with protected dashboard route group.
 - [ ] Persisted settings with Supabase + RLS.
-- [ ] Implement `/api/health` endpoint and status page.
-- [ ] Implement `/api/ai/chat` with validation and tests.
+- [x] Implement `/api/health` endpoint and status page.
+- [x] Implement `/api/ai/chat` with validation and tests.
 
 ## Milestone 3 — Providers + NSCALE
 - [ ] DeepSeek provider adapter.

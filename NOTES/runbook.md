@@ -45,17 +45,18 @@
 3. **Nächster Gate-Check:** Welcher konkrete Nachweis wird bis zum nächsten Check geliefert (z. B. CI grün, Demo, E2E-Flow)?
 
 
-## Self-hosted GitHub Runner
+## Runner Policy
 
-- CI-Jobs in `.github/workflows/ci.yml` laufen auf `runs-on: self-hosted` statt `ubuntu-latest`.
-- Einrichtung eines Linux-Runners (Version `2.331.0`) im Repo-Kontext:
-  1. `mkdir actions-runner && cd actions-runner`
-  2. `curl -o actions-runner-linux-x64-2.331.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.331.0/actions-runner-linux-x64-2.331.0.tar.gz`
-  3. `echo "5fcc01bd546ba5c3f1291c2803658ebd3cedb3836489eda3be357d41bfcf28a7  actions-runner-linux-x64-2.331.0.tar.gz" | shasum -a 256 -c`
-  4. `tar xzf ./actions-runner-linux-x64-2.331.0.tar.gz`
-  5. `./config.sh --url https://github.com/NeXifyAI-cloud/opencarbox --token <EPHEMERAL_TOKEN>`
-  6. `./run.sh`
-- Sicherheit: Runner-Token ist kurzlebig und darf nicht committed oder geloggt werden.
+- CI in `.github/workflows/ci.yml` läuft standardmäßig auf `ubuntu-latest` (GitHub-hosted), damit PR-Checks nicht von lokaler Runner-Verfügbarkeit abhängen.
+- `actions/setup-node@v4` nutzt `cache: pnpm` + `cache-dependency-path: pnpm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
+- Self-hosted Runner können optional für andere Workflows verwendet werden, sind aber nicht Voraussetzung für den Standard-CI-Pfad.
+
+### Troubleshooting: Runner unavailable
+
+1. Prüfen, ob der betroffene Workflow wirklich `self-hosted` verlangt (Workflow-Datei kontrollieren).
+2. Für CI (`ci.yml`) keine Runner-Recovery nötig: erneut auslösen, der Lauf nutzt `ubuntu-latest`.
+3. Für explizit self-hosted Workflows: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
+4. Wenn self-hosted länger ausfällt, Workflow temporär auf `ubuntu-latest` umstellen und Incident im Backlog dokumentieren.
 
 ## Release Process
 

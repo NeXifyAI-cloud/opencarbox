@@ -38,6 +38,10 @@ jobs:
       - name: 'Guard: forbid OpenAI usage'
         run: bash tools/guard_no_openai.sh
 
+      - name: Env schema check (advisory)
+        run: npx tsx tools/check_env_schema.ts --ci
+        continue-on-error: true
+
       - name: Lint
         run: pnpm lint
 

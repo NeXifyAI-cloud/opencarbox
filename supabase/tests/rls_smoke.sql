@@ -106,5 +106,22 @@ WHERE n.nspname = 'public'
   AND c.relkind = 'r'
   AND c.relname NOT IN ('schema_migrations', '_prisma_migrations');
 
+-- ----------------------------------------------------------------
+-- Test 7: Sanity check — verify the public schema has tables at all
+-- Prevents false confidence if the test runs against an empty database.
+-- ----------------------------------------------------------------
+\echo ''
+\echo 'Test 7: Sanity check — public schema has tables:'
+SELECT
+  CASE
+    WHEN (
+      SELECT COUNT(*) FROM pg_class c
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relkind = 'r'
+        AND c.relname NOT IN ('schema_migrations', '_prisma_migrations')
+    ) > 0 THEN 'PASS: public schema has user tables — RLS results are meaningful'
+    ELSE 'WARN: no user tables in public schema — RLS tests may be vacuously passing'
+  END AS result;
+
 \echo ''
 \echo '=== RLS Smoke Tests Complete ==='

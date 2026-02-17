@@ -21,7 +21,7 @@ import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
 // Aligned with tools/guard_no_openai.sh forbidden patterns
-const FORBIDDEN_PREFIXES = ['OPENAI_']
+const FORBIDDEN_PREFIXES = ['OPENAI_', 'ANTHROPIC_']
 const FORBIDDEN_EXACT = ['GOOGLE_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY']
 
 function isForbidden(name: string): string | null {
@@ -77,9 +77,19 @@ function main(): void {
     }
   }
 
-  // In CI, only check that NEXT_PUBLIC_* build-time vars are documented in .env.example.
-  // Actual values come from Vercel/CI secrets — nothing to validate at this stage.
-  if (!isCI) {
+  // In CI, verify that all NEXT_PUBLIC_* build-time vars from .env.example are documented.
+  // Also warn if any NEXT_PUBLIC_* var has no default and is not set in the environment.
+  if (isCI) {
+    const publicVars = [...definedVars.entries()].filter(([name]) => name.startsWith('NEXT_PUBLIC_'))
+    if (publicVars.length === 0) {
+      warnings.push('No NEXT_PUBLIC_* variables found in .env.example — build may lack required public config')
+    }
+    for (const [name, defaultValue] of publicVars) {
+      if (!defaultValue && !process.env[name]) {
+        warnings.push(`NEXT_PUBLIC_* variable ${name} has no default and is not set in CI environment`)
+      }
+    }
+  } else {
     for (const [name, defaultValue] of definedVars) {
       if (isForbidden(name)) continue
       const envValue = process.env[name]

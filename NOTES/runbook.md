@@ -120,6 +120,8 @@
 - **Production**: Uses Vercel Production environment. Full secret set including `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
 - **CI**: Only needs build-time vars (`NEXT_PUBLIC_*`). No deploy secrets.
 
+> **Naming convention**: The canonical secret name is `VERCEL_PROJECT_ID`. Legacy alias `VERCEL_PROJEKT_ID` is supported in `auto-deploy.yml` for backwards compatibility but should not be used for new configuration.
+
 ## Env Variable Management
 
 ### Adding a new environment variable
@@ -150,9 +152,12 @@ RLS checks are available as a manual `workflow_dispatch` — not blocking CI by 
 
 ## Legacy section: Deploy to Vercel
 
+> **Deprecated**: See [Preview vs Production Deployment](#preview-vs-production-deployment) above for the current process.
+> This section is kept for historical reference only.
+
 1. Merge only through PR into protected `main`.
 2. Ensure required CI checks are green.
-3. Deploy to Vercel Preview, then Production.
+3. ~~Deploy to Vercel Preview, then Production.~~ → Now automated via `deploy-preview.yml` (PR) and `auto-deploy.yml` (main).
 
 ## Quality Gates by Milestone
 

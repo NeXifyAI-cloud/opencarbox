@@ -10,6 +10,17 @@ cp .env.example .env.local
 pnpm dev
 ```
 
+## System start with Supabase Access Token
+
+Use the startup wrapper to normalize legacy token names and boot the app:
+
+```bash
+pnpm system:check   # validates token/env mapping without starting dev server
+pnpm system:start   # starts Next.js dev server
+```
+
+`tools/export_env.sh` now maps `SUPABASE_TOKEN` and `supabase_access_token` to `SUPABASE_ACCESS_TOKEN` automatically.
+
 ## Required environment variables
 
 See `.env.example` for the full list. Core values:

@@ -6,6 +6,11 @@ export NEXT_PUBLIC_SUPABASE_URL="${NEXT_PUBLIC_SUPABASE_URL:-${SUPABASE_PROJEKT_
 export NEXT_PUBLIC_SUPABASE_ANON_KEY="${NEXT_PUBLIC_SUPABASE_ANON_KEY:-${SUPABASE_ANON_KEY:-${SUPABASE_PUBLISHABLE_KEY:-${Anon_Key:-}}}}"
 export SUPABASE_SERVICE_ROLE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-${SUPABASE_SECRET_KEY:-${service_role:-}}}"
 export DATABASE_URL="${DATABASE_URL:-${SUPABASE_POSTGRESQL:-}}"
+if [[ -z "${SUPABASE_ACCESS_TOKEN:-}" ]]; then
+  _supabase_access_token_alias="${SUPABASE_TOKEN:-${supabase_access_token:-${SUPABASE_ACCESS_KEY:-}}}"
+  printf -v SUPABASE_ACCESS_TOKEN '%s' "${_supabase_access_token_alias:-}"
+  export SUPABASE_ACCESS_TOKEN
+fi
 
 export VERCEL_TOKEN="${VERCEL_TOKEN:-${vercel_token:-}}"
 export VERCEL_PROJECT_ID="${VERCEL_PROJECT_ID:-${VERCEL_PROJEKT_ID:-${Vercel_Projekt_ID:-}}}"

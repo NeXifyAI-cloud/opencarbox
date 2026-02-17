@@ -1,20 +1,31 @@
 # Backlog
 
-## Milestone 1 — Scaffold
+## Milestone 1 — Scaffold ✅
 - [x] Add env validation module and feature flags.
 - [x] Align `.env.example` with required public/server variables.
 - [x] Initialize NOTES documentation set.
 - [x] Add dedicated CI and security workflows.
 - [x] Add modern issue forms and PR template checklist.
 
-## Milestone 2 — Vertical Slice
+## Milestone 2 — Vertical Slice (Auth/Settings)
 - [ ] Auth flow with protected dashboard route group.
+  - **Akzeptanzkriterien:**
+    - Supabase Auth login/logout functional
+    - Dashboard routes protected via middleware
+    - Session state managed via `@supabase/ssr`
 - [ ] Persisted settings with Supabase + RLS.
+  - **Akzeptanzkriterien:**
+    - User settings stored in Supabase with RLS policies
+    - Settings read/write via TanStack Query
+    - RLS smoke tests pass for settings table
 - [x] Implement `/api/health` endpoint and status page.
 - [x] Implement `/api/ai/chat` with validation and tests.
 
-## Milestone 3 — Providers + NSCALE
+## Milestone 3 — Providers + NSCALE (DeepSeek-only)
 - [ ] DeepSeek provider adapter.
+  - **Akzeptanzkriterien:**
+    - Provider interface implemented in `src/lib/ai/providers/deepseek.ts`
+    - Only `AI_PROVIDER=deepseek` accepted at runtime
 - [ ] DeepSeek adapter hardening (strict request schema, header enforcement, deterministic error mapping).
   - **Akzeptanzkriterien:**
     - Laufzeitvalidierung blockiert alle Provider außer `AI_PROVIDER=deepseek`.
@@ -36,6 +47,25 @@
 - [ ] Add `tools/auto_improve.ts` backlog generation.
 - [ ] Add optional `autofix.yml` safe-fix pipeline.
 - [ ] Document label/project setup and runbook operations.
+
+## Ops Milestones
+
+### Ops-1 — CI/CD & Templates ✅
+- [x] PR/Issue templates with DoD checklist
+- [x] CODEOWNERS ownership rules
+- [x] Branch protection contract documented
+- [x] Release workflow with SemVer tags
+- [x] Preview deploy on PR, production deploy on main
+
+### Ops-2 — Guards & Checks
+- [x] Env schema check (`tools/check_env_schema.ts`)
+- [x] RLS smoke tests (`supabase/tests/rls_smoke.sql`)
+- [x] Next.js hardening (deduplicated headers, vercel.json as contract)
+
+### Ops-3 — Future
+- [ ] Incident-Issue automation with standard template (A4)
+- [ ] Release checklist as PR template extension (A5)
+- [ ] Optional self-hosted runner evaluation (A6)
 
 ## Automation Backlog
 

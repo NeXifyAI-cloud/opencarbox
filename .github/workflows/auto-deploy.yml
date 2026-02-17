@@ -1,4 +1,5 @@
-# Automatisches Deployment nach erfolgreichem CI auf main
+# Automatisches Deployment nach erfolgreichem CI auf main (Production only)
+# Preview deploys are handled by deploy-preview.yml on pull_request events
 name: Auto-Deploy Production
 
 on:
@@ -7,15 +8,6 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment Environment'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - preview
 
 concurrency:
   group: deploy-${{ github.workflow }}-${{ github.event.workflow_run.head_branch || github.ref }}
@@ -43,7 +35,7 @@ jobs:
        github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event.inputs.environment || 'production' }}
+      name: production
       url: ${{ steps.deploy.outputs.url }}
 
     steps:
@@ -64,17 +56,17 @@ jobs:
         run: npx tsx tools/preflight.ts deploy
 
       - name: Pull Vercel Environment
-        run: pnpm dlx vercel pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm dlx vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
 
       - name: Build Project
-        run: pnpm dlx vercel build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm dlx vercel build --prod --token=${{ env.VERCEL_TOKEN }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy to Vercel
         id: deploy
         run: |
-          URL=$(pnpm dlx vercel deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }})
+          URL=$(pnpm dlx vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "Deployed to: $URL"
 
@@ -88,7 +80,7 @@ jobs:
 
             | Environment | URL |
             |-------------|-----|
-            | ${{ github.event.inputs.environment || 'production' }} | ${{ steps.deploy.outputs.url }} |
+            | production | ${{ steps.deploy.outputs.url }} |
 
   notify-failure:
     name: Notify on Failure

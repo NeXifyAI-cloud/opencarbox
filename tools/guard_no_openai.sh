@@ -35,7 +35,7 @@ scan_forbidden() {
   if [[ "${USE_RG}" == "true" ]]; then
     out="$(rg -n --hidden --glob "!${SCRIPT_PATH}" --glob "!${ENV_SCHEMA_PATH}" --glob '!.git' "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
   else
-    out="$(grep -rn --include='*' -E "${pattern}" "${EXISTING_ROOTS[@]}" | grep -v "${SCRIPT_PATH}" | grep -v "${ENV_SCHEMA_PATH}" || true)"
+    out="$(grep -rn --exclude-dir=.git --exclude="${SCRIPT_PATH##*/}" --exclude="${ENV_SCHEMA_PATH##*/}" -E "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
   fi
 
   if [[ -n "${out}" ]]; then

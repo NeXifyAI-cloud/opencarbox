@@ -1,28 +1,9 @@
-# Default owners for all files
-* @NeXifyAI-cloud/core
+# Default owner for all files
+* @NeXify-Chat-it-Automate-it
 
-# Workflows & CI
-.github/ @NeXifyAI-cloud/core
+# CI/CD and workflows
+.github/ @NeXify-Chat-it-Automate-it
 
-# Source code
-src/ @NeXifyAI-cloud/core
-
-# Database & Migrations
-prisma/ @NeXifyAI-cloud/core
-supabase/ @NeXifyAI-cloud/core
-
-# Configuration
-next.config.js @NeXifyAI-cloud/core
-vercel.json @NeXifyAI-cloud/core
-package.json @NeXifyAI-cloud/core
-.env.example @NeXifyAI-cloud/core
-
-# Documentation
-docs/ @NeXifyAI-cloud/core
-NOTES/ @NeXifyAI-cloud/core
-
-# Security-sensitive
-SECURITY.md @NeXifyAI-cloud/core
-tools/guard_no_openai.sh @NeXifyAI-cloud/core
-tools/check_env_schema.ts @NeXifyAI-cloud/core
-tools/preflight.ts @NeXifyAI-cloud/core
+# Database schema and migrations
+prisma/ @NeXify-Chat-it-Automate-it
+supabase/ @NeXify-Chat-it-Automate-it

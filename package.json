@@ -63,7 +63,7 @@
     "system:check": "bash scripts/start-system.sh check",
     "env:check": "npx tsx tools/check_env_schema.ts",
     "env:check:ci": "npx tsx tools/check_env_schema.ts --ci",
-    "db:rls:check": "bash -c 'if ! command -v psql >/dev/null 2>&1; then echo \"Error: psql (PostgreSQL client) is not installed or not on PATH.\" >&2; echo \"Please install PostgreSQL client tools and try again.\" >&2; exit 1; fi; if [ -z \"${DATABASE_URL:-}\" ]; then echo \"Error: DATABASE_URL environment variable is not set.\" >&2; echo \"Make sure your Supabase local instance is running and DATABASE_URL is configured.\" >&2; exit 1; fi; psql \"$DATABASE_URL\" -f supabase/tests/rls_smoke.sql'",
+    "db:rls:check": "psql $DATABASE_URL -f supabase/tests/rls_smoke.sql"
   },
   "packageManager": "pnpm@9.12.3",
   "dependencies": {

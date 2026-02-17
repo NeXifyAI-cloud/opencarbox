@@ -182,3 +182,150 @@ flowchart TD
 - **401 Invalid webhook signature**: Secret-Mismatch zwischen Sender und `CODEX_WEBHOOK_SECRET`.
 - **502 ROUTING_FAILED**: Prüfe `GH_PAT/GITHUB_TOKEN` und `GITHUB_REPOSITORY`.
 - **Kein Folgeworkflow**: Prüfe `repository_dispatch`-Typ gegen erlaubte Typen in `codex-controller.yml`.
+
+## Issue Triage (Auftrag 21)
+
+### Triage Rules
+- **Auto-Labels:** Issues are labeled based on title/body keywords:
+  - `type:bug`, `type:feature`, `docs`, `ci`, `security`, `db`, `ai`, `priority:high`
+- **Auto-Assign:** New issues are assigned to the repository owner by default.
+- **Repro Check (bugs):** Bug reports missing repro steps, expected behavior, or actual behavior get `needs-info` label + a checklist comment.
+- **Ready for Dev:** Issues with all required fields get `ready-for-dev` label.
+
+### Label Semantics
+| Label | Meaning |
+|-------|---------|
+| `type:bug` | Bug report |
+| `type:feature` | Feature request |
+| `status:triage` | Awaiting initial triage |
+| `needs-info` | Missing required information from reporter |
+| `ready-for-dev` | All info present, ready for development |
+| `ci-failure` | CI pipeline failure |
+| `autofix-candidate` | Can potentially be auto-fixed (lint/format/deps) |
+| `needs-human` | Requires manual investigation |
+| `flaky-test` | Test is flaky/non-deterministic |
+| `transient` | Transient/network failure |
+| `stale` | No activity for 14+ days with needs-info |
+| `security` | Security-related issue |
+| `priority:critical` | Critical priority |
+| `priority:high` | High priority |
+| `priority:medium` | Medium priority |
+| `priority:low` | Low priority |
+| `ci-retry` | Issue tracked for CI retry |
+
+### SLA Policy
+- `needs-info` → 14 days idle → `stale` label + warning comment
+- `stale` → 7 more days idle → auto-close with reopen instructions
+- **Never auto-close:** `security`, `production`, `data-loss`, `priority:critical`
+
+### PR Labeler
+- `.github/labeler.yml` auto-labels PRs by changed file paths (frontend, api, db, ci, docs, tests, config, tooling, dependencies)
+- Triggered via `pull_request_target` on opened/synchronize
+
+## Loop Orchestrator (Auftrag 22)
+
+### CI Failure → Issue Pipeline
+1. CI workflow fails → `loop-orchestrator.yml` creates an issue with:
+   - Failed job names + log links
+   - Failed step names
+   - Branch and commit info
+   - Deduplication marker (`ci-run-<id>`)
+2. If the failing CI run has an associated PR, a comment is posted with the failure summary.
+3. When an issue gets `ready-for-dev` label, an acknowledgment comment is posted.
+
+### Deterministic Summaries Only
+- No AI text generation in the loop orchestrator
+- All summaries are constructed from GitHub API metadata (job names, step names, URLs)
+
+## CI Retry & Flaky Guard (Auftrag 24)
+
+### Retry Policy
+- **Max 1 automatic retry** per failing CI run
+- Only retries for **transient** failures (network timeouts, registry errors)
+- **Never retries:** lint, typecheck, test, build failures
+
+### Failure Classification (`tools/ci_failure_classify.ts`)
+| Class | Retryable | Example Pattern |
+|-------|-----------|-----------------|
+| `network-transient` | ✅ | ETIMEDOUT, ECONNRESET |
+| `registry-timeout` | ✅ | ERR_PNPM_FETCH, registry timeout |
+| `lint` | ❌ | ESLint errors |
+| `format` | ❌ | Prettier check failed |
+| `typecheck` | ❌ | TS errors |
+| `test-flaky` | ✅ | Test timed out |
+| `test-deterministic` | ❌ | Assertion failures |
+| `build` | ❌ | Build/module errors |
+| `deps` | ❌ | Lockfile issues |
+| `unknown` | ❌ | Unrecognized |
+
+### Flaky Test Handling
+- Flaky tests get `flaky-test` label on the tracking issue
+- No autofix PR for flaky tests — only tracking
+- Existing flaky test issue gets updated with new occurrences
+
+## Autofix Engine (Auftrag 23)
+
+### Safe Fix Rules
+The autofix engine (`autofix.yml`) applies ONLY these deterministic fixes:
+1. **Format/Lint:** `prettier --write . && eslint . --fix`
+2. **Lockfile regeneration:** Only when error is clearly `ERR_PNPM_OUTDATED_LOCKFILE`
+
+### What is NEVER auto-fixed
+- TypeScript type errors
+- Test assertion failures
+- Build errors (module resolution, etc.)
+- Database migrations
+- Security vulnerabilities
+- Any file outside the allowlist
+
+### Validation
+After applying fixes, the engine runs the full check suite (lint → typecheck → test → build).
+Only creates a PR if ALL checks pass.
+
+## Autofix Guardrails (Auftrag 28)
+
+### Policy (`tools/autofix_policy.ts`)
+- **Allowed files:** `src/`, `tests/`, `tools/`, config files
+- **Blocked files:** migrations, `.env`, secrets, lockfiles, CODEOWNERS
+- **Max changed files:** 20 per autofix PR
+- **Max diff size:** 500 lines
+- **Cooldown:** 1 autofix PR per SHA per 6 hours
+- **PR limit:** Max 2 open autofix PRs at any time
+
+### Concurrency
+- Each autofix run is scoped to `autofix-<branch>` concurrency group
+- `cancel-in-progress: true` prevents parallel runs
+
+## Stale Issue Policy (Auftrag 25)
+
+- Only targets issues with `needs-info` label
+- 14 days no activity → `stale` label + warning
+- 7 more days → auto-close
+- Exempt labels: `security`, `production`, `data-loss`, `priority:critical`
+- Runs daily at 06:00 UTC
+- Can be dry-run via `workflow_dispatch`
+
+## Backlog Sync (Auftrag 26)
+
+- Daily job (05:00 UTC) syncs open issues to `NOTES/backlog.md`
+- Only replaces the auto-generated block (between `<!-- AUTO:LIVE_ISSUES_START -->` and `<!-- AUTO:LIVE_ISSUES_END -->`)
+- Manual backlog notes are preserved
+- Issues sorted by priority labels
+- Can be triggered via `workflow_dispatch`
+
+## Security Intake (Auftrag 27)
+
+### Audit → Issues
+- Weekly scan (Monday 04:00 UTC) runs `pnpm audit`
+- High/critical findings create or update a single tracking issue
+- Deduplication: reuses existing open security audit issue
+
+### Dependabot Policy
+- Auto-merge: patch/minor updates with green CI via `auto-merge.yml`
+- Major updates: always require manual review
+- GitHub Actions updates: grouped and auto-mergeable with `auto-merge` label
+- Security policy violations: never auto-merged
+
+## E2E Loop Verification (Auftrag 29)
+
+See `NOTES/loop-test.md` for the complete end-to-end verification procedure.

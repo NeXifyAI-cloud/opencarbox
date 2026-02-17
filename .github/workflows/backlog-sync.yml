@@ -1,0 +1,80 @@
+# Backlog Sync: Issues → NOTES/backlog.md (Auftrag 26)
+name: backlog-sync
+
+on:
+  schedule:
+    - cron: '0 5 * * *' # Daily at 05:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: backlog-sync
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  issues: read
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  sync:
+    name: Sync Issues to Backlog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Fetch issues and update backlog
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Fetch all open issues
+            const issues = [];
+            let page = 1;
+            while (true) {
+              const { data } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 100,
+                page: page,
+              });
+              // Filter out PRs (GitHub API returns PRs as issues too)
+              const realIssues = data.filter(i => !i.pull_request);
+              issues.push(...realIssues);
+              if (data.length < 100) break;
+              page++;
+            }
+
+            // Import and use the backlog_sync module
+            const { formatIssuesBlock, updateBacklogContent } = require('./tools/backlog_sync');
+
+            const backlogPath = path.join(process.cwd(), 'NOTES', 'backlog.md');
+            const existing = fs.readFileSync(backlogPath, 'utf-8');
+            const issuesBlock = formatIssuesBlock(issues);
+            const updated = updateBacklogContent(existing, issuesBlock);
+            fs.writeFileSync(backlogPath, updated);
+
+            core.info(`Updated backlog with ${issues.length} open issues`);
+
+      - name: Commit changes
+        run: |
+          git diff --quiet NOTES/backlog.md && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add NOTES/backlog.md
+          git commit -m "chore: sync live issues index in backlog"
+          git push

@@ -17,6 +17,7 @@
 SELECT schemaname, tablename
 FROM pg_tables
 WHERE schemaname = 'public'
+-- Exclude internal schema management tables (Prisma and Supabase migration tracking).
   AND tablename NOT IN ('schema_migrations', '_prisma_migrations')
   AND tablename NOT IN (
     SELECT relname

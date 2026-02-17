@@ -62,22 +62,14 @@ function main(): void {
     }
   }
 
-  // In CI, only check that NEXT_PUBLIC_* build-time vars are defined in .env.example
-  // Locally, warn about missing env vars
+  // In CI, only check that NEXT_PUBLIC_* build-time vars are documented in .env.example.
+  // Actual values come from Vercel/CI secrets — nothing to validate at this stage.
   if (!isCI) {
     for (const [name, defaultValue] of definedVars) {
       if (FORBIDDEN_PREFIXES.some((p) => name.startsWith(p))) continue
       const envValue = process.env[name]
       if (!envValue && !defaultValue) {
         warnings.push(`Variable ${name} is not set and has no default in .env.example`)
-      }
-    }
-  } else {
-    // In CI, verify that NEXT_PUBLIC_* vars exist in .env.example
-    for (const [name] of definedVars) {
-      if (name.startsWith(CI_REQUIRED_PREFIX)) {
-        // Just validate it's documented; actual values come from Vercel/CI secrets
-        continue
       }
     }
   }

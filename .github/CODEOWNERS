@@ -1,0 +1,15 @@
+# Default owners for all files
+* @NeXifyAI-cloud/core
+
+# Workflows
+.github/ @NeXifyAI-cloud/core
+
+# Source code
+src/ @NeXifyAI-cloud/core
+
+# Database
+prisma/ @NeXifyAI-cloud/core
+supabase/ @NeXifyAI-cloud/core
+
+# Documentation
+docs/ @NeXifyAI-cloud/core

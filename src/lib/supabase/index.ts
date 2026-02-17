@@ -1,2 +1,2 @@
 export { createBrowserClient } from '@/lib/supabase/browser';
-export { createServerClient, createAdminClient } from '@/lib/supabase/server';
+export { createClient as createServerClient } from '@/lib/supabase/server';

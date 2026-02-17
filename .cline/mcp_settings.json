@@ -1,5 +1,12 @@
 {
   "mcpServers": {
+    "github.com/mem0ai/mem0-mcp": {
+      "command": "mem0-mcp-server",
+      "env": {
+        "MEM0_API_KEY": "m0-qmsrhXRpxavhvwTtXQYt9M0ljms2RhYppctgvAim"
+      },
+      "description": "Mem0 MCP Server - Memory management and conversation history storage"
+    },
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage",

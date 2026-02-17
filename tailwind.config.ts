@@ -26,138 +26,167 @@ const config: Config = {
     },
     extend: {
       /* =================================================================
-         FARBSYSTEM - Rot-Blau Premium Palette
+         FARBSYSTEM - Sharon UI Base Tokens (Kein Rot)
          ================================================================= */
       colors: {
-        /* Carvantooo Rot - Für Shop, E-Commerce, CTAs */
-        carvantooo: {
-          50: '#FFF5F5',
-          100: '#FED7D7',
-          200: '#FEB2B2',
-          300: '#FC8181',
-          400: '#F56565',
-          500: '#E53E3E', // Primary
-          600: '#C53030', // Hover
-          700: '#9B2C2C', // Active
-          800: '#822727',
-          900: '#63171B',
-          DEFAULT: '#E53E3E',
+        /* Primary - Professionelles Blau (Corporate Identity) */
+        primary: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6', // DEFAULT
+          600: '#2563EB', // Hover
+          700: '#1D4ED8', // Active
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          950: '#172554',
+          DEFAULT: '#3B82F6',
+          light: '#60A5FA',
+          dark: '#1D4ED8',
+          foreground: '#FFFFFF',
         },
-        /* Carvantooo Teal - Für Shop Akzente (finales_Design) */
-        teal: {
-          50: '#E6FFFA',
-          100: '#B2F5EA',
-          200: '#81E6D9',
-          300: '#4FD1C5', // Primary Light
-          400: '#38B2AC', // Hover
-          500: '#319795',
-          600: '#2C7A7B',
-          700: '#285E61',
-          800: '#234E52',
-          900: '#1D4044',
-          DEFAULT: '#4FD1C5',
+        /* Secondary - Modernes Teal (Akzente) */
+        secondary: {
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#14B8A6', // DEFAULT
+          600: '#0D9488', // Hover
+          700: '#0F766E', // Active
+          800: '#115E59',
+          900: '#134E4A',
+          950: '#042F2E',
+          DEFAULT: '#14B8A6',
+          light: '#2DD4BF',
+          dark: '#0F766E',
+          foreground: '#FFFFFF',
         },
-        /* Navy Blue - Header Background (finales_Design) */
-        navy: {
-          50: '#E8EDF4',
-          100: '#C5D3E8',
-          200: '#9FB5D8',
-          300: '#7997C8',
-          400: '#5A7FB8',
-          500: '#3B67A8',
-          600: '#2D5290',
-          700: '#1E3A5F', // Primary Header
-          800: '#162D47', // Top Bar
-          900: '#0E1F2F',
-          DEFAULT: '#1E3A5F',
+        /* Accent - Für besondere Hervorhebungen */
+        accent: {
+          50: '#FEFCE8',
+          100: '#FEF9C3',
+          200: '#FEF08A',
+          300: '#FDE047',
+          400: '#FACC15',
+          500: '#EAB308', // DEFAULT
+          600: '#CA8A04',
+          700: '#A16207',
+          800: '#854D0E',
+          900: '#713F12',
+          DEFAULT: '#EAB308',
+          light: '#FDE047',
+          dark: '#CA8A04',
+          foreground: '#000000',
         },
-        /* OpenCarBox Blau - Für Services, Vertrauen, Navigation */
-        opencarbox: {
-          50: '#EBF8FF',
-          100: '#BEE3F8',
-          200: '#90CDF4',
-          300: '#63B3ED',
-          400: '#4299E1',
-          500: '#3182CE', // Primary
-          600: '#2B6CB0', // Hover
-          700: '#2C5282', // Active
-          800: '#2A4365',
-          900: '#1A365D',
-          DEFAULT: '#3182CE',
-        },
-        /* Neutrale Slate Palette */
-        slate: {
-          50: '#F8FAFC',
-          100: '#F1F5F9',
-          200: '#E2E8F0',
-          300: '#CBD5E1',
-          400: '#94A3B8',
-          500: '#64748B',
-          600: '#475569',
-          700: '#334155',
-          800: '#1E293B',
-          900: '#0F172A',
-          950: '#020617',
+        /* Neutral - Sharon UI Neutral Scale */
+        neutral: {
+          50: '#FAFAFA',
+          100: '#F4F4F5',
+          200: '#E4E4E7',
+          300: '#D4D4D8',
+          400: '#A1A1AA',
+          500: '#71717A',
+          600: '#52525B',
+          700: '#3F3F46',
+          800: '#27272A',
+          900: '#18181B',
+          950: '#09090B',
         },
         /* Status-Farben */
         success: {
           50: '#ECFDF5',
-          500: '#10B981',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981', // DEFAULT
+          600: '#059669',
           700: '#047857',
+          800: '#065F46',
+          900: '#064E3B',
           DEFAULT: '#10B981',
+          light: '#34D399',
+          dark: '#059669',
+          foreground: '#FFFFFF',
         },
         warning: {
           50: '#FFFBEB',
-          500: '#F59E0B',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B', // DEFAULT
+          600: '#D97706',
           700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
           DEFAULT: '#F59E0B',
+          light: '#FCD34D',
+          dark: '#D97706',
+          foreground: '#000000',
         },
         error: {
           50: '#FEF2F2',
-          500: '#EF4444',
+          100: '#FEE2E2',
+          200: '#FECACA',
+          300: '#FCA5A5',
+          400: '#F87171',
+          500: '#EF4444', // DEFAULT
+          600: '#DC2626',
           700: '#B91C1C',
+          800: '#991B1B',
+          900: '#7F1D1D',
           DEFAULT: '#EF4444',
+          light: '#FCA5A5',
+          dark: '#DC2626',
+          foreground: '#FFFFFF',
         },
         info: {
           50: '#EFF6FF',
-          500: '#3B82F6',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6', // DEFAULT
+          600: '#2563EB',
           700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
           DEFAULT: '#3B82F6',
+          light: '#60A5FA',
+          dark: '#1D4ED8',
+          foreground: '#FFFFFF',
         },
-        /* shadcn/ui Kompatibilität */
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+        /* Background & Surface */
+        background: {
+          DEFAULT: '#FFFFFF',
+          secondary: '#FAFAFA',
+          tertiary: '#F4F4F5',
         },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+        surface: {
+          DEFAULT: '#FFFFFF',
+          elevated: '#FFFFFF',
+          overlay: 'rgba(0, 0, 0, 0.5)',
         },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
+        /* Text */
+        text: {
+          primary: '#18181B',
+          secondary: '#71717A',
+          tertiary: '#A1A1AA',
+          disabled: '#D4D4D8',
+          inverse: '#FFFFFF',
         },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
+        /* Border */
+        border: {
+          DEFAULT: '#E4E4E7',
+          strong: '#D4D4D8',
+          subtle: '#F4F4F5',
         },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
-        },
+
       },
 
       /* =================================================================

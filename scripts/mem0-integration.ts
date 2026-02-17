@@ -20,18 +20,19 @@ interface CodexPR {
   gitlabSync: boolean;
 }
 
-interface Mem0Memory {
-  id: string;
-  text: string;
-  timestamp: string;
-  tags: string[];
-}
+// Interface not currently used - commented out for future use
+// interface Mem0Memory {
+//   id: string;
+//   text: string;
+//   timestamp: string;
+//   tags: string[];
+// }
 
 class Mem0Integration {
   private projectRoot: string;
-  private mem0Config: any;
-  private gitlabToken: string;
-  private githubToken: string;
+  // private mem0Config: any; // Not currently used
+  private gitlabToken: string = '';
+  private githubToken: string = '';
 
   constructor() {
     this.projectRoot = process.cwd();

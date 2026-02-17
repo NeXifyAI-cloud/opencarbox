@@ -14,25 +14,25 @@ export default function WerkstattPage() {
     <div className="pb-20">
       {/* Service Hero */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-blue opacity-30" />
+        <div className="absolute inset-0 bg-mesh-secondary opacity-30" />
         <div className="container-content relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="max-w-3xl mx-auto"
           >
-            <Badge variant="opencarbox" className="mb-6 px-4 py-1.5 text-sm font-bold">
+            <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm font-bold">
               OpenCarBox Meisterbetrieb
             </Badge>
             <h1 className="text-5xl md:text-7xl font-display font-bold mb-8 leading-tight">
-              Meisterlicher <span className="text-opencarbox-500">Service</span> für Ihr Auto
+              Meisterlicher <span className="text-secondary-500">Service</span> für Ihr Auto
             </h1>
             <p className="text-xl text-slate-400 mb-12 leading-relaxed">
               Von der Inspektion nach Herstellervorgaben bis zur komplexen Reparatur.
               Wir sorgen dafür, dass Ihr Fahrzeug sicher auf der Straße bleibt.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button className="btn-gradient-blue h-16 px-10 text-xl font-bold rounded-xl shadow-lg shadow-opencarbox-500/20">
+              <Button className="btn-gradient-secondary h-16 px-10 text-xl font-bold rounded-xl shadow-lg shadow-secondary-500/20">
                 Termin online buchen
               </Button>
               <Button variant="outline" className="h-16 px-10 text-xl font-bold border-white/20 hover:bg-white/10 text-white rounded-xl">
@@ -48,8 +48,8 @@ export default function WerkstattPage() {
         <div className="container-content">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             <div className="flex flex-col items-center text-center gap-4 group">
-              <div className="w-16 h-16 rounded-full bg-opencarbox-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <ShieldCheck className="w-8 h-8 text-opencarbox-500" />
+              <div className="w-16 h-16 rounded-full bg-secondary-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <ShieldCheck className="w-8 h-8 text-secondary-500" />
               </div>
               <div>
                 <h3 className="font-bold text-lg text-slate-900">Garantie erhalten</h3>
@@ -57,8 +57,8 @@ export default function WerkstattPage() {
               </div>
             </div>
             <div className="flex flex-col items-center text-center gap-4 group">
-              <div className="w-16 h-16 rounded-full bg-opencarbox-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Wrench className="w-8 h-8 text-opencarbox-500" />
+              <div className="w-16 h-16 rounded-full bg-secondary-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Wrench className="w-8 h-8 text-secondary-500" />
               </div>
               <div>
                 <h3 className="font-bold text-lg text-slate-900">Modernste Technik</h3>
@@ -66,8 +66,8 @@ export default function WerkstattPage() {
               </div>
             </div>
             <div className="flex flex-col items-center text-center gap-4 group">
-              <div className="w-16 h-16 rounded-full bg-opencarbox-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                <Star className="w-8 h-8 text-opencarbox-500" />
+              <div className="w-16 h-16 rounded-full bg-secondary-50 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <Star className="w-8 h-8 text-secondary-500" />
               </div>
               <div>
                 <h3 className="font-bold text-lg text-slate-900">Höchste Qualität</h3>
@@ -87,7 +87,7 @@ export default function WerkstattPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-8 leading-tight">
-              Schnell & einfach zum <span className="text-opencarbox-500">Wunschtermin</span>
+              Schnell & einfach zum <span className="text-secondary-500">Wunschtermin</span>
             </h2>
             <p className="text-lg text-slate-600 mb-10 leading-relaxed">
               Wählen Sie Ihren gewünschten Service, Ihr Fahrzeug und finden Sie in Echtzeit
@@ -100,7 +100,7 @@ export default function WerkstattPage() {
                 { title: 'Bestätigung erhalten', desc: 'Sofort per E-Mail & WhatsApp' },
               ].map((step, idx) => (
                 <li key={step.title} className="flex gap-4 group">
-                  <div className="w-12 h-12 rounded-xl bg-opencarbox-500 text-white flex items-center justify-center font-bold shrink-0 shadow-lg shadow-opencarbox-500/20 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-secondary-500 text-white flex items-center justify-center font-bold shrink-0 shadow-lg shadow-secondary-500/20 group-hover:scale-110 transition-transform">
                     {idx + 1}
                   </div>
                   <div>

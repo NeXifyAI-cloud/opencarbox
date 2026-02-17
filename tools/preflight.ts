@@ -2,7 +2,7 @@
 
 const allowedModes = new Set(["ci", "ai", "oracle", "deploy"]);
 
-function must(name: string) {
+function must(name: string): string {
   const value = (process.env[name] || "").trim();
   if (!value) {
     throw new Error(`Missing required env: ${name}`);
@@ -10,11 +10,11 @@ function must(name: string) {
   return value;
 }
 
-function optional(name: string) {
+function optional(name: string): string {
   return (process.env[name] || "").trim();
 }
 
-function optionalInt(name: string) {
+function optionalInt(name: string): number | undefined {
   const raw = optional(name);
   if (!raw) return undefined;
   const value = Number(raw);
@@ -24,7 +24,7 @@ function optionalInt(name: string) {
   return value;
 }
 
-function optionalIntAny(...names: string[]) {
+function optionalIntAny(...names: string[]): number | undefined {
   for (const name of names) {
     const raw = optional(name);
     if (!raw) continue;

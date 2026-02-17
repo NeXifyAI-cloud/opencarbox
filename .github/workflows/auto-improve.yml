@@ -1,88 +1,26 @@
 name: auto-improve
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '15 */6 * * *'
+  # Temporarily disabled scheduled runs until basic CI is stable
+  # schedule:
+  #   - cron: '15 */6 * * *'
 
 concurrency:
   group: auto-improve-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-
-env:
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SECRET_KEY }}
-  AI_PROVIDER: deepseek
-  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
-  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+  contents: read
 
 jobs:
   improve:
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'  # Only manual runs for now
+    
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-
-      - name: Preflight (AI only, Oracle optional)
-        run: |
-          source tools/export_env.sh
-          node tools/preflight.ts ai
-
-      - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          if ! command -v gh >/dev/null 2>&1; then
-            sudo apt-get install -y gh
-          fi
-
-      - name: Oracle availability (optional)
-        run: |
-          source tools/export_env.sh
-          if node tools/preflight.ts oracle >/dev/null 2>&1; then
-            echo "Oracle preflight: available"
-          else
-            echo "Oracle preflight: not configured (continuing without Oracle integration)"
-          fi
-
-      - name: Enforce PR backlog guardrail (max 2 open codex PRs)
-        run: |
-          PLANNED_BRANCH="codex/auto-improve-${{ github.run_id }}"
-          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,headRefName,createdAt,url --jq 'sort_by(.createdAt)')"
-          OPEN_COUNT="$(echo "$OPEN_CODEX_PRS" | jq 'length')"
-
-          if [ "$OPEN_COUNT" -ge 2 ]; then
-            echo "Skipping auto-improve: already $OPEN_COUNT open codex/* PRs (max 2)."
-            exit 0
-          fi
-
-          OLDEST_PR="$(echo "$OPEN_CODEX_PRS" | jq '.[0] // empty')"
-          if [ -n "$OLDEST_PR" ]; then
-            OLDEST_HEAD="$(echo "$OLDEST_PR" | jq -r '.headRefName')"
-            if [ "$OLDEST_HEAD" != "$PLANNED_BRANCH" ]; then
-              OLDEST_NUMBER="$(echo "$OLDEST_PR" | jq -r '.number')"
-              OLDEST_CREATED_AT="$(echo "$OLDEST_PR" | jq -r '.createdAt')"
-              OLDEST_URL="$(echo "$OLDEST_PR" | jq -r '.url')"
-              echo "Skipping auto-improve due to FIFO guardrail: oldest open codex/* PR #$OLDEST_NUMBER ($OLDEST_HEAD, created $OLDEST_CREATED_AT) blocks planned branch $PLANNED_BRANCH. Blocking PR: $OLDEST_URL"
-              exit 0
-            fi
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: pnpm/action-setup@v4
         with:
@@ -95,39 +33,18 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
-      - name: Run lint check
-        run: pnpm lint
-
-      - name: Run auto-improve (DeepSeek)
+      - name: Run basic checks
         run: |
-          source tools/export_env.sh
-          pnpm tsx tools/auto_improve.ts
-        env:
-          AI_MAX_CALLS: '5'
+          pnpm lint
+          pnpm type-check
+          pnpm test
+          pnpm build
 
-      - name: Open PR with improvements
-        if: ${{ success() }}
+      - name: Documentation check
         run: |
-          if git diff --quiet; then
-            echo "No changes."
-            exit 0
-          fi
-          BR="codex/auto-improve-${{ github.run_id }}"
-          git checkout -b "$BR"
-          git add -A
-          git commit -m "docs: auto-improve notes/wiki"
-          git push origin "$BR"
-          gh pr create --title "docs: auto-improve notes/wiki" --body "## Was geändert
-- Vorschlagssektion in \\`NOTES/backlog.md\\` aktualisiert.
-
-## Warum
-- Regelmäßige, risikoarme Verbesserungsimpulse für Doku/Backlog.
-
-## Wie getestet
-- \\`pnpm lint\\` (im Workflow vor PR-Erstellung ausgeführt)
-
-## Risiko/Backout
-- Risiko: Niedrig (nur Dokumentation).
-- Backout: PR schließen oder Commit revertieren." --base main
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          echo "✅ Basic checks passed. Auto-improve functionality will be enabled after CI stabilization."
+          echo "Current status:"
+          echo "- Lint: ✅"
+          echo "- TypeScript: ✅" 
+          echo "- Tests: ✅"
+          echo "- Build: ✅"

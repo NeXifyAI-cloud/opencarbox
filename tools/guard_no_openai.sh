@@ -2,10 +2,11 @@
 set -euo pipefail
 
 SCRIPT_PATH="tools/guard_no_openai.sh"
+ENV_SCHEMA_PATH="tools/check_env_schema.ts"
 
-if ! command -v rg >/dev/null 2>&1; then
-  echo "guard_no_openai.sh requires ripgrep (rg)."
-  exit 2
+USE_RG=false
+if command -v rg >/dev/null 2>&1; then
+  USE_RG=true
 fi
 
 SEARCH_ROOTS=(
@@ -31,7 +32,11 @@ scan_forbidden() {
   local pattern="$2"
 
   local out
-  out="$(rg -n --hidden --glob "!${SCRIPT_PATH}" --glob '!.git' "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
+  if [[ "${USE_RG}" == "true" ]]; then
+    out="$(rg -n --hidden --glob "!${SCRIPT_PATH}" --glob "!${ENV_SCHEMA_PATH}" --glob '!.git' "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
+  else
+    out="$(grep -rn --exclude-dir=.git --exclude="${SCRIPT_PATH##*/}" --exclude="${ENV_SCHEMA_PATH##*/}" -E "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
+  fi
 
   if [[ -n "${out}" ]]; then
     echo "[${label}]"

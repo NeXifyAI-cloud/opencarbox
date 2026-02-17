@@ -15,6 +15,13 @@ on:
       - Auto-Merge
       - auto-reply
       - codex-controller
+      - issue-triage
+      - loop-orchestrator
+      - ci-retry
+      - stale
+      - backlog-sync
+      - security-intake
+      - pr-labeler
     types: [completed]
 
 concurrency:

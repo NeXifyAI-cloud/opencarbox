@@ -1,7 +1,8 @@
 name: conflict-resolver
+
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '0 */6 * * *' # Every 6 hours (not every 30 min!)
   workflow_dispatch:
 
 concurrency:
@@ -14,154 +15,108 @@ permissions:
   issues: write
 
 env:
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SECRET_KEY }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
   AI_PROVIDER: deepseek
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
   NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   resolve:
+    name: Resolve PR Conflicts
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-
-      - name: Preflight (AI only, Oracle optional)
-        run: |
-          source tools/export_env.sh
-          node tools/preflight.ts ai
-
-      - name: Oracle availability (optional)
-        run: |
-          source tools/export_env.sh
-          if node tools/preflight.ts oracle >/dev/null 2>&1; then
-            echo "Oracle preflight: available"
-          else
-            echo "Oracle preflight: not configured (continuing without Oracle integration)"
-          fi
-
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          if ! command -v gh >/dev/null 2>&1; then
-            sudo apt-get install -y gh
-          fi
+        run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - name: Install deps
-        run: pnpm i --frozen-lockfile
+      - run: pnpm i --frozen-lockfile
 
-      - name: Find PRs with conflicts (DIRTY)
+      - name: AI preflight
+        run: npx tsx tools/preflight.ts ai
+        continue-on-error: true
+
+      - name: Find PRs with conflicts
         id: prs
         run: |
           prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
             | jq '[.[] | select(.mergeStateStatus=="DIRTY")]')
           echo "prs=$prs" >> $GITHUB_OUTPUT
+          echo "Found $(echo "$prs" | jq 'length') DIRTY PRs"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Resolve conflicts (rebase -> DeepSeek merge -> validate -> PR)
-        if: ${{ steps.prs.outputs.prs != '[]' }}
+      - name: Resolve conflicts (oldest DIRTY PR first)
+        if: steps.prs.outputs.prs != '[]'
         run: |
-          source tools/export_env.sh
-
-          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,headRefName,createdAt,url --jq 'sort_by(.createdAt)')"
-          OPEN_COUNT="$(echo "$OPEN_CODEX_PRS" | jq 'length')"
+          # Max 2 open codex PRs guardrail
+          OPEN_COUNT="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
           if [ "$OPEN_COUNT" -ge 2 ]; then
-            echo "Skipping conflict resolution PR creation: already $OPEN_COUNT open codex/* PRs (max 2)."
+            echo "Skipping: already $OPEN_COUNT open codex/* PRs (max 2)."
             exit 0
           fi
 
-          DIRTY_FIFO="$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url,createdAt --jq '[.[] | select(.mergeStateStatus=="DIRTY")] | sort_by(.createdAt)')"
-          CANDIDATE_COUNT="$(echo "$DIRTY_FIFO" | jq 'length')"
-          if [ "$CANDIDATE_COUNT" -eq 0 ]; then
-            echo "No DIRTY PRs found after FIFO refresh."
-            exit 0
-          fi
+          # Get oldest DIRTY PR
+          pr="$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,createdAt \
+            --jq '[.[] | select(.mergeStateStatus=="DIRTY")] | sort_by(.createdAt) | .[0]')"
 
-          pr="$(echo "$DIRTY_FIFO" | jq '.[0]')"
+          [ -z "$pr" ] || [ "$pr" = "null" ] && { echo "No DIRTY PRs"; exit 0; }
+
           num="$(echo "$pr" | jq -r .number)"
           head="$(echo "$pr" | jq -r .headRefName)"
           base="$(echo "$pr" | jq -r .baseRefName)"
-          created="$(echo "$pr" | jq -r .createdAt)"
-          url="$(echo "$pr" | jq -r .url)"
-          echo "FIFO selected DIRTY PR #$num ($head, created $created): $url"
+
+          echo "Resolving PR #$num ($head -> $base)"
 
           git fetch origin "$base" "$head"
           git checkout -B "codex/conflictfix-$num" "origin/$head"
 
           if git rebase "origin/$base"; then
-            echo "Rebase OK for #$num"
+            echo "Rebase OK"
           else
-            echo "Rebase conflict. Attempting AI merge via DeepSeek..."
+            echo "Rebase conflict - attempting AI merge..."
             git rebase --abort || true
-            pnpm tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head"
+            npx tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head" || {
+              echo "AI merge failed"
+              exit 0
+            }
           fi
 
-          pnpm lint
-          pnpm typecheck
-          pnpm test -- --run
-          pnpm build
+          # Validate
+          pnpm lint && pnpm typecheck && pnpm test -- --run && pnpm build || {
+            echo "Validation failed, skipping PR"
+            exit 0
+          }
 
           git add -A
-          if git diff --cached --quiet; then
-            echo "No changes; skip #$num"
-            exit 0
-          fi
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
 
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "chore: resolve conflicts for #$num"
           git push -u origin "codex/conflictfix-$num" --force-with-lease
 
-          OPEN_COUNT_BEFORE_CREATE="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
-          if [ "$OPEN_COUNT_BEFORE_CREATE" -ge 2 ]; then
-            echo "Race guard: skipping gh pr create because open codex/* PR count is now $OPEN_COUNT_BEFORE_CREATE (max 2)."
-            exit 0
-          fi
-
           gh pr create \
             --title "chore: resolve conflicts for #$num" \
-            --body "## Was geändert
-- Rebase des PR-Branches auf den aktuellen Base-Branch.
-- Bei Konflikten wurden ausschließlich Konfliktdateien mit DeepSeek (inkl. NSCALE-Header) gemerged.
-
-## Warum
-- Der ursprüngliche PR war im Status \\`DIRTY\\` und nicht mergebar.
-
-## Wie getestet
-- \\`pnpm lint\\`
-- \\`pnpm typecheck\\`
-- \\`pnpm test -- --run\\`
-- \\`pnpm build\\`
-
-## Risiko/Backout
-- Risiko: Niedrig bis mittel (konfliktbezogene Änderungen).
-- Backout: Fix-PR schließen und Branch \\`$head\\` erneut manuell rebasen." \
+            --body "Automatische Konfliktlösung für PR #$num via Rebase/AI-Merge." \
             --base "$base" \
             --head "codex/conflictfix-$num" || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AI_MAX_CALLS: '20'
-          max_conflict_files: '10'
-          max_file_bytes: '200000'
-          binary_heuristic_threshold: '0.15'
           FORBID_WORKFLOW_EDITS: '1'

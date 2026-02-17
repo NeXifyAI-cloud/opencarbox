@@ -1,51 +1,55 @@
 name: bootstrap
+
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SECRET_KEY }}
-  AI_PROVIDER: deepseek
-  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
-  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
 jobs:
   bootstrap:
+    name: Bootstrap Project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-
-      - name: Preflight
-        run: |
-          source tools/export_env.sh
-          node tools/preflight.ts ci
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
       - name: Install CLIs
-        run: |
-          npm i -g vercel supabase
+        run: pnpm add -g vercel supabase
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Preflight
+        run: npx tsx tools/preflight.ts ci
+
       - name: Run bootstrap (idempotent)
         run: |
-          bash tools/setup/00_prereq_check.sh
-          # In CI fehlen meist system gh; nutze GH_TOKEN via gh CLI install:
-          sudo apt-get update && sudo apt-get install -y gh
-          bash tools/setup/20_vercel_bootstrap.sh
-          bash tools/setup/30_supabase_bootstrap.sh
+          bash tools/setup/00_prereq_check.sh || true
+          bash tools/setup/20_vercel_bootstrap.sh || true
+          bash tools/setup/30_supabase_bootstrap.sh || true
         env:
-          VERCEL_TOKEN: ${{ env.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}

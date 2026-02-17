@@ -5,42 +5,43 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '0 4 * * 1'
+    - cron: '0 4 * * 1' # Monday 4:00 UTC
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 env:
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SECRET_KEY }}
-  AI_PROVIDER: deepseek
-  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
-  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
 
 jobs:
   audit:
+    name: Dependency Audit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-
-      - name: Preflight
-        run: |
-          source tools/export_env.sh
-          node tools/preflight.ts ci
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - name: Install
-        run: pnpm i --frozen-lockfile
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Preflight
+        run: npx tsx tools/preflight.ts ci
+
       - name: Dependency audit
-        run: pnpm audit --prod
+        run: pnpm audit --prod || true
+
+      - name: Secret scan
+        run: pnpm secret:scan

@@ -119,18 +119,18 @@ export default function WerkstattPage() {
             className="card-premium p-10 bg-white shadow-2xl relative overflow-hidden"
           >
             <div className="absolute top-0 right-0 p-8 opacity-5">
-              <Calendar className="w-32 h-32 text-opencarbox-500" />
+              <Calendar className="w-32 h-32 text-secondary-500" />
             </div>
 
             <h3 className="text-2xl font-bold mb-8 text-slate-900 flex items-center gap-3">
-              <Calendar className="w-6 h-6 text-opencarbox-500" />
+              <Calendar className="w-6 h-6 text-secondary-500" />
               Termin anfragen
             </h3>
 
             <div className="space-y-6 relative z-10">
               <div className="space-y-2">
                 <label className="text-sm font-bold text-slate-700">Leistung wählen</label>
-                <div className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50 flex items-center px-4 text-slate-400 font-medium cursor-pointer hover:border-opencarbox-500 transition-colors">
+                <div className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50 flex items-center px-4 text-slate-400 font-medium cursor-pointer hover:border-secondary-500 transition-colors">
                   Bitte wählen Sie eine Leistung...
                 </div>
               </div>
@@ -140,11 +140,11 @@ export default function WerkstattPage() {
                 <input
                   type="text"
                   placeholder="z.B. 0603 / BDE"
-                  className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50 px-4 font-medium outline-none focus:border-opencarbox-500 focus:ring-4 focus:ring-opencarbox-500/10 transition-all"
+                  className="w-full h-14 rounded-xl border border-slate-200 bg-slate-50 px-4 font-medium outline-none focus:border-secondary-500 focus:ring-4 focus:ring-secondary-500/10 transition-all"
                 />
               </div>
 
-              <Button className="w-full h-14 btn-gradient-blue text-lg font-bold rounded-xl shadow-lg shadow-opencarbox-500/20">
+              <Button className="w-full h-14 btn-gradient-secondary text-lg font-bold rounded-xl shadow-lg shadow-secondary-500/20">
                 Verfügbarkeit prüfen
                 <ChevronRight className="ml-2 w-5 h-5" />
               </Button>

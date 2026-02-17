@@ -15,59 +15,48 @@ permissions:
   issues: write
 
 env:
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SECRET_KEY }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
   AI_PROVIDER: deepseek
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
-  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   safe_autofix:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name == 'ci' && github.event.workflow_run.head_repository.full_name == github.repository }}
+    name: Safe Autofix
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.name == 'ci' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-      - name: Preflight
-        run: |
-          source tools/export_env.sh
-          node tools/preflight.ts ci
+
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
+
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: "pnpm"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
       - run: pnpm i --frozen-lockfile
-      - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          if ! command -v gh >/dev/null 2>&1; then
-            sudo apt-get install -y gh
-          fi
-      - name: Safe fixes
+
+      - name: Safe fixes (format + lint)
         run: |
           pnpm -s prettier --write . || true
           pnpm -s eslint . --fix || true
+
       - name: Classify changed files
         id: classify
         run: |
           if git diff --quiet; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             echo "check_profile=none" >> "$GITHUB_OUTPUT"
-            echo "changed_files<<EOF" >> "$GITHUB_OUTPUT"
-            echo "EOF" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -79,7 +68,8 @@ jobs:
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
-          if echo "$CHANGED_FILES" | rg -q '^(app/|lib/|components/|tools/|supabase/|\.github/workflows/)'; then
+          # Use grep instead of rg (ripgrep not available in CI)
+          if echo "$CHANGED_FILES" | grep -qE '^(src/|app/|lib/|components/|tools/|supabase/|\.github/workflows/)'; then
             echo "check_profile=full" >> "$GITHUB_OUTPUT"
           else
             echo "check_profile=lint-only" >> "$GITHUB_OUTPUT"
@@ -87,13 +77,12 @@ jobs:
 
       - name: Run required checks
         id: required_checks
+        if: steps.classify.outputs.has_changes == 'true'
         run: |
           PROFILE="${{ steps.classify.outputs.check_profile }}"
           PASSED=true
 
-          if [ "$PROFILE" = "none" ]; then
-            echo "No changes after safe fixes; skipping checks."
-          elif [ "$PROFILE" = "full" ]; then
+          if [ "$PROFILE" = "full" ]; then
             pnpm lint || PASSED=false
             pnpm typecheck || PASSED=false
             pnpm test || PASSED=false
@@ -104,97 +93,41 @@ jobs:
 
           echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
 
-      - name: Incident/Issue fallback for failed required checks
-        if: ${{ steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true' }}
-        run: |
-          RUN_REF="run:${{ github.event.workflow_run.id }} branch:${{ github.event.workflow_run.head_branch }} workflow:autofix"
-
-          ensure_label() {
-            local name="$1"
-            local color="$2"
-            local description="$3"
-
-            if [ "$(gh label list --search "$name" --json name --jq 'map(select(.name == "'"$name"'")) | length')" = "0" ]; then
-              gh label create "$name" --color "$color" --description "$description" || \
-                gh label list --search "$name" --json name --jq 'map(select(.name == "'"$name"'")) | length' | grep -q '^1$'
-            fi
-          }
-
-          ensure_label incident b60205 "Incident requiring manual follow-up"
-          ensure_label autofix 1d76db "Automated safe autofix PR"
-
-          gh issue create \
-            --title "Incident: autofix required checks failed for run ${{ github.event.workflow_run.id }}" \
-            --body "## Was passiert ist
-Safe-Autofix hat Änderungen erstellt, aber die zur Änderungsklasse erforderlichen Checks sind fehlgeschlagen.
-
-## Änderungsklasse
-- Profile: \`${{ steps.classify.outputs.check_profile }}\`
-- Betroffene Dateien:
-\`
-${{ steps.classify.outputs.changed_files }}
-\`
-
-## Erforderliche Checks
-- Bei Code-/Workflow-Änderungen: \`pnpm lint\`, \`pnpm typecheck\`, \`pnpm test\`, \`pnpm build\`
-- Bei reinen Doku-/Whitespace-Änderungen: mindestens \`pnpm lint\`
-
-## Nächste Schritte
-- Ursache der fehlgeschlagenen Checks analysieren
-- Manuellen Fix-PR erstellen
-
-<!-- ${RUN_REF} -->" \
-            --label incident --label autofix
-
-      - name: Stop when required checks fail
-        if: ${{ steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true' }}
-        run: |
-          echo "Required checks for profile '${{ steps.classify.outputs.check_profile }}' failed. Skipping PR creation."
-          exit 1
-
-      - name: Create PR if changes
-        if: ${{ steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed == 'true' }}
+      - name: Create PR if changes pass
+        if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed == 'true'
         run: |
           BR="codex/autofix-safe-${{ github.event.workflow_run.id }}"
 
-          # FIFO + max-2 guardrail for open autofix PRs
-          OPEN_AUTOFIX_PRS="$(gh pr list --state open --label autofix --json number,headRefName,createdAt --jq 'sort_by(.createdAt)')"
-          OPEN_COUNT="$(echo "$OPEN_AUTOFIX_PRS" | jq 'length')"
-
+          # Max 2 open autofix PRs guardrail
+          OPEN_COUNT="$(gh pr list --state open --label autofix --json number --jq 'length')"
           if [ "$OPEN_COUNT" -ge 2 ]; then
-            echo "Skipping new autofix PR: already $OPEN_COUNT open autofix PR(s) (max 2)."
+            echo "Skipping: already $OPEN_COUNT open autofix PRs (max 2)."
             exit 0
           fi
 
-          OLDEST_HEAD="$(echo "$OPEN_AUTOFIX_PRS" | jq -r '.[0].headRefName // ""')"
-          if [ -n "$OLDEST_HEAD" ] && [ "$OLDEST_HEAD" != "$BR" ]; then
-            echo "Skipping new autofix PR due to FIFO guardrail; oldest open autofix PR is $OLDEST_HEAD."
-            exit 0
-          fi
-
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BR"
           git add -A
           git commit -m "chore: safe autofix (format/lint)"
           git push origin "$BR"
-          if [ "$(gh label list --search autofix --json name --jq 'length')" = "0" ]; then
-            gh label create autofix --color 1d76db --description "Automated safe autofix PR"
-          fi
-          gh pr create --title "chore: safe autofix" --body "## Was geändert
-- Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet.
 
-## Warum
-- Fehlgeschlagener Workflow-Lauf wurde automatisch mit risikoarmen Änderungen behandelt.
+          gh label create autofix --color 1d76db --description "Automated safe autofix PR" 2>/dev/null || true
+          gh pr create \
+            --title "chore: safe autofix" \
+            --body "Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet." \
+            --base main \
+            --label autofix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-## Wie getestet
-- \\`pnpm -s prettier --write .\\`
-- \\`pnpm -s eslint . --fix\\`
-- \\`pnpm lint\\`
-- \\`pnpm typecheck\\` (bei Änderungen in app/lib/components/tools/supabase/.github/workflows)
-- \\`pnpm test\\` (bei Änderungen in app/lib/components/tools/supabase/.github/workflows)
-- \\`pnpm build\\` (bei Änderungen in app/lib/components/tools/supabase/.github/workflows)
-
-## Risiko/Backout
-- Risiko: Niedrig (stilistische Änderungen).
-- Backout: PR schließen oder Commit revertieren." --base main --label autofix
+      - name: Create incident issue on check failure
+        if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true'
+        run: |
+          gh label create incident --color b60205 --description "Incident requiring manual follow-up" 2>/dev/null || true
+          gh issue create \
+            --title "Incident: autofix checks fehlgeschlagen (Run ${{ github.event.workflow_run.id }})" \
+            --body "Autofix-Änderungen wurden erstellt, aber die Checks sind fehlgeschlagen. Manuelle Analyse erforderlich." \
+            --label incident --label autofix
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

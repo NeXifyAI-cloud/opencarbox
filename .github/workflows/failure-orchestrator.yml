@@ -2,8 +2,6 @@ name: failure-orchestrator
 
 on:
   workflow_run:
-    # Pflegehinweis: Diese Liste muss alle produktiven Workflows (außer diesem Orchestrator)
-    # enthalten und bei jedem neuen Workflow in derselben PR aktualisiert werden.
     workflows:
       - ci
       - Security
@@ -27,9 +25,8 @@ permissions:
   issues: write
 
 env:
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SECRET_KEY }}
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
   AI_PROVIDER: deepseek
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
@@ -38,39 +35,36 @@ env:
 
 jobs:
   route-failure:
-    if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.name != 'failure-orchestrator' }}
+    name: Route Failure
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.name != 'failure-orchestrator'
     runs-on: ubuntu-latest
     outputs:
       ai_eligible: ${{ steps.ai_eligible.outputs.eligible }}
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
-      marker_reason: ${{ steps.existing_marker.outputs.reason }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq gh
+        run: sudo apt-get update && sudo apt-get install -y jq gh
 
       - run: pnpm i --frozen-lockfile
 
       - name: AI triage eligibility
         id: ai_eligible
         run: |
-          source tools/export_env.sh
-          if node tools/preflight.ts ai >/dev/null 2>&1; then
+          if npx tsx tools/preflight.ts ai >/dev/null 2>&1; then
             echo "eligible=true" >> "$GITHUB_OUTPUT"
           else
             echo "eligible=false" >> "$GITHUB_OUTPUT"
@@ -78,39 +72,32 @@ jobs:
 
       - name: Ensure routing labels exist
         run: |
-          if [ "$(gh label list --search failure-routing --json name --jq 'length')" = "0" ]; then
-            gh label create failure-routing --color d93f0b --description "Failure orchestrator routing issue"
-          fi
-          if [ "$(gh label list --search ai-triage --json name --jq 'length')" = "0" ]; then
-            gh label create ai-triage --color 5319e7 --description "AI triage is required"
-          fi
+          gh label create failure-routing --color d93f0b --description "Failure orchestrator routing" 2>/dev/null || true
+          gh label create ai-triage --color 5319e7 --description "AI triage required" 2>/dev/null || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Prevent duplicate triage artifacts per failed run
+      - name: Check for existing triage marker
         id: existing_marker
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
-
           ISSUE_COUNT="$(gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
           PR_COUNT="$(gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
 
-          if [ "$ISSUE_COUNT" -gt 0 ]; then
+          if [ "$ISSUE_COUNT" -gt 0 ] || [ "$PR_COUNT" -gt 0 ]; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "reason=open-issue" >> "$GITHUB_OUTPUT"
-          elif [ "$PR_COUNT" -gt 0 ]; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "reason=open-pr" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
-            echo "reason=none" >> "$GITHUB_OUTPUT"
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  ai-triage-fix-pr:
+  ai-triage:
+    name: AI Triage & Fix PR
     needs: [route-failure]
-    if: ${{ needs.route-failure.outputs.ai_eligible == 'true' && needs.route-failure.outputs.marker_exists != 'true' }}
+    if: >-
+      needs.route-failure.outputs.ai_eligible == 'true' &&
+      needs.route-failure.outputs.marker_exists != 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -122,190 +109,49 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-
-      - name: Verify workflow head branch/sha checkout
-        run: |
-          git fetch origin "${{ github.event.workflow_run.head_branch }}" --depth=1
-          git checkout -B "${{ github.event.workflow_run.head_branch }}" "${{ github.event.workflow_run.head_sha }}"
-
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq gh
+        run: sudo apt-get update && sudo apt-get install -y jq gh
 
       - run: pnpm i --frozen-lockfile
 
-      - name: Enforce PR backlog guardrail (FIFO, max 2 codex PRs)
+      - name: PR backlog guardrail (max 2 codex PRs)
         id: pr_guardrail
         run: |
-          OPEN_CODEX_PRS="$(gh pr list --state open --search 'head:codex/' --json number,createdAt --jq 'sort_by(.createdAt)')"
-          OPEN_COUNT="$(echo "$OPEN_CODEX_PRS" | jq 'length')"
+          OPEN_COUNT="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
           echo "open_count=$OPEN_COUNT" >> "$GITHUB_OUTPUT"
-          if [ "$OPEN_COUNT" -ge 2 ]; then
-            echo "blocked=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "blocked=false" >> "$GITHUB_OUTPUT"
-          fi
+          [ "$OPEN_COUNT" -ge 2 ] && echo "blocked=true" >> "$GITHUB_OUTPUT" || echo "blocked=false" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Reproduce failed checks
-        id: reproduce
-        if: ${{ steps.pr_guardrail.outputs.blocked != 'true' }}
+      - name: Attempt safe autofix
+        if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
-          source tools/export_env.sh
-          set +e
-          WORKFLOW_NAME="${{ github.event.workflow_run.name }}"
+          pnpm -s prettier --write . 2>/dev/null || true
+          pnpm -s eslint . --fix 2>/dev/null || true
 
-          declare -A WORKFLOW_REPRO_PROFILES
-          WORKFLOW_REPRO_PROFILES["ci"]=$'pnpm lint\npnpm typecheck\npnpm test\npnpm build'
-          WORKFLOW_REPRO_PROFILES["bootstrap"]=$'pnpm lint\npnpm typecheck\npnpm test\npnpm build'
-          WORKFLOW_REPRO_PROFILES["Security"]=$'pnpm audit --prod'
-          WORKFLOW_REPRO_PROFILES["Auto-Deploy Production"]=$'pnpm lint\npnpm typecheck\npnpm build'
-          WORKFLOW_REPRO_PROFILES["__default__"]=$'pnpm lint\npnpm typecheck'
-
-          REPRO_COMMANDS="${WORKFLOW_REPRO_PROFILES[$WORKFLOW_NAME]:-${WORKFLOW_REPRO_PROFILES["__default__"]}}"
-          STATUS=0
-          {
-            echo "workflow=$WORKFLOW_NAME"
-            while IFS= read -r command; do
-              [ -z "$command" ] && continue
-              echo "+ $command"
-              bash -lc "$command"
-              COMMAND_STATUS="$?"
-              if [ "$COMMAND_STATUS" -ne 0 ]; then
-                STATUS="$COMMAND_STATUS"
-                break
-              fi
-            done <<< "$REPRO_COMMANDS"
-          } > triage-repro.log 2>&1
-          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
-          tail -n 200 triage-repro.log || true
-          exit 0
-
-      - name: AI diagnosis (DeepSeek + NSCALE, fail-closed)
-        if: ${{ steps.pr_guardrail.outputs.blocked != 'true' }}
-        run: |
-          source tools/export_env.sh
-          node - <<'NODE'
-          const fs = require('fs');
-
-          const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
-          const nscaleApiKey = process.env.NSCALE_API_KEY;
-          const nscaleHeaderName = process.env.NSCALE_HEADER_NAME || 'X-NSCALE-API-KEY';
-          const baseUrl = (process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com').replace(/\/$/, '');
-          const workflow = process.env.WORKFLOW_NAME;
-          const runUrl = process.env.RUN_URL;
-
-          if (!deepseekApiKey || !nscaleApiKey || process.env.AI_PROVIDER !== 'deepseek') {
-            throw new Error('AI triage fail-closed: deepseek + NSCALE credentials are mandatory');
-          }
-
-          const repro = fs.existsSync('triage-repro.log')
-            ? fs.readFileSync('triage-repro.log', 'utf8').slice(-12000)
-            : 'No reproduction log available';
-
-          const body = {
-            model: 'deepseek-chat',
-            temperature: 0.1,
-            messages: [
-              {
-                role: 'system',
-                content: 'You diagnose CI workflow failures. Return concise, deterministic markdown with: probable root cause, minimal safe code edits, exact test commands, and rollback hint.',
-              },
-              {
-                role: 'user',
-                content: `Workflow: ${workflow}\nRun: ${runUrl}\n\nReproduction log:\n${repro}`,
-              },
-            ],
-          };
-
-          (async () => {
-            try {
-              console.log('AI diagnosis: requesting DeepSeek response');
-              const res = await fetch(`${baseUrl}/v1/chat/completions`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${deepseekApiKey}`,
-                  [nscaleHeaderName]: nscaleApiKey,
-                },
-                body: JSON.stringify(body),
-              });
-
-              if (!res.ok) {
-                const errorText = (await res.text()).slice(0, 400);
-                throw new Error(`DeepSeek API request failed (${res.status}): ${errorText}`);
-              }
-
-              const json = await res.json();
-              const text = json?.choices?.[0]?.message?.content;
-
-              if (typeof text !== 'string' || !text.trim()) {
-                throw new Error('DeepSeek response validation failed: empty diagnosis content');
-              }
-
-              fs.writeFileSync('triage-ai.md', text, 'utf8');
-              console.log('AI diagnosis: triage-ai.md written');
-            } catch (error) {
-              console.error(`AI diagnosis failed: ${error instanceof Error ? error.message : 'unknown error'}`);
-              process.exit(1);
-            }
-          })();
-          NODE
-        env:
-          WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
-          RUN_URL: ${{ github.event.workflow_run.html_url }}
-
-      - name: Attempt safe autofix guided by triage
-        if: ${{ steps.pr_guardrail.outputs.blocked != 'true' }}
-        run: |
-          set +e
-          pnpm lint:fix > triage-fix.log 2>&1
-          pnpm format >> triage-fix.log 2>&1
-          echo "done"
-          exit 0
-
-      - name: Validate candidate fix
+      - name: Validate fix
         id: validate
-        if: ${{ steps.pr_guardrail.outputs.blocked != 'true' }}
+        if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
-          source tools/export_env.sh
           set +e
-          {
-            pnpm lint
-            pnpm typecheck
-            pnpm test
-            pnpm build
-          } > triage-validate.log 2>&1
-          STATUS="$?"
-          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
-          tail -n 200 triage-validate.log || true
-          exit 0
+          pnpm lint && pnpm typecheck && pnpm test && pnpm build
+          echo "status=$?" >> "$GITHUB_OUTPUT"
 
-      - name: Create AI triage fix PR
-        if: ${{ steps.pr_guardrail.outputs.blocked != 'true' && steps.validate.outputs.status == '0' }}
+      - name: Create fix PR
+        if: steps.pr_guardrail.outputs.blocked != 'true' && steps.validate.outputs.status == '0'
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
-          if gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
-            echo "A PR with marker ${RUN_REF} already exists. Skipping PR creation."
-            exit 0
-          fi
-          if git diff --quiet; then
-            echo "No fix changes detected. Skipping PR creation."
-            exit 0
-          fi
+          git diff --quiet && { echo "No changes"; exit 0; }
 
           WORKFLOW_SLUG="$(echo "${{ github.event.workflow_run.name }}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')"
           BRANCH="codex/${WORKFLOW_SLUG}-${{ github.event.workflow_run.id }}"
@@ -314,108 +160,46 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add -A
-          git commit -m "fix: ai triage for failed workflow ${{ github.event.workflow_run.name }}"
+          git commit -m "fix: ai triage for ${{ github.event.workflow_run.name }}"
           git push -u origin "$BRANCH"
 
           gh pr create \
-            --title "fix: ai triage for failed workflow ${{ github.event.workflow_run.name }}" \
+            --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
             --base main \
             --head "$BRANCH" \
-            --body "## Was geändert
-- Reproduktion und AI-Triage für den fehlgeschlagenen Workflow \`${{ github.event.workflow_run.name }}\` durchgeführt.
-- Sichere Autofix-Maßnahmen (Lint/Format) angewendet und validiert.
-- Marker: ${RUN_REF}
-
-## Warum
-- Der Workflow-Run \`${{ github.event.workflow_run.id }}\` ist fehlgeschlagen und wurde automatisch analysiert.
-- Ziel: deterministische, minimal-invasive Stabilisierung per Fix-PR statt PR-/Issue-Spam.
-
-## Wie getestet
-- Reproduktion: workflow-spezifische Checks (siehe \`triage-repro.log\`)
-- Validierung:
-  - \`pnpm lint\`
-  - \`pnpm typecheck\`
-  - \`pnpm test\`
-  - \`pnpm build\`
-
-## Risiko/Backout
-- Risiko: Niedrig bis mittel (nur sichere Autofix-Änderungen).
-- Backout: PR schließen oder den Fix-Commit auf \`${BRANCH}\` revertieren.
-
-## AI-Triage-Protokoll
-$(cat triage-ai.md 2>/dev/null || echo "Keine AI-Ausgabe verfügbar.")"
+            --body "AI-Triage für fehlgeschlagenen Workflow. Marker: ${RUN_REF}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Fallback issue for non-fixable AI triage
-        if: ${{ steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0' }}
+      - name: Fallback issue
+        if: steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0'
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
-          if gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
-            echo "An issue with marker ${RUN_REF} already exists. Skipping issue creation."
-            exit 0
-          fi
-          if gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
-            echo "A PR with marker ${RUN_REF} already exists. Skipping issue creation."
-            exit 0
-          fi
           gh issue create \
-            --title "Incident: AI triage could not auto-fix workflow ${{ github.event.workflow_run.name }}" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}
-Run: ${{ github.event.workflow_run.html_url }}
-Marker: ${RUN_REF}
-
-AI-Triage (DeepSeek + NSCALE) wurde ausgeführt, aber ein sicherer Auto-Fix war nicht möglich.
-
-Nächste Schritte:
-1. Fehler manuell triagieren und priorisieren.
-2. Backlog ergänzen/aktualisieren (\`NOTES/backlog.md\`) mit Akzeptanzkriterien.
-3. Runbook ergänzen/aktualisieren (\`NOTES/runbook.md\`) inkl. Diagnose- und Backout-Schritten.
-4. Bei wiederkehrenden Ursachen passende Guardrails/Checks ergänzen.
-
-Hinweis: pro fehlgeschlagenem Run wird über den Marker dedupliziert, um PR-/Issue-Spam zu vermeiden." \
-            --label failure-routing --label ai-triage
+            --title "Incident: ${{ github.event.workflow_run.name }} fehlgeschlagen" \
+            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\nMarker: ${RUN_REF}\n\nAuto-Fix war nicht möglich." \
+            --label failure-routing --label ai-triage || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   create-routing-issue:
-    needs: [route-failure, ai-triage-fix-pr]
-    if: ${{ always() && needs.route-failure.outputs.marker_exists != 'true' && needs.route-failure.outputs.ai_eligible != 'true' }}
+    name: Manual Triage Issue
+    needs: [route-failure, ai-triage]
+    if: >-
+      always() &&
+      needs.route-failure.outputs.marker_exists != 'true' &&
+      needs.route-failure.outputs.ai_eligible != 'true'
     runs-on: ubuntu-latest
     permissions:
       issues: write
-      pull-requests: read
     steps:
-      - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq gh
-
-      - name: Create manual triage routing issue
+      - name: Create manual triage issue
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
-          if gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
-            echo "An issue with marker ${RUN_REF} already exists. Skipping issue creation."
-            exit 0
-          fi
-          if gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length > 0' | grep -q true; then
-            echo "A PR with marker ${RUN_REF} already exists. Skipping issue creation."
-            exit 0
-          fi
+          gh label create failure-routing --color d93f0b 2>/dev/null || true
           gh issue create \
-            --title "Incident: manual triage required for failed workflow ${{ github.event.workflow_run.name }}" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}
-Run: ${{ github.event.workflow_run.html_url }}
-Marker: ${RUN_REF}
-
-Safe-Autofix wird in \`autofix.yml\` für CI-Fehlschläge verarbeitet. Dieser Run wird zentral durch den failure-orchestrator für Routing/Issue-Triage gesteuert.
-
-AI-Preflight ist fail-closed (DeepSeek + NSCALE erforderlich) und war nicht erfüllt.
-
-Nächste Schritte:
-1. Manuelle Analyse durchführen.
-2. Backlog in \`NOTES/backlog.md\` aktualisieren (inkl. Akzeptanzkriterien).
-3. Runbook in \`NOTES/runbook.md\` mit Diagnose/Backout ergänzen." \
-            --label failure-routing
+            --title "Manual triage: ${{ github.event.workflow_run.name }}" \
+            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\nMarker: ${RUN_REF}\n\nAI-Preflight nicht erfüllt. Manuelle Analyse erforderlich." \
+            --label failure-routing || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

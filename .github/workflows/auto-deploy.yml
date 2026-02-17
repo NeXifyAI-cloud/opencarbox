@@ -1,6 +1,4 @@
 # Automatisches Deployment nach erfolgreichem CI auf main
-# Dieser Workflow deployed nur nach erfolgreicher CI-Pipeline
-
 name: Auto-Deploy Production
 
 on:
@@ -23,21 +21,18 @@ concurrency:
   group: deploy-${{ github.workflow }}-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: write
+
 env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
-  NODE_VERSION: '20.19.0'
-  VERCEL_CLI_VERSION: '50.17.1'
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.SUPABASE_PUBLISHABLE_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SECRET_KEY }}
-  AI_PROVIDER: deepseek
-  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
-  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
-  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  GH_PAT: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
 jobs:
   deploy:
@@ -45,99 +40,58 @@ jobs:
     if: |
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.head_branch == 'main')
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_branch == 'main')
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     environment:
       name: ${{ github.event.inputs.environment || 'production' }}
       url: ${{ steps.deploy.outputs.url }}
 
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-      - name: Export normalized env names
-        run: source tools/export_env.sh
-
-      - name: Preflight (Deploy)
-        run: |
-          source tools/export_env.sh
-          node tools/preflight.ts deploy
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Show deterministic toolchain
-        run: |
-          node --version
-          pnpm --version
-          echo "Using vercel@${VERCEL_CLI_VERSION}"
+      - name: Preflight
+        run: npx tsx tools/preflight.ts deploy
 
       - name: Pull Vercel Environment
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm dlx vercel pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ env.VERCEL_TOKEN }}
 
       - name: Build Project
-        run: pnpm dlx vercel@${VERCEL_CLI_VERSION} build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm dlx vercel build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy to Vercel
         id: deploy
         run: |
-          URL=$(pnpm dlx vercel@${VERCEL_CLI_VERSION} deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }})
+          URL=$(pnpm dlx vercel deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }})
           echo "url=$URL" >> $GITHUB_OUTPUT
-          echo "🚀 Deployed to: $URL"
+          echo "Deployed to: $URL"
 
       - name: Comment on Commit
         if: github.event_name == 'workflow_run'
-        uses: peter-evans/commit-comment@f6d60c65d05bb59f750fa51ad3de1d443ba0eb52 # v4
+        uses: peter-evans/commit-comment@v3
         with:
           sha: ${{ github.event.workflow_run.head_sha }}
           body: |
-            🚀 **Auto-Deployment erfolgreich!**
+            **Auto-Deployment erfolgreich!**
 
             | Environment | URL |
             |-------------|-----|
-            | Production | ${{ steps.deploy.outputs.url }} |
-
-            Commit: `${{ github.event.workflow_run.head_sha || github.sha }}`
-
-      - name: Preflight (Oracle)
-        if: success()
-        run: |
-          source tools/export_env.sh
-          node tools/preflight.ts oracle
-
-      - name: Notify Oracle
-        if: success()
-        run: |
-          pnpm dlx tsx -e "
-          import { Memory } from './scripts/core/memory.ts';
-          await Memory.audit({
-            action: 'auto_deploy',
-            resource: 'vercel_production',
-            status: 'SUCCESS',
-            details: {
-              url: '${{ steps.deploy.outputs.url }}',
-              commit: '${{ github.event.workflow_run.head_sha || github.sha }}',
-              branch: 'main'
-            }
-          });
-          console.log('✅ Deployment an Oracle gemeldet');
-          "
-        continue-on-error: true
+            | ${{ github.event.inputs.environment || 'production' }} | ${{ steps.deploy.outputs.url }} |
 
   notify-failure:
     name: Notify on Failure
@@ -146,14 +100,15 @@ jobs:
     if: failure()
     permissions:
       issues: write
-
     steps:
       - name: Create Issue on Failure
-        uses: peter-evans/create-issue-from-file@fca9117c27cdc29c6c4db3b86c48e4115a786710 # v6
+        uses: actions/github-script@v7
         with:
-          title: '🚨 Auto-Deploy fehlgeschlagen - ${{ github.event.workflow_run.head_sha || github.sha }}'
-          content-filepath: .github/ISSUE_TEMPLATE/deploy-failure.md
-          labels: |
-            bug
-            deployment
-            automated
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Deploy fehlgeschlagen - ${context.sha.substring(0, 7)}`,
+              body: `Deployment ist fehlgeschlagen.\n\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              labels: ['bug', 'deployment', 'automated']
+            });

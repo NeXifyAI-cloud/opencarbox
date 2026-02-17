@@ -29,6 +29,29 @@ const config: Config = {
          FARBSYSTEM - Sharon UI Base Tokens (Kein Rot)
          ================================================================= */
       colors: {
+        /* ---------------------------------------------------------
+           shadcn/ui CSS-Variable Tokens (Dark-Mode-kompatibel)
+           --------------------------------------------------------- */
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        ring: 'hsl(var(--ring))',
+        input: 'hsl(var(--input))',
+
         /* Primary - Professionelles Blau (Corporate Identity) */
         primary: {
           50: '#EFF6FF',
@@ -163,7 +186,7 @@ const config: Config = {
         },
         /* Background & Surface */
         background: {
-          DEFAULT: '#FFFFFF',
+          DEFAULT: 'hsl(var(--background))',
           secondary: '#FAFAFA',
           tertiary: '#F4F4F5',
         },
@@ -182,7 +205,7 @@ const config: Config = {
         },
         /* Border */
         border: {
-          DEFAULT: '#E4E4E7',
+          DEFAULT: 'hsl(var(--border))',
           strong: '#D4D4D8',
           subtle: '#F4F4F5',
         },

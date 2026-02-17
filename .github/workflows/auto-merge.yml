@@ -1,49 +1,34 @@
-# Auto-Merge Workflow für OpenCarBox
-# Gehärtete Regeln: nur interne PRs auf main mit explizitem Label
-
+# Auto-Merge für vertrauenswürdige interne PRs und Dependabot
 name: Auto-Merge
 
 on:
   pull_request:
     branches: [main]
-    types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
-      - ready_for_review
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
   pull-requests: write
+  contents: write
 
 jobs:
   auto-merge-safe:
     name: Auto-Merge (Trusted Internal PRs)
     runs-on: ubuntu-latest
-    if: |
+    if: >-
       github.event.pull_request.head.repo.fork == false &&
       github.base_ref == 'main' &&
-      contains(github.event.pull_request.labels.*.name, 'auto-merge') &&
-      (github.event.pull_request.author_association == 'MEMBER' || github.event.pull_request.author_association == 'COLLABORATOR' || github.event.pull_request.author_association == 'OWNER')
+      contains(github.event.pull_request.labels.*.name, 'auto-merge')
 
     steps:
-      - name: Install system tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
-          if ! command -v gh >/dev/null 2>&1; then
-            sudo apt-get install -y gh
-          fi
-
       - name: Dependabot metadata
         id: metadata
         if: github.actor == 'dependabot[bot]'
-        uses: dependabot/fetch-metadata@21025c705c08248db411dc16f3619e6b5f9ea21a # v2
+        uses: dependabot/fetch-metadata@v2
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Wait for checks
-        uses: lewagon/wait-on-check-action@3603e826ee561ea102b58accb5ea55a1a7482343 # v1.4.1
+        uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
@@ -51,9 +36,10 @@ jobs:
           running-workflow-name: "Auto-Merge (Trusted Internal PRs)"
 
       - name: Auto-approve trusted Dependabot PRs
-        if: |
+        if: >-
           github.actor == 'dependabot[bot]' &&
-          (steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor')
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+           steps.metadata.outputs.update-type == 'version-update:semver-minor')
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}

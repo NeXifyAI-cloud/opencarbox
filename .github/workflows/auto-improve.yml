@@ -1,7 +1,8 @@
 name: auto-improve
+
 on:
   workflow_dispatch:
-  # Temporarily disabled scheduled runs until basic CI is stable
+  # Disabled until CI is fully stable
   # schedule:
   #   - cron: '15 */6 * * *'
 
@@ -12,11 +13,15 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
 jobs:
   improve:
+    name: Quality Checks
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'  # Only manual runs for now
-    
+    if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -24,27 +29,22 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
 
-      - name: Run basic checks
+      - name: Run full quality checks
         run: |
           pnpm lint
-          pnpm type-check
+          pnpm typecheck
           pnpm test
           pnpm build
 
-      - name: Documentation check
-        run: |
-          echo "✅ Basic checks passed. Auto-improve functionality will be enabled after CI stabilization."
-          echo "Current status:"
-          echo "- Lint: ✅"
-          echo "- TypeScript: ✅" 
-          echo "- Tests: ✅"
-          echo "- Build: ✅"
+      - name: Status
+        run: echo "All quality checks passed."

@@ -40,6 +40,7 @@
 | `DIRECT_URL` | Server | Yes (Prisma directUrl for Supabase pooling) |
 | `DEEPSEEK_API_KEY` | Server | For AI features |
 | `NSCALE_API_KEY` | Server | For AI features |
+| `NSCALE_HEADER_NAME` | Server | Default: X-NSCALE-API-KEY |
 | `AI_PROVIDER` | Server | Default: deepseek |
 | `AI_DEFAULT_MODEL` | Server | Default: deepseek-chat |
 | `RATE_LIMIT_PER_MINUTE` | Server | Default: 20 |

@@ -23,6 +23,7 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
+    "db:rls:check": "psql $DATABASE_URL -f supabase/tests/rls_smoke.sql",
     "supabase:bootstrap": "bash scripts/supabase-bootstrap.sh",
     "prepare": "husky || true",
     "sync-rules": "tsx scripts/sync-docs-to-rules.ts",
@@ -60,7 +61,9 @@
     "report:plan-status": "tsx scripts/report-plan-status.ts",
     "report:weekly-status": "tsx scripts/report-weekly-status.ts",
     "system:start": "bash scripts/start-system.sh",
-    "system:check": "bash scripts/start-system.sh check"
+    "system:check": "bash scripts/start-system.sh check",
+    "env:check": "tsx tools/check_env_schema.ts",
+    "env:check:ci": "tsx tools/check_env_schema.ts --ci"
   },
   "packageManager": "pnpm@9.12.3",
   "dependencies": {

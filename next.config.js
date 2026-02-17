@@ -45,57 +45,11 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },
 
-  /* Weiterleitungen */
-  async redirects() {
-    return [
-      /* Beispiel-Weiterleitungen */
-      {
-        source: '/produkte',
-        destination: '/shop',
-        permanent: true,
-      },
-      {
-        source: '/services',
-        destination: '/werkstatt/services',
-        permanent: true,
-      },
-    ];
-  },
+  /* Weiterleitungen — defined in vercel.json (single source of truth) */
 
-  /* Header für Sicherheit und Performance */
+  /* Header für Performance (security headers in vercel.json — single source of truth) */
   async headers() {
     return [
-      {
-        source: '/:path*',
-        headers: [
-          /* Sicherheits-Header */
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-          /* Permissions Policy */
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-        ],
-      },
       /* Cache-Header für statische Assets */
       {
         source: '/fonts/:path*',

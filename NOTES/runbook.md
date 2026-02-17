@@ -70,6 +70,23 @@
 2. Ensure required CI checks are green.
 3. Deploy to Vercel Preview, then Production.
 
+### How to Release (SemVer)
+
+1. Ensure `main` is stable and all CI checks pass.
+2. Create and push a SemVer tag:
+   ```bash
+   git tag v1.2.3
+   git push origin v1.2.3
+   ```
+3. The `release.yml` workflow triggers automatically:
+   - Runs full validation: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+   - Generates release notes from git log (no AI generation)
+   - Creates a GitHub Release with changelog
+4. Alternatively, trigger manually via **Actions → Release → Run workflow** with the tag name.
+5. Verify the GitHub Release was created under **Releases**.
+
+> **Note:** Release notes are generated from git commit history using `git log`. No OpenAI or AI-based generation is used.
+
 ## Quality Gates by Milestone
 
 - **M1 – Katalog:** `lint` + `typecheck` + `build` sind Pflicht.
@@ -113,12 +130,59 @@ flowchart TD
 - Redeploy previous successful Vercel deployment.
 - If migration-related, apply compensating migration (never edit historical migration files).
 
+## Preview vs Production Deployment
+
+| Aspect | Preview | Production |
+|--------|---------|------------|
+| **Trigger** | `pull_request` (opened/synchronize/reopened) | `workflow_run` after successful CI on `main` |
+| **Workflow** | `deploy-preview.yml` | `auto-deploy.yml` |
+| **Vercel flag** | no `--prod` (preview URL) | `--prod` |
+| **Environment** | `preview` | `production` |
+| **PR Comment** | ✅ Preview URL posted/updated | — |
+| **Secrets** | Only `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `VERCEL_TOKEN` | Full deploy secrets (Supabase, DB, etc.) |
+
+### Environment Variables
+
+- **Preview** secrets are configured in GitHub Environment `preview` — only Vercel credentials needed for build.
+- **Production** secrets are configured in GitHub Environment `production` — includes Supabase, database, and AI provider keys.
+- New env vars must always be added to `.env.example` first, then to the appropriate GitHub Environment.
+
+## Adding New Environment Variables
+
+1. Add the variable to `.env.example` with a placeholder value.
+2. Run `pnpm env:check` locally to verify the schema is consistent.
+3. Add the variable to the appropriate GitHub Environment (preview/production) or repository secrets.
+4. If the variable is optional, add it to the `OPTIONAL_VARS` set in `tools/check_env_schema.ts`.
+5. If the variable is only needed in CI builds, add it to the `CI_REQUIRED` array.
+6. **Never** add `OPENAI_*` variables (except `OPENAI_COMPAT_*`) — these are rejected by the env check.
+
 ## Incident Steps
 
 1. Triage impact and severity.
 2. Check `/api/health` and CI status.
 3. Capture metadata-only logs (no prompts/PII/secrets).
 4. Create backlog item with acceptance criteria before closing incident.
+
+## RLS Smoke Tests
+
+Minimal SQL-based tests to verify Row Level Security is configured correctly.
+
+### Running Locally
+
+```bash
+# Requires psql and DATABASE_URL pointing to a Supabase instance
+pnpm db:rls:check
+```
+
+### What is Tested
+
+- RLS is **enabled** for all public tables (profiles, products, orders, etc.)
+- At least one **policy** exists per table
+- Tables not yet created are skipped
+
+### In CI
+
+RLS smoke tests are not blocking in CI (no database available). They can be run manually via `workflow_dispatch` or locally against a Supabase instance.
 
 ### Incident-Handling: Label-Robustheit im Autofix-Fallback
 
@@ -152,6 +216,23 @@ flowchart TD
   - `Auto-Deploy Production`: `pnpm lint`, `pnpm typecheck`, `pnpm build`
   - `__default__`: `pnpm lint`, `pnpm typecheck`
 - Pflege-Regel: Bei neuen produktiven Workflows sowohl `on.workflow_run.workflows` als auch das Repro-Profil in derselben PR ergänzen.
+
+## Branch Protection Contract
+
+The following rules **must** be enforced on the `main` branch via GitHub repository settings:
+
+| Rule | Value |
+|------|-------|
+| **Protected branch** | `main` |
+| **Required status checks** | `ci / quick-checks`, `ci / test-and-build` |
+| **Blocking security check** | `security` (if configured) |
+| **Require PR reviews** | min 1 approval |
+| **Dismiss stale approvals** | optional (recommended) |
+| **Require linear history** | optional |
+| **Allow force push** | disabled |
+| **Allow deletions** | disabled |
+
+> **Note:** These rules cannot be enforced via PR — they must be configured in GitHub UI under Settings → Branches → Branch protection rules. This section serves as a documented contract.
 
 ## Codex Controller Webhook
 

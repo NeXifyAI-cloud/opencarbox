@@ -20,7 +20,6 @@ jobs:
   improve:
     name: Quality Checks
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
         with:

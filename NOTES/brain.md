@@ -37,6 +37,7 @@
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client | Yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server | Yes |
 | `DATABASE_URL` | Server | Yes (Prisma + DB connection) |
+| `DIRECT_URL` | Server | Yes (Prisma directUrl for Supabase pooling) |
 | `DEEPSEEK_API_KEY` | Server | For AI features |
 | `NSCALE_API_KEY` | Server | For AI features |
 | `AI_PROVIDER` | Server | Default: deepseek |

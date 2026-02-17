@@ -168,6 +168,13 @@ flowchart TD
   B -->|lint + typecheck OK| C[ci.yml: test-and-build]
   C -->|success on main| D[auto-deploy.yml via workflow_run]
   D --> E[Vercel production deploy]
+  A -->|pull_request| F[deploy-preview.yml]
+  F --> G[env-schema-check]
+  G -->|OK| H[Vercel preview deploy]
+  H --> I[PR comment with URL]
+  J[push tag v*.*.*] --> K[release.yml]
+  K --> L[lint + typecheck + test + build]
+  L --> M[GitHub Release]
 ```
 
 ### Workflow Responsibilities
@@ -234,6 +241,9 @@ flowchart TD
   - `bootstrap`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
   - `Security`: nur sicherheitsrelevanter Check `pnpm audit --prod` (entspricht `security.yml`)
   - `Auto-Deploy Production`: `pnpm lint`, `pnpm typecheck`, `pnpm build`
+  - `Deploy Preview`: `npx tsx tools/check_env_schema.ts --ci`, `pnpm build`
+  - `Release`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+  - `RLS Smoke Tests`: `psql $DATABASE_URL -f supabase/tests/rls_smoke.sql`
   - `__default__`: `pnpm lint`, `pnpm typecheck`
 - Pflege-Regel: Bei neuen produktiven Workflows sowohl `on.workflow_run.workflows` als auch das Repro-Profil in derselben PR ergänzen.
 

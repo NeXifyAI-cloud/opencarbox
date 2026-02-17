@@ -14,9 +14,6 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
-  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
 jobs:
   env-schema-check:
@@ -36,38 +33,56 @@ jobs:
       - run: pnpm i --frozen-lockfile
 
       - name: Check env schema
-        run: npx tsx tools/check_env_schema.ts
-        env:
-          CI: 'true'
+        run: npx tsx tools/check_env_schema.ts --ci
 
   deploy-preview:
     name: Deploy Preview to Vercel
     runs-on: ubuntu-latest
     needs: env-schema-check
-    if: ${{ secrets.VERCEL_TOKEN != '' }}
     environment:
       name: preview
       url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
+      - name: Check Vercel secrets
+        id: check
+        run: |
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::Vercel secrets not configured — skipping preview deploy"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
+        if: steps.check.outputs.skip != 'true'
 
       - uses: pnpm/action-setup@v4
+        if: steps.check.outputs.skip != 'true'
 
       - uses: actions/setup-node@v4
+        if: steps.check.outputs.skip != 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+        if: steps.check.outputs.skip != 'true'
 
       - name: Pull Vercel Environment
+        if: steps.check.outputs.skip != 'true'
         run: pnpm dlx vercel pull --yes --environment=preview --token=${{ env.VERCEL_TOKEN }}
 
       - name: Build
+        if: steps.check.outputs.skip != 'true'
         run: pnpm dlx vercel build --token=${{ env.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel Preview
+        if: steps.check.outputs.skip != 'true'
         id: deploy
         run: |
           URL=$(pnpm dlx vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
@@ -75,6 +90,7 @@ jobs:
           echo "Preview deployed to: $URL"
 
       - name: Comment Preview URL on PR
+        if: steps.check.outputs.skip != 'true' && steps.deploy.outputs.url
         uses: actions/github-script@v7
         with:
           script: |

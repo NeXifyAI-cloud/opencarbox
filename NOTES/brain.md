@@ -112,3 +112,29 @@
 - **Consequences**:
   - Preflight/Setup zeigen fehlende GitLab-Parameter früh als Warnung.
   - Künftige GitLab-Automationen können standardisierte Variablen direkt verwenden.
+
+## ADR-008: Env-Schema-Check über `.env.example` als Single Source of Truth
+- **Decision**: `tools/check_env_schema.ts` nutzt `.env.example` als deklaratives Schema für alle Umgebungsvariablen. Neue Variablen müssen zuerst dort ergänzt werden. Verbotene Provider-Variablen (`OPENAI_*`, `GOOGLE_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) werden sowohl im Environment als auch in `.env.example` geprüft.
+- **Alternatives**:
+  - Manuelle Prüfung ohne automatisierten Check.
+  - Separate Schema-Datei unabhängig von `.env.example`.
+- **Reasoning**:
+  - `.env.example` existiert bereits als Dokumentation; nutzt es doppelt als Laufzeit-Schema.
+  - CI-Modus (`--ci`) beschränkt Prüfung auf Build-relevante Variablen, während lokaler Modus alle prüft.
+  - Forbidden-Provider-Alignment mit `tools/guard_no_openai.sh` stellt konsistente Policy-Durchsetzung sicher.
+- **Consequences**:
+  - `pnpm env:check` kann lokal und in CI als Preflight genutzt werden.
+  - Alle neuen Variablen folgen einem dokumentierten Workflow: `.env.example` → `env:check` → Vercel/CI Secrets.
+
+## ADR-009: Preview/Production Deploy-Trennung über dedizierte Workflows
+- **Decision**: Preview-Deployments werden durch `deploy-preview.yml` (Trigger: `pull_request`) gesteuert, Production-Deployments durch `auto-deploy.yml` (Trigger: `workflow_run` nach CI auf `main`). Kein gemeinsamer Workflow mit Environment-Schalter.
+- **Alternatives**:
+  - Ein einzelner Deploy-Workflow mit Environment-Parameter.
+  - Preview nur über Vercel Git Integration ohne eigenen Workflow.
+- **Reasoning**:
+  - Klare Trennung von Berechtigungen (Preview braucht kein `--prod`).
+  - Preview-Workflows können eigene Preflight-Checks ausführen (z. B. Env-Schema-Check).
+  - Production-Deploys sind an erfolgreiche CI gebunden, nicht an PR-Events.
+- **Consequences**:
+  - Zwei Workflows zu pflegen, aber mit klaren, nicht-überlappenden Verantwortlichkeiten.
+  - Preview-URLs werden automatisch als PR-Kommentar gepostet.

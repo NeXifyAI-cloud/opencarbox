@@ -1,6 +1,7 @@
 -- RLS Smoke Tests
 -- Run with: psql $DATABASE_URL -f supabase/tests/rls_smoke.sql
 -- Or via: pnpm db:rls:check (requires local Supabase or DATABASE_URL)
+-- CI: workflow_dispatch via .github/workflows/rls-check.yml
 --
 -- These tests verify that Row Level Security is enabled on tables
 -- that require it, and that expected policies exist.
@@ -32,7 +33,7 @@ ORDER BY tablename;
 -- ----------------------------------------------------------------
 \echo ''
 \echo 'Test 2: Tables with RLS enabled:'
-SELECT c.relname AS table_name, c.relrowsecurity AS rls_enabled
+SELECT c.relname AS table_name, c.relrowsecurity AS rls_enabled, c.relforcerowsecurity AS rls_forced
 FROM pg_class c
 JOIN pg_namespace n ON n.oid = c.relnamespace
 WHERE n.nspname = 'public'
@@ -69,6 +70,41 @@ SELECT
     ) THEN 'FAIL: settings table exists but RLS is NOT enabled'
     ELSE 'SKIP: settings table does not exist yet'
   END AS result;
+
+-- ----------------------------------------------------------------
+-- Test 5: Verify profiles table has RLS (if it exists)
+-- ----------------------------------------------------------------
+\echo ''
+\echo 'Test 5: Profiles table RLS check:'
+SELECT
+  CASE
+    WHEN EXISTS (
+      SELECT 1 FROM pg_class c
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relname = 'profiles' AND c.relrowsecurity = true
+    ) THEN 'PASS: profiles table has RLS enabled'
+    WHEN EXISTS (
+      SELECT 1 FROM pg_class c
+      JOIN pg_namespace n ON n.oid = c.relnamespace
+      WHERE n.nspname = 'public' AND c.relname = 'profiles'
+    ) THEN 'FAIL: profiles table exists but RLS is NOT enabled'
+    ELSE 'SKIP: profiles table does not exist yet'
+  END AS result;
+
+-- ----------------------------------------------------------------
+-- Test 6: Summary — count tables with/without RLS
+-- ----------------------------------------------------------------
+\echo ''
+\echo 'Test 6: RLS coverage summary:'
+SELECT
+  COUNT(*) FILTER (WHERE c.relrowsecurity = true) AS rls_enabled,
+  COUNT(*) FILTER (WHERE c.relrowsecurity = false) AS rls_disabled,
+  COUNT(*) AS total_tables
+FROM pg_class c
+JOIN pg_namespace n ON n.oid = c.relnamespace
+WHERE n.nspname = 'public'
+  AND c.relkind = 'r'
+  AND c.relname NOT IN ('schema_migrations', '_prisma_migrations');
 
 \echo ''
 \echo '=== RLS Smoke Tests Complete ==='

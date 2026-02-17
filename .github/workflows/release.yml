@@ -46,6 +46,9 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: 'Guard: forbid OpenAI usage'
+        run: bash tools/guard_no_openai.sh
+
       - name: Lint
         run: pnpm lint
 

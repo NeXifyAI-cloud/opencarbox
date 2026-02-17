@@ -62,6 +62,7 @@
     "system:start": "bash scripts/start-system.sh",
     "system:check": "bash scripts/start-system.sh check",
     "env:check": "npx tsx tools/check_env_schema.ts",
+    "env:check:ci": "npx tsx tools/check_env_schema.ts --ci",
     "db:rls:check": "psql $DATABASE_URL -f supabase/tests/rls_smoke.sql"
   },
   "packageManager": "pnpm@9.12.3",

@@ -1,20 +1,31 @@
 # Backlog
 
-## Milestone 1 — Scaffold
+## Milestone 1 — Scaffold ✅
 - [x] Add env validation module and feature flags.
 - [x] Align `.env.example` with required public/server variables.
 - [x] Initialize NOTES documentation set.
 - [x] Add dedicated CI and security workflows.
 - [x] Add modern issue forms and PR template checklist.
 
-## Milestone 2 — Vertical Slice
+## Milestone 2 — Vertical Slice (Auth/Settings)
 - [ ] Auth flow with protected dashboard route group.
+  - **Akzeptanzkriterien:**
+    - Supabase Auth angebunden, Login/Logout funktioniert.
+    - Dashboard-Routen sind nur für authentifizierte Nutzer erreichbar.
+    - E2E-Test oder manueller Nachweis vorhanden.
 - [ ] Persisted settings with Supabase + RLS.
+  - **Akzeptanzkriterien:**
+    - Settings-Tabelle hat RLS aktiviert.
+    - Nutzer kann nur eigene Settings lesen/schreiben.
+    - `pnpm db:rls:check` zeigt keine offenen RLS-Lücken.
 - [x] Implement `/api/health` endpoint and status page.
 - [x] Implement `/api/ai/chat` with validation and tests.
 
-## Milestone 3 — Providers + NSCALE
+## Milestone 3 — Providers + NSCALE (DeepSeek-only)
 - [ ] DeepSeek provider adapter.
+  - **Akzeptanzkriterien:**
+    - Adapter implementiert und getestet.
+    - `AI_PROVIDER=deepseek` erzwungen, kein Fallback auf andere Provider.
 - [ ] DeepSeek adapter hardening (strict request schema, header enforcement, deterministic error mapping).
   - **Akzeptanzkriterien:**
     - Laufzeitvalidierung blockiert alle Provider außer `AI_PROVIDER=deepseek`.
@@ -36,6 +47,16 @@
 - [ ] Add `tools/auto_improve.ts` backlog generation.
 - [ ] Add optional `autofix.yml` safe-fix pipeline.
 - [ ] Document label/project setup and runbook operations.
+
+## Ops — Repo Standards & CI/CD
+- [x] PR/Issue Templates, CODEOWNERS, CONTRIBUTING.md, SECURITY.md (Auftrag 13).
+- [x] Branch Protection Contract documented in NOTES/runbook.md (Auftrag 14).
+- [x] Release Workflow with SemVer tags + workflow_dispatch (Auftrag 15).
+- [x] Vercel Preview deploy on PR, Production deploy on main (Auftrag 16).
+- [x] Env Sync Check via `tools/check_env_schema.ts` (Auftrag 17).
+- [x] Supabase RLS Smoke Tests via `supabase/tests/rls_smoke.sql` (Auftrag 18).
+- [x] Next.js hardening: headers/redirects single-source in vercel.json (Auftrag 19).
+- [x] Definition of Done gate in PR template + Backlog grooming (Auftrag 20).
 
 ## Automation Backlog
 
@@ -73,11 +94,8 @@
 - **Zieltermin:** 2026-03-27
 
 ### A5 — Release-Checklist als PR-Template-Erweiterung — Priorität: Niedrig
-- **Akzeptanzkriterien:**
-  - Das PR-Template enthält eine dedizierte Release-Checklist (Versioning, Changelog, Migration, Rollback-Hinweise).
-  - Die Checklist ist in regulären PRs nutzbar, ohne den normalen Entwicklungsfluss übermäßig zu belasten.
-  - Dokumentation beschreibt, wann die Release-Checklist vollständig abgearbeitet werden muss.
-- **Zieltermin:** 2026-04-03
+- **Status:** ✅ Erledigt (integriert in PR Template DoD)
+- **Abnahmedatum:** 2026-02-17
 
 ### A6 — Optionaler Umstieg von CI auf self-hosted Runner (separate ADR) — Priorität: Mittel
 - **Akzeptanzkriterien:**

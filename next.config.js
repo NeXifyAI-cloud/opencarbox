@@ -45,10 +45,10 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },
 
-  /* Weiterleitungen */
+  /* Weiterleitungen – see vercel.json for Vercel deployments (single source of truth).
+     These are used by `next start` (standalone / Docker). */
   async redirects() {
     return [
-      /* Beispiel-Weiterleitungen */
       {
         source: '/produkte',
         destination: '/shop',
@@ -62,7 +62,8 @@ const nextConfig = {
     ];
   },
 
-  /* Header für Sicherheit und Performance */
+  /* Security & performance headers – see vercel.json for Vercel deployments (single source of truth).
+     These are used by `next start` (standalone / Docker). */
   async headers() {
     return [
       {

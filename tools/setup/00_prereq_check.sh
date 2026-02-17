@@ -7,6 +7,8 @@ source "$SCRIPT_DIR/lib.sh"
 
 echo "== 00_prereq_check =="
 
+resolve_gitlab_token || true
+
 for cmd in bash node npm curl git; do
   if command -v "$cmd" >/dev/null 2>&1; then
     echo "✅ $cmd gefunden"
@@ -17,7 +19,7 @@ for cmd in bash node npm curl git; do
 done
 
 missing=0
-for var in GITHUB_OWNER REPO_NAME GH_TOKEN VERCEL_TOKEN VERCEL_ORG_ID SUPABASE_ACCESS_TOKEN NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY; do
+for var in GITHUB_OWNER REPO_NAME GH_TOKEN VERCEL_TOKEN VERCEL_ORG_ID SUPABASE_ACCESS_TOKEN NEXT_PUBLIC_SUPABASE_URL NEXT_PUBLIC_SUPABASE_ANON_KEY SUPABASE_SERVICE_ROLE_KEY GITLAB_TOKEN GITLAB_PROJECT_ID; do
   require_or_warn "$var" || missing=1
 done
 

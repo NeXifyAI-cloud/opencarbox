@@ -16,6 +16,10 @@ export VERCEL_TOKEN="${VERCEL_TOKEN:-${vercel_token:-}}"
 export VERCEL_PROJECT_ID="${VERCEL_PROJECT_ID:-${VERCEL_PROJEKT_ID:-${Vercel_Projekt_ID:-}}}"
 export GH_PAT="${GH_PAT:-${CLASSIC_TOKEN_GITHUB:-${github_token:-}}}"
 
+# GitLab integration (supports system-wide alias names from project data stores)
+export GITLAB_TOKEN="${GITLAB_TOKEN:-${GITLAB_PROJECT_TOKEN:-${GITLAB_PROJEKT_TOKEN:-${gitlab_token:-${gitlab_project_token:-${projekt_token:-${project_token:-}}}}}}}"
+export GITLAB_PROJECT_ID="${GITLAB_PROJECT_ID:-${GITLAB_PROJEKT_ID:-${GitLab_Projekt_ID:-${gitlab_project_id:-${projekt_id_gitlab:-}}}}}"
+
 export AI_PROVIDER="${AI_PROVIDER:-deepseek}"
 export DEEPSEEK_API_KEY="${DEEPSEEK_API_KEY:-}"
 export NSCALE_API_KEY="${NSCALE_API_KEY:-}"

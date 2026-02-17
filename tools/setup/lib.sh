@@ -21,6 +21,41 @@ resolve_github_token() {
   return 1
 }
 
+
+resolve_gitlab_token() {
+  if [[ -n "${GITLAB_TOKEN:-}" ]]; then
+    export GITLAB_TOKEN
+    return 0
+  fi
+
+  if [[ -n "${GITLAB_PROJECT_TOKEN:-}" ]]; then
+    export GITLAB_TOKEN="$GITLAB_PROJECT_TOKEN"
+    return 0
+  fi
+
+  if [[ -n "${GITLAB_PROJEKT_TOKEN:-}" ]]; then
+    export GITLAB_TOKEN="$GITLAB_PROJEKT_TOKEN"
+    return 0
+  fi
+
+  if [[ -n "${gitlab_token:-}" ]]; then
+    export GITLAB_TOKEN="$gitlab_token"
+    return 0
+  fi
+
+  if [[ -n "${projekt_token:-}" ]]; then
+    export GITLAB_TOKEN="$projekt_token"
+    return 0
+  fi
+
+  if [[ -n "${project_token:-}" ]]; then
+    export GITLAB_TOKEN="$project_token"
+    return 0
+  fi
+
+  return 1
+}
+
 is_missing_or_placeholder() {
   local value="${1:-}"
   [[ -z "$value" || "$value" == "..." || "$value" == "DEIN_ORG_ODER_USER" || "$value" == "dein-projekt" ]]

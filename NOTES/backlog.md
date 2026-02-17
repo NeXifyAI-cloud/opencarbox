@@ -94,8 +94,8 @@
 - **Zieltermin:** 2026-03-27
 
 ### A5 — Release-Checklist als PR-Template-Erweiterung — Priorität: Niedrig
-- **Status:** ✅ Erledigt (integriert in PR Template DoD)
-- **Abnahmedatum:** 2026-02-17
+- **Status:** ⏳ In Review (integriert in PR-Template-DoD, Abnahme nach produktivem Einsatz)
+- **Abnahmedatum:** tbd (nach Merge & Verifizierung)
 
 ### A6 — Optionaler Umstieg von CI auf self-hosted Runner (separate ADR) — Priorität: Mittel
 - **Akzeptanzkriterien:**

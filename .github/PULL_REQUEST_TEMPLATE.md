@@ -13,7 +13,7 @@
 - [ ] NOTES updated (`runbook.md`, `brain.md`, or `backlog.md`) if applicable
 - [ ] Documentation updated (`README`, `docs/`) if applicable
 - [ ] DB migration / runbook updated if schema changed
-- [ ] Orchestrator checked: Bei neuen/umbenannten Workflows wurde `.github/workflows/failure-orchestrator.yml` (`on.workflow_run.workflows`) aktualisiert
+- [ ] Orchestrator updated: For new/renamed production workflows, `.github/workflows/failure-orchestrator.yml` (`on.workflow_run.workflows`) was updated in this same PR
 
 ### Security & Compliance
 - [ ] Branch protection contract checked (see `NOTES/runbook.md`)

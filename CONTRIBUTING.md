@@ -57,7 +57,7 @@ pnpm dev
 ## Adding Environment Variables
 
 1. Add the variable with a placeholder value to `.env.example`
-2. Update `tools/check_env_schema.ts` if the variable is required at build time
+2. No changes to `tools/check_env_schema.ts` are needed; it automatically validates variables listed in `.env.example`
 3. Set the variable in Vercel (Preview + Production) and CI secrets as needed
 4. Document in `NOTES/runbook.md` under the appropriate section
 

@@ -6,6 +6,8 @@ on:
       - ci
       - Security
       - Auto-Deploy Production
+      - Deploy Preview
+      - Release
       - autofix
       - conflict-resolver
       - auto-improve

@@ -64,7 +64,91 @@
 3. Für explizit self-hosted Workflows: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
 4. Wenn self-hosted länger ausfällt, Workflow temporär auf `ubuntu-latest` umstellen und Incident im Backlog dokumentieren.
 
-## Release Process
+## Branch Protection Contract
+
+> These rules **must** be enforced in GitHub Settings → Branches → `main`.
+> This section is the authoritative contract; changes require a PR with team review.
+
+| Rule                          | Value                                     |
+| ----------------------------- | ----------------------------------------- |
+| Protected branch              | `main`                                    |
+| Required status checks        | `ci / quick-checks`, `ci / test-and-build` |
+| Require PR reviews            | min 1 approval                            |
+| Dismiss stale approvals       | recommended (optional)                    |
+| Require linear history        | optional                                  |
+| Include administrators        | recommended                               |
+| Allow force pushes            | **never**                                 |
+| Allow deletions               | **never**                                 |
+
+### Optional blocking checks
+
+- `Security` (from `security.yml`) — recommended as required once stable
+- `env-schema-check` (from `deploy-preview.yml`) — advisory
+
+## Release Process (SemVer)
+
+### How to release
+
+1. Ensure `main` is green and all PRs are merged.
+2. Create a SemVer tag locally:
+   ```bash
+   git tag v1.2.3
+   git push origin v1.2.3
+   ```
+3. The `release.yml` workflow triggers automatically on `v*.*.*` tags.
+4. Alternatively, trigger a release manually via **Actions → Release → Run workflow**.
+5. The workflow runs lint, typecheck, test, build, then creates a GitHub Release with auto-generated notes.
+6. **No AI is used** for release note generation — notes come from `git log` and GitHub's built-in release notes.
+
+### Versioning policy
+
+- **Major** (`v2.0.0`): Breaking changes to public API or database schema
+- **Minor** (`v1.1.0`): New features, non-breaking
+- **Patch** (`v1.0.1`): Bug fixes, dependency updates
+
+## Preview vs Production Deployment
+
+| Trigger            | Environment | Workflow              | Vercel flag |
+| ------------------ | ----------- | --------------------- | ----------- |
+| Pull Request       | Preview     | `deploy-preview.yml`  | (no `--prod`) |
+| Push/merge to main | Production  | `auto-deploy.yml`     | `--prod`    |
+| Manual dispatch    | Production  | `deploy-prod.yml`     | `--prod`    |
+
+### Environment variables by context
+
+- **Preview**: Uses Vercel Preview environment. Secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`. No production database credentials.
+- **Production**: Uses Vercel Production environment. Full secret set including `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+- **CI**: Only needs build-time vars (`NEXT_PUBLIC_*`). No deploy secrets.
+
+## Env Variable Management
+
+### Adding a new environment variable
+
+1. Add the variable with a placeholder to `.env.example`.
+2. Run `pnpm env:check` to verify the schema still passes.
+3. Set the variable in Vercel Dashboard (Preview + Production) and/or GitHub Secrets as needed.
+4. Document the variable's purpose in this runbook if it affects operations.
+
+> **Rule**: `OPENAI_*` variables are explicitly rejected by `tools/check_env_schema.ts` and `tools/guard_no_openai.sh`.
+
+## RLS Smoke Tests
+
+### Running locally
+
+```bash
+# Requires Supabase CLI with a running local instance
+pnpm db:rls:check
+```
+
+This executes `supabase/tests/rls_smoke.sql` against the local Supabase instance and verifies:
+- RLS is enabled on security-relevant tables
+- Expected policies exist
+
+### In CI
+
+RLS checks are available as a manual `workflow_dispatch` — not blocking CI by default since they require a running Supabase instance.
+
+## Legacy section: Deploy to Vercel
 
 1. Merge only through PR into protected `main`.
 2. Ensure required CI checks are green.

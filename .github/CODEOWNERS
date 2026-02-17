@@ -1,15 +1,25 @@
 # Default owners for all files
 * @NeXifyAI-cloud/core
 
-# Workflows
+# Workflows & CI
 .github/ @NeXifyAI-cloud/core
 
 # Source code
 src/ @NeXifyAI-cloud/core
 
-# Database
+# Database & Migrations
 prisma/ @NeXifyAI-cloud/core
 supabase/ @NeXifyAI-cloud/core
 
+# Configuration
+next.config.js @NeXifyAI-cloud/core
+vercel.json @NeXifyAI-cloud/core
+package.json @NeXifyAI-cloud/core
+
 # Documentation
 docs/ @NeXifyAI-cloud/core
+NOTES/ @NeXifyAI-cloud/core
+
+# Security-sensitive
+SECURITY.md @NeXifyAI-cloud/core
+tools/guard_no_openai.sh @NeXifyAI-cloud/core

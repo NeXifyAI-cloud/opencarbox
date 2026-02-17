@@ -34,14 +34,12 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
-      - name: Fetch issues and update backlog
+      - name: Fetch open issues
+        id: issues
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
-            const path = require('path');
-
-            // Fetch all open issues
             const issues = [];
             let page = 1;
             while (true) {
@@ -52,23 +50,26 @@ jobs:
                 per_page: 100,
                 page: page,
               });
-              // Filter out PRs (GitHub API returns PRs as issues too)
               const realIssues = data.filter(i => !i.pull_request);
               issues.push(...realIssues);
               if (data.length < 100) break;
               page++;
             }
+            fs.writeFileSync('/tmp/issues.json', JSON.stringify(issues));
+            core.info(`Fetched ${issues.length} open issues`);
 
-            // Import and use the backlog_sync module
-            const { formatIssuesBlock, updateBacklogContent } = require('./tools/backlog_sync');
-
-            const backlogPath = path.join(process.cwd(), 'NOTES', 'backlog.md');
-            const existing = fs.readFileSync(backlogPath, 'utf-8');
-            const issuesBlock = formatIssuesBlock(issues);
-            const updated = updateBacklogContent(existing, issuesBlock);
-            fs.writeFileSync(backlogPath, updated);
-
-            core.info(`Updated backlog with ${issues.length} open issues`);
+      - name: Update backlog
+        run: |
+          npx tsx -e "
+            import { formatIssuesBlock, updateBacklogContent } from './tools/backlog_sync';
+            import * as fs from 'fs';
+            const issues = JSON.parse(fs.readFileSync('/tmp/issues.json', 'utf-8'));
+            const existing = fs.readFileSync('NOTES/backlog.md', 'utf-8');
+            const block = formatIssuesBlock(issues);
+            const updated = updateBacklogContent(existing, block);
+            fs.writeFileSync('NOTES/backlog.md', updated);
+            console.log('Updated backlog with ' + issues.length + ' open issues');
+          "
 
       - name: Commit changes
         run: |

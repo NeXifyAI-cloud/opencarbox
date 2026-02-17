@@ -25,10 +25,11 @@ const FORBIDDEN_PREFIXES = ['OPENAI_']
 const FORBIDDEN_EXACT = ['GOOGLE_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY']
 
 function isForbidden(name: string): string | null {
+  const upper = name.toUpperCase()
   for (const prefix of FORBIDDEN_PREFIXES) {
-    if (name.startsWith(prefix)) return `${prefix}*`
+    if (upper.startsWith(prefix)) return `${prefix}*`
   }
-  if (FORBIDDEN_EXACT.includes(name)) return name
+  if (FORBIDDEN_EXACT.includes(upper)) return name
   return null
 }
 

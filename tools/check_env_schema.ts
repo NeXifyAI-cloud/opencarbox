@@ -15,7 +15,7 @@
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
-const FORBIDDEN_PREFIXES = ['OPENAI_API_KEY', 'GOOGLE_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY']
+const FORBIDDEN_ENV_VARS = ['OPENAI_API_KEY', 'GOOGLE_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY']
 
 // Vars that CI build actually needs (subset of .env.example)
 const CI_REQUIRED: string[] = []
@@ -61,8 +61,8 @@ function main() {
 
   // Check for forbidden provider env vars
   const envKeys = Object.keys(process.env)
-  for (const forbidden of FORBIDDEN_PREFIXES) {
-    const found = envKeys.filter((k) => k === forbidden || k.startsWith(forbidden))
+  for (const forbidden of FORBIDDEN_ENV_VARS) {
+    const found = envKeys.filter((k) => k.startsWith(forbidden))
     if (found.length > 0) {
       errors.push(`Forbidden env var(s) detected: ${found.join(', ')}`)
     }
@@ -85,7 +85,6 @@ function main() {
     // Full mode: check all non-optional vars from .env.example
     for (const v of schemaVars) {
       if (OPTIONAL_VARS.has(v)) continue
-      if (v.startsWith('OPENAI_COMPAT')) continue
       if (!process.env[v]) {
         errors.push(`Missing env var: ${v} (defined in .env.example)`)
       }

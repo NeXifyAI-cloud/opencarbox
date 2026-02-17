@@ -2,57 +2,9 @@
 
 ## Operations
 
-### Local Development
-```bash
-pnpm install              # Install dependencies (use --frozen-lockfile in CI)
-pnpm dev                  # Start local dev server (http://localhost:3000)
-pnpm system:check         # System health check
-pnpm system:start         # Start system
-```
-
-### Quality Gate (run before every PR)
-```bash
-pnpm lint                 # ESLint check
-pnpm typecheck            # TypeScript strict check
-pnpm test                 # Vitest unit + API tests
-pnpm build                # Next.js production build
-pnpm secret:scan          # Secret pattern scan
-```
-
-### Database Migrations
-1. SQL migrations live in `supabase/migrations/` (ordered: 001, 002, 003).
-2. Apply via Supabase CLI: `supabase db push` or SQL editor.
-3. Apply order: `001_initial_schema.sql` → `002_nexify_core.sql` → `003_nexify_memory.sql`.
-4. **Never** edit historical migration files — create new migrations instead.
-5. Rollback: create compensating migration, test in staging first.
-6. Required env: `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`.
-
-### Prisma
-```bash
-pnpm db:generate          # Generate Prisma client
-pnpm db:push              # Push schema to Supabase
-pnpm db:migrate           # Run Prisma migrations (dev)
-pnpm db:studio            # Open Prisma GUI
-```
-
-### Secrets / Env Management
-- **Source of truth:** `.env.example` lists all variables with defaults.
-- **Normalization:** `tools/export_env.sh` maps legacy secret names to standard env vars.
-- **CI Secrets:** Configured in GitHub Settings → Secrets → Actions (see `.github/SECRETS_SETUP.md`).
-- **Vercel Env:** Managed via Vercel dashboard or `vercel env pull`.
-- **Policy:** Never commit secrets; `pnpm secret:scan` checks for leaked patterns.
-
-### Deployment (Vercel Track)
-1. **Automatic:** Push to `main` with green CI triggers `auto-deploy.yml` → Vercel production.
-2. **Manual:** `workflow_dispatch` on `auto-deploy.yml` with environment choice.
-3. **Preview:** PR deployments via Vercel integration (if connected).
-4. **Vercel Config:** `vercel.json` — fra1 region, security headers, redirects.
-5. **Rollback:** Redeploy previous successful deployment in Vercel dashboard.
-
-### Healthchecks
-- `/api/health` — returns `{ status: "ok", version, dependencies }`.
-- Poll every 60s; alert on `status !== "ok"` or HTTP >= 500.
-- Check `dependencies.supabase.status` for DB connectivity.
+- Start local app: `pnpm dev`.
+- Validate quality gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
+- Apply Supabase migrations via Supabase CLI or SQL editor using files in `supabase/migrations`.
 
 ## AI Provider Policy (Production + CI)
 
@@ -112,11 +64,100 @@ pnpm db:studio            # Open Prisma GUI
 3. Für explizit self-hosted Workflows: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
 4. Wenn self-hosted länger ausfällt, Workflow temporär auf `ubuntu-latest` umstellen und Incident im Backlog dokumentieren.
 
-## Release Process
+## Branch Protection Contract
+
+> These rules **must** be enforced in GitHub Settings → Branches → `main`.
+> This section is the authoritative contract; changes require a PR with team review.
+
+| Rule                          | Value                                     |
+| ----------------------------- | ----------------------------------------- |
+| Protected branch              | `main`                                    |
+| Required status checks        | `ci / quick-checks`, `ci / test-and-build` |
+| Require PR reviews            | min 1 approval                            |
+| Dismiss stale approvals       | recommended (optional)                    |
+| Require linear history        | optional                                  |
+| Include administrators        | recommended                               |
+| Allow force pushes            | **never**                                 |
+| Allow deletions               | **never**                                 |
+
+### Optional blocking checks
+
+- `Security` (from `security.yml`) — recommended as required once stable
+- `env-schema-check` (from `deploy-preview.yml`) — advisory
+
+## Release Process (SemVer)
+
+### How to release
+
+1. Ensure `main` is green and all PRs are merged.
+2. Create a SemVer tag locally:
+   ```bash
+   git tag v1.2.3
+   git push origin v1.2.3
+   ```
+3. The `release.yml` workflow triggers automatically on `v*.*.*` tags.
+4. Alternatively, trigger a release manually via **Actions → Release → Run workflow**.
+5. The workflow runs lint, typecheck, test, build, then creates a GitHub Release with auto-generated notes.
+6. **No AI is used** for release note generation — notes come from `git log` and GitHub's built-in release notes.
+
+### Versioning policy
+
+- **Major** (`v2.0.0`): Breaking changes to public API or database schema
+- **Minor** (`v1.1.0`): New features, non-breaking
+- **Patch** (`v1.0.1`): Bug fixes, dependency updates
+
+## Preview vs Production Deployment
+
+| Trigger            | Environment | Workflow              | Vercel flag |
+| ------------------ | ----------- | --------------------- | ----------- |
+| Pull Request       | Preview     | `deploy-preview.yml`  | (no `--prod`) |
+| Push/merge to main | Production  | `auto-deploy.yml`     | `--prod`    |
+| Manual dispatch    | Production  | `deploy-prod.yml`     | `--prod`    |
+
+### Environment variables by context
+
+- **Preview**: Uses Vercel Preview environment. Secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`. No production database credentials.
+- **Production**: Uses Vercel Production environment. Full secret set including `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+- **CI**: Only needs build-time vars (`NEXT_PUBLIC_*`). No deploy secrets.
+
+> **Naming convention**: The canonical secret name is `VERCEL_PROJECT_ID`. Legacy alias `VERCEL_PROJEKT_ID` is supported in `auto-deploy.yml` for backwards compatibility but should not be used for new configuration.
+
+## Env Variable Management
+
+### Adding a new environment variable
+
+1. Add the variable with a placeholder to `.env.example`.
+2. Run `pnpm env:check` to verify the schema still passes.
+3. Set the variable in Vercel Dashboard (Preview + Production) and/or GitHub Secrets as needed.
+4. Document the variable's purpose in this runbook if it affects operations.
+
+> **Rule**: `OPENAI_*` variables are explicitly rejected by `tools/check_env_schema.ts` and `tools/guard_no_openai.sh`.
+
+## RLS Smoke Tests
+
+### Running locally
+
+```bash
+# Requires Supabase CLI with a running local instance
+pnpm db:rls:check
+```
+
+This executes `supabase/tests/rls_smoke.sql` against the local Supabase instance and verifies:
+- RLS is enabled on security-relevant tables
+- Expected policies exist
+
+### In CI
+
+RLS checks are available as a manual `workflow_dispatch` — not blocking CI by default since they require a running Supabase instance.
+
+## Legacy section: Deploy to Vercel
+
+> **Deprecated**: See [Preview vs Production Deployment](#preview-vs-production-deployment) above for the current process.
+> This section is kept for historical reference only.
 
 1. Merge only through PR into protected `main`.
 2. Ensure required CI checks are green.
-3. Deploy to Vercel Preview, then Production.
+3. ~~Deploy to Vercel Preview, then Production.~~ → Now automated via `deploy-preview.yml` (PR) and `auto-deploy.yml` (main).
 
 ## Quality Gates by Milestone
 
@@ -132,6 +173,13 @@ flowchart TD
   B -->|lint + typecheck OK| C[ci.yml: test-and-build]
   C -->|success on main| D[auto-deploy.yml via workflow_run]
   D --> E[Vercel production deploy]
+  A -->|pull_request| F[deploy-preview.yml]
+  F --> G[env-schema-check]
+  G -->|OK| H[Vercel preview deploy]
+  H --> I[PR comment with URL]
+  J[push tag v*.*.*] --> K[release.yml]
+  K --> L[lint + typecheck + test + build]
+  L --> M[GitHub Release]
 ```
 
 ### Workflow Responsibilities
@@ -198,6 +246,9 @@ flowchart TD
   - `bootstrap`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
   - `Security`: nur sicherheitsrelevanter Check `pnpm audit --prod` (entspricht `security.yml`)
   - `Auto-Deploy Production`: `pnpm lint`, `pnpm typecheck`, `pnpm build`
+  - `Deploy Preview`: `npx tsx tools/check_env_schema.ts --ci`, `pnpm build`
+  - `Release`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+  - `RLS Smoke Tests`: `psql $DATABASE_URL -f supabase/tests/rls_smoke.sql`
   - `__default__`: `pnpm lint`, `pnpm typecheck`
 - Pflege-Regel: Bei neuen produktiven Workflows sowohl `on.workflow_run.workflows` als auch das Repro-Profil in derselben PR ergänzen.
 

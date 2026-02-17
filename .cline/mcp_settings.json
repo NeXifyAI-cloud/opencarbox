@@ -9,12 +9,13 @@
       "description": "Supabase MCP Server - Database, Auth, Storage, Edge Functions, Branching"
     },
     "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_TOKEN}",
+        "X-MCP-Insiders": "true"
       },
-      "description": "GitHub MCP Server - Repository operations, issues, pull requests"
+      "description": "GitHub MCP Server (Insiders) - Repository operations, issues, pull requests, actions, code security, early access features"
     },
     "postgres": {
       "command": "npx",

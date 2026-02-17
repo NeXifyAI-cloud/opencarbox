@@ -1,5 +1,70 @@
 # Brain / Architecture Notes
 
+## System Map (Single Source of Truth)
+
+### Stack
+- **Framework:** Next.js 14 App Router, TypeScript strict, pnpm 9
+- **Data/Auth:** Supabase (Auth + DB + Storage + RLS), Prisma ORM (`prisma/schema.prisma`)
+- **State:** TanStack Query (server), Zustand (client, `src/stores/`)
+- **UI:** Tailwind CSS, Radix UI, class-variance-authority
+- **Payments:** Stripe (`@stripe/stripe-js`, `stripe`)
+- **Search:** Meilisearch
+- **Email:** Resend
+- **AI:** DeepSeek only (NSCALE header required) — **OpenAI forbidden** (guard policy)
+- **Deployment:** Vercel (`vercel.json`, `auto-deploy.yml`)
+- **CI:** GitHub Actions (`ci.yml` — lint, typecheck, test, build)
+
+### Key Directories
+| Path | Purpose |
+|------|---------|
+| `src/app/` | Next.js App Router (routes, API, layouts) |
+| `src/components/` | UI components (layout, ui, shared, providers) |
+| `src/lib/config/` | Env validation (Zod), feature flags |
+| `src/lib/supabase/` | Supabase clients (client, server, middleware) |
+| `src/stores/` | Zustand stores |
+| `prisma/schema.prisma` | Database schema |
+| `supabase/migrations/` | SQL migrations (001–003) |
+| `tools/` | CI/CD tools (preflight, guard, env export) |
+| `scripts/` | Dev/ops scripts (quality-gate, secret-scan, system start) |
+| `NOTES/` | Brain, backlog, runbook (this directory) |
+| `.github/workflows/` | CI, security, auto-deploy, failure-orchestrator |
+
+### Environment Variables (from `.env.example`)
+| Variable | Scope | Required |
+|----------|-------|----------|
+| `NEXT_PUBLIC_APP_URL` | Client | Yes |
+| `NEXT_PUBLIC_SUPABASE_URL` | Client | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client | Yes |
+| `SUPABASE_SERVICE_ROLE_KEY` | Server | Yes |
+| `DEEPSEEK_API_KEY` | Server | For AI features |
+| `NSCALE_API_KEY` | Server | For AI features |
+| `AI_DEFAULT_PROVIDER` | Server | Default: deepseek |
+| `AI_DEFAULT_MODEL` | Server | Default: deepseek-chat |
+| `RATE_LIMIT_PER_MINUTE` | Server | Default: 20 |
+| `AI_TIMEOUT_MS` | Server | Default: 30000 |
+| `SENTRY_DSN` | Server | Optional |
+| `FEATURE_AI_CHAT` | Server | Default: true |
+
+### Build / Test / Quality
+```bash
+pnpm install              # Install dependencies
+pnpm lint                 # ESLint (next lint)
+pnpm typecheck            # tsc --noEmit
+pnpm test                 # Vitest (unit + API tests)
+pnpm build                # next build (standalone output)
+pnpm secret:scan          # Secret pattern scan
+pnpm quality-gate         # Full quality check
+pnpm system:check         # System health check
+```
+
+### Integrations
+- **Supabase:** Auth, DB (PostgreSQL), Storage, RLS
+- **Stripe:** Payment processing (server-side only)
+- **Meilisearch:** Full-text search
+- **Resend:** Transactional email
+- **DeepSeek + NSCALE:** AI chat (server-side only)
+- **Vercel:** Hosting + deployment (fra1 region)
+
 ## Architecture Overview
 - Framework: Next.js App Router with TypeScript strict mode.
 - Data/Auth: Supabase (`@supabase/supabase-js` + `@supabase/ssr`).

@@ -1,0 +1,9 @@
+# Default owner for all files
+* @NeXify-Chat-it-Automate-it
+
+# CI/CD and workflows
+.github/ @NeXify-Chat-it-Automate-it
+
+# Database schema and migrations
+prisma/ @NeXify-Chat-it-Automate-it
+supabase/ @NeXify-Chat-it-Automate-it

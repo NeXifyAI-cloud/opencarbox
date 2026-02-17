@@ -36,9 +36,10 @@
 | `NEXT_PUBLIC_SUPABASE_URL` | Client | Yes |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client | Yes |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server | Yes |
+| `DATABASE_URL` | Server | Yes (Prisma + DB connection) |
 | `DEEPSEEK_API_KEY` | Server | For AI features |
 | `NSCALE_API_KEY` | Server | For AI features |
-| `AI_DEFAULT_PROVIDER` | Server | Default: deepseek |
+| `AI_PROVIDER` | Server | Default: deepseek |
 | `AI_DEFAULT_MODEL` | Server | Default: deepseek-chat |
 | `RATE_LIMIT_PER_MINUTE` | Server | Default: 20 |
 | `AI_TIMEOUT_MS` | Server | Default: 30000 |

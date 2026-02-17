@@ -2,9 +2,57 @@
 
 ## Operations
 
-- Start local app: `pnpm dev`.
-- Validate quality gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
-- Apply Supabase migrations via Supabase CLI or SQL editor using files in `supabase/migrations`.
+### Local Development
+```bash
+pnpm install              # Install dependencies (use --frozen-lockfile in CI)
+pnpm dev                  # Start local dev server (http://localhost:3000)
+pnpm system:check         # System health check
+pnpm system:start         # Start system
+```
+
+### Quality Gate (run before every PR)
+```bash
+pnpm lint                 # ESLint check
+pnpm typecheck            # TypeScript strict check
+pnpm test                 # Vitest unit + API tests
+pnpm build                # Next.js production build
+pnpm secret:scan          # Secret pattern scan
+```
+
+### Database Migrations
+1. SQL migrations live in `supabase/migrations/` (ordered: 001, 002, 003).
+2. Apply via Supabase CLI: `supabase db push` or SQL editor.
+3. Apply order: `001_initial_schema.sql` → `002_nexify_core.sql` → `003_nexify_memory.sql`.
+4. **Never** edit historical migration files — create new migrations instead.
+5. Rollback: create compensating migration, test in staging first.
+6. Required env: `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`.
+
+### Prisma
+```bash
+pnpm db:generate          # Generate Prisma client
+pnpm db:push              # Push schema to Supabase
+pnpm db:migrate           # Run Prisma migrations (dev)
+pnpm db:studio            # Open Prisma GUI
+```
+
+### Secrets / Env Management
+- **Source of truth:** `.env.example` lists all variables with defaults.
+- **Normalization:** `tools/export_env.sh` maps legacy secret names to standard env vars.
+- **CI Secrets:** Configured in GitHub Settings → Secrets → Actions (see `.github/SECRETS_SETUP.md`).
+- **Vercel Env:** Managed via Vercel dashboard or `vercel env pull`.
+- **Policy:** Never commit secrets; `pnpm secret:scan` checks for leaked patterns.
+
+### Deployment (Vercel Track)
+1. **Automatic:** Push to `main` with green CI triggers `auto-deploy.yml` → Vercel production.
+2. **Manual:** `workflow_dispatch` on `auto-deploy.yml` with environment choice.
+3. **Preview:** PR deployments via Vercel integration (if connected).
+4. **Vercel Config:** `vercel.json` — fra1 region, security headers, redirects.
+5. **Rollback:** Redeploy previous successful deployment in Vercel dashboard.
+
+### Healthchecks
+- `/api/health` — returns `{ status: "ok", version, dependencies }`.
+- Poll every 60s; alert on `status !== "ok"` or HTTP >= 500.
+- Check `dependencies.supabase.status` for DB connectivity.
 
 ## AI Provider Policy (Production + CI)
 

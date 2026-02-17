@@ -1,5 +1,45 @@
 # Backlog
 
+## Tech Debt / Bug Fixes (prioritized)
+
+### TD-001 — pnpm-lock.yaml out of sync with package.json — Priorität: Hoch
+- **Repro:** `pnpm install --frozen-lockfile` → fails with specifier mismatch (autoprefixer, postcss versions).
+- **Erwartetes Ergebnis:** `pnpm install --frozen-lockfile` succeeds.
+- **Aktuelles Ergebnis:** Fails in CI with `ERR_PNPM_OUTDATED_LOCKFILE`.
+- **Betroffene Dateien:** `pnpm-lock.yaml`, `package.json`
+- **Fix:** Regenerate lockfile with `pnpm install`.
+- **Akzeptanzkriterien:** `pnpm install --frozen-lockfile` succeeds in CI.
+- **Status:** ✅ Fixed (lockfile regenerated)
+
+### TD-002 — .env.example contains OPENAI_COMPAT vars — Priorität: Hoch
+- **Repro:** `grep OPENAI .env.example` → shows `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_BASE_URL`.
+- **Erwartetes Ergebnis:** No OPENAI references in env configuration.
+- **Aktuelles Ergebnis:** `.env.example` has OPENAI-prefixed vars that contradict DeepSeek-only policy.
+- **Betroffene Dateien:** `.env.example`
+- **Akzeptanzkriterien:** No `OPENAI_*` in `.env.example`; `tools/guard_no_openai.sh` stays green.
+- **Status:** ✅ Fixed
+
+### TD-003 — Missing CONTRIBUTING.md — Priorität: Mittel
+- **Repro:** No contribution guidelines exist.
+- **Erwartetes Ergebnis:** Clear guidelines for branching, PR process, commit messages.
+- **Betroffene Dateien:** `CONTRIBUTING.md` (new)
+- **Akzeptanzkriterien:** File exists with branch strategy, commit convention, PR checklist.
+- **Status:** ✅ Fixed
+
+### TD-004 — Missing CODEOWNERS — Priorität: Mittel
+- **Repro:** No `.github/CODEOWNERS` exists; PRs have no auto-assigned reviewers.
+- **Erwartetes Ergebnis:** Auto-review assignment for critical paths.
+- **Betroffene Dateien:** `.github/CODEOWNERS` (new)
+- **Akzeptanzkriterien:** CODEOWNERS file assigns default owner.
+- **Status:** ✅ Fixed
+
+### TD-005 — CI lacks test report artifacts — Priorität: Niedrig
+- **Repro:** CI runs tests but does not upload results as artifacts.
+- **Erwartetes Ergebnis:** Test results available as downloadable artifacts in CI.
+- **Betroffene Dateien:** `.github/workflows/ci.yml`
+- **Akzeptanzkriterien:** CI uploads test report on failure.
+- **Status:** ✅ Fixed
+
 ## Milestone 1 — Scaffold
 - [x] Add env validation module and feature flags.
 - [x] Align `.env.example` with required public/server variables.

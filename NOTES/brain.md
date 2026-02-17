@@ -100,3 +100,15 @@
   - Bestehende Automationen bleiben kompatibel, neue Workflows können konsistent lowercase-Guardrails setzen.
   - Binärdatei-Erkennung kann über `binary_heuristic_threshold` explizit gesteuert werden.
 
+
+## ADR-007: GitLab-Projekttoken als systemweite Alias-Quelle in Setup/Env-Mapping
+- **Decision**: Setup- und Env-Normalisierung unterstützen zusätzlich GitLab-Projekttoken/-Projekt-ID über standardisierte Variablen (`GITLAB_TOKEN`, `GITLAB_PROJECT_ID`) plus Legacy-Aliasse aus systemweiten Datenquellen.
+- **Alternatives**:
+  - Ausschließlich GitHub/Vercel/Supabase-Secrets mappen.
+  - GitLab-Variablen nur manuell ohne Alias-Auflösung pflegen.
+- **Reasoning**:
+  - Erlaubt direkte Nutzung bereits hinterlegter Projekttoken ohne manuelle Umbenennung.
+  - Hält den Bootstrap-/Verify-Pfad konsistent mit bestehender Env-Normalisierung.
+- **Consequences**:
+  - Preflight/Setup zeigen fehlende GitLab-Parameter früh als Warnung.
+  - Künftige GitLab-Automationen können standardisierte Variablen direkt verwenden.

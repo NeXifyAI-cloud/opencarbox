@@ -2,9 +2,8 @@ name: auto-improve
 
 on:
   workflow_dispatch:
-  # Disabled until CI is fully stable
-  # schedule:
-  #   - cron: '15 */6 * * *'
+  schedule:
+    - cron: '15 */6 * * *'
 
 concurrency:
   group: auto-improve-${{ github.ref }}
@@ -20,7 +19,6 @@ jobs:
   improve:
     name: Quality Checks
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
     steps:
       - uses: actions/checkout@v4
         with:

@@ -15,17 +15,17 @@ describe('Users API', () => {
         {
           email: 'customer@test.com',
           name: 'Test Kunde',
-          role: 'customer',
+          role: 'CUSTOMER',
         },
         {
           email: 'admin@test.com',
           name: 'Test Admin',
-          role: 'admin',
+          role: 'ADMIN',
         },
         {
           email: 'employee@test.com',
           name: 'Test Mitarbeiter',
-          role: 'employee',
+          role: 'EMPLOYEE',
         },
       ],
     })
@@ -49,12 +49,12 @@ describe('Users API', () => {
     })
 
     it('sollte Filter nach Rolle unterstützen', async () => {
-      const response = await fetch(`${API_URL}?role=customer`)
+      const response = await fetch(`${API_URL}?role=CUSTOMER`)
       const data = await response.json()
 
       expect(response.status).toBe(200)
       expect(data.data).toHaveLength(1)
-      expect(data.data[0].role).toBe('customer')
+      expect(data.data[0].role).toBe('CUSTOMER')
       expect(data.data[0].email).toBe('customer@test.com')
     })
 
@@ -97,7 +97,7 @@ describe('Users API', () => {
 
       const updateData = {
         name: 'Aktualisierter Name',
-        role: 'admin',
+        role: 'ADMIN',
       }
 
       const response = await fetch(`${API_URL}?id=${userId}`, {
@@ -200,7 +200,7 @@ describe('Users API', () => {
       expect(data.success).toBe(true)
       expect(data.data.name).toBe(updateData.name)
       // Rolle sollte unverändert bleiben
-      expect(data.data.role).toBe('admin')
+      expect(data.data.role).toBe('ADMIN')
     })
   })
 })

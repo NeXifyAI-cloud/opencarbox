@@ -1,60 +1,31 @@
 # Backlog
 
-## Tech Debt / Bug Fixes (prioritized)
-
-### TD-001 — pnpm-lock.yaml out of sync with package.json — Priorität: Hoch
-- **Repro:** `pnpm install --frozen-lockfile` → fails with specifier mismatch (autoprefixer, postcss versions).
-- **Erwartetes Ergebnis:** `pnpm install --frozen-lockfile` succeeds.
-- **Aktuelles Ergebnis:** Fails in CI with `ERR_PNPM_OUTDATED_LOCKFILE`.
-- **Betroffene Dateien:** `pnpm-lock.yaml`, `package.json`
-- **Fix:** Regenerate lockfile with `pnpm install`.
-- **Akzeptanzkriterien:** `pnpm install --frozen-lockfile` succeeds in CI.
-- **Status:** ✅ Fixed (lockfile regenerated)
-
-### TD-002 — .env.example contains OPENAI_COMPAT vars — Priorität: Hoch
-- **Repro:** `grep OPENAI .env.example` → shows `OPENAI_COMPAT_API_KEY` and `OPENAI_COMPAT_BASE_URL`.
-- **Erwartetes Ergebnis:** No OPENAI references in env configuration.
-- **Aktuelles Ergebnis:** `.env.example` has OPENAI-prefixed vars that contradict DeepSeek-only policy.
-- **Betroffene Dateien:** `.env.example`
-- **Akzeptanzkriterien:** No `OPENAI_*` in `.env.example`; `tools/guard_no_openai.sh` stays green.
-- **Status:** ✅ Fixed
-
-### TD-003 — Missing CONTRIBUTING.md — Priorität: Mittel
-- **Repro:** No contribution guidelines exist.
-- **Erwartetes Ergebnis:** Clear guidelines for branching, PR process, commit messages.
-- **Betroffene Dateien:** `CONTRIBUTING.md` (new)
-- **Akzeptanzkriterien:** File exists with branch strategy, commit convention, PR checklist.
-- **Status:** ✅ Fixed
-
-### TD-004 — Missing CODEOWNERS — Priorität: Mittel
-- **Repro:** No `.github/CODEOWNERS` exists; PRs have no auto-assigned reviewers.
-- **Erwartetes Ergebnis:** Auto-review assignment for critical paths.
-- **Betroffene Dateien:** `.github/CODEOWNERS` (new)
-- **Akzeptanzkriterien:** CODEOWNERS file assigns default owner.
-- **Status:** ✅ Fixed
-
-### TD-005 — CI lacks test report artifacts — Priorität: Niedrig
-- **Repro:** CI runs tests but does not upload results as artifacts.
-- **Erwartetes Ergebnis:** Test results available as downloadable artifacts in CI.
-- **Betroffene Dateien:** `.github/workflows/ci.yml`
-- **Akzeptanzkriterien:** CI uploads test report on failure.
-- **Status:** ✅ Fixed
-
-## Milestone 1 — Scaffold
+## Milestone 1 — Scaffold ✅
 - [x] Add env validation module and feature flags.
 - [x] Align `.env.example` with required public/server variables.
 - [x] Initialize NOTES documentation set.
 - [x] Add dedicated CI and security workflows.
 - [x] Add modern issue forms and PR template checklist.
 
-## Milestone 2 — Vertical Slice
+## Milestone 2 — Vertical Slice (Auth/Settings)
 - [ ] Auth flow with protected dashboard route group.
+  - **Akzeptanzkriterien:**
+    - Supabase Auth angebunden, Login/Logout funktioniert.
+    - Dashboard-Routen sind nur für authentifizierte Nutzer erreichbar.
+    - E2E-Test oder manueller Nachweis vorhanden.
 - [ ] Persisted settings with Supabase + RLS.
+  - **Akzeptanzkriterien:**
+    - Settings-Tabelle hat RLS aktiviert.
+    - Nutzer kann nur eigene Settings lesen/schreiben.
+    - `pnpm db:rls:check` zeigt keine offenen RLS-Lücken.
 - [x] Implement `/api/health` endpoint and status page.
 - [x] Implement `/api/ai/chat` with validation and tests.
 
-## Milestone 3 — Providers + NSCALE
+## Milestone 3 — Providers + NSCALE (DeepSeek-only)
 - [ ] DeepSeek provider adapter.
+  - **Akzeptanzkriterien:**
+    - Adapter implementiert und getestet.
+    - `AI_PROVIDER=deepseek` erzwungen, kein Fallback auf andere Provider.
 - [ ] DeepSeek adapter hardening (strict request schema, header enforcement, deterministic error mapping).
   - **Akzeptanzkriterien:**
     - Laufzeitvalidierung blockiert alle Provider außer `AI_PROVIDER=deepseek`.
@@ -76,6 +47,16 @@
 - [ ] Add `tools/auto_improve.ts` backlog generation.
 - [ ] Add optional `autofix.yml` safe-fix pipeline.
 - [ ] Document label/project setup and runbook operations.
+
+## Ops — Repo Standards & CI/CD
+- [x] PR/Issue Templates, CODEOWNERS, CONTRIBUTING.md, SECURITY.md (Auftrag 13).
+- [x] Branch Protection Contract documented in NOTES/runbook.md (Auftrag 14).
+- [x] Release Workflow with SemVer tags + workflow_dispatch (Auftrag 15).
+- [x] Vercel Preview deploy on PR, Production deploy on main (Auftrag 16).
+- [x] Env Sync Check via `tools/check_env_schema.ts` (Auftrag 17).
+- [x] Supabase RLS Smoke Tests via `supabase/tests/rls_smoke.sql` (Auftrag 18).
+- [x] Next.js hardening: headers/redirects single-source in vercel.json (Auftrag 19).
+- [x] Definition of Done gate in PR template + Backlog grooming (Auftrag 20).
 
 ## Automation Backlog
 
@@ -113,11 +94,8 @@
 - **Zieltermin:** 2026-03-27
 
 ### A5 — Release-Checklist als PR-Template-Erweiterung — Priorität: Niedrig
-- **Akzeptanzkriterien:**
-  - Das PR-Template enthält eine dedizierte Release-Checklist (Versioning, Changelog, Migration, Rollback-Hinweise).
-  - Die Checklist ist in regulären PRs nutzbar, ohne den normalen Entwicklungsfluss übermäßig zu belasten.
-  - Dokumentation beschreibt, wann die Release-Checklist vollständig abgearbeitet werden muss.
-- **Zieltermin:** 2026-04-03
+- **Status:** ⏳ In Review (integriert in PR-Template-DoD, Abnahme nach produktivem Einsatz)
+- **Abnahmedatum:** tbd (nach Merge & Verifizierung)
 
 ### A6 — Optionaler Umstieg von CI auf self-hosted Runner (separate ADR) — Priorität: Mittel
 - **Akzeptanzkriterien:**

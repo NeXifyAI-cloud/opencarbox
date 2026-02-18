@@ -42,6 +42,9 @@ jobs:
         run: npx tsx tools/check_env_schema.ts --ci
         continue-on-error: true
 
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
       - name: Lint
         run: pnpm lint
 
@@ -64,6 +67,9 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
 
       - name: Test
         run: pnpm test

@@ -1,64 +1,69 @@
-# Contributing to OpenCarBox
+# Contributing to OpenCarBox & Carvantooo
 
-## Branch Strategy
-
-| Branch pattern | Purpose |
-|----------------|---------|
-| `main` | Protected production branch |
-| `feature/*` | New features |
-| `fix/*` | Bug fixes |
-| `chore/*` | Tooling, docs, maintenance |
+Thank you for your interest in contributing!
 
 ## Getting Started
 
 ```bash
-git clone <repo-url>
+# Clone the repository
+git clone https://github.com/NeXifyAI-cloud/opencarbox.git
 cd opencarbox
+
+# Install dependencies
 pnpm install
-cp .env.example .env.local   # Fill in your values
-pnpm dev                      # http://localhost:3000
+
+# Start development server
+pnpm dev
 ```
 
-## Before Opening a PR
+## Development Workflow
 
-Run the quality gate locally:
+1. Create a feature branch from `main`: `git checkout -b feature/my-feature`
+2. Make your changes
+3. Run quality checks:
+   ```bash
+   pnpm lint        # ESLint
+   pnpm typecheck   # TypeScript
+   pnpm test        # Unit tests
+   pnpm build       # Production build
+   ```
+4. Commit with a descriptive message
+5. Open a Pull Request against `main`
 
-```bash
-pnpm lint        # ESLint
-pnpm typecheck   # TypeScript strict check
-pnpm test        # Vitest
-pnpm build       # Next.js production build
-pnpm secret:scan # Ensure no secrets leaked
-```
+## Code Standards
 
-## Commit Messages
+- **TypeScript strict mode** — no `any`, no implicit null
+- **Tailwind CSS only** — no inline styles, use design tokens
+- **Path aliases** — use `@/` imports (e.g., `import { x } from '@/lib/utils'`)
+- **Formatting** — Prettier (semi-false, single quotes, width 100)
+- **AI Policy** — only DeepSeek + NSCALE providers allowed; `OPENAI_*` is forbidden
+- **8px Grid** — all spacing in 8px increments
 
-Use conventional commit style:
+## Branch Naming
 
-- `feat: add product search`
-- `fix: correct cart total calculation`
-- `chore: update CI workflow`
-- `docs: update runbook`
-- `deps: bump next to 14.2.x`
+- `feature/*` — new features
+- `fix/*` — bug fixes
+- `chore/*` — maintenance tasks
 
-## Pull Request Checklist
+## Pull Request Guidelines
 
-See `.github/PULL_REQUEST_TEMPLATE.md` for the full checklist. Key points:
+- PRs require CI to pass (lint + typecheck + test + build)
+- PRs require at least one code review approval
+- Keep changes focused and small
+- Update documentation (`NOTES/`, `docs/`, `README`) if needed
+- Complete the Definition of Done checklist in the PR template
+- See `NOTES/runbook.md` for the Branch Protection Contract
 
-- [ ] Tests added/updated for behavior changes
-- [ ] All quality gate checks pass
-- [ ] Documentation updated if needed
-- [ ] No secrets in code, logs, or docs
-- [ ] Migrations included if DB schema changed
+## Adding Environment Variables
 
-## AI Provider Policy
+1. Add the variable with a placeholder value to `.env.example`
+2. No changes to `tools/check_env_schema.ts` are needed; it automatically validates variables listed in `.env.example`
+3. Set the variable in Vercel (Preview + Production) and CI secrets as needed
+4. Document in `NOTES/runbook.md` under the appropriate section
 
-**Only DeepSeek + NSCALE** are allowed. No OpenAI dependencies.
-See `tools/guard_no_openai.sh` for the enforced policy.
+## Security
 
-## Code Style
-
-- TypeScript strict mode — no `any`, no implicit null.
-- Tailwind CSS only — no inline styles.
-- `@/` path aliases for imports (`@/lib/utils`, `@/components/ui`).
-- German UI text, English code.
+- Never commit secrets, API keys, or tokens
+- Run `pnpm secret:scan` before committing
+- `OPENAI_*` environment variables are explicitly forbidden
+- Report security issues via [SECURITY.md](./SECURITY.md)

@@ -30,18 +30,18 @@ describe('Orders API', () => {
       await prisma.order.createMany({
         data: [
           {
+            orderNumber: 'CV-TEST-0001',
             userId: 'user-001',
-            orderNumber: 'TEST-001',
             subtotal: 99.99,
             total: 99.99,
             status: 'PENDING',
           },
           {
+            orderNumber: 'CV-TEST-0002',
             userId: 'user-002',
-            orderNumber: 'TEST-002',
             subtotal: 149.99,
             total: 149.99,
-            status: 'PENDING',
+            status: 'PROCESSING',
           },
         ],
       })
@@ -56,11 +56,11 @@ describe('Orders API', () => {
     })
 
     it('sollte Filter nach Status unterstützen', async () => {
-      const response = await fetch(`${API_URL}?status=pending`)
+      const response = await fetch(`${API_URL}?status=PENDING`)
       const data = await response.json()
 
       expect(response.status).toBe(200)
-      expect(data.data.every((order: any) => order.status === 'pending')).toBe(true)
+      expect(data.data.every((order: any) => order.status === 'PENDING')).toBe(true)
     })
 
     it('sollte Filter nach UserId unterstützen', async () => {
@@ -75,9 +75,11 @@ describe('Orders API', () => {
   describe('POST /api/orders', () => {
     it('sollte neue Bestellung erfolgreich erstellen', async () => {
       const newOrder = {
+        orderNumber: 'CV-TEST-0003',
         userId: 'test-user',
+        subtotal: 199.99,
         total: 199.99,
-        status: 'pending',
+        status: 'PENDING',
       }
 
       const response = await fetch(API_URL, {
@@ -101,6 +103,8 @@ describe('Orders API', () => {
 
     it('sollte Bestellung ohne UserId erstellen können', async () => {
       const newOrder = {
+        orderNumber: 'CV-TEST-0004',
+        subtotal: 99.99,
         total: 99.99,
         // Keine userId - optional
       }
@@ -141,6 +145,8 @@ describe('Orders API', () => {
 
     it('sollte Standard-Status "pending" verwenden', async () => {
       const newOrder = {
+        orderNumber: 'CV-TEST-0005',
+        subtotal: 50.00,
         total: 50.00,
         // Kein Status angegeben
       }
@@ -154,7 +160,7 @@ describe('Orders API', () => {
       const data = await response.json()
 
       expect(response.status).toBe(201)
-      expect(data.data.status).toBe('pending')
+      expect(data.data.status).toBe('PENDING')
     })
   })
 })

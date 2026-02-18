@@ -118,13 +118,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create incident issue on check failure
+      - name: Log check failure
         if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true'
-        run: |
-          gh label create incident --color b60205 --description "Incident requiring manual follow-up" 2>/dev/null || true
-          gh issue create \
-            --title "Incident: autofix checks fehlgeschlagen (Run ${{ github.event.workflow_run.id }})" \
-            --body "Autofix-Änderungen wurden erstellt, aber die Checks sind fehlgeschlagen. Manuelle Analyse erforderlich." \
-            --label incident --label autofix
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "Autofix changes were created but checks failed. Skipping PR creation."

@@ -28,6 +28,9 @@ on:
       - security-intake
       - pr-labeler
       - health-check
+      - AI PR Review
+      - AI Issue Analysis
+      - AI Code Scan
     types: [completed]
 
 concurrency:

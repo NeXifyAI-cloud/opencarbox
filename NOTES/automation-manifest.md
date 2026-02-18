@@ -29,7 +29,7 @@
 | `backlog-sync.yml` | daily cron (05:00 UTC), manual | sync GitHub issues to `NOTES/backlog.md` | none | disable workflow |
 | `release.yml` | `push` (tags `v*.*.*`), manual | build + create GitHub Release | none | disable workflow |
 | `bootstrap.yml` | manual (`workflow_dispatch`) | project initialization (Vercel + Supabase setup) | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | disable workflow |
-| `mem0-brain.yml` | `push` (`$default-branch`), every 6h cron, manual | Mem0 AI memory sync + GitLab mirror | `GITLAB_PROJEKT_TOKEN`, `CLASSIC_TOKEN_GITHUB` | disable workflow |
+| `mem0-brain.yml` | `push` (`$default-branch`), every 6h cron, manual | Mem0 AI memory sync + GitLab mirror | `GITLAB_PROJEKT_TOKEN`, `CLASSIC_TOKEN_GITHUB_NEU` | disable workflow |
 | `security-intake.yml` | weekly cron (Mon 04:00 UTC), manual | parse audit findings → create GitHub issues | none | disable workflow |
 | `ai-pr-review.yml` | `pull_request` (opened/synchronize) | AI-powered PR code review via OpenAI | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
 | `ai-issue-analyze.yml` | `issues` (opened/labeled) | AI-powered issue analysis and categorization | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
@@ -61,7 +61,7 @@
 
 ### External Integrations
 - `GITLAB_PROJEKT_TOKEN` — GitLab project access token (mem0-brain)
-- `CLASSIC_TOKEN_GITHUB` — GitHub classic PAT (mem0-brain)
+- `CLASSIC_TOKEN_GITHUB_NEU` — GitHub classic PAT (mem0-brain)
 - `HEALTHCHECK_URL` — deployed app URL for health probes (optional)
 
 ## Runner Configuration (ADR-010, ADR-011)

@@ -41,11 +41,20 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  AI_PROVIDER: deepseek
+  # AI Provider Configuration (primary: github-models, fallback: deepseek)
+  AI_PROVIDER: ${{ vars.AI_PROVIDER || 'github-models' }}
+  AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
+  # GitHub Models (Primary)
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_MODELS_BASE_URL: ${{ secrets.GITHUB_MODELS_BASE_URL || 'https://models.inference.ai.azure.com' }}
+  GITHUB_MODELS_MODEL: ${{ secrets.GITHUB_MODELS_MODEL || 'gpt-4o' }}
+  # DeepSeek (Fallback)
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
   NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  FORBID_WORKFLOW_EDITS: 'true'
+  AI_MAX_CALLS: '3'
 
 jobs:
   route-failure:
@@ -53,7 +62,7 @@ jobs:
     if: >-
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.name != 'failure-orchestrator'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     outputs:
       ai_eligible: ${{ steps.ai_eligible.outputs.eligible }}
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
@@ -73,14 +82,14 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Normalize environment aliases
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ai
+
       - name: AI triage eligibility
         id: ai_eligible
-        run: |
-          if npx tsx tools/preflight.ts ai >/dev/null 2>&1; then
-            echo "eligible=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "eligible=false" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "eligible=true" >> "$GITHUB_OUTPUT"
 
       - name: Ensure routing labels exist
         run: |
@@ -93,10 +102,21 @@ jobs:
         id: existing_marker
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          WF_NAME="${{ github.event.workflow_run.name }}"
+          INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
+
+          # Check for exact run-id marker (existing dedup)
           ISSUE_COUNT="$(gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
           PR_COUNT="$(gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
 
-          if [ "$ISSUE_COUNT" -gt 0 ] || [ "$PR_COUNT" -gt 0 ]; then
+          # Check for open issue with exact incident title (robust dedup, independent of search parser behavior)
+          WF_ISSUE_COUNT="$(gh issue list --state open --label failure-routing --json title --jq --arg title "$INCIDENT_TITLE" '[.[] | select(.title == $title)] | length')"
+
+          echo "marker_issue_count=$ISSUE_COUNT"
+          echo "marker_pr_count=$PR_COUNT"
+          echo "workflow_issue_count=$WF_ISSUE_COUNT"
+
+          if [ "$ISSUE_COUNT" -gt 0 ] || [ "$PR_COUNT" -gt 0 ] || [ "$WF_ISSUE_COUNT" -gt 0 ]; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
@@ -110,7 +130,7 @@ jobs:
     if: >-
       needs.route-failure.outputs.ai_eligible == 'true' &&
       needs.route-failure.outputs.marker_exists != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     permissions:
       contents: write
       pull-requests: write
@@ -134,6 +154,11 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Normalize environment aliases
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ai
+
       - name: PR backlog guardrail (max 2 codex PRs)
         id: pr_guardrail
         run: |
@@ -148,17 +173,26 @@ jobs:
         run: |
           pnpm -s prettier --write . 2>/dev/null || true
           pnpm -s eslint . --fix 2>/dev/null || true
+        env:
+          AI_MAX_CALLS: '20'
+          max_conflict_files: '10'
+          max_file_bytes: '200000'
+          binary_heuristic_threshold: '0.15'
+          FORBID_WORKFLOW_EDITS: '1'
 
       - name: Validate fix
         id: validate
         if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
           set +e
-          pnpm lint && pnpm typecheck && pnpm test && pnpm build
+          pnpm db:generate && pnpm lint && pnpm typecheck && pnpm test && pnpm build
           echo "status=$?" >> "$GITHUB_OUTPUT"
 
       - name: Create fix PR
         if: steps.pr_guardrail.outputs.blocked != 'true' && steps.validate.outputs.status == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
           git diff --quiet && { echo "No changes"; exit 0; }
@@ -175,11 +209,9 @@ jobs:
 
           gh pr create \
             --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
-            --base main \
+            --base "${{ github.event.workflow_run.head_branch }}" \
             --head "$BRANCH" \
-            --body "AI-Triage für fehlgeschlagenen Workflow. Marker: ${RUN_REF}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- pnpm lint\n- pnpm typecheck\n- pnpm test\n- pnpm build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
 
       - name: Fallback issue
         if: steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0'
@@ -199,7 +231,7 @@ jobs:
       always() &&
       needs.route-failure.outputs.marker_exists != 'true' &&
       needs.route-failure.outputs.ai_eligible != 'true'
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     permissions:
       issues: write
     steps:

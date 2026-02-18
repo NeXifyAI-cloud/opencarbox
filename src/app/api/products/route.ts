@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    // console.error('Fehler beim Abrufen der Produkte:', error)
+
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    // console.error('Fehler beim Erstellen des Produkts:', error)
+
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }

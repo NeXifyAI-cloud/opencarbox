@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    // console.error('Fehler beim Abrufen der Benutzer:', error)
+
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -127,7 +127,7 @@ export async function PUT(request: NextRequest) {
       data: updatedUser,
     })
   } catch (error) {
-    // console.error('Fehler beim Aktualisieren des Benutzers:', error)
+
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }

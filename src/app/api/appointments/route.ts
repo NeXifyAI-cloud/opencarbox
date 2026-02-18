@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -96,7 +97,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Termine:', error)
+    logger.error('Fehler beim Abrufen der Termine:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -183,7 +184,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Fehler beim Erstellen des Termins:', error)
+    logger.error('Fehler beim Erstellen des Termins:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -255,7 +256,7 @@ async function _GET_AVAILABILITY(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Prüfen der Verfügbarkeit:', error)
+    logger.error('Fehler beim Prüfen der Verfügbarkeit:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -346,7 +347,7 @@ async function _GET_STATS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Termin-Statistiken:', error)
+    logger.error('Fehler beim Abrufen der Termin-Statistiken:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }

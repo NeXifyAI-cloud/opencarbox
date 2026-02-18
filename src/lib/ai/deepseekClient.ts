@@ -1,24 +1,19 @@
-import { getAiEnv } from '@/lib/ai/env';
+/**
+ * Legacy DeepSeek client
+ * @deprecated This module is maintained for backward compatibility only.
+ * Use the new provider system: import { aiChatCompletion } from '@/lib/ai/client'
+ */
 
+import { getAutoSelector } from './auto-selector';
+import type { ChatCompletionRequest } from './providers/types';
+
+/**
+ * Execute a chat completion request
+ * Now uses the new auto-selector system with fallback support
+ * @deprecated Use aiChatCompletion from @/lib/ai/client instead
+ */
 export async function deepseekChatCompletion(payload: unknown) {
-  const env = getAiEnv();
-  const baseUrl = env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com';
-  const url = `${baseUrl.replace(/\/$/, '')}/v1/chat/completions`;
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`,
-      [env.NSCALE_HEADER_NAME]: env.NSCALE_API_KEY,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const txt = await res.text().catch(() => '');
-    throw new Error(`DeepSeek error ${res.status}: ${txt.slice(0, 300)}`);
-  }
-
-  return res.json();
+  // Use the new auto-selector system for better reliability
+  const autoSelector = getAutoSelector();
+  return autoSelector.chatCompletion(payload as ChatCompletionRequest);
 }

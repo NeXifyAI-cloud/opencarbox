@@ -73,15 +73,7 @@ jobs:
               --title "chore: sync audit-fix-deploy → main [autonomous]" \
               --base "$TARGET_BRANCH" \
               --head "$SOURCE_BRANCH" \
-              --body "## Automated Sync from audit-fix-deploy to main
-
-This PR automatically syncs changes from \`$SOURCE_BRANCH\` to \`$TARGET_BRANCH\`.
-
-- ✅ Commits ahead: $COMMITS_AHEAD
-- 🤖 This PR will auto-merge when CI passes
-- 📊 All changes have been validated in the audit-fix-deploy branch
-
-**Merge Strategy:** Squash merge" \
+              --body "Automated sync from audit-fix-deploy to main. Commits ahead: $COMMITS_AHEAD. This PR will auto-merge when CI passes." \
               --label "auto-merge"
             
             exit 0

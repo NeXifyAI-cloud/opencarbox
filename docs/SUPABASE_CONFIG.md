@@ -19,7 +19,7 @@ Diese Keys sind sicher für den Browser und können in `.env.local` verwendet we
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://acclrhzzwdutbigxsxyq.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFjY2xyaHp6d2R1dGJpZ3hzeHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0NzA0MTgsImV4cCI6MjA4MjA0NjQxOH0.EipGXl9SLxMcsMnnmvnN8dBqiM3j3CoIen1GrXas_NE
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<SUPABASE_ANON_KEY_PLACEHOLDER>
 ```
 
 ### Private Keys (NUR Server-side!)
@@ -34,10 +34,8 @@ SUPABASE_SERVICE_ROLE_KEY=<Hole aus Supabase Dashboard → Settings → API>
 
 Für die Supabase CLI und MCP-Integration:
 
-> 🔐 Falls jemals ein Token im Repository auftaucht: im Supabase Dashboard sofort **rotieren/revoken** und lokal neu setzen.
-
 ```env
-SUPABASE_ACCESS_TOKEN=<set-in-local-env>
+SUPABASE_ACCESS_TOKEN=<SUPABASE_ACCESS_TOKEN_PLACEHOLDER>
 MCP_SERVER_URL=https://mcp.supabase.com/mcp?project_ref=acclrhzzwdutbigxsxyq&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cbranching%2Cfunctions%2Cstorage
 ```
 
@@ -127,15 +125,13 @@ RLS ist für alle Tabellen aktiviert. Policies:
 
 ## 🛠️ Verwendung im Code
 
-### Client vs Server vs Admin (Mapping)
+Die Implementierung im Repository nutzt **@supabase/ssr** mit klarer Trennung:
 
-| Kontext | Funktion | Dateipfad |
-| --- | --- | --- |
-| Browser / Client Components | `createClient()` oder `supabase` Singleton | `src/lib/supabase/client.ts` |
-| Server Components / Server Actions / Route Handlers | `createServerClient()` | `src/lib/supabase/server.ts` |
-| Privilegierte Admin-Tasks (ohne RLS) | `createAdminClient()` | `src/lib/supabase/server.ts` |
+- `src/lib/supabase/client.ts` exportiert `supabase` (Singleton) und `createClient()` für Browser/Client Components.
+- `src/lib/supabase/server.ts` exportiert `createServerClient()` (nutzt `cookies()` aus Next.js) und `createAdminClient()`.
+- `src/lib/supabase/middleware.ts` exportiert `updateSession(request)` für Session-Refresh in `src/middleware.ts`.
 
-### Browser-Side (Client Components)
+### Client Components (Browser)
 
 ```typescript
 import { createClient } from '@/lib/supabase/client';
@@ -147,7 +143,13 @@ const { data, error } = await supabase
   .limit(10);
 ```
 
-### Server-Side (Server Components)
+Alternativ kann direkt der Singleton verwendet werden:
+
+```typescript
+import { supabase } from '@/lib/supabase/client';
+```
+
+### Server Components / Route Handlers
 
 ```typescript
 import { createServerClient } from '@/lib/supabase/server';
@@ -159,38 +161,25 @@ const { data, error } = await supabase
   .eq('user_id', userId);
 ```
 
-### Server Actions
+### Server-only Admin Aufgaben (umgeht RLS)
 
 ```typescript
-'use server';
-
-import { createServerClient } from '@/lib/supabase/server';
-
-export async function createOrder(orderData: OrderInput) {
-  const supabase = await createServerClient();
-  const { data, error } = await supabase
-    .from('orders')
-    .insert(orderData)
-    .select()
-    .single();
-
-  return { data, error };
-}
-```
-
-### Sichere Admin-Nutzung (`createAdminClient`) 
-
-⚠️ **server-only:** `createAdminClient()` darf nur in Server-Code verwendet werden (z. B. Route Handler, Cronjobs, Backend-Services) und niemals in Client Components.
-
-```typescript
-import 'server-only';
 import { createAdminClient } from '@/lib/supabase/server';
 
-export async function deleteUserForCompliance(userId: string) {
-  const admin = createAdminClient();
+const admin = createAdminClient();
+await admin.from('users').delete().eq('id', userId);
+```
 
-  const { error } = await admin.auth.admin.deleteUser(userId);
-  if (error) throw error;
+### Middleware-Hinweis
+
+Die Auth-Session wird in der Middleware aktualisiert. Zwischen `createServerClient(...)` und `supabase.auth.getUser()` in der Middleware darf kein zusätzlicher Code eingefügt werden, da sonst Session-Refresh/Debugging problematisch werden kann.
+
+```typescript
+import { updateSession } from '@/lib/supabase/middleware';
+import type { NextRequest } from 'next/server';
+
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
 }
 ```
 

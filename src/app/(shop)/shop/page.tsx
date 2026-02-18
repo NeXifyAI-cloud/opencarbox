@@ -26,17 +26,17 @@ export default function ShopPage() {
     <div className="flex flex-col min-h-screen bg-slate-50">
       {/* 1. Top Vehicle Finder Section (kfzteile24 Style) */}
       <section className="bg-slate-900 pt-8 pb-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-red opacity-10" />
+        <div className="absolute inset-0 bg-mesh-primary opacity-10" />
         <div className="container-content relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
             {/* Left: Headline */}
             <div className="lg:col-span-5 text-white">
-              <Badge variant="carvantooo" className="mb-4">
+              <Badge variant="primary" className="mb-4">
                 Carvantooo Parts & Service
               </Badge>
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 leading-tight">
-                Die richtigen Teile für <span className="text-carvantooo-500 italic">Dein Auto.</span>
+                Die richtigen Teile für <span className="text-primary-500 italic">Dein Auto.</span>
               </h1>
               <p className="text-slate-400 text-lg mb-8 max-w-md">
                 Finden Sie garantiert passende Ersatzteile mit unserer HSN/TSN Suche oder über Ihr Fahrzeugmodell.
@@ -67,8 +67,8 @@ export default function ShopPage() {
             <div className="lg:col-span-7">
               <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
                 <div className="flex border-b">
-                  <button className="flex-1 py-4 text-sm font-bold border-b-2 border-carvantooo-500 text-slate-900 flex items-center justify-center gap-2">
-                    <Search className="w-4 h-4 text-carvantooo-500" /> HSN/TSN Suche
+                  <button className="flex-1 py-4 text-sm font-bold border-b-2 border-primary-500 text-slate-900 flex items-center justify-center gap-2">
+                    <Search className="w-4 h-4 text-primary-500" /> HSN/TSN Suche
                   </button>
                   <button className="flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-900 flex items-center justify-center gap-2 bg-slate-50">
                     <Car className="w-4 h-4" /> Fahrzeug wählen
@@ -89,7 +89,7 @@ export default function ShopPage() {
 
                   <div className="bg-slate-50 rounded-xl p-4 flex items-start gap-4 mb-6 border border-slate-100">
                     <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm flex-shrink-0">
-                      <Clock className="w-5 h-5 text-carvantooo-500" />
+                      <Clock className="w-5 h-5 text-primary-500" />
                     </div>
                     <div>
                       <p className="text-sm text-slate-600 leading-relaxed font-medium">
@@ -98,7 +98,7 @@ export default function ShopPage() {
                     </div>
                   </div>
 
-                  <Button variant="gradient-red" size="xl" className="w-full rounded-xl shadow-lg shadow-carvantooo-500/20 group">
+                  <Button variant="gradient-primary" size="xl" className="w-full rounded-xl shadow-lg shadow-primary-500/20 group">
                     Passende Teile finden
                     <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
@@ -114,19 +114,19 @@ export default function ShopPage() {
         <div className="container-content">
           <div className="flex flex-wrap justify-between gap-6 lg:gap-12">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-carvantooo-500" />
+              <CheckCircle2 className="w-5 h-5 text-primary-500" />
               <span className="text-sm font-bold text-slate-700">100 Tage Rückgaberecht</span>
             </div>
             <div className="flex items-center gap-3 border-l pl-6 border-slate-200">
-              <Truck className="w-5 h-5 text-carvantooo-500" />
+              <Truck className="w-5 h-5 text-primary-500" />
               <span className="text-sm font-bold text-slate-700">Versand heute bis 18 Uhr</span>
             </div>
             <div className="flex items-center gap-3 border-l pl-6 border-slate-200">
-              <ShieldCheck className="w-5 h-5 text-carvantooo-500" />
+              <ShieldCheck className="w-5 h-5 text-primary-500" />
               <span className="text-sm font-bold text-slate-700">Sicher verschlüsselt</span>
             </div>
             <div className="flex items-center gap-3 border-l pl-6 border-slate-200 hidden md:flex">
-              <Zap className="w-5 h-5 text-carvantooo-500" />
+              <Zap className="w-5 h-5 text-primary-500" />
               <span className="text-sm font-bold text-slate-700">Bestpreis Garantie</span>
             </div>
           </div>
@@ -162,7 +162,7 @@ export default function ShopPage() {
           ].map((cat, i) => (
             <Link key={i} href={`/shop/kategorie/${cat.name.toLowerCase()}`} className="group">
               <div className={cn(
-                "h-full p-6 rounded-2xl transition-all border border-transparent hover:border-carvantooo-200 hover:shadow-xl hover:shadow-slate-200/50 flex flex-col items-center text-center gap-4",
+                "h-full p-6 rounded-2xl transition-all border border-transparent hover:border-primary-200 hover:shadow-xl hover:shadow-slate-200/50 flex flex-col items-center text-center gap-4",
                 cat.color || "bg-white"
               )}>
                 <span className="text-4xl group-hover:scale-110 transition-transform duration-300">{cat.icon}</span>
@@ -176,24 +176,24 @@ export default function ShopPage() {
       {/* 4. Promotional Banners */}
       <section className="py-8 container-content">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-carvantooo-500 rounded-3xl p-8 relative overflow-hidden group">
+          <div className="bg-primary-500 rounded-3xl p-8 relative overflow-hidden group">
             <div className="relative z-10 text-white">
               <Badge className="bg-white/20 text-white mb-4 border-none backdrop-blur-md">Sonderaktion</Badge>
               <h3 className="text-3xl font-display font-bold mb-4">Bremswochen bei <br/>Carvantooo</h3>
               <p className="text-white/80 mb-6 max-w-xs">Sichern Sie sich bis zu 20% Rabatt auf alle Bremsscheiben und Beläge namhafter Hersteller.</p>
-              <Button className="bg-white text-carvantooo-500 hover:bg-slate-100 rounded-xl font-bold h-12 px-8">
+              <Button className="bg-white text-primary-500 hover:bg-slate-100 rounded-xl font-bold h-12 px-8">
                 Jetzt sparen
               </Button>
             </div>
             <div className="absolute top-0 right-0 h-full w-1/2 bg-[url('/api/placeholder/400/300')] bg-cover bg-center opacity-40 group-hover:scale-105 transition-transform duration-700" />
           </div>
 
-          <div className="bg-opencarbox-500 rounded-3xl p-8 relative overflow-hidden group">
+          <div className="bg-secondary-500 rounded-3xl p-8 relative overflow-hidden group">
             <div className="relative z-10 text-white">
               <Badge className="bg-white/20 text-white mb-4 border-none backdrop-blur-md">Werkstatt-Service</Badge>
               <h3 className="text-3xl font-display font-bold mb-4">Direkt-Einbau <br/>buchen</h3>
               <p className="text-white/80 mb-6 max-w-xs">Teile online kaufen und direkt in unserer Meisterwerkstatt in 1030 Wien fachgerecht einbauen lassen.</p>
-              <Button className="bg-white text-opencarbox-500 hover:bg-slate-100 rounded-xl font-bold h-12 px-8">
+              <Button className="bg-white text-secondary-500 hover:bg-slate-100 rounded-xl font-bold h-12 px-8">
                 Termin vereinbaren
               </Button>
             </div>

@@ -1,58 +1,130 @@
-name: AutoFix CI Failures
+name: autofix
 
 on:
   workflow_run:
-    workflows: ['CI']
+    workflows: ["ci"]
     types: [completed]
-    branches: [main, develop]
+
+concurrency:
+  group: autofix-${{ github.event.workflow_run.head_branch || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
   pull-requests: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+  AI_PROVIDER: deepseek
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
 
 jobs:
-  autofix:
-    name: Auto-Fix
+  safe_autofix:
+    name: Safe Autofix
+    if: >-
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.name == 'ci' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'failure'
-    timeout-minutes: 30
-    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_branch }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
         with:
-          version: 9
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
+      - run: pnpm i --frozen-lockfile
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Format code
-        run: pnpm format:write || true
-
-      - name: Fix linting issues
-        run: pnpm lint --fix || true
-
-      - name: Commit and push fixes
+      - name: Safe fixes (format + lint)
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          if ! git diff --quiet; then
-            git add -A
-            git commit -m "fix: auto-format and lint fixes [skip ci]"
-            git push
-          else
-            echo "No changes to commit"
+          pnpm -s prettier --write . || true
+          pnpm -s eslint . --fix || true
+
+      - name: Classify changed files
+        id: classify
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "check_profile=none" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-        continue-on-error: true
+
+          CHANGED_FILES="$(git diff --name-only)"
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          {
+            echo "changed_files<<EOF"
+            echo "$CHANGED_FILES"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          # Use grep instead of rg (ripgrep not available in CI)
+          if echo "$CHANGED_FILES" | grep -qE '^(src/|app/|lib/|components/|tools/|supabase/|\.github/workflows/)'; then
+            echo "check_profile=full" >> "$GITHUB_OUTPUT"
+          else
+            echo "check_profile=lint-only" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run required checks
+        id: required_checks
+        if: steps.classify.outputs.has_changes == 'true'
+        run: |
+          PROFILE="${{ steps.classify.outputs.check_profile }}"
+          PASSED=true
+
+          if [ "$PROFILE" = "full" ]; then
+            pnpm lint || PASSED=false
+            pnpm typecheck || PASSED=false
+            pnpm test || PASSED=false
+            pnpm build || PASSED=false
+          else
+            pnpm lint || PASSED=false
+          fi
+
+          echo "passed=$PASSED" >> "$GITHUB_OUTPUT"
+
+      - name: Create PR if changes pass
+        if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed == 'true'
+        run: |
+          BR="codex/autofix-safe-${{ github.event.workflow_run.id }}"
+
+          # Max 2 open autofix PRs guardrail
+          OPEN_COUNT="$(gh pr list --state open --label autofix --json number --jq 'length')"
+          if [ "$OPEN_COUNT" -ge 2 ]; then
+            echo "Skipping: already $OPEN_COUNT open autofix PRs (max 2)."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BR"
+          git add -A
+          git commit -m "chore: safe autofix (format/lint)"
+          git push origin "$BR"
+
+          gh label create autofix --color 1d76db --description "Automated safe autofix PR" 2>/dev/null || true
+          gh pr create \
+            --title "chore: safe autofix" \
+            --body "Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet." \
+            --base main \
+            --label autofix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create incident issue on check failure
+        if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true'
+        run: |
+          gh label create incident --color b60205 --description "Incident requiring manual follow-up" 2>/dev/null || true
+          gh issue create \
+            --title "Incident: autofix checks fehlgeschlagen (Run ${{ github.event.workflow_run.id }})" \
+            --body "Autofix-Änderungen wurden erstellt, aber die Checks sind fehlgeschlagen. Manuelle Analyse erforderlich." \
+            --label incident --label autofix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

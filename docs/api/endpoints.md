@@ -3,9 +3,9 @@
 > **API-Dokumentation**
 > Alle verfügbaren API-Endpunkte der Plattform.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Basis-URL:** `/api`  
-**Aktualisiert:** 2024-12-05
+**Aktualisiert:** 2026-02-16
 
 ---
 
@@ -16,6 +16,87 @@ Alle geschützten Endpunkte erfordern einen gültigen Supabase JWT-Token im Auth
 ```
 Authorization: Bearer <supabase-jwt-token>
 ```
+
+---
+
+## Plattform-API
+
+### Health
+
+| Methode | Endpunkt | Beschreibung | Auth |
+|---------|----------|--------------|------|
+| GET | `/api/health` | Betriebsstatus inkl. Version und Abhängigkeiten | Nein |
+
+**Standardisierte Response (`200`)**
+
+```json
+{
+  "status": "ok",
+  "version": "1.1.0",
+  "dependencies": {
+    "supabase": {
+      "status": "up",
+      "missingEnv": []
+    }
+  },
+  "timestamp": "2026-02-16T00:00:00.000Z"
+}
+```
+
+---
+
+### AI Chat
+
+| Methode | Endpunkt | Beschreibung | Auth |
+|---------|----------|--------------|------|
+| POST | `/api/ai/chat` | Chat-Completion über DeepSeek mit Validation, Rate-Limit, Retry und Timeout | Nein |
+
+**Request Body (Zod-validiert)**
+
+```json
+{
+  "model": "deepseek-chat",
+  "temperature": 0.2,
+  "max_tokens": 1024,
+  "messages": [
+    { "role": "user", "content": "Wie wechsle ich Bremsbeläge?" }
+  ]
+}
+```
+
+**Erfolg (`200`)**
+
+```json
+{
+  "success": true,
+  "data": {
+    "provider": "deepseek"
+  },
+  "meta": {
+    "attempt": 1,
+    "maxAttempts": 3
+  }
+}
+```
+
+**Fehler (`4xx/5xx`)**
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Validation failed.",
+    "details": {}
+  }
+}
+```
+
+**Verhalten**
+
+- In-Memory Rate-Limit pro Client-IP (konfigurierbar über `AI_CHAT_RATE_LIMIT_MAX_REQUESTS` und `AI_CHAT_RATE_LIMIT_WINDOW_MS`).
+- Timeout pro Upstream-Call (`AI_CHAT_TIMEOUT_MS`, Standard 12s).
+- Retry mit Backoff (`AI_CHAT_RETRY_COUNT`, Standard 2 Retries = 3 Gesamtversuche).
 
 ---
 
@@ -122,49 +203,22 @@ Authorization: Bearer <supabase-jwt-token>
 
 ---
 
-## Response-Format
-
-### Erfolg
-
-```json
-{
-  "success": true,
-  "data": { ... },
-  "meta": {
-    "total": 100,
-    "page": 1,
-    "limit": 20
-  }
-}
-```
-
-### Fehler
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Beschreibung des Fehlers",
-    "details": { ... }
-  }
-}
-```
-
----
-
-## Fehler-Codes
+## Fehler-Codes (standardisiert)
 
 | Code | HTTP | Beschreibung |
 |------|------|--------------|
-| `VALIDATION_ERROR` | 400 | Ungültige Eingabedaten |
+| `INVALID_JSON` | 400 | Body ist kein valides JSON |
+| `VALIDATION_ERROR` | 422 | Zod-Validierung fehlgeschlagen |
 | `UNAUTHORIZED` | 401 | Nicht authentifiziert |
 | `FORBIDDEN` | 403 | Keine Berechtigung |
 | `NOT_FOUND` | 404 | Ressource nicht gefunden |
 | `CONFLICT` | 409 | Konflikt (z.B. Duplikat) |
+| `RATE_LIMITED` | 429 | Request-Limit überschritten |
+| `UPSTREAM_ERROR` | 502 | Externer Anbieter antwortet mit Fehler |
+| `FEATURE_DISABLED` | 503 | Feature ist abgeschaltet |
+| `UPSTREAM_TIMEOUT` | 504 | Timeout gegen externen Anbieter |
 | `INTERNAL_ERROR` | 500 | Server-Fehler |
 
 ---
 
-**Letzte Aktualisierung:** 2024-12-05
-
+**Letzte Aktualisierung:** 2026-02-16

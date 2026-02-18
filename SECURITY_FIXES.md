@@ -107,7 +107,7 @@ Found: react@18.3.1
 
 1. **MCP Server:**
    - Projekt-Ref: `acclrhzzwdutbigxsxyq`
-   - Access Token: `<revoked-token>`
+   - Access Token: `<SUPABASE_ACCESS_TOKEN_PLACEHOLDER>`
 
 2. **`.env` Werte:**
    - NEXT_PUBLIC_SUPABASE_URL

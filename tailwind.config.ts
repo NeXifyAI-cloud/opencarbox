@@ -1,13 +1,14 @@
 import type { Config } from 'tailwindcss';
+import { designTokens } from './src/config/design-tokens';
 
 /**
  * Tailwind CSS Konfiguration für OpenCarBox & Carvantooo
  *
- * Dieses Designsystem implementiert die Premium "Automotive Premium" Ästhetik
- * mit dem Rot-Blau Farbkonzept gemäß project_specs.md
+ * Dieses Designsystem implementiert die Sharon UI Base Tokens v2.0
+ * mit professionellem Blau (#3B82F6) für OpenCarBox und Teal (#14B8A6) für Carvantooo
  *
- * @see /docs/design-system/colors.md
- * @see /docs/design-system/typography.md
+ * @see src/config/design-tokens.ts
+ * @see sharon_ui_base_tokens.md
  */
 const config: Config = {
   darkMode: ['class'],
@@ -26,138 +27,59 @@ const config: Config = {
     },
     extend: {
       /* =================================================================
-         FARBSYSTEM - Rot-Blau Premium Palette
+         FARBSYSTEM - Sharon UI Base Tokens (Kein Rot)
          ================================================================= */
       colors: {
-        /* Carvantooo Rot - Für Shop, E-Commerce, CTAs */
-        carvantooo: {
-          50: '#FFF5F5',
-          100: '#FED7D7',
-          200: '#FEB2B2',
-          300: '#FC8181',
-          400: '#F56565',
-          500: '#E53E3E', // Primary
-          600: '#C53030', // Hover
-          700: '#9B2C2C', // Active
-          800: '#822727',
-          900: '#63171B',
-          DEFAULT: '#E53E3E',
-        },
-        /* Carvantooo Teal - Für Shop Akzente (finales_Design) */
-        teal: {
-          50: '#E6FFFA',
-          100: '#B2F5EA',
-          200: '#81E6D9',
-          300: '#4FD1C5', // Primary Light
-          400: '#38B2AC', // Hover
-          500: '#319795',
-          600: '#2C7A7B',
-          700: '#285E61',
-          800: '#234E52',
-          900: '#1D4044',
-          DEFAULT: '#4FD1C5',
-        },
-        /* Navy Blue - Header Background (finales_Design) */
-        navy: {
-          50: '#E8EDF4',
-          100: '#C5D3E8',
-          200: '#9FB5D8',
-          300: '#7997C8',
-          400: '#5A7FB8',
-          500: '#3B67A8',
-          600: '#2D5290',
-          700: '#1E3A5F', // Primary Header
-          800: '#162D47', // Top Bar
-          900: '#0E1F2F',
-          DEFAULT: '#1E3A5F',
-        },
-        /* OpenCarBox Blau - Für Services, Vertrauen, Navigation */
-        opencarbox: {
-          50: '#EBF8FF',
-          100: '#BEE3F8',
-          200: '#90CDF4',
-          300: '#63B3ED',
-          400: '#4299E1',
-          500: '#3182CE', // Primary
-          600: '#2B6CB0', // Hover
-          700: '#2C5282', // Active
-          800: '#2A4365',
-          900: '#1A365D',
-          DEFAULT: '#3182CE',
-        },
-        /* Neutrale Slate Palette */
-        slate: {
-          50: '#F8FAFC',
-          100: '#F1F5F9',
-          200: '#E2E8F0',
-          300: '#CBD5E1',
-          400: '#94A3B8',
-          500: '#64748B',
-          600: '#475569',
-          700: '#334155',
-          800: '#1E293B',
-          900: '#0F172A',
-          950: '#020617',
-        },
-        /* Status-Farben */
-        success: {
-          50: '#ECFDF5',
-          500: '#10B981',
-          700: '#047857',
-          DEFAULT: '#10B981',
-        },
-        warning: {
-          50: '#FFFBEB',
-          500: '#F59E0B',
-          700: '#B45309',
-          DEFAULT: '#F59E0B',
-        },
-        error: {
-          50: '#FEF2F2',
-          500: '#EF4444',
-          700: '#B91C1C',
-          DEFAULT: '#EF4444',
-        },
-        info: {
-          50: '#EFF6FF',
-          500: '#3B82F6',
-          700: '#1D4ED8',
-          DEFAULT: '#3B82F6',
-        },
-        /* shadcn/ui Kompatibilität */
-        border: 'hsl(var(--border))',
-        input: 'hsl(var(--input))',
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
+        /* ---------------------------------------------------------
+           shadcn/ui CSS-Variable Tokens (Dark-Mode-kompatibel)
+           --------------------------------------------------------- */
         foreground: 'hsl(var(--foreground))',
-        primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
-        },
-        destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))',
-        },
-        muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
         },
         popover: {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
-        card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))',
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
         },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        ring: 'hsl(var(--ring))',
+        input: 'hsl(var(--input))',
+
+        /* Primary - OpenCarBox (Werkstatt & Autohandel) */
+        primary: designTokens.primary,
+        
+        /* Secondary - Carvantooo Shop */
+        secondary: designTokens.secondary,
+        
+        /* Accent - Highlight-Farbe */
+        accent: designTokens.accent,
+        
+        /* Semantic Colors */
+        success: designTokens.success,
+        warning: designTokens.warning,
+        error: designTokens.error,
+        info: designTokens.info,
+        
+        /* Neutral Colors */
+        neutral: designTokens.neutral,
+        
+        /* Background & Surface */
+        background: designTokens.background,
+        surface: designTokens.surface,
+        
+        /* Text Colors */
+        text: designTokens.text,
+        
+        /* Border Colors */
+        border: designTokens.border,
       },
 
       /* =================================================================

@@ -33,12 +33,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Primärfarbe - Carvantooo Rot */
-    --primary: 0 72% 51%;              /* #E53E3E */
+/* Primärfarbe - Professionelles Blau (Corporate Identity) */
+    --primary: 221 83% 53%;            /* #3B82F6 */
     --primary-foreground: 0 0% 100%;
 
-    /* Sekundärfarbe - OpenCarBox Blau */
-    --secondary: 210 79% 46%;          /* #3182CE */
+    /* Sekundärfarbe - Modernes Teal (Akzente) */
+    --secondary: 173 80% 40%;          /* #14B8A6 */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
@@ -52,22 +52,22 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 0 72% 51%;                 /* Carvantooo Rot */
+    --ring: 221 83% 53%;               /* Primary Blau */
 
     /* Border Radius */
     --radius: 0.5rem;
 
     /* ---------------------------------------------------------------------
-       Marken-spezifische Variablen
+       Marken-spezifische Variablen (aktualisiert - kein Rot)
        --------------------------------------------------------------------- */
     
-    /* Carvantooo (Shop) */
-    --carvantooo-primary: 0 72% 51%;
-    --carvantooo-glow: rgba(229, 62, 62, 0.4);
+    /* Carvantooo (Shop) - Primary Blau */
+    --carvantooo-primary: 221 83% 53%;           /* #3B82F6 */
+    --carvantooo-glow: rgba(59, 130, 246, 0.4);
     
-    /* OpenCarBox (Services) */
-    --opencarbox-primary: 210 79% 46%;
-    --opencarbox-glow: rgba(49, 130, 206, 0.4);
+    /* OpenCarBox (Services) - Secondary Teal */
+    --opencarbox-primary: 173 80% 40%;           /* #14B8A6 */
+    --opencarbox-glow: rgba(20, 184, 166, 0.4);
 
     /* ---------------------------------------------------------------------
        Schatten
@@ -87,10 +87,10 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 0 72% 65%;              /* Helleres Rot für Dark Mode */
+    --primary: 221 83% 65%;            /* Helleres Blau für Dark Mode */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 79% 60%;          /* Helleres Blau für Dark Mode */
+    --secondary: 173 80% 50%;          /* Helleres Teal für Dark Mode */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 217.2 32.6% 17.5%;
@@ -104,13 +104,11 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 0 72% 65%;
+    --ring: 221 83% 65%;               /* Helleres Blau für Dark Mode */
 
-    /* Carvantooo Dark */
-    --carvantooo-glow: rgba(248, 113, 113, 0.4);
-    
-    /* OpenCarBox Dark */
-    --opencarbox-glow: rgba(96, 165, 250, 0.4);
+    /* Marken-spezifische Glow Effects (aktualisiert) */
+    --carvantooo-glow: rgba(59, 130, 246, 0.4);    /* Primary Blau */
+    --opencarbox-glow: rgba(20, 184, 166, 0.4);    /* Secondary Teal */
   }
 }
 
@@ -168,11 +166,11 @@
 
   /* Auswahl */
   ::selection {
-    @apply bg-carvantooo-100 text-carvantooo-900;
+    @apply bg-primary-100 text-primary-900;
   }
 
   .dark ::selection {
-    @apply bg-carvantooo-900 text-carvantooo-100;
+    @apply bg-primary-900 text-primary-100;
   }
 }
 
@@ -205,42 +203,42 @@
     @apply rounded-2xl;
   }
 
-  /* Gradient Button - Carvantooo */
-  .btn-gradient-red {
-    @apply bg-gradient-to-r from-carvantooo-500 to-carvantooo-700;
+  /* Gradient Button - Carvantooo (Primary Blau) */
+  .btn-gradient-primary {
+    @apply bg-gradient-to-r from-primary-500 to-primary-700;
     @apply text-white font-medium;
-    @apply hover:from-carvantooo-600 hover:to-carvantooo-800;
+    @apply hover:from-primary-600 hover:to-primary-800;
     @apply transition-all duration-300;
   }
 
-  .btn-gradient-red:hover {
+  .btn-gradient-primary:hover {
     box-shadow: 0 0 20px var(--carvantooo-glow);
   }
 
-  /* Gradient Button - OpenCarBox */
-  .btn-gradient-blue {
-    @apply bg-gradient-to-r from-opencarbox-500 to-opencarbox-700;
+  /* Gradient Button - OpenCarBox (Secondary Teal) */
+  .btn-gradient-secondary {
+    @apply bg-gradient-to-r from-secondary-500 to-secondary-700;
     @apply text-white font-medium;
-    @apply hover:from-opencarbox-600 hover:to-opencarbox-800;
+    @apply hover:from-secondary-600 hover:to-secondary-800;
     @apply transition-all duration-300;
   }
 
-  .btn-gradient-blue:hover {
+  .btn-gradient-secondary:hover {
     box-shadow: 0 0 20px var(--opencarbox-glow);
   }
 
   /* Gradient Border */
-  .border-gradient-red {
+  .border-gradient-primary {
     @apply relative;
     background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #E53E3E, #9B2C2C) border-box;
+                linear-gradient(135deg, #3B82F6, #1D4ED8) border-box;
     border: 2px solid transparent;
   }
 
-  .border-gradient-blue {
+  .border-gradient-secondary {
     @apply relative;
     background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #3182CE, #1A365D) border-box;
+                linear-gradient(135deg, #14B8A6, #0F766E) border-box;
     border: 2px solid transparent;
   }
 
@@ -251,7 +249,7 @@
 
   .input-float-label input {
     @apply w-full px-4 py-3 border border-border rounded-lg;
-    @apply focus:border-carvantooo-500 focus:ring-1 focus:ring-carvantooo-500;
+    @apply focus:border-primary-500 focus:ring-1 focus:ring-primary-500;
     @apply transition-all duration-200;
   }
 
@@ -263,7 +261,7 @@
   .input-float-label input:focus ~ label,
   .input-float-label input:not(:placeholder-shown) ~ label {
     @apply -top-2.5 left-3 text-xs bg-background px-1;
-    @apply text-carvantooo-500;
+    @apply text-primary-500;
   }
 }
 
@@ -273,22 +271,22 @@
 
 @layer utilities {
   /* Text Gradient */
-  .text-gradient-red {
+  .text-gradient-primary {
     @apply bg-clip-text text-transparent;
-    @apply bg-gradient-to-r from-carvantooo-500 to-carvantooo-700;
+    @apply bg-gradient-to-r from-primary-500 to-primary-700;
   }
 
-  .text-gradient-blue {
+  .text-gradient-secondary {
     @apply bg-clip-text text-transparent;
-    @apply bg-gradient-to-r from-opencarbox-500 to-opencarbox-700;
+    @apply bg-gradient-to-r from-secondary-500 to-secondary-700;
   }
 
   /* Glow Effects */
-  .glow-red {
+  .glow-primary {
     box-shadow: 0 0 20px var(--carvantooo-glow);
   }
 
-  .glow-blue {
+  .glow-secondary {
     box-shadow: 0 0 20px var(--opencarbox-glow);
   }
 
@@ -307,18 +305,18 @@
   }
 
   /* Mesh Gradient Backgrounds */
-  .bg-mesh-red {
+  .bg-mesh-primary {
     background: 
-      radial-gradient(at 40% 20%, rgba(229, 62, 62, 0.3) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, rgba(155, 44, 44, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, rgba(254, 215, 215, 0.3) 0px, transparent 50%);
+      radial-gradient(at 40% 20%, rgba(59, 130, 246, 0.3) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(29, 78, 216, 0.2) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(219, 234, 254, 0.3) 0px, transparent 50%);
   }
 
-  .bg-mesh-blue {
+  .bg-mesh-secondary {
     background: 
-      radial-gradient(at 40% 20%, rgba(49, 130, 206, 0.3) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, rgba(26, 54, 93, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, rgba(190, 227, 248, 0.3) 0px, transparent 50%);
+      radial-gradient(at 40% 20%, rgba(20, 184, 166, 0.3) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(15, 118, 110, 0.2) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(204, 251, 241, 0.3) 0px, transparent 50%);
   }
 
   /* Animierte Unterstreichung für Links */
@@ -342,18 +340,13 @@
     scrollbar-color: theme('colors.slate.300') transparent;
   }
 
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: theme('colors.slate.300');
+    border-radius: 3px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
-  }
-
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: theme('colors.slate.300');
-    border-radius: 3px;
   }
 
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {

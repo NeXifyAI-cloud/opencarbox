@@ -45,12 +45,13 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },
 
-  /* Weiterleitungen */
+  /* Weiterleitungen – see vercel.json for Vercel deployments (single source of truth).
+     These are used by `next start` (standalone / Docker). */
   async redirects() {
     return [
       {
         source: '/produkte',
-        destination: '/shop/produkte',
+        destination: '/shop',
         permanent: true,
       },
       {
@@ -61,12 +62,14 @@ const nextConfig = {
     ];
   },
 
-  /* Header für Sicherheit und Performance */
+  /* Security & performance headers – see vercel.json for Vercel deployments (single source of truth).
+     These are used by `next start` (standalone / Docker). */
   async headers() {
     return [
       {
         source: '/:path*',
         headers: [
+          /* Sicherheits-Header */
           {
             key: 'X-DNS-Prefetch-Control',
             value: 'on',
@@ -87,12 +90,14 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
           },
+          /* Permissions Policy */
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
           },
         ],
       },
+      /* Cache-Header für statische Assets */
       {
         source: '/fonts/:path*',
         headers: [
@@ -114,13 +119,26 @@ const nextConfig = {
     ];
   },
 
+  /* Webpack-Konfiguration */
+  webpack: (config, { isServer }) => {
+    /* SVG als React-Komponenten */
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+
+    return config;
+  },
+
   /* TypeScript-Fehler beim Build ignorieren (NICHT für Production empfohlen) */
   typescript: {
+    // Setze auf true nur für Notfälle - normalerweise false
     ignoreBuildErrors: false,
   },
 
   /* ESLint-Fehler beim Build ignorieren (NICHT für Production empfohlen) */
   eslint: {
+    // Setze auf true nur für Notfälle - normalerweise false
     ignoreDuringBuilds: false,
   },
 
@@ -132,3 +150,5 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+
+

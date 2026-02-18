@@ -1,14 +1,28 @@
-# Default owner
-* @OpenCarBox/maintainers
+# Default owners for all files
+* @NeXifyAI-cloud/core
 
-# CI / Workflow security
-.github/workflows/* @OpenCarBox/maintainers
-scripts/ci-* @OpenCarBox/maintainers
+# Workflows & CI
+.github/ @NeXifyAI-cloud/core
 
-# Security / platform critical surfaces
-src/middleware.ts @OpenCarBox/security-platform
-src/lib/supabase/** @OpenCarBox/security-platform
+# Source code
+src/ @NeXifyAI-cloud/core
 
-# Database ownership
-prisma/** @OpenCarBox/db-owners
-supabase/migrations/** @OpenCarBox/db-owners
+# Database & Migrations
+prisma/ @NeXifyAI-cloud/core
+supabase/ @NeXifyAI-cloud/core
+
+# Configuration
+next.config.js @NeXifyAI-cloud/core
+vercel.json @NeXifyAI-cloud/core
+package.json @NeXifyAI-cloud/core
+.env.example @NeXifyAI-cloud/core
+
+# Documentation
+docs/ @NeXifyAI-cloud/core
+NOTES/ @NeXifyAI-cloud/core
+
+# Security-sensitive
+SECURITY.md @NeXifyAI-cloud/core
+tools/guard_no_openai.sh @NeXifyAI-cloud/core
+tools/check_env_schema.ts @NeXifyAI-cloud/core
+tools/preflight.ts @NeXifyAI-cloud/core

@@ -24,7 +24,7 @@ Die Supabase-Datenbankverbindung ist aktuell ein BLOCKER für die weitere Entwic
 
 1. **DNS-Auflösung**: Hostname wird korrekt aufgelöst (IPv6)
 2. **API-Zugriff**: Supabase API-Token funktionieren nicht (JWT failed verification)
-3. **Supabase CLI**: Access Token `<revoked-token>` führt zu "Unauthorized"
+3. **Supabase CLI**: Access Token `<SUPABASE_ACCESS_TOKEN_PLACEHOLDER>` führt zu "Unauthorized"
 4. **Alternative Verbindung**: Lokale PostgreSQL-Instanz via Docker (Docker Desktop nicht gestartet)
 5. **SQLite-Fallback**: Nicht möglich wegen PostgreSQL-spezifischer Features im Schema
 
@@ -41,7 +41,7 @@ Die Supabase-Datenbankverbindung ist aktuell ein BLOCKER für die weitere Entwic
 ### 3. Connection Pooling prüfen
 - Connection String für Prisma verwenden:
   ```
-  <set-in-local-env>
+  postgresql://postgres:<PASSWORD>@db.acclrhzzwdutbigxsxyq.supabase.co:5432/postgres
   ```
 
 ### 4. Prisma Schema synchronisieren
@@ -66,8 +66,8 @@ Für lokale Entwicklung ohne Supabase-Datenbank:
    ```
 3. .env Datei anpassen:
    ```
-   DATABASE_URL=<set-in-local-env>
-   DIRECT_URL=<set-in-local-env>
+   DATABASE_URL=postgresql://postgres:localdev@localhost:5432/opencarbox
+   DIRECT_URL=postgresql://postgres:localdev@localhost:5432/opencarbox
    ```
 4. Prisma Schema synchronisieren
 

@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+resolve_github_token() {
+  if [[ -n "${GH_TOKEN:-}" ]]; then
+    export GH_TOKEN
+    return 0
+  fi
+
+  if [[ -n "${CLASSIC_TOKEN_GITHUB_NEU:-}" ]]; then
+    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB_NEU"
+    return 0
+  fi
+
+  if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+    export GH_TOKEN="$GITHUB_TOKEN"
+    return 0
+  fi
+
+  return 1
+}
+
+
+resolve_gitlab_token() {
+  if [[ -n "${GITLAB_TOKEN:-}" ]]; then
+    export GITLAB_TOKEN
+    return 0
+  fi
+
+  if [[ -n "${GITLAB_PROJECT_TOKEN:-}" ]]; then
+    export GITLAB_TOKEN="$GITLAB_PROJECT_TOKEN"
+    return 0
+  fi
+
+  if [[ -n "${GITLAB_PROJEKT_TOKEN:-}" ]]; then
+    export GITLAB_TOKEN="$GITLAB_PROJEKT_TOKEN"
+    return 0
+  fi
+
+  if [[ -n "${gitlab_token:-}" ]]; then
+    export GITLAB_TOKEN="$gitlab_token"
+    return 0
+  fi
+
+  if [[ -n "${projekt_token:-}" ]]; then
+    export GITLAB_TOKEN="$projekt_token"
+    return 0
+  fi
+
+  if [[ -n "${project_token:-}" ]]; then
+    export GITLAB_TOKEN="$project_token"
+    return 0
+  fi
+
+  return 1
+}
+
+is_missing_or_placeholder() {
+  local value="${1:-}"
+  [[ -z "$value" || "$value" == "..." || "$value" == "DEIN_ORG_ODER_USER" || "$value" == "dein-projekt" ]]
+}
+
+require_or_warn() {
+  local name="$1"
+  local value="${!name:-}"
+
+  if is_missing_or_placeholder "$value"; then
+    echo "⚠️  $name ist nicht gesetzt oder enthält einen Platzhalter. Schritt wird ggf. übersprungen."
+    return 1
+  fi
+
+  echo "✅ $name ist gesetzt"
+  return 0
+}
+
+write_env_value() {
+  local file="$1"
+  local key="$2"
+  local value="$3"
+
+  if grep -q "^${key}=" "$file" 2>/dev/null; then
+    sed -i "s|^${key}=.*|${key}=${value}|" "$file"
+  else
+    echo "${key}=${value}" >> "$file"
+  fi
+}

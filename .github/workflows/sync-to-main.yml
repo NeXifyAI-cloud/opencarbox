@@ -1,0 +1,100 @@
+# Fully Autonomous Sync from audit-fix-deploy to main
+name: sync-to-main
+
+on:
+  push:
+    branches:
+      - audit-fix-deploy-10646060533465607163
+  schedule:
+    - cron: '0 3 * * *' # Daily at 03:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: sync-to-main
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  SOURCE_BRANCH: audit-fix-deploy-10646060533465607163
+  TARGET_BRANCH: main
+  PR_NUMBER: 116
+
+jobs:
+  sync-to-main:
+    name: Sync to Main
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gh and jq
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
+      - name: Check or create sync PR
+        run: |
+          echo "🔍 Checking for existing sync PR..."
+          
+          # Check if PR #116 exists
+          PR_EXISTS=$(gh pr view $PR_NUMBER --json number --jq '.number' 2>/dev/null || echo "")
+          
+          if [ -n "$PR_EXISTS" ]; then
+            echo "✅ PR #$PR_NUMBER exists"
+            PR_STATE=$(gh pr view $PR_NUMBER --json state --jq '.state')
+            
+            if [ "$PR_STATE" = "OPEN" ]; then
+              echo "PR #$PR_NUMBER is open - will check CI status"
+            else
+              echo "PR #$PR_NUMBER is $PR_STATE - nothing to do"
+              exit 0
+            fi
+          else
+            echo "Creating new sync PR..."
+            
+            # Check if there are changes to sync
+            git fetch origin $SOURCE_BRANCH
+            git fetch origin $TARGET_BRANCH
+            
+            COMMITS_AHEAD=$(git rev-list --count origin/$TARGET_BRANCH..origin/$SOURCE_BRANCH)
+            
+            if [ "$COMMITS_AHEAD" = "0" ]; then
+              echo "✅ No changes to sync - branches are up to date"
+              exit 0
+            fi
+            
+            echo "Found $COMMITS_AHEAD commits to sync"
+            
+            # Create PR
+            gh pr create \
+              --title "chore: sync audit-fix-deploy → main [autonomous]" \
+              --base "$TARGET_BRANCH" \
+              --head "$SOURCE_BRANCH" \
+              --body "Automated sync from audit-fix-deploy to main. Commits ahead: $COMMITS_AHEAD. This PR will auto-merge when CI passes." \
+              --label "auto-merge"
+            
+            exit 0
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
+
+      - name: Check CI and enable auto-merge
+        run: |
+          echo "🔍 Checking CI status on $SOURCE_BRANCH..."
+          
+          # Get the latest commit SHA on source branch
+          LATEST_SHA=$(git rev-parse origin/$SOURCE_BRANCH)
+          echo "Latest SHA: $LATEST_SHA"
+          
+          # Check if CI is passing
+          # Note: We'll enable auto-merge regardless and let it wait for CI
+          echo "Enabling auto-merge on PR #$PR_NUMBER..."
+          
+          gh pr merge --squash --auto $PR_NUMBER || echo "Auto-merge already enabled or not possible"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'

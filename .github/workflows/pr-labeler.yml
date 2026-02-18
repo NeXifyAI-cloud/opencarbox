@@ -12,7 +12,7 @@ permissions:
 jobs:
   label:
     name: Label PR by paths
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/labeler@v5
         with:

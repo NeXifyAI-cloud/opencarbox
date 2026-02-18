@@ -52,8 +52,11 @@ jobs:
               labels: 'ci-failure',
               per_page: 50,
             });
-            const existing = issues.find(i => i.body && i.body.includes(marker));
-            core.setOutput('exists', existing ? 'true' : 'false');
+            // Check for exact run-id marker
+            const exactMatch = issues.find(i => i.body && i.body.includes(marker));
+            // Check for any open ci-failure issue (prevent flood — max 3 open)
+            const tooMany = issues.length >= 3;
+            core.setOutput('exists', (exactMatch || tooMany) ? 'true' : 'false');
             core.setOutput('marker', marker);
 
       - name: Create CI failure issue

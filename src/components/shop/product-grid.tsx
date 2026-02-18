@@ -126,7 +126,7 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
     }
 
     return filtered
-  }, [category, selectedCategory, limit])
+  }, [customProducts, category, selectedCategory, limit])
 
   const toggleWishlist = (productId: string | number) => {
     setWishlist(prev =>

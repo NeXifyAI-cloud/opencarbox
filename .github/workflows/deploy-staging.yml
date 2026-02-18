@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-staging-${{ github.event.workflow_run.head_branch || github.ref }}
+  group: deploy-staging-${{ github.event.workflow_run.head_branch || github.ref_name }}
   cancel-in-progress: true
 
 permissions:

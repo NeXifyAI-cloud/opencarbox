@@ -2,7 +2,7 @@ name: Deploy Staging
 
 on:
   push:
-    branches: ["$default-branch"]
+    branches: ["main"]
   workflow_dispatch:
 
 concurrency:
@@ -36,7 +36,9 @@ jobs:
       - run: pnpm i --frozen-lockfile
 
       - name: Preflight
-        run: npx tsx tools/preflight.ts deploy
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

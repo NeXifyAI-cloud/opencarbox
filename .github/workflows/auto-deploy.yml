@@ -6,7 +6,7 @@ on:
   workflow_run:
     workflows: [ci]
     types: [completed]
-    branches: ["$default-branch"]
+    branches: ["main"]
   workflow_dispatch:
 
 concurrency:
@@ -64,7 +64,9 @@ jobs:
 
       - name: Preflight
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npx tsx tools/preflight.ts deploy
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts deploy
 
       - name: Pull Vercel Environment
         if: steps.vercel_check.outputs.skip != 'true'

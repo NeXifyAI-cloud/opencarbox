@@ -13,6 +13,7 @@ on:
       - Auto-Merge
       - auto-reply
       - codex-controller
+      - Mem0 Brain Integration
     types: [completed]
 
 concurrency:

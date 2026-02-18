@@ -1,0 +1,33 @@
+# Check that NOTES/automation-manifest.md is updated when workflows change
+name: manifest-check
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+jobs:
+  check-manifest:
+    name: Automation Manifest Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check manifest was updated
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          CHANGED_FILES="$(git diff --name-only "$BASE" "$HEAD")"
+
+          if echo "$CHANGED_FILES" | grep -q '^\.github/workflows/'; then
+            if ! echo "$CHANGED_FILES" | grep -q 'NOTES/automation-manifest.md'; then
+              echo "::warning::Workflow files changed but NOTES/automation-manifest.md was not updated. Please review and update the manifest."
+            else
+              echo "Manifest updated – OK."
+            fi
+          fi

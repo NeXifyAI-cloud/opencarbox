@@ -3,7 +3,19 @@ name: ci
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'NOTES/**'
+      - 'LICENSE'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'NOTES/**'
+      - 'LICENSE'
+  schedule:
+    - cron: '0 5 * * 1' # Weekly health check – Monday 05:00 UTC
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -60,6 +72,15 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**', 'app/**') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            nextjs-${{ runner.os }}-
 
       - name: Test
         run: pnpm test

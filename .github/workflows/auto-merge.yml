@@ -1,4 +1,4 @@
-# Auto-Merge für vertrauenswürdige interne PRs und Dependabot
+# Auto-Merge für vertrauenswürdige interne PRs, Dependabot und Autofix
 name: Auto-Merge
 
 on:
@@ -16,8 +16,10 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event.pull_request.head.repo.fork == false &&
-      github.base_ref == 'main' &&
-      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+      github.event.pull_request.base.ref == github.event.repository.default_branch &&
+      (contains(github.event.pull_request.labels.*.name, 'auto-merge') ||
+       github.actor == 'dependabot[bot]' ||
+       contains(github.event.pull_request.labels.*.name, 'autofix'))
 
     steps:
       - name: Dependabot metadata
@@ -40,6 +42,13 @@ jobs:
           github.actor == 'dependabot[bot]' &&
           (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
            steps.metadata.outputs.update-type == 'version-update:semver-minor')
+        run: gh pr review --approve "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-approve autofix PRs
+        if: contains(github.event.pull_request.labels.*.name, 'autofix')
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}

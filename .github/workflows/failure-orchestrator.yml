@@ -88,13 +88,18 @@ jobs:
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
           WF_NAME="${{ github.event.workflow_run.name }}"
+          INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
 
           # Check for exact run-id marker (existing dedup)
           ISSUE_COUNT="$(gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
           PR_COUNT="$(gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
 
-          # Check for recent open issue with same workflow name (prevent flood)
-          WF_ISSUE_COUNT="$(gh issue list --state open --label failure-routing --search "Incident: ${WF_NAME}" --json number --jq 'length')"
+          # Check for open issue with exact incident title (robust dedup, independent of search parser behavior)
+          WF_ISSUE_COUNT="$(gh issue list --state open --label failure-routing --json title --jq --arg title "$INCIDENT_TITLE" '[.[] | select(.title == $title)] | length')"
+
+          echo "marker_issue_count=$ISSUE_COUNT"
+          echo "marker_pr_count=$PR_COUNT"
+          echo "workflow_issue_count=$WF_ISSUE_COUNT"
 
           if [ "$ISSUE_COUNT" -gt 0 ] || [ "$PR_COUNT" -gt 0 ] || [ "$WF_ISSUE_COUNT" -gt 0 ]; then
             echo "exists=true" >> "$GITHUB_OUTPUT"

@@ -2,7 +2,8 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    branches:
+      - '**'
   pull_request:
 
 concurrency:
@@ -16,9 +17,37 @@ env:
   NODE_VERSION: '20'
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      code_changed: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            code:
+              - 'app/**'
+              - 'src/**'
+              - 'lib/**'
+              - 'components/**'
+              - 'tools/**'
+              - 'supabase/**'
+              - '.github/workflows/**'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'tsconfig*.json'
+
   quick-checks:
     name: Lint & Type Check
     runs-on: ubuntu-latest
+    needs: changes
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.ref_name == github.event.repository.default_branch ||
+      needs.changes.outputs.code_changed == 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -29,6 +58,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
 
       - run: pnpm i --frozen-lockfile
 
@@ -47,7 +84,12 @@ jobs:
   test-and-build:
     name: Test & Build
     runs-on: ubuntu-latest
-    needs: quick-checks
+    needs: [changes, quick-checks]
+    if: >-
+      needs.quick-checks.result == 'success' &&
+      (github.event_name == 'pull_request' ||
+       github.ref_name == github.event.repository.default_branch ||
+       needs.changes.outputs.code_changed == 'true')
     steps:
       - uses: actions/checkout@v4
 
@@ -58,6 +100,14 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
 
       - run: pnpm i --frozen-lockfile
 

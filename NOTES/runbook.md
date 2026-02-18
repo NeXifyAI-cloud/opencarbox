@@ -34,7 +34,7 @@
 - **Owner:** Tech Lead (oder benannter Release-Manager im aktuellen Sprint).
 - **Single Source of Truth:** `docs/tasks/master_plan.md` ist die einzige Truth-Quelle für Task-Status.
 - **Aktualisierungsrhythmus:**
-  - Bei jedem Merge auf `main` `pnpm report:plan-status` ausführen.
+  - Bei jedem Merge auf `$default-branch` `pnpm report:plan-status` ausführen.
   - Zusätzlich vor jedem Weekly-Status-Update und vor Releases ausführen.
   - Änderungen an Task-Status immer zuerst in `docs/tasks/master_plan.md` pflegen, danach `STATUS_REPORT.md` via Script aktualisieren.
 
@@ -66,13 +66,13 @@
 
 ## Release Process
 
-1. Merge only through PR into protected `main`.
+1. Merge only through PR into protected `$default-branch`.
 2. Ensure required CI checks are green.
 3. Deploy to Vercel Preview, then Production.
 
 ### How to Release (SemVer)
 
-1. Ensure `main` is stable and all CI checks pass.
+1. Ensure `$default-branch` is stable and all CI checks pass.
 2. Create and push a SemVer tag:
    ```bash
    git tag v1.2.3
@@ -97,16 +97,16 @@
 
 ```mermaid
 flowchart TD
-  A[push main / pull_request] --> B[ci.yml: quick-checks]
+  A[push $default-branch / pull_request] --> B[ci.yml: quick-checks]
   B -->|lint + typecheck OK| C[ci.yml: test-and-build]
-  C -->|success on main| D[auto-deploy.yml via workflow_run]
+  C -->|success on $default-branch| D[auto-deploy.yml via workflow_run]
   D --> E[Vercel production deploy]
 ```
 
 ### Workflow Responsibilities
 
 - **CI (`.github/workflows/ci.yml`)**
-  - Trigger: `push` auf `main` und `pull_request`
+  - Trigger: `push` auf `$default-branch` und `pull_request`
   - Stufe 1 (schnell): `quick-checks` mit `lint` + `typecheck`
   - Stufe 2 (langsam): `test-and-build` mit `test` + `build` (nur wenn Stufe 1 erfolgreich)
   - Paketmanager/Cache: **pnpm** + `actions/setup-node` cache `pnpm`
@@ -114,8 +114,7 @@ flowchart TD
 
 - **Deploy (`.github/workflows/auto-deploy.yml`)**
   - Trigger:
-    - automatisch nur über `workflow_run` nach erfolgreichem `ci` auf `main`
-    - manuell über `workflow_dispatch` (optional, für Wartung)
+    - automatisch über `workflow_run` nach erfolgreichem `ci` auf `$default-branch`
   - Aufgabe: ausschließlich Deployment (Vercel pull/build/deploy)
   - Paketmanager/Cache: **pnpm** + `pnpm dlx`
   - Concurrency: ein Deployment-Lauf pro Branch-Ref
@@ -134,7 +133,7 @@ flowchart TD
 
 | Aspect | Preview | Production |
 |--------|---------|------------|
-| **Trigger** | `pull_request` (opened/synchronize/reopened) | `workflow_run` after successful CI on `main` |
+| **Trigger** | `pull_request` (opened/synchronize/reopened) | `workflow_run` after successful CI on `$default-branch` |
 | **Workflow** | `deploy-preview.yml` | `auto-deploy.yml` |
 | **Vercel flag** | no `--prod` (preview URL) | `--prod` |
 | **Environment** | `preview` | `production` |
@@ -219,11 +218,11 @@ RLS smoke tests are not blocking in CI (no database available). They can be run 
 
 ## Branch Protection Contract
 
-The following rules **must** be enforced on the `main` branch via GitHub repository settings:
+The following rules **must** be enforced on the `$default-branch` branch via GitHub repository settings:
 
 | Rule | Value |
 |------|-------|
-| **Protected branch** | `main` |
+| **Protected branch** | `$default-branch` |
 | **Required status checks** | `ci / quick-checks`, `ci / test-and-build` |
 | **Blocking security check** | `security` (if configured) |
 | **Require PR reviews** | min 1 approval |

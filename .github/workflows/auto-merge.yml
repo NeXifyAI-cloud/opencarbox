@@ -3,7 +3,6 @@ name: Auto-Merge
 
 on:
   pull_request:
-    branches: [main]
     types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
@@ -15,9 +14,12 @@ jobs:
     name: Auto-Merge (Trusted Internal PRs)
     runs-on: ubuntu-latest
     if: >-
+      github.event.pull_request.draft == false &&
       github.event.pull_request.head.repo.fork == false &&
-      github.base_ref == 'main' &&
-      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+      github.event.pull_request.base.ref == github.event.repository.default_branch &&
+      (github.actor == 'dependabot[bot]' ||
+       contains(github.event.pull_request.labels.*.name, 'auto-merge') ||
+       contains(github.event.pull_request.labels.*.name, 'autofix'))
 
     steps:
       - name: Dependabot metadata
@@ -35,11 +37,10 @@ jobs:
           wait-interval: 10
           running-workflow-name: "Auto-Merge (Trusted Internal PRs)"
 
-      - name: Auto-approve trusted Dependabot PRs
+      - name: Auto-approve trusted categories
         if: >-
-          github.actor == 'dependabot[bot]' &&
-          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
-           steps.metadata.outputs.update-type == 'version-update:semver-minor')
+          github.actor == 'dependabot[bot]' ||
+          contains(github.event.pull_request.labels.*.name, 'autofix')
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}

@@ -3,7 +3,8 @@ name: Security
 on:
   pull_request:
   push:
-    branches: [main]
+    branches:
+      - "**"
   schedule:
     - cron: '0 4 * * 1' # Monday 4:00 UTC
 
@@ -21,6 +22,7 @@ jobs:
   audit:
     name: Dependency Audit
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     steps:
       - uses: actions/checkout@v4
 

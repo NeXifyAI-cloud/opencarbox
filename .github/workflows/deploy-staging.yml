@@ -2,7 +2,8 @@ name: Deploy Staging
 
 on:
   push:
-    branches: [main]
+    branches:
+      - "**"
   workflow_dispatch:
 
 concurrency:
@@ -19,6 +20,7 @@ jobs:
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
+    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     environment:
       name: staging
       url: ${{ steps.deploy.outputs.url }}

@@ -112,3 +112,15 @@
 - **Consequences**:
   - Preflight/Setup zeigen fehlende GitLab-Parameter früh als Warnung.
   - Künftige GitLab-Automationen können standardisierte Variablen direkt verwenden.
+
+## ADR-008: Fail-closed AI-Workflows mit standardisiertem PR-Body
+- **Decision**: `conflict-resolver.yml`, `auto-improve.yml` und `failure-orchestrator.yml` führen vor AI-Aktivitäten verpflichtend `tools/export_env.sh` + `tools/preflight.ts ai` aus (fail-closed). Automatisch erzeugte PR-Bodies enthalten standardisiert die Abschnitte „Was geändert“, „Warum“, „Wie getestet“, „Risiko/Backout“.
+- **Alternatives**:
+  - Soft-Gating mit `continue-on-error` im Preflight.
+  - Freitext-PR-Bodies ohne einheitliche Incident-Struktur.
+- **Reasoning**:
+  - Erzwingt DeepSeek-only/NSCALE-Pflicht deterministisch vor jedem AI-Lauf.
+  - Verbessert Nachvollziehbarkeit und Backout-Fähigkeit automatischer Fix-PRs.
+- **Consequences**:
+  - Fehlende AI-Secrets stoppen AI-Workflows früh und sichtbar.
+  - Auto-PRs sind auditierbar und entsprechen den geforderten Pflichtfeldern.

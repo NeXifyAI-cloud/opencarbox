@@ -54,7 +54,11 @@ jobs:
         run: |
           prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
             | jq '[.[] | select(.mergeStateStatus=="DIRTY")]' 2>/dev/null || echo '[]')
-          echo "prs=$prs" >> $GITHUB_OUTPUT
+          {
+            echo "prs<<EOF"
+            echo "$prs"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
           echo "Found $(echo "$prs" | jq 'length') DIRTY PRs"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,6 +71,11 @@ jobs:
       - name: Resolve conflicts (oldest DIRTY PR first)
         if: steps.prs.outputs.prs != '[]'
         continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_MAX_CALLS: '20'
+          FORBID_WORKFLOW_EDITS: '1'
+          HUSKY: '0'
         run: |
           # Max 2 open codex PRs guardrail
           OPEN_COUNT="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
@@ -102,7 +111,7 @@ jobs:
           fi
 
           # Validate
-          pnpm lint && pnpm typecheck && pnpm test -- --run && pnpm build || {
+          pnpm db:generate && pnpm lint && pnpm typecheck && pnpm test -- --run && pnpm build || {
             echo "Validation failed, skipping PR"
             exit 0
           }
@@ -120,7 +129,3 @@ jobs:
             --body "## Was geändert\n- Rebase der betroffenen PR auf den aktuellen Base-Branch.\n- Bei Rebase-Konflikt: DeepSeek-only Merge für Konfliktdateien mit Guardrails.\n\n## Warum\n- Mergebarkeit wiederherstellen, ohne direkten Push auf bestehende PR-Branches.\n\n## Wie getestet\n- pnpm lint\n- pnpm typecheck\n- pnpm test -- --run\n- pnpm build\n\n## Risiko/Backout\n- Risiko: Falsche Konfliktauflösung in inhaltlich komplexen Dateien.\n- Backout: Erstellte Fix-PR schließen oder revertieren; Ursprungs-PR unverändert erneut bearbeiten." \
             --base "$base" \
             --head "codex/conflictfix-$num" || true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AI_MAX_CALLS: '20'
-          FORBID_WORKFLOW_EDITS: '1'

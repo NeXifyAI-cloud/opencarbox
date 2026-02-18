@@ -53,6 +53,8 @@ jobs:
         continue-on-error: true
 
       - name: Update memory documentation
+        env:
+          HUSKY: '0'
         run: |
           git config --global user.name "Mem0 Brain"
           git config --global user.email "mem0@opencarbox.ai"

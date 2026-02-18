@@ -72,6 +72,8 @@ jobs:
           "
 
       - name: Commit changes
+        env:
+          HUSKY: '0'
         run: |
           git diff --quiet NOTES/backlog.md && exit 0
           git config user.name "github-actions[bot]"

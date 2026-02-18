@@ -23,6 +23,9 @@ on:
       - security-intake
       - pr-labeler
       - manifest-check
+      - Deploy Staging
+      - Deploy Production
+      - Mem0 Brain Integration
     types: [completed]
 
 concurrency:

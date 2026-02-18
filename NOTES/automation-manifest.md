@@ -40,6 +40,8 @@ push/PR → ci → ci-retry (on failure)
                 ├── autofix (on failure)
                 └── failure-orchestrator (on any completion)
 
+push (main) → deploy-staging
+
 pull_request → deploy-preview
              → auto-merge (dependabot / autofix / labeled)
              → security

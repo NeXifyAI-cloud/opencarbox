@@ -21,14 +21,14 @@ complete autonomous operation for the opencarbox repository.
 
 ## ✅ Step 1: Repository Variables
 
-Set the `OPENCARBOX_RUNNER` repository variable:
+Set the `RUNNER` repository variable:
 
 ```bash
 # Option A: Use GitHub-hosted runners (default)
-gh variable set OPENCARBOX_RUNNER --body ""
+gh variable set RUNNER --body ""
 
 # Option B: Use self-hosted runner
-gh variable set OPENCARBOX_RUNNER --body "self-hosted"
+gh variable set RUNNER --body "self-hosted"
 ```
 
 **Why**: Centralized control of runner infrastructure across all workflows.
@@ -152,7 +152,7 @@ Repository Settings → Actions → General → Workflow permissions:
 
 ## ✅ Step 8: Optional - Self-Hosted Runner Setup
 
-If using self-hosted runners (`OPENCARBOX_RUNNER` set to custom value):
+If using self-hosted runners (`RUNNER` set to custom value):
 
 1. Install runner on target machine:
    ```bash
@@ -171,7 +171,7 @@ If using self-hosted runners (`OPENCARBOX_RUNNER` set to custom value):
 
 After completing all steps, verify autonomous operation:
 
-- [ ] `OPENCARBOX_RUNNER` variable set
+- [ ] `RUNNER` variable set
 - [ ] All required secrets configured
 - [ ] Auto-merge enabled at repository level
 - [ ] Branch protection allows bot merges

@@ -44,22 +44,29 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
-      - name: AI preflight
-        run: npx tsx tools/preflight.ts ai
-        continue-on-error: true
+      - name: Normalize environment aliases
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ai
 
       - name: Find PRs with conflicts
         id: prs
         run: |
           prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
-            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]')
+            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]' 2>/dev/null || echo '[]')
           echo "prs=$prs" >> $GITHUB_OUTPUT
           echo "Found $(echo "$prs" | jq 'length') DIRTY PRs"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_MAX_CALLS: '20'
+          max_conflict_files: '10'
+          max_file_bytes: '200000'
+          binary_heuristic_threshold: '0.15'
+          FORBID_WORKFLOW_EDITS: '1'
 
       - name: Resolve conflicts (oldest DIRTY PR first)
         if: steps.prs.outputs.prs != '[]'
+        continue-on-error: true
         run: |
           # Max 2 open codex PRs guardrail
           OPEN_COUNT="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
@@ -110,7 +117,7 @@ jobs:
 
           gh pr create \
             --title "chore: resolve conflicts for #$num" \
-            --body "Automatische Konfliktlösung für PR #$num via Rebase/AI-Merge." \
+            --body "## Was geändert\n- Rebase der betroffenen PR auf den aktuellen Base-Branch.\n- Bei Rebase-Konflikt: DeepSeek-only Merge für Konfliktdateien mit Guardrails.\n\n## Warum\n- Mergebarkeit wiederherstellen, ohne direkten Push auf bestehende PR-Branches.\n\n## Wie getestet\n- pnpm lint\n- pnpm typecheck\n- pnpm test -- --run\n- pnpm build\n\n## Risiko/Backout\n- Risiko: Falsche Konfliktauflösung in inhaltlich komplexen Dateien.\n- Backout: Erstellte Fix-PR schließen oder revertieren; Ursprungs-PR unverändert erneut bearbeiten." \
             --base "$base" \
             --head "codex/conflictfix-$num" || true
         env:

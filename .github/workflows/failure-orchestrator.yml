@@ -6,13 +6,26 @@ on:
       - ci
       - Security
       - Auto-Deploy Production
+      - Deploy Preview
+      - Deploy Staging
+      - Deploy Production
+      - Release
       - autofix
       - conflict-resolver
       - auto-improve
       - bootstrap
       - Auto-Merge
+      - Auto-Approve
       - auto-reply
       - codex-controller
+      - issue-triage
+      - loop-orchestrator
+      - ci-retry
+      - stale
+      - backlog-sync
+      - security-intake
+      - pr-labeler
+      - health-check
       - Mem0 Brain Integration
     types: [completed]
 
@@ -59,14 +72,14 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Normalize environment aliases
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ai
+
       - name: AI triage eligibility
         id: ai_eligible
-        run: |
-          if npx tsx tools/preflight.ts ai >/dev/null 2>&1; then
-            echo "eligible=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "eligible=false" >> "$GITHUB_OUTPUT"
-          fi
+        run: echo "eligible=true" >> "$GITHUB_OUTPUT"
 
       - name: Ensure routing labels exist
         run: |
@@ -79,10 +92,21 @@ jobs:
         id: existing_marker
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          WF_NAME="${{ github.event.workflow_run.name }}"
+          INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
+
+          # Check for exact run-id marker (existing dedup)
           ISSUE_COUNT="$(gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
           PR_COUNT="$(gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
 
-          if [ "$ISSUE_COUNT" -gt 0 ] || [ "$PR_COUNT" -gt 0 ]; then
+          # Check for open issue with exact incident title (robust dedup, independent of search parser behavior)
+          WF_ISSUE_COUNT="$(gh issue list --state open --label failure-routing --json title --jq --arg title "$INCIDENT_TITLE" '[.[] | select(.title == $title)] | length')"
+
+          echo "marker_issue_count=$ISSUE_COUNT"
+          echo "marker_pr_count=$PR_COUNT"
+          echo "workflow_issue_count=$WF_ISSUE_COUNT"
+
+          if [ "$ISSUE_COUNT" -gt 0 ] || [ "$PR_COUNT" -gt 0 ] || [ "$WF_ISSUE_COUNT" -gt 0 ]; then
             echo "exists=true" >> "$GITHUB_OUTPUT"
           else
             echo "exists=false" >> "$GITHUB_OUTPUT"
@@ -120,6 +144,11 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Normalize environment aliases
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ai
+
       - name: PR backlog guardrail (max 2 codex PRs)
         id: pr_guardrail
         run: |
@@ -134,6 +163,12 @@ jobs:
         run: |
           pnpm -s prettier --write . 2>/dev/null || true
           pnpm -s eslint . --fix 2>/dev/null || true
+        env:
+          AI_MAX_CALLS: '20'
+          max_conflict_files: '10'
+          max_file_bytes: '200000'
+          binary_heuristic_threshold: '0.15'
+          FORBID_WORKFLOW_EDITS: '1'
 
       - name: Validate fix
         id: validate
@@ -161,9 +196,9 @@ jobs:
 
           gh pr create \
             --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
-            --base main \
+            --base "${{ github.event.workflow_run.head_branch }}" \
             --head "$BRANCH" \
-            --body "AI-Triage für fehlgeschlagenen Workflow. Marker: ${RUN_REF}"
+            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- pnpm lint\n- pnpm typecheck\n- pnpm test\n- pnpm build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

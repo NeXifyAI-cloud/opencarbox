@@ -1,21 +1,13 @@
-# Automatisches Deployment nach erfolgreichem CI auf main
+# Automatisches Deployment nach erfolgreichem CI auf dem Default-Branch (Production only)
+# Preview deploys are handled by deploy-preview.yml on pull_request events
 name: Auto-Deploy Production
 
 on:
   workflow_run:
     workflows: [ci]
     types: [completed]
-    branches: [main]
+    branches: ["main"]
   workflow_dispatch:
-    inputs:
-      environment:
-        description: 'Deployment Environment'
-        required: true
-        default: 'production'
-        type: choice
-        options:
-          - production
-          - preview
 
 concurrency:
   group: deploy-${{ github.workflow }}-${{ github.event.workflow_run.head_branch || github.ref }}
@@ -40,46 +32,62 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_branch == 'main')
+       github.event.workflow_run.head_branch == github.event.workflow_run.repository.default_branch)
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ github.event.inputs.environment || 'production' }}
-      url: ${{ steps.deploy.outputs.url }}
 
     steps:
+      - name: Check Vercel config
+        id: vercel_check
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Vercel token not configured — skipping production deploy."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout
+        if: steps.vercel_check.outputs.skip != 'true'
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: pnpm/action-setup@v4
+        if: steps.vercel_check.outputs.skip != 'true'
 
       - uses: actions/setup-node@v4
+        if: steps.vercel_check.outputs.skip != 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
       - name: Preflight
-        run: npx tsx tools/preflight.ts deploy
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts deploy
 
       - name: Pull Vercel Environment
-        run: pnpm dlx vercel pull --yes --environment=${{ github.event.inputs.environment || 'production' }} --token=${{ env.VERCEL_TOKEN }}
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: pnpm dlx vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
 
       - name: Build Project
-        run: pnpm dlx vercel build ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }}
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: pnpm dlx vercel build --prod --token=${{ env.VERCEL_TOKEN }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Deploy to Vercel
         id: deploy
+        if: steps.vercel_check.outputs.skip != 'true'
         run: |
-          URL=$(pnpm dlx vercel deploy --prebuilt ${{ github.event.inputs.environment == 'preview' && '' || '--prod' }} --token=${{ env.VERCEL_TOKEN }})
+          URL=$(pnpm dlx vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "Deployed to: $URL"
 
       - name: Comment on Commit
-        if: github.event_name == 'workflow_run'
+        if: steps.vercel_check.outputs.skip != 'true' && github.event_name == 'workflow_run'
         uses: peter-evans/commit-comment@v3
         with:
           sha: ${{ github.event.workflow_run.head_sha }}
@@ -88,24 +96,13 @@ jobs:
 
             | Environment | URL |
             |-------------|-----|
-            | ${{ github.event.inputs.environment || 'production' }} | ${{ steps.deploy.outputs.url }} |
+            | production | ${{ steps.deploy.outputs.url }} |
 
   notify-failure:
     name: Notify on Failure
     runs-on: ubuntu-latest
     needs: deploy
     if: failure()
-    permissions:
-      issues: write
     steps:
-      - name: Create Issue on Failure
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Deploy fehlgeschlagen - ${context.sha.substring(0, 7)}`,
-              body: `Deployment ist fehlgeschlagen.\n\nRun: ${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
-              labels: ['bug', 'deployment', 'automated']
-            });
+      - name: Log deploy failure
+        run: echo "Production deployment failed. See workflow run for details."

@@ -300,20 +300,20 @@ graph LR
 
 ## Runner Configuration
 
-All workflows use centralized runner control:
+All workflows use centralized runner control (ADR-010):
 
 ```yaml
-runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
 ```
 
-**Repository Variable**: `OPENCARBOX_RUNNER`
+**Repository Variable**: `RUNNER`
 
 **Options**:
-- Empty string `""`: Use GitHub-hosted `ubuntu-latest` (default)
+- Not set / empty: Use GitHub-hosted `ubuntu-latest` (default)
 - `"self-hosted"`: Use self-hosted runner
-- Custom label: Use specific runner with that label
+- Custom label (e.g. `"self-hosted-build"`): Use specific runner with that label
 
-**Why**: Centralized control allows switching entire infrastructure without editing workflows.
+**Why**: Centralized control allows switching entire infrastructure without editing workflows. See ADR-011 for self-hosted runner deployment details.
 
 ---
 
@@ -384,7 +384,7 @@ runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-l
 ### GitHub Features
 - **Auto-merge**: Repository-level feature (must be enabled)
 - **GITHUB_TOKEN**: Workflow permissions (read+write)
-- **Repository Variables**: `OPENCARBOX_RUNNER`
+- **Repository Variables**: `RUNNER`
 - **Repository Secrets**: All API keys/tokens
 
 ### Required Secrets

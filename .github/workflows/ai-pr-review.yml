@@ -1,0 +1,27 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+concurrency:
+  group: ai-pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr-review:
+    name: AI PR Review
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - name: AI PR Review
+        uses: aguirreibarra/ai-github-action@main
+        with:
+          action-type: pr-review
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          custom-prompt: "Focus on security best practices and performance optimization. Respond in German when possible."

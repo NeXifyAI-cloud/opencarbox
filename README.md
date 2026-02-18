@@ -50,6 +50,8 @@ The platform supports multiple AI providers with automatic fallback:
 📖 **See [AI Provider System Documentation](docs/ai-provider-system.md) for complete documentation.**
 📖 **See [Continuous AI overview](docs/continuous-ai.md) for collaboration-focused automation concepts.**
 
+📖 **German guide:** [KI-GitHub-Aktion](docs/ai-github-action-de.md).
+
 ## Local development checks
 
 ```bash

@@ -33,6 +33,9 @@ jobs:
        github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == github.event.workflow_run.repository.default_branch)
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    environment:
+      name: production
+      url: ${{ steps.deploy.outputs.url }}
 
     steps:
       - name: Check Vercel config

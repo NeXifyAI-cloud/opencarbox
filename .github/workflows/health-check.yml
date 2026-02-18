@@ -51,3 +51,11 @@ jobs:
 
       - name: Dependency freshness
         run: pnpm outdated || true
+
+      - name: API health check
+        run: |
+          if [ -z "${{ secrets.HEALTHCHECK_URL }}" ]; then
+            echo "HEALTHCHECK_URL not configured - skipping /api/health probe."
+            exit 0
+          fi
+          curl --fail --silent --show-error "${{ secrets.HEALTHCHECK_URL }}/api/health"

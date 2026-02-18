@@ -3,7 +3,6 @@ name: Auto-Merge
 
 on:
   pull_request:
-    branches: ["$default-branch"]
     types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
@@ -17,7 +16,11 @@ jobs:
     if: >-
       github.event.pull_request.head.repo.fork == false &&
       github.base_ref == github.event.repository.default_branch &&
-      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+      (
+        contains(github.event.pull_request.labels.*.name, 'auto-merge') ||
+        contains(github.event.pull_request.labels.*.name, 'autofix') ||
+        contains(github.event.pull_request.labels.*.name, 'dependencies')
+      )
 
     steps:
       - name: Dependabot metadata

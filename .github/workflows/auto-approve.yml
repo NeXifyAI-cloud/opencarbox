@@ -16,7 +16,7 @@ jobs:
       github.event.pull_request.head.repo.fork == false &&
       (
         github.actor == 'dependabot[bot]' ||
-        contains(github.event.pull_request.labels.*.name, 'autofix')
+        contains(github.event.pull_request.labels.*.name, 'autofix') || contains(github.event.pull_request.labels.*.name, 'dependencies')
       )
     steps:
       - name: Dependabot metadata
@@ -35,10 +35,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Approve autofix PRs
+      - name: Approve autofix/dependencies PRs
         if: >-
           github.actor != 'dependabot[bot]' &&
-          contains(github.event.pull_request.labels.*.name, 'autofix')
+          (contains(github.event.pull_request.labels.*.name, 'autofix') || contains(github.event.pull_request.labels.*.name, 'dependencies'))
         uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -25,7 +25,7 @@ jobs:
   reply:
     name: AI Auto-Reply
     if: github.actor != 'github-actions[bot]'
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
 

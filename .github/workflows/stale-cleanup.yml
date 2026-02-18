@@ -1,0 +1,176 @@
+# Autonomous Stale PR and Branch Cleanup
+name: stale-cleanup
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Daily at 02:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: stale-cleanup
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  cleanup-stale-prs:
+    name: Cleanup Stale PRs
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gh and jq
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
+      - name: Close Codex placeholder PRs
+        run: |
+          echo "🔍 Finding Codex placeholder PRs..."
+          
+          # Find all open PRs with Codex placeholder message
+          PLACEHOLDER_PRS=$(gh pr list --state open --json number,body --jq '.[] | select(.body | contains("Codex generated this pull request, but encountered an unexpected error after generation. This is a placeholder PR message.")) | .number')
+          
+          if [ -z "$PLACEHOLDER_PRS" ]; then
+            echo "✅ No Codex placeholder PRs found"
+          else
+            echo "Found placeholder PRs: $PLACEHOLDER_PRS"
+            for PR_NUM in $PLACEHOLDER_PRS; do
+              echo "Closing PR #$PR_NUM..."
+              gh pr comment "$PR_NUM" --body "🤖 Auto-closed: Codex placeholder PR with no generated content. See consolidated PR for this work."
+              gh pr close "$PR_NUM"
+            done
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
+
+      - name: Close superseded Codex PRs
+        run: |
+          echo "🔍 Finding superseded Codex/CI PRs..."
+          
+          # Find open PRs with codex or ci labels older than 6 hours
+          SIX_HOURS_AGO=$(date -u -d '6 hours ago' +%Y-%m-%dT%H:%M:%SZ)
+          
+          SUPERSEDED_PRS=$(gh pr list --state open --label codex,ci --json number,createdAt,headRefName --jq --arg cutoff "$SIX_HOURS_AGO" '.[] | select(.createdAt < $cutoff) | .number')
+          
+          if [ -z "$SUPERSEDED_PRS" ]; then
+            echo "✅ No superseded PRs found"
+          else
+            echo "Checking PRs: $SUPERSEDED_PRS"
+            for PR_NUM in $SUPERSEDED_PRS; do
+              # Check if PR is mergeable and has no conflicts
+              MERGEABLE=$(gh pr view "$PR_NUM" --json mergeable --jq '.mergeable')
+              
+              if [ "$MERGEABLE" = "CONFLICTING" ]; then
+                echo "Closing conflicting PR #$PR_NUM..."
+                gh pr comment "$PR_NUM" --body "🤖 Auto-closed: Changes already merged into default branch via a later PR."
+                gh pr close "$PR_NUM"
+              fi
+            done
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
+
+  auto-merge-ready-prs:
+    name: Auto-Merge Ready PRs
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    needs: cleanup-stale-prs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install gh and jq
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
+      - name: Find and merge ready PRs
+        run: |
+          echo "🔍 Finding ready PRs to auto-merge..."
+          
+          # Find open non-draft PRs with auto-merge label or from copilot-swe-agent
+          READY_PRS=$(gh pr list --state open --json number,author,labels,isDraft --jq '.[] | select(.isDraft == false) | select(.author.login == "copilot-swe-agent[bot]" or ([.labels[].name] | any(. == "auto-merge"))) | .number')
+          
+          if [ -z "$READY_PRS" ]; then
+            echo "✅ No ready PRs found"
+            exit 0
+          fi
+          
+          echo "Found ready PRs: $READY_PRS"
+          
+          for PR_NUM in $READY_PRS; do
+            echo "Checking PR #$PR_NUM..."
+            
+            # Get changed files
+            CHANGED_FILES=$(gh pr view "$PR_NUM" --json files --jq '.files[].path')
+            
+            # Check for protected paths
+            if echo "$CHANGED_FILES" | grep -E '^\.github/workflows/|^supabase/migrations/'; then
+              echo "⚠️  PR #$PR_NUM touches workflow or migration files - skipping"
+              continue
+            fi
+            
+            # Check CI status
+            CHECK_STATUS=$(gh pr checks "$PR_NUM" --json state --jq 'all(.state == "SUCCESS")')
+            
+            if [ "$CHECK_STATUS" != "true" ]; then
+              echo "⚠️  PR #$PR_NUM checks not passing - skipping"
+              continue
+            fi
+            
+            echo "✅ Merging PR #$PR_NUM..."
+            gh pr review --approve "$PR_NUM" || true
+            gh pr merge --squash --auto "$PR_NUM"
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
+
+  sync-pr-116:
+    name: Sync PR #116
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    needs: [cleanup-stale-prs, auto-merge-ready-prs]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gh and jq
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
+      - name: Update and enable auto-merge on PR #116
+        run: |
+          echo "🔍 Checking PR #116 status..."
+          
+          # Check if PR #116 exists and is open
+          PR_STATE=$(gh pr view 116 --json state --jq '.state' 2>/dev/null || echo "NOT_FOUND")
+          
+          if [ "$PR_STATE" != "OPEN" ]; then
+            echo "PR #116 is not open (state: $PR_STATE) - skipping"
+            exit 0
+          fi
+          
+          echo "PR #116 is open, checking if rebase needed..."
+          
+          # Check if PR is behind base branch
+          MERGEABLE=$(gh pr view 116 --json mergeable --jq '.mergeable')
+          
+          if [ "$MERGEABLE" = "CONFLICTING" ]; then
+            echo "⚠️  PR #116 has conflicts - manual intervention required"
+            exit 0
+          fi
+          
+          # Enable auto-merge
+          echo "✅ Enabling auto-merge on PR #116..."
+          gh pr merge --squash --auto 116 || echo "Auto-merge already enabled or not possible"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'

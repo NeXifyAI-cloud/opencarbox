@@ -22,6 +22,8 @@ on:
       - loop-orchestrator
       - ci-retry
       - stale
+      - stale-cleanup
+      - sync-to-main
       - backlog-sync
       - security-intake
       - pr-labeler
@@ -44,6 +46,8 @@ env:
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
   NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  FORBID_WORKFLOW_EDITS: 'true'
+  AI_MAX_CALLS: '3'
 
 jobs:
   route-failure:
@@ -51,7 +55,7 @@ jobs:
     if: >-
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.name != 'failure-orchestrator'
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     outputs:
       ai_eligible: ${{ steps.ai_eligible.outputs.eligible }}
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
@@ -119,7 +123,7 @@ jobs:
     if: >-
       needs.route-failure.outputs.ai_eligible == 'true' &&
       needs.route-failure.outputs.marker_exists != 'true'
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     permissions:
       contents: write
       pull-requests: write
@@ -220,7 +224,7 @@ jobs:
       always() &&
       needs.route-failure.outputs.marker_exists != 'true' &&
       needs.route-failure.outputs.ai_eligible != 'true'
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     permissions:
       issues: write
     steps:

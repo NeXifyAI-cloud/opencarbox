@@ -32,7 +32,7 @@ jobs:
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&
        github.event.workflow_run.head_branch == github.event.workflow_run.repository.default_branch)
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
 
     steps:
       - name: Check Vercel config
@@ -84,6 +84,7 @@ jobs:
       - name: Deploy to Vercel
         id: deploy
         if: steps.vercel_check.outputs.skip != 'true'
+        continue-on-error: false
         run: |
           URL=$(pnpm dlx vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
           echo "url=$URL" >> $GITHUB_OUTPUT
@@ -103,7 +104,7 @@ jobs:
 
   notify-failure:
     name: Notify on Failure
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     needs: deploy
     if: failure()
     steps:

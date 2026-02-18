@@ -32,7 +32,7 @@ env:
 jobs:
   quick-checks:
     name: Lint & Type Check
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
 
   test-and-build:
     name: Test & Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     needs: quick-checks
     if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     steps:

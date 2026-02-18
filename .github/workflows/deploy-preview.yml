@@ -21,7 +21,7 @@ env:
 jobs:
   deploy-preview:
     name: Preview Deploy
-    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     if: |
       github.event.pull_request.head.repo.fork == false
     steps:

@@ -20,7 +20,7 @@ env:
 jobs:
   sync:
     name: Sync Issues to Backlog
-    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
 

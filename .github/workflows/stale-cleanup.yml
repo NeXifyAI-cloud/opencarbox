@@ -21,7 +21,7 @@ env:
 jobs:
   cleanup-stale-prs:
     name: Cleanup Stale PRs
-    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -82,7 +82,7 @@ jobs:
 
   auto-merge-ready-prs:
     name: Auto-Merge Ready PRs
-    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     needs: cleanup-stale-prs
     steps:
       - name: Checkout
@@ -135,7 +135,7 @@ jobs:
 
   sync-pr-116:
     name: Sync PR #116
-    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     needs: [cleanup-stale-prs, auto-merge-ready-prs]
     steps:
       - name: Checkout

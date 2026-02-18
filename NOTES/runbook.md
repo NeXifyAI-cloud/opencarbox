@@ -53,16 +53,45 @@
 
 ## Runner Policy
 
-- Alle Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` — der Runner wird systemweit über die Repository-Variable `vars.RUNNER` gesteuert (siehe ADR-010).
+- Alle Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` — der Runner wird systemweit über die Repository-Variable `vars.RUNNER` gesteuert (siehe ADR-010, ADR-011).
 - **Standard:** Ohne gesetzte Variable laufen alle Workflows auf `ubuntu-latest` (GitHub-hosted).
 - `actions/setup-node@v4` nutzt `cache: pnpm` + `cache-dependency-path: pnpm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
-- Self-hosted Runner können über `vars.RUNNER = self-hosted` aktiviert werden, sind aber keine Voraussetzung für den Standard-CI-Pfad.
+- Self-hosted Runner werden über `vars.RUNNER = self-hosted` (oder spezifisches Label wie `self-hosted-build`) aktiviert.
+
+### Self-Hosted Runner Provisioning (ADR-011)
+
+1. **Server-Anforderungen:** Dedizierte VM oder Bare-Metal mit min. 4 CPU, 8 GB RAM, 50 GB SSD, Ubuntu 22.04+.
+2. **System-Abhängigkeiten installieren:**
+   ```bash
+   sudo apt-get update && sudo apt-get install -y git curl jq docker.io
+   # Node.js LTS
+   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+   sudo apt-get install -y nodejs
+   # pnpm
+   corepack enable && corepack prepare pnpm@latest --activate
+   # GitHub CLI
+   sudo apt-get install -y gh
+   ```
+3. **Runner-Agent registrieren:** GitHub Settings → Actions → Runners → „New self-hosted runner" — Anweisungen folgen und Label `self-hosted` (oder `self-hosted-build`) vergeben.
+4. **Als Systemd-Service starten:**
+   ```bash
+   sudo ./svc.sh install && sudo ./svc.sh start
+   ```
+5. **Secrets auf dem Runner hinterlegen:** DeepSeek-/NSCALE-Keys, Supabase- und Vercel-Tokens als Systemd-Umgebungsvariablen (z. B. `/etc/systemd/system/actions.runner.*.service.d/override.conf`) — nicht im Repository speichern.
 
 ### Runner-Wechsel
 
-1. **Zu self-hosted:** GitHub Settings → Actions → Variables → `RUNNER` auf `self-hosted` setzen (oder spezifisches Label wie `self-hosted-linux`).
+1. **Zu self-hosted:** GitHub Settings → Actions → Variables → `RUNNER` auf `self-hosted` setzen (oder spezifisches Label wie `self-hosted-build`).
 2. **Zurück zu GitHub-hosted:** Variable `RUNNER` löschen oder auf `ubuntu-latest` setzen.
 3. **Validierung nach Wechsel:** CI-Lauf manuell auslösen und prüfen, dass `pnpm lint`, `pnpm typecheck`, `pnpm test` und `pnpm build` erfolgreich durchlaufen.
+
+### Monitoring & Wartung
+
+- **CPU/RAM/Disk:** Regelmäßig überwachen (z. B. via Prometheus Node Exporter, htop, oder Cloud-Monitoring).
+- **Runner-Version:** Runner-Agent regelmäßig aktualisieren — GitHub zeigt in Settings → Runners an, ob ein Update verfügbar ist.
+- **OS-Patches:** Monatliches Patch-Fenster definieren; nach Updates CI-Lauf manuell validieren.
+- **Node.js/pnpm-Updates:** Bei LTS-Wechsel pnpm/Node.js auf dem Runner aktualisieren und CI-Stack testen.
+- **Failover:** Bei Runner-Ausfall `vars.RUNNER` auf `ubuntu-latest` setzen — Workflows fallen automatisch auf GitHub-hosted zurück (kein Code-Change nötig).
 
 ### Troubleshooting: Runner unavailable
 

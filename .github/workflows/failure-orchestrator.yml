@@ -7,12 +7,15 @@ on:
       - Security
       - Auto-Deploy Production
       - Deploy Preview
+      - Deploy Staging
+      - Deploy Production
       - Release
       - autofix
       - conflict-resolver
       - auto-improve
       - bootstrap
       - Auto-Merge
+      - Auto-Approve
       - auto-reply
       - codex-controller
       - issue-triage
@@ -22,6 +25,7 @@ on:
       - backlog-sync
       - security-intake
       - pr-labeler
+      - health-check
     types: [completed]
 
 concurrency:

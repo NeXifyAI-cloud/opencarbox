@@ -97,28 +97,48 @@
 
 ```mermaid
 flowchart TD
-  A[push main / pull_request] --> B[ci.yml: quick-checks]
+  A[push default-branch / pull_request] --> B[ci.yml: quick-checks]
   B -->|lint + typecheck OK| C[ci.yml: test-and-build]
-  C -->|success on main| D[auto-deploy.yml via workflow_run]
+  C -->|success on default-branch| D[auto-deploy.yml via workflow_run]
   D --> E[Vercel production deploy]
+  F[schedule 04:30 UTC / workflow_dispatch] --> B
+  G[Dependabot / autofix PR] --> H[auto-approve.yml]
+  H --> I[auto-merge.yml]
+  J[schedule 05:00 UTC] --> K[health-check.yml]
+  L[schedule Mon 04:00 UTC] --> M[security.yml: audit + SBOM]
 ```
 
 ### Workflow Responsibilities
 
 - **CI (`.github/workflows/ci.yml`)**
-  - Trigger: `push` auf `main` und `pull_request`
+  - Trigger: `push` auf default branch, `pull_request`, `schedule` (täglich 04:30 UTC), `workflow_dispatch`
+  - Pfadfilter: Reine Doku-Änderungen (`*.md`, `docs/`, `NOTES/`, `LICENSE`) lösen keinen Build aus
   - Stufe 1 (schnell): `quick-checks` mit `lint` + `typecheck`
   - Stufe 2 (langsam): `test-and-build` mit `test` + `build` (nur wenn Stufe 1 erfolgreich)
-  - Paketmanager/Cache: **pnpm** + `actions/setup-node` cache `pnpm`
+  - Caching: **pnpm** via `actions/setup-node` + **Next.js build cache** via `actions/cache@v4`
   - Concurrency: ein Lauf pro Branch/PR-Ref, ältere Läufe werden abgebrochen
 
 - **Deploy (`.github/workflows/auto-deploy.yml`)**
   - Trigger:
-    - automatisch nur über `workflow_run` nach erfolgreichem `ci` auf `main`
+    - automatisch nur über `workflow_run` nach erfolgreichem `ci` auf default branch
     - manuell über `workflow_dispatch` (optional, für Wartung)
   - Aufgabe: ausschließlich Deployment (Vercel pull/build/deploy)
   - Paketmanager/Cache: **pnpm** + `pnpm dlx`
   - Concurrency: ein Deployment-Lauf pro Branch-Ref
+
+- **Auto-Approve (`.github/workflows/auto-approve.yml`)**
+  - Trigger: `pull_request_target` (opened/synchronize/reopened)
+  - Genehmigt automatisch sichere PRs: Dependabot patch/minor Updates und PRs mit `autofix` Label
+  - Verwendet `hmarr/auto-approve-action@v4`
+
+- **Health Check (`.github/workflows/health-check.yml`)**
+  - Trigger: `schedule` (täglich 05:00 UTC), `workflow_dispatch`
+  - Prüft: lint, typecheck, test, build, dependency freshness
+  - Stellt sicher, dass der default branch jederzeit buildbar bleibt
+
+- **Security (`.github/workflows/security.yml`)**
+  - Trigger: `pull_request`, `push` auf default branch, `schedule` (wöchentlich Mo 04:00 UTC)
+  - Jobs: Dependency Audit + Secret Scan + SBOM-Generierung (Software Bill of Materials)
 
 - **Konsolidierung**
   - Es gibt nur noch einen primären CI-Workflow: `.github/workflows/ci.yml`

@@ -50,6 +50,9 @@ jobs:
           AI_MAX_CALLS: '10'
           FORBID_WORKFLOW_EDITS: '1'
 
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
       - name: Run full quality checks
         id: quality
         continue-on-error: true

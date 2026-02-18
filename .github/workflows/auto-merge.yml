@@ -3,7 +3,6 @@ name: Auto-Merge
 
 on:
   pull_request:
-    branches: [main]
     types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:

@@ -58,10 +58,10 @@ schedule → auto-improve (every 6h)
 
 ## Conventions
 
-- **Branch references**: Conditions and commands use `github.event.repository.default_branch` instead of hardcoded branch names.
-- **Path filters**: CI and security workflows skip on docs-only changes (`*.md`, `docs/**`, `NOTES/**`).
+- **Branch references**: Trigger-level `branches:` filters are removed where a job-level `if` already checks `github.event.repository.default_branch`. Conditions and `--base` commands use `github.event.repository.default_branch` instead of hardcoded branch names.
+- **Path filters**: CI and security workflows skip on docs-only changes (`*.md`, `docs/**`, `NOTES/**`, `LICENSE`).
 - **Caching**: pnpm store cached via `actions/setup-node` `cache: pnpm`; Next.js build cached via `actions/cache`.
-- **Concurrency**: All workflows use concurrency groups to prevent redundant runs.
+- **Concurrency**: Workflows that benefit from cancelling superseded runs use `concurrency` groups to prevent redundant executions; utility workflows (like manifest checks) may omit concurrency when cancellation is not required.
 - **pnpm version**: Read from `packageManager` in `package.json` – never specified in `pnpm/action-setup`.
-- **No environment protection rules**: Deploy workflows avoid `environment:` blocks that require manual approval (except `deploy-prod.yml` which is intentionally manual).
+- **Environment protection rules**: Deploy workflows prefer to model manual approvals via dedicated workflows (for example `deploy-prod.yml`) rather than `environment:`-based protection; some deploy workflows may still use `environment:` blocks when GitHub environment features are explicitly desired.
 - **Auto-merge**: Dependabot patch/minor PRs and autofix PRs are automatically approved and merged when all checks pass.

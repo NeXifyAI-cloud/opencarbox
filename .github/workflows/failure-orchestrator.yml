@@ -175,7 +175,7 @@ jobs:
 
           gh pr create \
             --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
-            --base main \
+            --base "${{ github.event.workflow_run.head_branch }}" \
             --head "$BRANCH" \
             --body "AI-Triage für fehlgeschlagenen Workflow. Marker: ${RUN_REF}"
         env:

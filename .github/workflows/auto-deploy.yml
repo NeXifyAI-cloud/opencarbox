@@ -1,4 +1,4 @@
-# Automatisches Deployment nach erfolgreichem CI auf main (Production only)
+# Automatisches Deployment nach erfolgreichem CI auf dem Default-Branch (Production only)
 # Preview deploys are handled by deploy-preview.yml on pull_request events
 name: Auto-Deploy Production
 
@@ -6,7 +6,7 @@ on:
   workflow_run:
     workflows: [ci]
     types: [completed]
-    branches: [main]
+    branches: ["$default-branch"]
   workflow_dispatch:
 
 concurrency:
@@ -32,7 +32,7 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_branch == 'main')
+       github.event.workflow_run.head_branch == github.event.workflow_run.repository.default_branch)
     runs-on: ubuntu-latest
 
     steps:

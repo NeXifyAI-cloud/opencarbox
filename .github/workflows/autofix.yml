@@ -16,9 +16,6 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  AI_PROVIDER: deepseek
-  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
 
 jobs:
   safe_autofix:
@@ -41,7 +38,13 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y jq gh
+
       - run: pnpm i --frozen-lockfile
+
+      - name: Normalize environment aliases
+        run: source tools/export_env.sh
 
       - name: Safe fixes (format + lint)
         run: |

@@ -124,3 +124,16 @@
 - **Consequences**:
   - Fehlende AI-Secrets stoppen AI-Workflows früh und sichtbar.
   - Auto-PRs sind auditierbar und entsprechen den geforderten Pflichtfeldern.
+
+## ADR-009: Fail-closed Auto-Reply + secret-freie Controller/Autofix-Orchestrierung
+- **Decision**: `auto-reply.yml` führt vor der Antwortgenerierung verpflichtend `tools/export_env.sh` und `tools/preflight.ts ai` aus und bricht bei fehlendem DeepSeek/NSCALE-Setup oder leerer DeepSeek-Antwort hart ab (kein stiller Fallback). `autofix.yml` und `codex-controller.yml` wurden auf nicht-AI-spezifische Umgebungen reduziert und führen nur Env-Normalisierung aus.
+- **Alternatives**:
+  - Soft-Fallback im Auto-Reply (Template-Antwort ohne AI bei Fehlern).
+  - Beibehalten unnötiger AI-Secrets in Workflows ohne direkten AI-Request.
+- **Reasoning**:
+  - Verhindert intransparente Reply-Pfade ohne DeepSeek/NSCALE-Header.
+  - Reduziert Secret-Abhängigkeiten in Dispatch-/Safe-Autofix-Workflows.
+  - Erzwingt explizite Tool-Installation (`gh`/`jq`) dort, wo CLI-Aufrufe stattfinden.
+- **Consequences**:
+  - Auto-Reply scheitert sichtbar bei fehlerhafter AI-Konfiguration statt stiller Platzhalter-Kommentare.
+  - Autofix/Controller bleiben ausführbar ohne AI-Secrets und sind klarer voneinander abgegrenzt.

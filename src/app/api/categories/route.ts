@@ -44,7 +44,8 @@ export async function GET(request: NextRequest) {
     })
 
     // Hierarchische Struktur erstellen
-    const buildHierarchy = (cats: typeof categories, parentId: string | null = null) => {
+    type CategoryWithChildren = typeof categories[number] & { children: CategoryWithChildren[] }
+    const buildHierarchy = (cats: typeof categories, parentId: string | null = null): CategoryWithChildren[] => {
       return cats
         .filter(category => category.parentId === parentId)
         .map(category => ({

@@ -8,8 +8,8 @@ resolve_github_token() {
     return 0
   fi
 
-  if [[ -n "${CLASSIC_TOKEN_GITHUB:-}" ]]; then
-    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB"
+  if [[ -n "${CLASSIC_TOKEN_GITHUB_NEU:-}" ]]; then
+    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB_NEU"
     return 0
   fi
 

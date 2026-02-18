@@ -39,7 +39,7 @@ jobs:
       - name: Run Mem0 integration
         env:
           GITLAB_PROJEKT_TOKEN: ${{ secrets.GITLAB_PROJEKT_TOKEN }}
-          CLASSIC_TOKEN_GITHUB: ${{ secrets.CLASSIC_TOKEN_GITHUB }}
+          CLASSIC_TOKEN_GITHUB_NEU: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
         run: npx tsx scripts/mem0-integration.ts
         continue-on-error: true
 

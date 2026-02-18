@@ -20,6 +20,19 @@
 - AI: `AI_PROVIDER`, `DEEPSEEK_API_KEY`, `NSCALE_API_KEY`, optional `DEEPSEEK_BASE_URL`, `NSCALE_HEADER_NAME`
 - Deploy: `VERCEL_TOKEN`, `VERCEL_PROJECT_ID`, optional `GH_PAT`
 
+## Runner Configuration (ADR-010, ADR-011)
+
+All workflows use centralized runner control via repository variable:
+
+```yaml
+runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+```
+
+- **Default (no variable set):** GitHub-hosted `ubuntu-latest`.
+- **Self-hosted activation:** Set `vars.RUNNER` to `self-hosted` or a specific label (e.g. `self-hosted-build`) in GitHub Settings → Actions → Variables.
+- **Rollback:** Delete `vars.RUNNER` or set to `ubuntu-latest` — all workflows fall back to GitHub-hosted instantly.
+- **Provisioning:** See NOTES/runbook.md § Runner Policy for server setup, monitoring, and maintenance.
+
 ## Notes
 
 - Non-CI workflows call `source tools/export_env.sh` before preflight checks (including `bootstrap.yml`).

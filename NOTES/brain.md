@@ -151,3 +151,32 @@
   - Runner-Wechsel ist eine Konfigurationsänderung in GitHub Settings → Variables, kein Code-Change.
   - Neue Workflows müssen `${{ vars.RUNNER || 'ubuntu-latest' }}` statt `ubuntu-latest` verwenden.
   - Rollback: Variable löschen oder auf `ubuntu-latest` setzen — alle Workflows fallen automatisch auf GitHub-hosted zurück.
+
+## ADR-011: Self-Hosted Runner Deployment
+- **Decision**: Die CI/CD-Pipeline wird um eine self-hosted Runner-Infrastruktur ergänzt. Alle Workflows nutzen weiterhin `${{ vars.RUNNER || 'ubuntu-latest' }}` (ADR-010), sodass Aktivierung und Rollback rein über die Repository-Variable `vars.RUNNER` erfolgen.
+- **Motivation**:
+  - Kürzere CI-Laufzeiten durch dedizierte Hardware statt geteilter GitHub-Runner-Kapazitäten.
+  - Bessere Kontrolle über Secrets (DeepSeek, NSCALE, Supabase, Vercel) — Runner unter eigener Verwaltung ermöglichen striktere Netzwerkkontrollen.
+  - AI-Workflows benötigen spezielle Abhängigkeiten (`gh`, `jq`, Node.js, pnpm), die auf self-hosted Runnern vorinstalliert und versioniert werden können.
+  - Weniger `cancel-in-progress`-Auslösungen durch schnellere, parallele Builds.
+- **Alternatives**:
+  - Weiterhin ausschließlich GitHub-hosted Runner nutzen (Status quo).
+  - Nur AI-Workflows auf self-hosted Runner migrieren, Rest bleibt auf `ubuntu-latest`.
+  - Larger GitHub-hosted Runner (kostenpflichtig) statt eigener Infrastruktur.
+- **Risiken**:
+  - Runner-Ausfall: Wird durch Fallback auf `ubuntu-latest` über ADR-010-Mechanismus abgefangen — Variable löschen oder auf `ubuntu-latest` setzen.
+  - Wartungsaufwand: OS-Updates, Node.js/pnpm-Upgrades und Runner-Agent-Updates müssen regelmäßig eingespielt werden.
+  - Sicherheit: Runner-Server muss gehärtet sein (Firewall, SSH-only-Zugang, minimale Angriffsfläche).
+- **Provisioning-Anforderungen**:
+  - Dedizierter Server/VM mit min. 4 CPU, 8 GB RAM, 50 GB SSD.
+  - Vorinstalliert: Node.js (LTS), pnpm, `gh` CLI, `jq`, Git, Docker (optional).
+  - Runner-Agent registriert unter Settings → Actions → Runners mit Label `self-hosted` (oder `self-hosted-build`).
+  - Secrets als Systemd-Service-Umgebungsvariablen oder via `.env`-Datei (nicht im Repository).
+- **Rollback-Plan**:
+  1. `vars.RUNNER` in GitHub Settings → Actions → Variables auf `ubuntu-latest` setzen oder löschen.
+  2. Alle Workflows fallen sofort auf GitHub-hosted Runner zurück — kein Code-Change nötig.
+  3. CI-Lauf manuell auslösen und validieren (`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`).
+- **Consequences**:
+  - Self-hosted Runner sind produktionsbereit für alle Workflow-Typen (CI, Deploy, AI, Ops).
+  - `tools/export_env.sh` und `tools/preflight.ts` prüfen fehlende Variablen am Beginn jedes Workflows.
+  - Monitoring (CPU, RAM, Disk, Runner-Version) muss als Betriebsaufgabe etabliert werden (siehe Runbook).

@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: ["main"]
+    branches: ["$default-branch"]
     paths-ignore:
       - '*.md'
       - 'docs/**'

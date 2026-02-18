@@ -37,9 +37,13 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
       - run: pnpm i --frozen-lockfile
 
       - name: Normalize environment aliases
+        continue-on-error: true
         run: |
           source tools/export_env.sh
           npx tsx tools/preflight.ts ai

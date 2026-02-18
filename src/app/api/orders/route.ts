@@ -6,9 +6,24 @@ const prisma = new PrismaClient()
 
 // Validation Schema
 const orderSchema = z.object({
-  userId: z.string().optional(),
+  userId: z.string().optional().nullable(),
+  vehicleId: z.string().optional().nullable(),
+  shippingAddressId: z.string().optional().nullable(),
+  billingAddressId: z.string().optional().nullable(),
+  orderNumber: z.string().min(1, 'Bestellnummer ist erforderlich'),
+  subtotal: z.number().positive('Zwischensumme muss positiv sein'),
+  shippingCost: z.number().min(0, 'Versandkosten dürfen nicht negativ sein').default(0),
+  taxAmount: z.number().min(0, 'Steuerbetrag darf nicht negativ sein').default(0),
+  discount: z.number().min(0, 'Rabatt darf nicht negativ sein').default(0),
   total: z.number().positive('Gesamtbetrag muss positiv sein'),
-  status: z.enum(['pending', 'processing', 'shipped', 'delivered', 'cancelled']).default('pending'),
+  paymentMethod: z.string().optional().nullable(),
+  paymentIntentId: z.string().optional().nullable(),
+  paymentStatus: z.enum(['PENDING', 'PAID', 'FAILED', 'REFUNDED']).default('PENDING'),
+  status: z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']).default('PENDING'),
+  shippingMethod: z.string().optional().nullable(),
+  trackingNumber: z.string().optional().nullable(),
+  customerNote: z.string().optional().nullable(),
+  internalNote: z.string().optional().nullable(),
 })
 
 // GET /api/orders - Alle Bestellungen abrufen
@@ -21,12 +36,18 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
     const userId = searchParams.get('userId')
 
+    const VALID_ORDER_STATUSES = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']
     // Filter erstellen
     const where: {
       status?: string
       userId?: string
     } = {}
-    if (status) where.status = status
+    if (status) {
+      const statusUpper = status.toUpperCase()
+      if (VALID_ORDER_STATUSES.includes(statusUpper)) {
+        where.status = statusUpper
+      }
+    }
     if (userId) where.userId = userId
 
       const [orders, total] = await Promise.all([
@@ -76,9 +97,25 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Bestellung erstellen
+    // Bestellung erstellen - entferne null/undefined Werte
+    const orderData = {
+      ...validation.data,
+    }
+    
+    // Entferne userId wenn es null oder undefined ist
+    if (!orderData.userId) {
+      const { userId: _, ...rest } = orderData
+      const order = await prisma.order.create({
+        data: rest,
+      })
+      return NextResponse.json(
+        { success: true, data: order },
+        { status: 201 }
+      )
+    }
+    
     const order = await prisma.order.create({
-      data: validation.data,
+      data: orderData,
     })
 
     return NextResponse.json(

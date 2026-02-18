@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 // Validation Schema für User Updates
 const userUpdateSchema = z.object({
   name: z.string().min(1, 'Name ist erforderlich').optional(),
-  role: z.enum(['customer', 'admin', 'employee']).optional(),
+  role: z.enum(['CUSTOMER', 'EMPLOYEE', 'ADMIN']).optional(),
 })
 
 // GET /api/users - Alle Benutzer abrufen (mit Pagination)
@@ -19,11 +19,17 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
     const role = searchParams.get('role')
 
+    const VALID_ROLES = ['CUSTOMER', 'EMPLOYEE', 'ADMIN']
     // Filter erstellen
     const where: {
       role?: string
     } = {}
-    if (role) where.role = role
+    if (role) {
+      const roleUpper = role.toUpperCase()
+      if (VALID_ROLES.includes(roleUpper)) {
+        where.role = roleUpper
+      }
+    }
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({

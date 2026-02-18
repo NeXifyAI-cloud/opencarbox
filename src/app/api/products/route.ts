@@ -8,9 +8,21 @@ const prisma = new PrismaClient()
 const productSchema = z.object({
   sku: z.string().min(1, 'SKU ist erforderlich'),
   name: z.string().min(1, 'Name ist erforderlich'),
+  slug: z.string().min(1, 'Slug ist erforderlich'),
   description: z.string().optional(),
   price: z.number().positive('Preis muss positiv sein'),
+  comparePrice: z.number().positive().optional(),
+  costPrice: z.number().positive().optional(),
   stock: z.number().int().min(0, 'Lagerbestand darf nicht negativ sein'),
+  lowStockAlert: z.number().int().min(0).default(5),
+  trackStock: z.boolean().default(true),
+  images: z.string().default(''),
+  categoryId: z.string().optional(),
+  brand: z.string().optional(),
+  isActive: z.boolean().default(true),
+  isFeatured: z.boolean().default(false),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
 })
 
 // GET /api/products - Alle Produkte abrufen

@@ -32,6 +32,8 @@ describe('Products API', () => {
           {
             sku: 'TEST-001',
             name: 'Test Produkt 1',
+            slug: 'test-produkt-1',
+            images: '',
             description: 'Beschreibung 1',
             price: 99.99,
             stock: 10,
@@ -39,6 +41,8 @@ describe('Products API', () => {
           {
             sku: 'TEST-002',
             name: 'Test Produkt 2',
+            slug: 'test-produkt-2',
+            images: '',
             description: 'Beschreibung 2',
             price: 149.99,
             stock: 5,

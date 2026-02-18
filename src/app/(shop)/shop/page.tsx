@@ -32,7 +32,7 @@ export default function ShopPage() {
 
             {/* Left: Headline */}
             <div className="lg:col-span-5 text-white">
-              <Badge variant="carvantooo" className="mb-4">
+              <Badge variant="primary" className="mb-4">
                 Carvantooo Parts & Service
               </Badge>
               <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 leading-tight">

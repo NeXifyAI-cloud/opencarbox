@@ -31,13 +31,17 @@ describe('Orders API', () => {
         data: [
           {
             userId: 'user-001',
+            orderNumber: 'TEST-001',
+            subtotal: 99.99,
             total: 99.99,
-            status: 'pending',
+            status: 'PENDING',
           },
           {
             userId: 'user-002',
+            orderNumber: 'TEST-002',
+            subtotal: 149.99,
             total: 149.99,
-            status: 'processing',
+            status: 'PENDING',
           },
         ],
       })

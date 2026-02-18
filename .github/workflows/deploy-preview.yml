@@ -3,9 +3,12 @@ name: Deploy Preview
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
 
 concurrency:
-  group: preview-${{ github.event.pull_request.number }}
+  group: preview-${{ github.event.pull_request.number || github.event.workflow_run.id || github.run_id }}
   cancel-in-progress: true
 
 permissions:
@@ -23,7 +26,14 @@ jobs:
     name: Preview Deploy
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     if: |
-      github.event.pull_request.head.repo.fork == false
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'pull_request' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.url }}
     steps:
       - name: Check Vercel config
         id: vercel_check
@@ -37,6 +47,8 @@ jobs:
 
       - uses: actions/checkout@v4
         if: steps.vercel_check.outputs.skip != 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
 
       - uses: pnpm/action-setup@v4
         if: steps.vercel_check.outputs.skip != 'true'
@@ -80,10 +92,17 @@ jobs:
           script: |
             const url = '${{ steps.deploy.outputs.url }}';
             const body = `🚀 **Preview deployed!**\n\n| Environment | URL |\n|---|---|\n| Preview | ${url} |`;
+            // Resolve PR number from pull_request event or workflow_run context
+            let prNumber = context.issue?.number;
+            if (!prNumber && context.eventName === 'workflow_run') {
+              const prs = context.payload?.workflow_run?.pull_requests || [];
+              prNumber = prs[0]?.number;
+            }
+            if (!prNumber) return;
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number: prNumber,
             });
             const existing = comments.find(c => c.body.includes('Preview deployed!'));
             if (existing) {
@@ -97,7 +116,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
+                issue_number: prNumber,
                 body,
               });
             }

@@ -38,6 +38,9 @@ jobs:
       - name: 'Guard: forbid OpenAI usage'
         run: bash tools/guard_no_openai.sh
 
+      - name: Generate Prisma client
+        run: pnpm db:generate
+
       - name: Lint
         run: pnpm lint
 
@@ -60,6 +63,9 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm db:generate
 
       - name: Test
         run: pnpm test

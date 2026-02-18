@@ -5,7 +5,6 @@
 
 import { BaseAIProvider } from './base';
 import { DeepSeekProvider } from './deepseek';
-import { GitHubModelsProvider } from './github-models';
 import type { ProviderConfig, ProviderType } from './types';
 
 /**
@@ -13,8 +12,6 @@ import type { ProviderConfig, ProviderType } from './types';
  */
 export function createProvider(config: ProviderConfig): BaseAIProvider {
   switch (config.type) {
-    case 'github-models':
-      return new GitHubModelsProvider(config);
     case 'deepseek':
       return new DeepSeekProvider(config);
     default:

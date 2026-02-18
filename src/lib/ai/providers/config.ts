@@ -19,64 +19,35 @@ export function getProviderConfigFromEnv(): AIProviderConfiguration {
   const providerType = (process.env.AI_PROVIDER || 'deepseek') as ProviderType;
   const autoSelect = process.env.AI_AUTO_SELECT !== 'false'; // Default to true
 
-  // GitHub Models configuration
-  const githubModelsConfig: ProviderConfig | null =
-    process.env.GITHUB_TOKEN || process.env.GITHUB_MODELS_API_KEY
-      ? {
-          type: 'github-models',
-          apiKey: process.env.GITHUB_TOKEN || process.env.GITHUB_MODELS_API_KEY || '',
-          baseUrl: process.env.GITHUB_MODELS_BASE_URL,
-          model: process.env.GITHUB_MODELS_MODEL || 'gpt-4o',
-          timeout: process.env.AI_TIMEOUT_MS ? parseInt(process.env.AI_TIMEOUT_MS, 10) : 30000,
-        }
-      : null;
-
-  // DeepSeek configuration
-  const deepseekConfig: ProviderConfig | null = process.env.DEEPSEEK_API_KEY
-    ? {
-        type: 'deepseek',
-        apiKey: process.env.DEEPSEEK_API_KEY,
-        baseUrl: process.env.DEEPSEEK_BASE_URL,
-        model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
-        timeout: process.env.AI_TIMEOUT_MS ? parseInt(process.env.AI_TIMEOUT_MS, 10) : 30000,
-        customHeaders: {
-          ...(process.env.NSCALE_API_KEY && process.env.NSCALE_HEADER_NAME
-            ? { [process.env.NSCALE_HEADER_NAME]: process.env.NSCALE_API_KEY }
-            : {}),
-        },
-      }
-    : null;
-
-  // Determine primary provider based on AI_PROVIDER env var
-  let primary: ProviderConfig | null = null;
-  const fallbacks: ProviderConfig[] = [];
-
-  if (providerType === 'github-models') {
-    if (githubModelsConfig) {
-      primary = githubModelsConfig;
-    }
-    if (deepseekConfig) {
-      fallbacks.push(deepseekConfig);
-    }
-  } else {
-    // Default to deepseek
-    if (deepseekConfig) {
-      primary = deepseekConfig;
-    }
-    if (githubModelsConfig) {
-      fallbacks.push(githubModelsConfig);
-    }
+  if (providerType !== 'deepseek') {
+    throw new Error('AI_PROVIDER must be deepseek. Other providers are disabled by policy.');
   }
 
-  if (!primary) {
+  // DeepSeek configuration
+  const nscaleHeaderName = process.env.NSCALE_HEADER_NAME || 'X-NSCALE-API-KEY';
+  const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+  const nscaleApiKey = process.env.NSCALE_API_KEY;
+
+  if (!deepseekApiKey || !nscaleApiKey) {
     throw new Error(
-      `No valid AI provider configuration found. Set GITHUB_TOKEN/GITHUB_MODELS_API_KEY or DEEPSEEK_API_KEY environment variable.`
+      'DeepSeek configuration is incomplete. DEEPSEEK_API_KEY and NSCALE_API_KEY are required.'
     );
   }
 
+  const primary: ProviderConfig = {
+    type: 'deepseek',
+    apiKey: deepseekApiKey,
+    baseUrl: process.env.DEEPSEEK_BASE_URL,
+    model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
+    timeout: process.env.AI_TIMEOUT_MS ? parseInt(process.env.AI_TIMEOUT_MS, 10) : 30000,
+    customHeaders: {
+      [nscaleHeaderName]: nscaleApiKey,
+    },
+  };
+
   return {
     primary,
-    fallbacks,
+    fallbacks: [],
     autoSelect,
     healthCheckInterval: process.env.AI_HEALTH_CHECK_INTERVAL_MS
       ? parseInt(process.env.AI_HEALTH_CHECK_INTERVAL_MS, 10)
@@ -92,7 +63,11 @@ export function validateProviderConfig(config: ProviderConfig): boolean {
     return false;
   }
 
-  if (config.type !== 'github-models' && config.type !== 'deepseek') {
+  if (config.type !== 'deepseek') {
+    return false;
+  }
+
+  if (!config.customHeaders || Object.keys(config.customHeaders).length === 0) {
     return false;
   }
 
@@ -103,32 +78,22 @@ export function validateProviderConfig(config: ProviderConfig): boolean {
  * Get all available provider configurations
  */
 export function getAllAvailableProviders(): ProviderConfig[] {
-  const providers: ProviderConfig[] = [];
-
-  // GitHub Models
-  if (process.env.GITHUB_TOKEN || process.env.GITHUB_MODELS_API_KEY) {
-    providers.push({
-      type: 'github-models',
-      apiKey: process.env.GITHUB_TOKEN || process.env.GITHUB_MODELS_API_KEY || '',
-      baseUrl: process.env.GITHUB_MODELS_BASE_URL,
-      model: process.env.GITHUB_MODELS_MODEL || 'gpt-4o',
-    });
+  const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+  const nscaleApiKey = process.env.NSCALE_API_KEY;
+  if (!deepseekApiKey || !nscaleApiKey) {
+    return [];
   }
 
-  // DeepSeek
-  if (process.env.DEEPSEEK_API_KEY) {
-    providers.push({
+  const nscaleHeaderName = process.env.NSCALE_HEADER_NAME || 'X-NSCALE-API-KEY';
+  return [
+    {
       type: 'deepseek',
-      apiKey: process.env.DEEPSEEK_API_KEY,
+      apiKey: deepseekApiKey,
       baseUrl: process.env.DEEPSEEK_BASE_URL,
       model: process.env.DEEPSEEK_MODEL || 'deepseek-chat',
       customHeaders: {
-        ...(process.env.NSCALE_API_KEY && process.env.NSCALE_HEADER_NAME
-          ? { [process.env.NSCALE_HEADER_NAME]: process.env.NSCALE_API_KEY }
-          : {}),
+        [nscaleHeaderName]: nscaleApiKey,
       },
-    });
-  }
-
-  return providers;
+    },
+  ];
 }

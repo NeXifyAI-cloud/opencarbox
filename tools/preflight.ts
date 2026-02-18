@@ -57,35 +57,14 @@ function main() {
     }
 
     const provider = optional("AI_PROVIDER") || "deepseek";
-    if (provider !== "deepseek" && provider !== "github-models") {
-      throw new Error("AI_PROVIDER must be 'deepseek' or 'github-models'");
+    if (provider !== "deepseek") {
+      throw new Error("AI_PROVIDER must be 'deepseek'");
     }
 
-    // Check for at least one provider configuration
-    const hasDeepSeek = !!optional("DEEPSEEK_API_KEY");
-    const hasGitHub = !!(optional("GITHUB_TOKEN") || optional("GITHUB_MODELS_API_KEY"));
-
-    if (!hasDeepSeek && !hasGitHub) {
-      throw new Error("At least one AI provider must be configured: DEEPSEEK_API_KEY or GITHUB_TOKEN/GITHUB_MODELS_API_KEY");
-    }
-
-    // If DeepSeek is primary or only option, validate NSCALE (if needed)
-    if (provider === "deepseek" && hasDeepSeek) {
-      must("DEEPSEEK_API_KEY");
-      // NSCALE may be optional depending on setup
-      optional("NSCALE_API_KEY");
-      optional("DEEPSEEK_BASE_URL");
-      optional("NSCALE_HEADER_NAME");
-    }
-
-    // Validate GitHub Models if configured
-    if (provider === "github-models" && hasGitHub) {
-      if (!optional("GITHUB_TOKEN") && !optional("GITHUB_MODELS_API_KEY")) {
-        throw new Error("GITHUB_TOKEN or GITHUB_MODELS_API_KEY required for github-models provider");
-      }
-      optional("GITHUB_MODELS_BASE_URL");
-      optional("GITHUB_MODELS_MODEL");
-    }
+    must("DEEPSEEK_API_KEY");
+    must("NSCALE_API_KEY");
+    optional("DEEPSEEK_BASE_URL");
+    optional("NSCALE_HEADER_NAME");
 
     optional("AI_AUTO_SELECT");
     optional("AI_TIMEOUT_MS");
@@ -96,7 +75,7 @@ function main() {
     optionalIntAny("binary_heuristic_threshold", "BINARY_HEURISTIC_THRESHOLD");
     optional("FORBID_WORKFLOW_EDITS");
 
-    console.log(`Preflight(ai): OK (provider: ${provider}, fallback: ${hasDeepSeek && hasGitHub ? "enabled" : "disabled"})`);
+    console.log(`Preflight(ai): OK (provider: ${provider})`);
     return;
   }
 

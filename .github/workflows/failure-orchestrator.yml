@@ -7,7 +7,10 @@ on:
       - Security
       - Auto-Deploy Production
       - Deploy Preview
+      - Deploy Staging
+      - Deploy Production
       - Release
+      - Health Check
       - autofix
       - conflict-resolver
       - auto-improve
@@ -22,6 +25,7 @@ on:
       - backlog-sync
       - security-intake
       - pr-labeler
+      - Mem0 Brain Integration
     types: [completed]
 
 concurrency:

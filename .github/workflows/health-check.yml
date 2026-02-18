@@ -1,0 +1,64 @@
+name: Health Check
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Every hour
+  workflow_dispatch:
+
+concurrency:
+  group: health-check
+  cancel-in-progress: true
+
+permissions:
+  issues: write
+
+jobs:
+  health:
+    name: Application Health Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check /api/health
+        id: health
+        run: |
+          HEALTH_URL="${APP_URL}/api/health"
+          echo "Checking $HEALTH_URL ..."
+          HTTP_CODE=$(curl -sf -o /tmp/health.json -w '%{http_code}' "$HEALTH_URL" || echo "000")
+          echo "http_code=$HTTP_CODE" >> "$GITHUB_OUTPUT"
+
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "status=ok" >> "$GITHUB_OUTPUT"
+            echo "✅ Health check passed (HTTP $HTTP_CODE)"
+            cat /tmp/health.json
+          else
+            echo "status=degraded" >> "$GITHUB_OUTPUT"
+            echo "⚠️ Health check failed (HTTP $HTTP_CODE)"
+            cat /tmp/health.json 2>/dev/null || echo "No response body"
+          fi
+        env:
+          APP_URL: ${{ vars.APP_URL || 'https://opencarbox.vercel.app' }}
+
+      - name: Create issue on degradation
+        if: steps.health.outputs.status == 'degraded'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = `Health Check degraded – HTTP ${process.env.HTTP_CODE}`;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'health-check,automated',
+              state: 'open',
+            });
+            if (issues.length >= 1) {
+              core.info('Open health-check issue already exists, skipping.');
+              return;
+            }
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body: `The hourly health check detected degradation.\n\n**HTTP Status:** ${process.env.HTTP_CODE}\n**Timestamp:** ${new Date().toISOString()}\n\nPlease investigate the application status.`,
+              labels: ['health-check', 'automated'],
+            });
+        env:
+          HTTP_CODE: ${{ steps.health.outputs.http_code }}

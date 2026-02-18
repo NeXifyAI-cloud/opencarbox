@@ -3,7 +3,6 @@ name: Auto-Merge
 
 on:
   pull_request:
-    branches: [main]
     types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
@@ -16,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event.pull_request.head.repo.fork == false &&
-      github.base_ref == 'main' &&
       contains(github.event.pull_request.labels.*.name, 'auto-merge')
 
     steps:

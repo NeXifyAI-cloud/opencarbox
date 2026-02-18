@@ -1,12 +1,14 @@
 name: Deploy Staging
 
 on:
-  push:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
 concurrency:
-  group: deploy-staging-${{ github.ref }}
+  group: deploy-staging-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -18,12 +20,18 @@ env:
 jobs:
   deploy-staging:
     name: Deploy to Staging
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     environment:
       name: staging
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: pnpm/action-setup@v4
 

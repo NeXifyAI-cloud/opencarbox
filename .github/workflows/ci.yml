@@ -3,7 +3,19 @@ name: ci
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - 'NOTES/**'
+      - 'LICENSE'
+      - '.github/SECRETS_SETUP.md'
   pull_request:
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - 'NOTES/**'
+      - 'LICENSE'
+      - '.github/SECRETS_SETUP.md'
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -29,6 +41,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store/v3
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-${{ runner.os }}-
 
       - run: pnpm i --frozen-lockfile
 
@@ -58,6 +77,20 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store/v3
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-${{ runner.os }}-
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**', 'app/**') }}
+          restore-keys: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
 
       - run: pnpm i --frozen-lockfile
 

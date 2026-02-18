@@ -109,11 +109,12 @@ jobs:
           git commit -m "chore: safe autofix (format/lint)"
           git push origin "$BR"
 
+          BASE_BRANCH="${{ github.event.workflow_run.head_branch }}"
           gh label create autofix --color 1d76db --description "Automated safe autofix PR" 2>/dev/null || true
           gh pr create \
             --title "chore: safe autofix" \
             --body "Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet." \
-            --base main \
+            --base "$BASE_BRANCH" \
             --label autofix
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

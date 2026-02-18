@@ -69,7 +69,7 @@ check_http_server "Supabase" \
 # GitHub
 check_http_server "GitHub" \
     "https://api.githubcopilot.com/mcp/" \
-    "Authorization: Bearer $CLASSIC_TOKEN_GITHUB"
+    "Authorization: Bearer $CLASSIC_TOKEN_GITHUB_NEU"
 
 # Vercel
 check_http_server "Vercel" \
@@ -114,11 +114,11 @@ else
     echo "✅ SUPABASE_ACCESS_TOKEN: Set"
 fi
 
-if [ -z "$CLASSIC_TOKEN_GITHUB" ]; then
-    echo "❌ CLASSIC_TOKEN_GITHUB not set"
+if [ -z "$CLASSIC_TOKEN_GITHUB_NEU" ]; then
+    echo "❌ CLASSIC_TOKEN_GITHUB_NEU not set"
     tokens_missing=$((tokens_missing + 1))
 else
-    echo "✅ CLASSIC_TOKEN_GITHUB: Set"
+    echo "✅ CLASSIC_TOKEN_GITHUB_NEU: Set"
 fi
 
 if [ -z "$VERCEL_TOKEN" ]; then

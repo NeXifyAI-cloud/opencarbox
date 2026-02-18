@@ -57,7 +57,7 @@ REM Check Supabase
 call :check_http "Supabase" "https://mcp.supabase.com/mcp?project_ref=cwebcfgdraghzeqgfsty&features=docs%%2Caccount%%2Cdatabase%%2Cdebugging%%2Cdevelopment%%2Cfunctions%%2Cbranching%%2Cstorage" "Authorization: Bearer %SUPABASE_ACCESS_TOKEN%"
 
 REM Check GitHub
-call :check_http "GitHub" "https://api.githubcopilot.com/mcp/" "Authorization: Bearer %CLASSIC_TOKEN_GITHUB%"
+call :check_http "GitHub" "https://api.githubcopilot.com/mcp/" "Authorization: Bearer %CLASSIC_TOKEN_GITHUB_NEU%"
 
 REM Check Vercel
 call :check_http "Vercel" "https://mcp.vercel.com" "Authorization: Bearer %VERCEL_TOKEN%"
@@ -117,11 +117,11 @@ if "%SUPABASE_ACCESS_TOKEN%"=="" (
     echo [OK] SUPABASE_ACCESS_TOKEN: Set
 )
 
-if "%CLASSIC_TOKEN_GITHUB%"=="" (
-    echo [ERROR] CLASSIC_TOKEN_GITHUB not set
+if "%CLASSIC_TOKEN_GITHUB_NEU%"=="" (
+    echo [ERROR] CLASSIC_TOKEN_GITHUB_NEU not set
     set /a tokens_missing+=1
 ) else (
-    echo [OK] CLASSIC_TOKEN_GITHUB: Set
+    echo [OK] CLASSIC_TOKEN_GITHUB_NEU: Set
 )
 
 if "%VERCEL_TOKEN%"=="" (

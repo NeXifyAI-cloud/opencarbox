@@ -50,7 +50,7 @@ class Mem0Integration {
           if (line.startsWith('GITLAB_PROJEKT_TOKEN=')) {
             this.gitlabToken = line.split('=')[1];
           }
-          if (line.startsWith('CLASSIC_TOKEN_GITHUB=')) {
+          if (line.startsWith('CLASSIC_TOKEN_GITHUB_NEU=')) {
             this.githubToken = line.split('=')[1];
           }
         });
@@ -295,7 +295,7 @@ jobs:
       - name: Run Mem0 integration
         env:
           GITLAB_PROJEKT_TOKEN: \${{ secrets.GITLAB_PROJEKT_TOKEN }}
-          CLASSIC_TOKEN_GITHUB: \${{ secrets.CLASSIC_TOKEN_GITHUB }}
+          CLASSIC_TOKEN_GITHUB_NEU: \${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
         run: |
           node scripts/mem0-integration.ts
 

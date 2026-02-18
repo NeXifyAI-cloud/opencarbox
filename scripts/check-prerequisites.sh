@@ -16,4 +16,4 @@ need vercel
 need supabase
 
 echo "OK: prerequisites found."
-echo "Tip: ensure GH_TOKEN (or CLASSIC_TOKEN_GITHUB/GITHUB_TOKEN), VERCEL_TOKEN, SUPABASE_ACCESS_TOKEN are set for full auto."
+echo "Tip: ensure GH_TOKEN (or CLASSIC_TOKEN_GITHUB_NEU/GITHUB_TOKEN), VERCEL_TOKEN, SUPABASE_ACCESS_TOKEN are set for full auto."

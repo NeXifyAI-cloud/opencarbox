@@ -7,8 +7,8 @@ resolve_github_token() {
     return 0
   fi
 
-  if [[ -n "${CLASSIC_TOKEN_GITHUB:-}" ]]; then
-    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB"
+  if [[ -n "${CLASSIC_TOKEN_GITHUB_NEU:-}" ]]; then
+    export GH_TOKEN="$CLASSIC_TOKEN_GITHUB_NEU"
     return 0
   fi
 
@@ -24,7 +24,7 @@ resolve_github_token || true
 
 : "${GITHUB_OWNER:?}"
 : "${REPO_NAME:?}"
-: "${GH_TOKEN:?Set GH_TOKEN (or CLASSIC_TOKEN_GITHUB/GITHUB_TOKEN)}"
+: "${GH_TOKEN:?Set GH_TOKEN (or CLASSIC_TOKEN_GITHUB_NEU/GITHUB_TOKEN)}"
 
 # App/Supabase public
 : "${NEXT_PUBLIC_SUPABASE_URL:?}"

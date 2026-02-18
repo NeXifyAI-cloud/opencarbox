@@ -1,31 +1,52 @@
-name: Auto-Merge Bot PRs
+# Auto-Merge für vertrauenswürdige interne PRs und Dependabot
+name: Auto-Merge
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
   pull-requests: write
   contents: write
 
 jobs:
-  auto-merge:
-    name: Auto-Merge
+  auto-merge-safe:
+    name: Auto-Merge (Trusted Internal PRs)
     runs-on: ubuntu-latest
-    if: |
-      github.actor == 'dependabot[bot]' ||
-      github.actor == 'renovate[bot]' ||
+    if: >-
+      github.event.pull_request.head.repo.fork == false &&
+      github.base_ref == 'main' &&
       contains(github.event.pull_request.labels.*.name, 'auto-merge')
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
-      - name: Enable auto-merge for bot PRs
-        run: |
-          gh pr merge --auto --squash \
-            --delete-branch \
-            "${{ github.event.pull_request.number }}"
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        if: github.actor == 'dependabot[bot]'
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Wait for checks
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          running-workflow-name: "Auto-Merge (Trusted Internal PRs)"
+
+      - name: Auto-approve trusted Dependabot PRs
+        if: >-
+          github.actor == 'dependabot[bot]' &&
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+           steps.metadata.outputs.update-type == 'version-update:semver-minor')
+        run: gh pr review --approve "$PR_URL"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

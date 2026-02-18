@@ -1,45 +1,88 @@
+# Dependabot Konfiguration für OpenCarBox
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
 version: 2
 
 updates:
-  # npm packages
-  - package-ecosystem: npm
-    directory: '/'  
+  # NPM Dependencies (Frontend & Backend)
+  - package-ecosystem: "npm"
+    directory: "/"
     schedule:
-      interval: daily
-      time: '03:00'
-      timezone: UTC
-    pull-request-branch-name:
-      separator: '/'
-    rebase-strategy: auto
-    reviewers:
-      - nexifyai-dev
-    assignees:
-      - nexifyai-dev
-    labels:
-      - dependencies
-      - npm
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Vienna"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: 'chore'
-      include: 'scope'
-    allow:
-      - dependency-type: direct
-      - dependency-type: indirect
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    reviewers:
+      - "NeXify-Chat-it-Automate-it"
+    groups:
+      # Next.js Ecosystem
+      nextjs:
+        patterns:
+          - "next"
+          - "next-*"
+          - "@next/*"
+        update-types:
+          - "minor"
+          - "patch"
+      # React Ecosystem
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # Supabase
+      supabase:
+        patterns:
+          - "@supabase/*"
+          - "supabase"
+      # Testing
+      testing:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "playwright"
+          - "@playwright/*"
+      # Linting & Formatting
+      linting:
+        patterns:
+          - "eslint"
+          - "eslint-*"
+          - "@eslint/*"
+          - "prettier"
+          - "@typescript-eslint/*"
+      # UI Components
+      ui:
+        patterns:
+          - "@radix-ui/*"
+          - "tailwindcss"
+          - "tailwind-*"
+          - "class-variance-authority"
+          - "clsx"
+    ignore:
+      # Major Updates manuell prüfen
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
 
   # GitHub Actions
-  - package-ecosystem: github-actions
-    directory: '/'  
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: weekly
-      day: monday
-      time: '03:00'
-      timezone: UTC
-    pull-request-branch-name:
-      separator: '/'
-    rebase-strategy: auto
-    reviewers:
-      - nexifyai-dev
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "ci"
     labels:
-      - dependencies
-      - github-actions
-    open-pull-requests-limit: 5
+      - "github-actions"
+      - "automated"
+    groups:
+      actions:
+        patterns:
+          - "*"

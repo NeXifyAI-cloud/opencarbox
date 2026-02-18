@@ -59,6 +59,26 @@ storybook-static/
 /blob-report/
 /playwright/.cache/
 
+# GitHub Actions Runner (local runner binaries - NEVER commit)
+actions-runner/
+_diag/
+externals/
+
+# CI/CD runner downloads
+*.zip
+*.tar.gz
+*.tgz
+
+# Binary files that should never be in source control
+*.dll
+*.exe
+*.so
+*.dylib
+*.pdb
+*.exp
+*.lib
+*.obj
+
 # Prisma
 prisma/*.db
 prisma/*.db-journal
@@ -76,7 +96,8 @@ supabase/.temp/
 # Local History Extension (VS Code)
 .history/
 
-# Cline State Files (local only)
+# Cline State Files (local only - enthält Secrets)
+.cline/mcp_settings.json
 .cline/resilience-state.json
 .cline/watchdog-state.json
 .cline/watchdog.pid
@@ -87,3 +108,6 @@ supabase/.temp/
 OpenCarBox/
 .vercel
 .env*.local
+
+# OpenMemory - IDE/Assistant specific rules
+.github\instructions\openmemory.instructions.md

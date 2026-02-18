@@ -2,7 +2,7 @@
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { featuredProducts } from '@/lib/mock-data';
+import { findFeaturedProductBySlug } from '@/lib/shop-products';
 import {
     Check,
     ChevronRight,
@@ -25,12 +25,24 @@ interface ProductPageProps {
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
-  // Mock data lookup (in real app, fetch by ID/Slug)
-  // For now we just pick the first featured product as a dummy
-  const product = featuredProducts[0] || { name: params.slug };
+  const product = findFeaturedProductBySlug(params.slug);
   const [quantity, setQuantity] = useState(1);
 
-  if (!product) return <div>Produkt nicht gefunden</div>;
+  if (!product) {
+    return (
+      <div className="container-content py-16">
+        <div className="max-w-2xl mx-auto rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
+          <h1 className="text-2xl font-display font-bold text-slate-900 mb-3">Produkt nicht gefunden</h1>
+          <p className="text-slate-600 mb-6">
+            Für den Slug "{params.slug}" wurde kein Produkt gefunden.
+          </p>
+          <Button asChild className="bg-carvantooo-500 hover:bg-carvantooo-600 text-white">
+            <Link href="/shop">Zurück zum Shop</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-content py-8">

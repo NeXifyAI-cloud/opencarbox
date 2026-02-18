@@ -58,7 +58,6 @@
 ### CI/CD Integration
 - ✅ **GitHub Actions** (`.github/workflows/ci-cd.yml`)
   - Quality Gate (TypeCheck, Lint, Tests, Build)
-  - Security Scan (Snyk)
   - Oracle Sync (auf main Branch)
   - Auto-Deploy (Vercel Preview + Production)
 

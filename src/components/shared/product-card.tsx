@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Star, ChevronRight } from 'lucide-react';
@@ -48,10 +49,11 @@ export const ProductCard = ({
     >
       {/* Image Container */}
       <div className="relative aspect-square bg-slate-50 overflow-hidden">
-        <img
+        <Image
           src={image}
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          fill
+          className="object-cover transition-transform duration-700 group-hover:scale-110"
         />
 
         {/* Quick Add Button */}
@@ -73,7 +75,7 @@ export const ProductCard = ({
           {brand}
         </div>
 
-        <Link href={`/shop/produkte/${slug}`} className="block group/title">
+        <Link href={`/shop/produkt/${slug}`} className="block group/title">
           <h3 className="font-display font-bold text-slate-900 mb-2 group-hover/title:text-carvantooo-600 transition-colors line-clamp-2 min-h-[3rem]">
             {name}
           </h3>
@@ -112,7 +114,7 @@ export const ProductCard = ({
             asChild
             className="p-0 text-carvantooo-600 font-bold hover:bg-transparent hover:gap-2 transition-all"
           >
-            <Link href={`/shop/produkte/${slug}`}>
+            <Link href={`/shop/produkt/${slug}`}>
               Details <ChevronRight className="w-4 h-4" />
             </Link>
           </Button>

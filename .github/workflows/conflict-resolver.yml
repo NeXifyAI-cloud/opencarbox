@@ -1,0 +1,119 @@
+name: conflict-resolver
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Every 6 hours (not every 30 min!)
+  workflow_dispatch:
+
+concurrency:
+  group: conflict-resolver-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+  AI_PROVIDER: deepseek
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+
+jobs:
+  resolve:
+    name: Resolve PR Conflicts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y jq gh
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: AI preflight
+        run: npx tsx tools/preflight.ts ai
+        continue-on-error: true
+
+      - name: Find PRs with conflicts
+        id: prs
+        run: |
+          prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
+            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]')
+          echo "prs=$prs" >> $GITHUB_OUTPUT
+          echo "Found $(echo "$prs" | jq 'length') DIRTY PRs"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve conflicts (oldest DIRTY PR first)
+        if: steps.prs.outputs.prs != '[]'
+        run: |
+          # Max 2 open codex PRs guardrail
+          OPEN_COUNT="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
+          if [ "$OPEN_COUNT" -ge 2 ]; then
+            echo "Skipping: already $OPEN_COUNT open codex/* PRs (max 2)."
+            exit 0
+          fi
+
+          # Get oldest DIRTY PR
+          pr="$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,createdAt \
+            --jq '[.[] | select(.mergeStateStatus=="DIRTY")] | sort_by(.createdAt) | .[0]')"
+
+          [ -z "$pr" ] || [ "$pr" = "null" ] && { echo "No DIRTY PRs"; exit 0; }
+
+          num="$(echo "$pr" | jq -r .number)"
+          head="$(echo "$pr" | jq -r .headRefName)"
+          base="$(echo "$pr" | jq -r .baseRefName)"
+
+          echo "Resolving PR #$num ($head -> $base)"
+
+          git fetch origin "$base" "$head"
+          git checkout -B "codex/conflictfix-$num" "origin/$head"
+
+          if git rebase "origin/$base"; then
+            echo "Rebase OK"
+          else
+            echo "Rebase conflict - attempting AI merge..."
+            git rebase --abort || true
+            npx tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head" || {
+              echo "AI merge failed"
+              exit 0
+            }
+          fi
+
+          # Validate
+          pnpm lint && pnpm typecheck && pnpm test -- --run && pnpm build || {
+            echo "Validation failed, skipping PR"
+            exit 0
+          }
+
+          git add -A
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: resolve conflicts for #$num"
+          git push -u origin "codex/conflictfix-$num" --force-with-lease
+
+          gh pr create \
+            --title "chore: resolve conflicts for #$num" \
+            --body "Automatische Konfliktlösung für PR #$num via Rebase/AI-Merge." \
+            --base "$base" \
+            --head "codex/conflictfix-$num" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_MAX_CALLS: '20'
+          FORBID_WORKFLOW_EDITS: '1'

@@ -1,44 +1,21 @@
-## 📝 Beschreibung
+## Summary
+<!-- Describe what this PR does and why -->
 
-<!-- Was wurde geändert und warum? -->
+## Definition of Done
 
-## 🔗 Zugehöriges Issue
+### CI & Quality
+- [ ] CI is green (`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build` pass)
+- [ ] `pnpm env:check` passes (env schema valid, no forbidden providers)
+- [ ] Tests added/updated where behavior changed
+- [ ] No secrets leaked in code, logs, or docs (`pnpm secret:scan` clean)
 
-<!-- Verlinke das Issue: Fixes #123 oder Closes #123 -->
+### Documentation & Ops
+- [ ] NOTES updated (`runbook.md`, `brain.md`, or `backlog.md`) if applicable
+- [ ] Documentation updated (`README`, `docs/`) if applicable
+- [ ] DB migration / runbook updated if schema changed
+- [ ] Orchestrator updated: For new/renamed production workflows, `.github/workflows/failure-orchestrator.yml` (`on.workflow_run.workflows`) was updated in this same PR
 
-## 📋 Art der Änderung
-
-- [ ] 🐛 Bugfix (non-breaking change)
-- [ ] ✨ Neues Feature (non-breaking change)
-- [ ] 💥 Breaking Change (fix oder feature mit breaking changes)
-- [ ] 📚 Dokumentation
-- [ ] 🔧 Konfiguration
-- [ ] 🎨 Styling/UI
-
-## ✅ Checkliste
-
-- [ ] Code folgt dem Styleguide des Projekts
-- [ ] Selbst-Review durchgeführt
-- [ ] TypeScript strict mode: kein `any`, keine implicit null
-- [ ] Tailwind only: keine Inline-Styles
-- [ ] Deutsche UI-Texte, englischer Code
-- [ ] Tests hinzugefügt (falls anwendbar)
-- [ ] Dokumentation aktualisiert (falls nötig)
-
-## 🧪 Tests
-
-<!-- Wie wurde getestet? -->
-
-## 📸 Screenshots
-
-<!-- Falls UI-Änderungen -->
-
-## 🏷️ Labels
-
-<!-- auto-merge hinzufügen für automatisches Mergen nach Approval -->
-
-## 🤖 Autofix Policy
-
-- [ ] Bei roter CI **kein manueller Merge** ohne dokumentierte Ausnahme
-- [ ] Für `autofix`-PRs: Oracle/Scope-Guard Kommentare geprüft
-- [ ] Keine Änderungen in verbotenen Pfaden (`prisma/migrations/**`, `supabase/migrations/**`, `.env*`, `vercel.json`)
+### Security & Compliance
+- [ ] Branch protection contract checked (see `NOTES/runbook.md`)
+- [ ] No `OPENAI_*` or forbidden provider references introduced (`bash tools/guard_no_openai.sh`)
+- [ ] UI changes include screenshot(s)

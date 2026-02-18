@@ -1,9 +1,10 @@
 ---
 name: Bug Report
 about: Automatisch erstellt bei fehlgeschlagenem Deployment
-title: "🐛 Bug Report"
+title: "\U0001F41B Bug Report"
 labels: bug
 assignees: ''
+
 ---
 
 ## 🚨 Auto-Deployment fehlgeschlagen

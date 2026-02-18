@@ -1,165 +1,110 @@
-stages:
-  - fast
-  - full
-  - autofix
-  - maintenance
-  - mirror
+# GitLab CI/CD Configuration for OpenCarBox
+# Mirrored from GitHub with Mem0 integration
 
-workflow:
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+image: node:20-alpine
+
+stages:
+  - analyze
+  - test
+  - build
+  - deploy
 
 variables:
+  NODE_ENV: production
   CI: "true"
-  TZ: "UTC"
-  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
-  MAX_AUTOFIX_ATTEMPTS: "2"
-  AUTOFIX_LABEL: "autofix"
-  NEEDS_HUMAN_LABEL: "needs-human"
-  PAGERDUTY_SEVERITY: "error"
-  PAGERDUTY_SOURCE: "gitlab-ci"
 
 cache:
-  key: "${CI_COMMIT_REF_SLUG}"
+  key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - .npm/
+    - node_modules/
+    - .next/cache/
 
-default:
-  image: node:20
-  before_script:
-    - node -v
-    - npm -v
-    - npm ci
+before_script:
+  - npm ci --prefer-offline
 
-fast_gate:
-  stage: fast
+analyze:
+  stage: analyze
   script:
-    - mkdir -p logs
-    - npm run security:scan-secrets | tee logs/secret-scan.log
-    - npm run lint | tee logs/lint.log
-    - npm run type-check | tee logs/type-check.log
-    - npm run build | tee logs/build.log
-    - cat logs/*.log > logs/workflow.log
-    - node scripts/ci-classify-failure.js logs/workflow.log || true
+    - echo "🔍 Analyzing with Mem0 integration"
+    - node scripts/mem0-integration.ts
+    - npm run lint
+    - npm run type-check
   artifacts:
     when: always
     paths:
-      - logs/
+      - .mem0/
+    reports:
+      junit: test-results/junit.xml
 
-full_gate_tests:
-  stage: full
-  parallel:
-    matrix:
-      - SHARD: ["1/2", "2/2"]
+test:
+  stage: test
   script:
-    - mkdir -p logs
-    - echo "Shard: $SHARD" | tee logs/test-shard.meta
-    - npm run test -- --run | tee "logs/test-${SHARD//\//-}.log" || true
+    - npm run test:unit
+    - npm run test:integration
   artifacts:
     when: always
     paths:
-      - logs/
+      - coverage/
 
-full_gate_build:
-  stage: full
+build:
+  stage: build
   script:
-    - mkdir -p logs
-    - npm run build | tee logs/build.log
-    - npm run ci:perf-budget | tee logs/perf.log || true
-    - cat logs/*.log > logs/workflow.log
-    - node scripts/ci-classify-failure.js logs/workflow.log || true
+    - npm run build
+  artifacts:
+    paths:
+      - .next/
+      - public/
+    expire_in: 1 week
+
+deploy:
+  stage: deploy
+  script:
+    - echo "🚀 Deploying to Vercel"
+    - npm run deploy
+  only:
+    - main
+  environment:
+    name: production
+    url: https://opencarbox.ai
+
+# Mem0 Memory Sync Job
+mem0-sync:
+  stage: analyze
+  script:
+    - echo "🧠 Syncing memories with Mem0"
+    - chmod +x scripts/gitlab-sync.sh
+    - bash scripts/gitlab-sync.sh
+  only:
+    - schedules
+    - web
+  artifacts:
+    paths:
+      - .mem0/
+
+# Mirror sync from GitHub
+mirror-sync:
+  stage: analyze
+  script:
+    - echo "🔄 Mirroring from GitHub"
+    - git fetch origin
+    - git push --mirror gitlab
+  only:
+    - schedules
+  variables:
+    GIT_STRATEGY: none
+
+# Health check for Mem0 integration
+health-check:
+  stage: analyze
+  script:
+    - echo "🏥 Health Check for Mem0 Integration"
+    - echo "1. Checking Mem0 directory..."
+    - ls -la .mem0/ || echo "Mem0 directory not found"
+    - echo "2. Checking integration scripts..."
+    - ls -la scripts/mem0-integration.ts scripts/gitlab-sync.sh
+    - echo "3. Checking GitLab connectivity..."
+    - curl -s -H "PRIVATE-TOKEN: $GITLAB_PROJEKT_TOKEN" "https://gitlab.com/api/v4/projects/NeXifyAI-cloud%2Fopencarbox" | jq -r '.name' || echo "GitLab connectivity failed"
   artifacts:
     when: always
     paths:
-      - logs/
-
-autofix:
-  stage: autofix
-  when: on_failure
-  rules:
-    - if: '$CI_COMMIT_BRANCH'
-  script:
-    - mkdir -p logs
-    - test -f logs/error-summary.json || echo '{"kind":"unknown"}' > logs/error-summary.json
-    - |
-      node - <<'NODE'
-      const fs=require('fs');
-      const s=JSON.parse(fs.readFileSync('logs/error-summary.json','utf8'));
-      if (s.kind === 'infra') process.exit(50);
-      NODE
-    - node scripts/ci-classify-failure.js logs/workflow.log || true
-    - npm run ai:autofix || exit 2
-    - git config user.name "NeXifyAI Bot"
-    - git config user.email "nexifyai-bot@gitlab.com"
-    - git checkout -b "autofix/${CI_COMMIT_SHORT_SHA}"
-    - git push -u origin "HEAD:autofix/${CI_COMMIT_SHORT_SHA}"
-    - node scripts/gitlab/upsert-mr.mjs
-  allow_failure: true
-
-maintenance_pin_actions:
-  stage: maintenance
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-  script:
-    - npm run ci:pin-actions
-    - node scripts/gitlab/upsert-mr-pin-actions.mjs
-
-maintenance_branch_repair:
-  stage: maintenance
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-  script:
-    - node scripts/gitlab/branch-maintenance.mjs
-
-mirror_to_github:
-  stage: mirror
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  image: alpine:3.20
-  before_script:
-    - apk add --no-cache git openssh-client
-    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
-    - echo "$GITHUB_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-    - chmod 600 ~/.ssh/id_ed25519
-    - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-  script:
-    - git remote remove github 2>/dev/null || true
-    - git remote add github git@github.com:NeXify-Chat-it-Automate-it/OpenCarBox.git
-    - git push --prune github +refs/heads/*:refs/heads/* +refs/tags/*:refs/tags/*
-
-notify_pagerduty_on_failure:
-  stage: mirror
-  image: alpine:3.20
-  rules:
-    - when: on_failure
-  before_script:
-    - apk add --no-cache curl jq
-  script: |
-    set -euo pipefail
-    test -n "${PAGERDUTY_ROUTING_KEY:-}" || { echo "Missing PAGERDUTY_ROUTING_KEY"; exit 0; }
-
-    summary="CI failed: ${CI_PROJECT_PATH} @ ${CI_COMMIT_REF_NAME} (${CI_COMMIT_SHORT_SHA})"
-    source="${PAGERDUTY_SOURCE:-gitlab-ci}"
-    severity="${PAGERDUTY_SEVERITY:-error}"
-
-    cat > payload.json <<JSON
-    {
-      "routing_key": "${PAGERDUTY_ROUTING_KEY}",
-      "event_action": "trigger",
-      "dedup_key": "${CI_PIPELINE_ID}",
-      "payload": {
-        "summary": "${summary}",
-        "source": "${source}",
-        "severity": "${severity}"
-      },
-      "links": [
-        { "href": "${CI_PIPELINE_URL}", "text": "GitLab Pipeline" }
-      ]
-    }
-    JSON
-
-    curl -sS -X POST "https://events.pagerduty.com/v2/enqueue" \
-      -H "Content-Type: application/json" \
-      --data @payload.json | jq .
+      - .mem0/health-check.log

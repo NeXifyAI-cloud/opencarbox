@@ -1,0 +1,67 @@
+{
+  "mcpServers": {
+    "github.com/mem0ai/mem0-mcp": {
+      "command": "uvx",
+      "args": ["mem0-mcp-server"],
+      "env": {
+        "MEM0_API_KEY": "<MEM0_API_KEY>",
+        "MEM0_DEFAULT_USER_ID": "opencarbox"
+      },
+      "autoApprove": ["add_memory"],
+      "description": "Mem0 MCP Server - Memory management and conversation history storage"
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?project_ref=<SUPABASE_PROJECT_REF>&features=docs%2Caccount%2Cdatabase%2Cdebugging%2Cdevelopment%2Cfunctions%2Cbranching%2Cstorage",
+      "headers": {
+        "Authorization": "Bearer <SUPABASE_ACCESS_TOKEN>"
+      },
+      "description": "Supabase MCP Server - Database, Auth, Storage, Edge Functions, Branching"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer <GITHUB_TOKEN>",
+        "X-MCP-Insiders": "true"
+      },
+      "description": "GitHub MCP Server (Insiders) - Repository operations, issues, pull requests, actions"
+    },
+    "vercel": {
+      "type": "http",
+      "url": "https://mcp.vercel.com",
+      "headers": {
+        "Authorization": "Bearer <VERCEL_TOKEN>",
+        "X-Vercel-Project-Id": "<VERCEL_PROJECT_ID>"
+      },
+      "description": "Vercel MCP Server - Deployment, projects, domains, environment variables"
+    },
+    "postgres": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "<SUPABASE_POSTGRESQL>"
+      },
+      "description": "PostgreSQL MCP Server - Direct database access"
+    },
+    "git": {
+      "command": "npx",
+      "args": ["-y", "@cyanheads/git-mcp-server"],
+      "description": "Git MCP Server - Version control operations"
+    },
+    "filesystem": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "${workspaceFolder}"],
+      "description": "Filesystem MCP Server - Enhanced file operations"
+    },
+    "gitlab": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-gitlab"],
+      "env": {
+        "GITLAB_PERSONAL_ACCESS_TOKEN": "<GITLAB_PROJEKT_TOKEN>",
+        "GITLAB_INSTANCE_URL": "https://gitlab.com"
+      },
+      "description": "GitLab MCP Server - Repository operations, issues, merge requests, CI/CD"
+    }
+  }
+}

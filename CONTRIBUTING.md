@@ -1,34 +1,69 @@
-# Contributing Guidelines
+# Contributing to OpenCarBox & Carvantooo
 
-## Auto-Merge Regeln
+Thank you for your interest in contributing!
 
-Der Auto-Merge-Workflow (`.github/workflows/auto-merge.yml`) ist bewusst restriktiv konfiguriert:
+## Getting Started
 
-- Auto-Merge läuft nur für Pull Requests aus **nicht-Fork Repositories**.
-- Auto-Merge läuft nur für PRs, deren Head-Repository dem `github.repository_owner` gehört,
-  **oder** wenn der auslösende Actor in `AUTO_MERGE_TRUSTED_ACTORS` hinterlegt ist
-  (kommaseparierte Repository-Variable, z. B. `dependabot[bot],octocat`).
-- Das Label `auto-merge` darf nur von Maintainern mit Write/Maintain/Admin-Rechten gesetzt werden.
-- Dependabot-PRs werden nur für Minor/Patch-Versionen automatisch freigegeben.
+```bash
+# Clone the repository
+git clone https://github.com/NeXifyAI-cloud/opencarbox.git
+cd opencarbox
 
-## Wann Auto-Merge greift
+# Install dependencies
+pnpm install
 
-Auto-Merge wird nur aktiviert (nicht sofort gemergt), wenn eine der folgenden Bedingungen erfüllt ist:
+# Start development server
+pnpm dev
+```
 
-1. Dependabot-PR mit Patch/Minor-Update.
-2. PR wurde mit `APPROVED` reviewed.
-3. PR trägt das Label `auto-merge`.
+## Development Workflow
 
-Das tatsächliche Mergen erfolgt erst, wenn Branch-Protection-Bedingungen erfüllt sind.
+1. Create a feature branch from `main`: `git checkout -b feature/my-feature`
+2. Make your changes
+3. Run quality checks:
+   ```bash
+   pnpm lint        # ESLint
+   pnpm typecheck   # TypeScript
+   pnpm test        # Unit tests
+   pnpm build       # Production build
+   ```
+4. Commit with a descriptive message
+5. Open a Pull Request against `main`
 
-## Empfohlene Branch-Protection für `main`
+## Code Standards
 
-Damit Auto-Merge sicher ist, müssen in GitHub für `main` mindestens diese Regeln gesetzt sein:
+- **TypeScript strict mode** — no `any`, no implicit null
+- **Tailwind CSS only** — no inline styles, use design tokens
+- **Path aliases** — use `@/` imports (e.g., `import { x } from '@/lib/utils'`)
+- **Formatting** — Prettier (semi-false, single quotes, width 100)
+- **AI Policy** — only DeepSeek + NSCALE providers allowed; `OPENAI_*` is forbidden
+- **8px Grid** — all spacing in 8px increments
 
-1. **Require a pull request before merging**.
-2. **Require approvals** mit mindestens **1 Review**.
-3. **Require status checks to pass before merging** (mindestens der CI-Workflow, z. B. `Quality Gate & Deployment`).
-4. Optional: **Dismiss stale pull request approvals when new commits are pushed**.
-5. Optional: **Require conversation resolution before merging**.
+## Branch Naming
 
-> Ohne diese Branch-Protection-Regeln wird `gh pr merge --auto` nicht die gewünschte Sicherheitswirkung erzielen.
+- `feature/*` — new features
+- `fix/*` — bug fixes
+- `chore/*` — maintenance tasks
+
+## Pull Request Guidelines
+
+- PRs require CI to pass (lint + typecheck + test + build)
+- PRs require at least one code review approval
+- Keep changes focused and small
+- Update documentation (`NOTES/`, `docs/`, `README`) if needed
+- Complete the Definition of Done checklist in the PR template
+- See `NOTES/runbook.md` for the Branch Protection Contract
+
+## Adding Environment Variables
+
+1. Add the variable with a placeholder value to `.env.example`
+2. No changes to `tools/check_env_schema.ts` are needed; it automatically validates variables listed in `.env.example`
+3. Set the variable in Vercel (Preview + Production) and CI secrets as needed
+4. Document in `NOTES/runbook.md` under the appropriate section
+
+## Security
+
+- Never commit secrets, API keys, or tokens
+- Run `pnpm secret:scan` before committing
+- `OPENAI_*` environment variables are explicitly forbidden
+- Report security issues via [SECURITY.md](./SECURITY.md)

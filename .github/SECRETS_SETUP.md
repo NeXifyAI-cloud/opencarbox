@@ -1,169 +1,54 @@
-# GitHub Secrets Setup - Checkliste
+# GitHub Secrets Setup
 
-## 📋 Required Secrets für CI/CD
+Gehe zu: `Settings → Secrets and variables → Actions`.
 
-> 🚫 **Keine secret-ähnlichen Beispielwerte committen:** Auch in Doku/Beispielen nur Platzhalter verwenden (z. B. `<set-in-local-env>` statt echter Token/Connection-Strings).
+## Required AI runtime secrets (DeepSeek + NSCALE only)
 
-Gehe zu: `https://github.com/NeXify-Chat-it-Automate-it/OpenCarBox/settings/secrets/actions`
+```bash
+DEEPSEEK_API_KEY
+DEEPSEEK_BASE_URL          # optional
+NSCALE_API_KEY
+NSCALE_HEADER_NAME         # optional, default: X-NSCALE-API-KEY
+AI_PROVIDER                # must be: deepseek
+```
 
-### 🗄️ Supabase Secrets
+> ⚠️ Kein `OPENAI_*` Secret anlegen. Es gibt bewusst keinen OpenAI-Fallback.
+
+## Optional repository-operations secret
+
+```bash
+GH_PAT                     # classic PAT with repo + workflow, for admin-like automation
+```
+
+## Supabase / App secrets (project-specific)
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL
-# Wert: https://acclrhzzwdutbigxsxyq.supabase.co
-
 NEXT_PUBLIC_SUPABASE_ANON_KEY
-# Wert: <set-in-local-env>
-
 SUPABASE_SERVICE_ROLE_KEY
-# Wert: aus .env kopieren (Service Role Key)
-
 DATABASE_URL
-# Wert: <set-in-local-env>
 ```
 
-### 🤖 Google AI (Oracle)
-
-```bash
-GOOGLE_GENERATIVE_AI_API_KEY
-# Wert: <set-in-local-env>
-```
-
-### ☁️ Vercel Deployment
+## Optional Vercel secrets
 
 ```bash
 VERCEL_TOKEN
-# Wert: <set-in-local-env>
-
 VERCEL_PROJECT_ID
-# Wert: prj_hJUOVM8ETLfdGvSlxzlBkuqCgx86
-
 VERCEL_ORG_ID
-# Wert: team_nexifyai
 ```
 
-### 🔒 Security Scanning (Optional)
+## CLI setup example
 
 ```bash
-SNYK_TOKEN
-# Wert: Snyk Account Token (falls vorhanden)
+chmod +x scripts/set-deployment-secrets.sh
+GITHUB_OWNER=NeXify-Chat-it-Automate-it \
+REPO_NAME=OpenCarBox \
+GH_TOKEN=... \
+NEXT_PUBLIC_SUPABASE_URL=... \
+NEXT_PUBLIC_SUPABASE_ANON_KEY=... \
+SUPABASE_SERVICE_ROLE_KEY=... \
+DEEPSEEK_API_KEY=... \
+NSCALE_API_KEY=... \
+AI_PROVIDER=deepseek \
+./scripts/set-deployment-secrets.sh
 ```
-
-### 💳 Stripe (wenn implementiert)
-
-```bash
-STRIPE_SECRET_KEY
-# Wert: <set-in-local-env>
-
-STRIPE_WEBHOOK_SECRET
-# Wert: <set-in-local-env>
-```
-
-### 📧 Resend Email (wenn implementiert)
-
-```bash
-RESEND_API_KEY
-# Wert: re_...
-```
-
-## ✅ Setup-Schritte
-
-1. **GitHub öffnen:**
-   ```
-   https://github.com/NeXify-Chat-it-Automate-it/OpenCarBox/settings/secrets/actions
-   ```
-
-2. **Für jedes Secret:**
-   - Klicke "New repository secret"
-   - Name: (wie oben)
-   - Value: (aus .env kopieren)
-   - Klicke "Add secret"
-
-3. **Verifizieren:**
-   - Alle Secrets sollten in der Liste erscheinen
-   - Bei Push zu `main` sollte CI/CD Pipeline starten
-
-## 🚀 Pipeline-Ablauf
-
-```mermaid
-graph LR
-    A[Push/PR] --> B[Quality Gate]
-    B --> C{Tests OK?}
-    C -->|Yes| D[Security Scan]
-    C -->|No| E[Fail]
-    D --> F{Branch?}
-    F -->|PR| G[Deploy Preview]
-    F -->|main| H[Deploy Production]
-    H --> I[Oracle Sync]
-```
-
-### Quality Gate prüft:
-- ✅ TypeScript Type Check
-- ✅ ESLint
-- ✅ Prettier
-- ✅ Tests
-- ✅ Build
-
-### Security Scan:
-- 🔒 Gitleaks Secret Detection (blocking)
-- 🔒 Snyk Vulnerability Check
-
-### Oracle Sync (nur main):
-- 📚 Sync docs → Memory
-- 📝 Audit Log erstellen
-
-### Deployment:
-- 🌐 Vercel Preview (PRs)
-- 🚀 Vercel Production (main)
-
-## 🛡️ Required Checks aktivieren
-
-1. Gehe zu: `Settings` → `Branches` → Branch Protection Rule für `main`.
-2. Aktiviere **Require status checks to pass before merging**.
-3. Wähle mindestens diese Checks:
-   - `Quality Gate`
-   - `Secret Scan (Gitleaks)`
-4. Speichern.
-
-## 🔧 Troubleshooting
-
-### Pipeline schlägt fehl?
-
-1. **Check Secrets:**
-   ```bash
-   # Lokal testen ob Secrets korrekt sind
-   npm run type-check
-   npm run test
-   npm run build
-   ```
-
-2. **Check GitHub Actions Log:**
-   - Gehe zu Actions Tab
-   - Klicke auf fehlgeschlagenen Run
-   - Schaue welcher Step fehlschlug
-
-3. **Häufige Fehler:**
-   - `DATABASE_URL missing` → Secret falsch gesetzt
-   - `VERCEL_TOKEN invalid` → Token abgelaufen
-   - `Build failed` → Lokale Probleme, erst lokal fixen
-
-## 📊 Status-Badge
-
-Füge in README.md ein:
-
-```markdown
-![CI/CD](https://github.com/NeXify-Chat-it-Automate-it/OpenCarBox/workflows/Quality%20Gate%20&%20Deployment/badge.svg)
-```
-
-## 🔄 Auto-Deployment
-
-Nach Setup:
-- ✅ Push zu `main` → Automatisches Production Deployment
-- ✅ Pull Request → Preview Deployment
-- ✅ Tests bestanden → Automatisches Merge (optional)
-
----
-
-**Setup-Zeit:** ~10 Minuten
-**Wartung:** Automatisch
-**Status:** 🟢 Bereit für Automation

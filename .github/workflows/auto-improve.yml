@@ -1,0 +1,46 @@
+name: auto-improve
+
+on:
+  workflow_dispatch:
+  # Disabled until CI is fully stable
+  # schedule:
+  #   - cron: '15 */6 * * *'
+
+concurrency:
+  group: auto-improve-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  improve:
+    name: Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Run full quality checks
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+          pnpm build
+
+      - name: Status
+        run: echo "All quality checks passed."

@@ -52,7 +52,7 @@ jobs:
         id: prs
         run: |
           prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
-            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]')
+            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]' 2>/dev/null || echo '[]')
           echo "prs=$prs" >> $GITHUB_OUTPUT
           echo "Found $(echo "$prs" | jq 'length') DIRTY PRs"
         env:
@@ -60,6 +60,7 @@ jobs:
 
       - name: Resolve conflicts (oldest DIRTY PR first)
         if: steps.prs.outputs.prs != '[]'
+        continue-on-error: true
         run: |
           # Max 2 open codex PRs guardrail
           OPEN_COUNT="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"

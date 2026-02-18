@@ -31,6 +31,9 @@
 | `bootstrap.yml` | manual (`workflow_dispatch`) | project initialization (Vercel + Supabase setup) | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | disable workflow |
 | `mem0-brain.yml` | `push` (`$default-branch`), every 6h cron, manual | Mem0 AI memory sync + GitLab mirror | `GITLAB_PROJEKT_TOKEN`, `CLASSIC_TOKEN_GITHUB` | disable workflow |
 | `security-intake.yml` | weekly cron (Mon 04:00 UTC), manual | parse audit findings → create GitHub issues | none | disable workflow |
+| `ai-pr-review.yml` | `pull_request` (opened/synchronize) | AI-powered PR code review via OpenAI | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
+| `ai-issue-analyze.yml` | `issues` (opened/labeled) | AI-powered issue analysis and categorization | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
+| `ai-code-scan.yml` | `push` (`$default-branch`), weekly cron (Mon 00:00 UTC), manual | AI-powered code scanning for vulnerabilities | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
 
 ## Standardized Environment Variables
 
@@ -48,6 +51,7 @@
 ### AI (primary: GitHub Models, fallback: DeepSeek)
 - `AI_PROVIDER` (var) — `github-models` (default) or `deepseek`
 - `AI_AUTO_SELECT` (var) — `true` (default) enables automatic fallback
+- `OPENAI_API_KEY` — OpenAI API key (used by `ai-github-action` workflows)
 - `DEEPSEEK_API_KEY` — DeepSeek API key
 - `NSCALE_API_KEY` — nscale API key
 - `DEEPSEEK_BASE_URL` — DeepSeek base URL (optional)

@@ -10,22 +10,24 @@ on:
       - Deploy Staging
       - Deploy Production
       - Release
-      - Health Check
       - autofix
       - conflict-resolver
       - auto-improve
       - bootstrap
       - Auto-Merge
+      - Auto-Approve
       - auto-reply
       - codex-controller
       - issue-triage
       - loop-orchestrator
       - ci-retry
       - stale
+      - stale-cleanup
+      - sync-to-main
       - backlog-sync
       - security-intake
       - pr-labeler
-      - Mem0 Brain Integration
+      - health-check
     types: [completed]
 
 concurrency:

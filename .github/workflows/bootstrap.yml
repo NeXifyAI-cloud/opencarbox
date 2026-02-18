@@ -18,7 +18,7 @@ env:
 jobs:
   bootstrap:
     name: Bootstrap Project
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +40,9 @@ jobs:
         run: pnpm i --frozen-lockfile
 
       - name: Preflight
-        run: npx tsx tools/preflight.ts ci
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ci
 
       - name: Run bootstrap (idempotent)
         run: |

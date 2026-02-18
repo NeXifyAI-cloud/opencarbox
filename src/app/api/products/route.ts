@@ -8,6 +8,7 @@ const prisma = new PrismaClient()
 const productSchema = z.object({
   sku: z.string().min(1, 'SKU ist erforderlich'),
   name: z.string().min(1, 'Name ist erforderlich'),
+  slug: z.string().min(1, 'Slug ist erforderlich'),
   description: z.string().optional(),
   price: z.number().positive('Preis muss positiv sein'),
   stock: z.number().int().min(0, 'Lagerbestand darf nicht negativ sein'),

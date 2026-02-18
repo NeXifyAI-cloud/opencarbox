@@ -32,6 +32,7 @@ describe('Products API', () => {
           {
             sku: 'TEST-001',
             name: 'Test Produkt 1',
+            slug: 'test-produkt-1',
             description: 'Beschreibung 1',
             price: 99.99,
             stock: 10,
@@ -39,6 +40,7 @@ describe('Products API', () => {
           {
             sku: 'TEST-002',
             name: 'Test Produkt 2',
+            slug: 'test-produkt-2',
             description: 'Beschreibung 2',
             price: 149.99,
             stock: 5,
@@ -72,6 +74,7 @@ describe('Products API', () => {
       const newProduct = {
         sku: 'NEW-001',
         name: 'Neues Produkt',
+        slug: 'neues-produkt',
         description: 'Test Beschreibung',
         price: 199.99,
         stock: 20,
@@ -101,6 +104,7 @@ describe('Products API', () => {
       const invalidProduct = {
         sku: '', // Leerer SKU
         name: '', // Leerer Name
+        slug: '', // Leerer Slug
         price: -10, // Negativer Preis
         stock: -5, // Negativer Lagerbestand
       }
@@ -123,6 +127,7 @@ describe('Products API', () => {
       const duplicateProduct = {
         sku: 'NEW-001', // Bereits existierende SKU
         name: 'Anderes Produkt',
+        slug: 'anderes-produkt',
         price: 299.99,
         stock: 15,
       }

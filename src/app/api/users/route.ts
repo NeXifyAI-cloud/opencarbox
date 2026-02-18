@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, UserRole } from '@prisma/client'
 import { z } from 'zod'
 
 const prisma = new PrismaClient()
@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 // Validation Schema für User Updates
 const userUpdateSchema = z.object({
   name: z.string().min(1, 'Name ist erforderlich').optional(),
-  role: z.enum(['customer', 'admin', 'employee']).optional(),
+  role: z.enum(['CUSTOMER', 'ADMIN', 'EMPLOYEE']).optional(),
 })
 
 // GET /api/users - Alle Benutzer abrufen (mit Pagination)
@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
 
     // Filter erstellen
     const where: {
-      role?: string
+      role?: UserRole
     } = {}
-    if (role) where.role = role
+    if (role) where.role = role as UserRole
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({

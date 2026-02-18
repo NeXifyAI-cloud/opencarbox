@@ -1,74 +1,5 @@
 # Brain / Architecture Notes
 
-## System Map (Single Source of Truth)
-
-### Stack
-- **Framework:** Next.js 14 App Router, TypeScript strict, pnpm 9
-- **Data/Auth:** Supabase (Auth + DB + Storage + RLS), Prisma ORM (`prisma/schema.prisma`)
-- **State:** TanStack Query (server), Zustand (client, `src/stores/`)
-- **UI:** Tailwind CSS, Radix UI, class-variance-authority
-- **Payments:** Stripe (`@stripe/stripe-js`, `stripe`)
-- **Search:** Meilisearch
-- **Email:** Resend
-- **AI:** DeepSeek only (NSCALE header required) — **OpenAI forbidden** (guard policy)
-- **Deployment:** Vercel (`vercel.json`, `auto-deploy.yml`)
-- **CI:** GitHub Actions (`ci.yml` — lint, typecheck, test, build)
-
-### Key Directories
-| Path | Purpose |
-|------|---------|
-| `src/app/` | Next.js App Router (routes, API, layouts) |
-| `src/components/` | UI components (layout, ui, shared, providers) |
-| `src/lib/config/` | Env validation (Zod), feature flags |
-| `src/lib/supabase/` | Supabase clients (client, server, middleware) |
-| `src/stores/` | Zustand stores |
-| `prisma/schema.prisma` | Database schema |
-| `supabase/migrations/` | SQL migrations (001–003) |
-| `tools/` | CI/CD tools (preflight, guard, env export) |
-| `scripts/` | Dev/ops scripts (quality-gate, secret-scan, system start) |
-| `NOTES/` | Brain, backlog, runbook (this directory) |
-| `.github/workflows/` | CI, security, auto-deploy, failure-orchestrator |
-
-### Environment Variables (from `.env.example`)
-| Variable | Scope | Required |
-|----------|-------|----------|
-| `NEXT_PUBLIC_APP_URL` | Client | Yes |
-| `NEXT_PUBLIC_SUPABASE_URL` | Client | Yes |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client | Yes |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server | Yes |
-| `DATABASE_URL` | Server | Yes (Prisma + DB connection) |
-| `DATABASE_URL` | Server | Yes (Prisma + DB connection) |
-| `DIRECT_URL` | Server | Yes (Prisma directUrl for Supabase pooling) |
-| `DEEPSEEK_API_KEY` | Server | For AI features |
-| `NSCALE_API_KEY` | Server | For AI features |
-| `NSCALE_HEADER_NAME` | Server | Default: X-NSCALE-API-KEY |
-| `AI_PROVIDER` | Server | Default: deepseek |
-| `AI_DEFAULT_MODEL` | Server | Default: deepseek-chat |
-| `RATE_LIMIT_PER_MINUTE` | Server | Default: 20 |
-| `AI_TIMEOUT_MS` | Server | Default: 30000 |
-| `SENTRY_DSN` | Server | Optional |
-| `FEATURE_AI_CHAT` | Server | Default: true |
-
-### Build / Test / Quality
-```bash
-pnpm install              # Install dependencies
-pnpm lint                 # ESLint (next lint)
-pnpm typecheck            # tsc --noEmit
-pnpm test                 # Vitest (unit + API tests)
-pnpm build                # next build (standalone output)
-pnpm secret:scan          # Secret pattern scan
-pnpm quality-gate         # Full quality check
-pnpm system:check         # System health check
-```
-
-### Integrations
-- **Supabase:** Auth, DB (PostgreSQL), Storage, RLS
-- **Stripe:** Payment processing (server-side only)
-- **Meilisearch:** Full-text search
-- **Resend:** Transactional email
-- **DeepSeek + NSCALE:** AI chat (server-side only)
-- **Vercel:** Hosting + deployment (fra1 region)
-
 ## Architecture Overview
 - Framework: Next.js App Router with TypeScript strict mode.
 - Data/Auth: Supabase (`@supabase/supabase-js` + `@supabase/ssr`).
@@ -181,3 +112,29 @@ pnpm system:check         # System health check
 - **Consequences**:
   - Preflight/Setup zeigen fehlende GitLab-Parameter früh als Warnung.
   - Künftige GitLab-Automationen können standardisierte Variablen direkt verwenden.
+
+## ADR-008: Env-Schema-Check über `.env.example` als Single Source of Truth
+- **Decision**: `tools/check_env_schema.ts` nutzt `.env.example` als deklaratives Schema für alle Umgebungsvariablen. Neue Variablen müssen zuerst dort ergänzt werden. Verbotene Provider-Variablen (`OPENAI_*`, `GOOGLE_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) werden sowohl im Environment als auch in `.env.example` geprüft.
+- **Alternatives**:
+  - Manuelle Prüfung ohne automatisierten Check.
+  - Separate Schema-Datei unabhängig von `.env.example`.
+- **Reasoning**:
+  - `.env.example` existiert bereits als Dokumentation; nutzt es doppelt als Laufzeit-Schema.
+  - CI-Modus (`--ci`) beschränkt Prüfung auf Build-relevante Variablen, während lokaler Modus alle prüft.
+  - Forbidden-Provider-Alignment mit `tools/guard_no_openai.sh` stellt konsistente Policy-Durchsetzung sicher.
+- **Consequences**:
+  - `pnpm env:check` kann lokal und in CI als Preflight genutzt werden.
+  - Alle neuen Variablen folgen einem dokumentierten Workflow: `.env.example` → `env:check` → Vercel/CI Secrets.
+
+## ADR-009: Preview/Production Deploy-Trennung über dedizierte Workflows
+- **Decision**: Preview-Deployments werden durch `deploy-preview.yml` (Trigger: `pull_request`) gesteuert, Production-Deployments durch `auto-deploy.yml` (Trigger: `workflow_run` nach CI auf `main`). Kein gemeinsamer Workflow mit Environment-Schalter.
+- **Alternatives**:
+  - Ein einzelner Deploy-Workflow mit Environment-Parameter.
+  - Preview nur über Vercel Git Integration ohne eigenen Workflow.
+- **Reasoning**:
+  - Klare Trennung von Berechtigungen (Preview braucht kein `--prod`).
+  - Preview-Workflows können eigene Preflight-Checks ausführen (z. B. Env-Schema-Check).
+  - Production-Deploys sind an erfolgreiche CI gebunden, nicht an PR-Events.
+- **Consequences**:
+  - Zwei Workflows zu pflegen, aber mit klaren, nicht-überlappenden Verantwortlichkeiten.
+  - Preview-URLs werden automatisch als PR-Kommentar gepostet.

@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, OrderStatus } from '@prisma/client'
 import { z } from 'zod'
 
 const prisma = new PrismaClient()
 
 // Validation Schema
 const orderSchema = z.object({
+  orderNumber: z.string().min(1, 'Bestellnummer ist erforderlich'),
   userId: z.string().optional(),
+  subtotal: z.number().positive('Zwischensumme muss positiv sein'),
   total: z.number().positive('Gesamtbetrag muss positiv sein'),
-  status: z.enum(['pending', 'processing', 'shipped', 'delivered', 'cancelled']).default('pending'),
+  status: z.enum(['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']).default('PENDING'),
 })
 
 // GET /api/orders - Alle Bestellungen abrufen
@@ -23,10 +25,10 @@ export async function GET(request: NextRequest) {
 
     // Filter erstellen
     const where: {
-      status?: string
+      status?: OrderStatus
       userId?: string
     } = {}
-    if (status) where.status = status
+    if (status) where.status = status as OrderStatus
     if (userId) where.userId = userId
 
       const [orders, total] = await Promise.all([

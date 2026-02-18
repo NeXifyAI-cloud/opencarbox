@@ -41,14 +41,10 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  # AI Provider Configuration (primary: github-models, fallback: deepseek)
-  AI_PROVIDER: ${{ vars.AI_PROVIDER || 'github-models' }}
+  # AI Provider Configuration (DeepSeek-only)
+  AI_PROVIDER: ${{ vars.AI_PROVIDER || 'deepseek' }}
   AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
-  # GitHub Models (Primary)
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITHUB_MODELS_BASE_URL: ${{ secrets.GITHUB_MODELS_BASE_URL || 'https://models.inference.ai.azure.com' }}
-  GITHUB_MODELS_MODEL: ${{ secrets.GITHUB_MODELS_MODEL || 'gpt-4o' }}
-  # DeepSeek (Fallback)
+  # DeepSeek + NSCALE
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}

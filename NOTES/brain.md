@@ -180,3 +180,15 @@
   - Self-hosted Runner sind produktionsbereit für alle Workflow-Typen (CI, Deploy, AI, Ops).
   - `tools/export_env.sh` und `tools/preflight.ts` prüfen fehlende Variablen am Beginn jedes Workflows.
   - Monitoring (CPU, RAM, Disk, Runner-Version) muss als Betriebsaufgabe etabliert werden (siehe Runbook).
+
+## ADR-012: DeepSeek-only Defaults in allen AI-Automations-Workflows
+- **Decision**: `auto-improve.yml`, `conflict-resolver.yml`, `auto-reply.yml` und `failure-orchestrator.yml` setzen standardmäßig `AI_PROVIDER=deepseek` und entfernen GitHub-Models-Defaultpfade aus den Workflow-Umgebungsvariablen.
+- **Alternatives**:
+  - Mixed-Provider-Default (`github-models` primär, DeepSeek fallback).
+  - Provider-Auswahl nur über Laufzeit-Flags ohne Workflow-Defaults.
+- **Reasoning**:
+  - Erzwingt die operative DeepSeek-only-Policy bereits auf Workflow-Ebene.
+  - Reduziert Fehlkonfigurationen, bei denen AI-Runs versehentlich gegen andere Provider laufen.
+- **Consequences**:
+  - AI-Workflows sind fail-closed bei fehlendem `DEEPSEEK_API_KEY`/`NSCALE_API_KEY` durch `tools/preflight.ts ai`.
+  - Provider-Wechsel erfordert künftig eine explizite ADR-/Policy-Änderung.

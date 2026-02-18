@@ -88,3 +88,6 @@ supabase/.temp/
 OpenCarBox/
 .vercel
 .env*.local
+
+# Local GitHub Actions self-hosted runner files
+actions-runner/

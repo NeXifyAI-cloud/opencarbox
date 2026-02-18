@@ -44,13 +44,13 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      NEU_VERCEL_PROJEKT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID }}
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
     steps:
       - name: Check Vercel secrets
         id: check
         run: |
-          if [ -z "$VERCEL_TOKEN" ] || [ -z "$VERCEL_PROJECT_ID" ]; then
+          if [ -z "$VERCEL_TOKEN" ] || [ -z "$NEU_VERCEL_PROJEKT_ID" ]; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
             echo "::warning::Vercel secrets not configured — skipping preview deploy"
           else

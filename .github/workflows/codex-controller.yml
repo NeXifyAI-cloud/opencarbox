@@ -17,6 +17,8 @@ env:
   AI_PROVIDER: deepseek
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
 
 jobs:
   control:
@@ -24,6 +26,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y gh
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Normalize environment aliases
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ai
 
       - name: Route dispatch action
         env:

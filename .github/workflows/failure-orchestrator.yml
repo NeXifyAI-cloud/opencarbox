@@ -72,13 +72,20 @@ jobs:
       - run: pnpm i --frozen-lockfile
 
       - name: Normalize environment aliases
+        id: preflight
+        continue-on-error: true
         run: |
           source tools/export_env.sh
           npx tsx tools/preflight.ts ai
 
       - name: AI triage eligibility
         id: ai_eligible
-        run: echo "eligible=true" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ "${{ steps.preflight.outcome }}" = "success" ]; then
+            echo "eligible=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Ensure routing labels exist
         run: |

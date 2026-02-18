@@ -484,3 +484,15 @@ model Review {
 
   @@map("reviews")
 }
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  level     String   // info, warn, error
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([createdAt])
+  @@map("system_logs")
+}

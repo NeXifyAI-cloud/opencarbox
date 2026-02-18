@@ -119,17 +119,6 @@ const nextConfig = {
     ];
   },
 
-  /* Webpack-Konfiguration */
-  webpack: (config, { isServer }) => {
-    /* SVG als React-Komponenten */
-    config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
-    });
-
-    return config;
-  },
-
   /* TypeScript-Fehler beim Build ignorieren (NICHT für Production empfohlen) */
   typescript: {
     // Setze auf true nur für Notfälle - normalerweise false
@@ -150,5 +139,4 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
 

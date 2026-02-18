@@ -137,3 +137,17 @@
 - **Consequences**:
   - Auto-Reply scheitert sichtbar bei fehlerhafter AI-Konfiguration statt stiller Platzhalter-Kommentare.
   - Autofix/Controller bleiben ausführbar ohne AI-Secrets und sind klarer voneinander abgegrenzt.
+
+## ADR-010: Systemweite Runner-Konfiguration via `vars.RUNNER`
+- **Decision**: Alle Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` statt hartcodiertem `ubuntu-latest`. Die Repository-Variable `vars.RUNNER` steuert den Runner systemweit.
+- **Alternatives**:
+  - Runner weiterhin in jedem Workflow einzeln hartcodieren.
+  - Nur CI-Workflows parametrisieren, Rest bleibt fix.
+- **Reasoning**:
+  - Ein Wechsel zwischen `ubuntu-latest` und `self-hosted` (oder anderen Runnern) erfordert nur eine Änderung an der Repository-Variable statt 25 Workflow-Dateien.
+  - Erfüllt A6-Kriterium: „Rollback auf `ubuntu-latest` ist als einzelner, dokumentierter Workflow-Change möglich."
+  - Ohne gesetzte Variable bleibt das Verhalten identisch zu vorher (`ubuntu-latest`).
+- **Consequences**:
+  - Runner-Wechsel ist eine Konfigurationsänderung in GitHub Settings → Variables, kein Code-Change.
+  - Neue Workflows müssen `${{ vars.RUNNER || 'ubuntu-latest' }}` statt `ubuntu-latest` verwenden.
+  - Rollback: Variable löschen oder auf `ubuntu-latest` setzen — alle Workflows fallen automatisch auf GitHub-hosted zurück.

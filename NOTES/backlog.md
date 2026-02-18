@@ -65,7 +65,7 @@
 ### Ops-3 — Future
 - [ ] Incident-Issue automation with standard template (A4)
 - [ ] Release checklist as PR template extension (A5)
-- [ ] Optional self-hosted runner evaluation (A6)
+- [x] Optional self-hosted runner evaluation (A6) — via `vars.RUNNER` systemweit konfigurierbar
 
 ## Automation Backlog
 
@@ -109,11 +109,8 @@
   - Dokumentation beschreibt, wann die Release-Checklist vollständig abgearbeitet werden muss.
 - **Zieltermin:** 2026-04-03
 
-### A6 — Optionaler Umstieg von CI auf self-hosted Runner (separate ADR) — Priorität: Mittel
-- **Akzeptanzkriterien:**
-  - Eine neue ADR dokumentiert Anlass, Risiko, Kosten und Rollback für den Umstieg von `ubuntu-latest` auf `self-hosted` in `ci.yml`.
-  - Es existiert ein reproduzierbarer Runner-Betriebsnachweis (Provisioning, Labels, Monitoring, Patch-Management, Ausfallprozess).
-  - Ein Validierungslauf zeigt, dass `pnpm lint`, `pnpm typecheck`, `pnpm test` und `pnpm build` auf self-hosted stabil durchlaufen.
-  - Rollback auf `ubuntu-latest` ist als einzelner, dokumentierter Workflow-Change möglich und getestet.
-- **Zieltermin:** 2026-04-10
+### A6 — Systemweite Runner-Konfiguration via `vars.RUNNER` (ADR-010) — Priorität: Mittel
+- **Status:** ✅ Erledigt
+- **Ergebnis:** Alle 25 Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}`. Runner-Wechsel erfordert nur eine Änderung an der Repository-Variable `vars.RUNNER`. Rollback auf `ubuntu-latest` durch Löschen der Variable. ADR-010 dokumentiert Entscheidung und Rollback-Plan.
+- **Abnahmedatum:** 2026-02-18
 

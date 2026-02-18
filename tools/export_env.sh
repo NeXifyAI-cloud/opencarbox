@@ -13,7 +13,7 @@ if [[ -z "${SUPABASE_ACCESS_TOKEN:-}" ]]; then
 fi
 
 export VERCEL_TOKEN="${VERCEL_TOKEN:-${vercel_token:-}}"
-export VERCEL_PROJECT_ID="${VERCEL_PROJECT_ID:-${NEU_VERCEL_PROJEKT_ID:-${VERCEL_PROJEKT_ID:-${Vercel_Projekt_ID:-${neu_vercel_projekt_id:-}}}}}"
+export VERCEL_PROJECT_ID="${VERCEL_PROJECT_ID:-${NEU_VERCEL_PROJEKT_ID:-}}"
 export GH_PAT="${GH_PAT:-${CLASSIC_TOKEN_GITHUB_NEU:-${github_token:-}}}"
 
 # GitLab integration (supports system-wide alias names from project data stores)

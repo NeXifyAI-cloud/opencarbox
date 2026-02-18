@@ -1,0 +1,103 @@
+# First-time Contributor: Welcome & Label
+name: first-contributor
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  welcome:
+    name: Welcome First-Time Contributor
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - name: Check and label first-time contributor
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const isIssue = !!context.payload.issue;
+            const isPR = !!context.payload.pull_request;
+            const author = isIssue
+              ? context.payload.issue.user.login
+              : context.payload.pull_request.user.login;
+            const number = isIssue
+              ? context.payload.issue.number
+              : context.payload.pull_request.number;
+
+            // Check if this is the author's first issue or PR
+            if (isIssue) {
+              const { data: issues } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                creator: author,
+                state: 'all',
+                per_page: 2,
+              });
+              // Filter out PRs (listForRepo returns both issues and PRs)
+              const onlyIssues = issues.filter(i => !i.pull_request);
+              if (onlyIssues.length > 1) {
+                core.info(`${author} has previous issues — skipping.`);
+                return;
+              }
+            }
+
+            if (isPR) {
+              const { data: prs } = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'all',
+                per_page: 100,
+              });
+              const authorPRs = prs.filter(p => p.user.login === author);
+              if (authorPRs.length > 1) {
+                core.info(`${author} has previous PRs — skipping.`);
+                return;
+              }
+            }
+
+            // Ensure label exists
+            const labelName = 'good first issue';
+            const labelColor = '7057ff';
+            const labelDescription = 'Good for newcomers';
+            try {
+              await github.rest.issues.getLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+              });
+            } catch {
+              await github.rest.issues.createLabel({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                name: labelName,
+                color: labelColor,
+                description: labelDescription,
+              });
+            }
+
+            // Add label
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              labels: [labelName],
+            });
+
+            // Post welcome comment
+            const greeting = isIssue
+              ? `👋 Welcome @${author}! Thanks for opening your first issue. A maintainer will review it shortly.`
+              : `👋 Welcome @${author}! Thanks for your first pull request. A maintainer will review it shortly.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              body: greeting,
+            });
+
+            core.info(`Labeled and welcomed first-time contributor ${author}.`);

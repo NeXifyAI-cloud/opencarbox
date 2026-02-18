@@ -3,7 +3,19 @@ name: ci
 on:
   push:
     branches: [$default-branch]
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - 'NOTES/**'
+      - 'LICENSE'
+      - '.github/ISSUE_TEMPLATE/**'
   pull_request:
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - 'NOTES/**'
+      - 'LICENSE'
+      - '.github/ISSUE_TEMPLATE/**'
   schedule:
     - cron: '30 4 * * *' # Daily at 04:30 UTC
   workflow_dispatch:
@@ -44,6 +56,9 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
       - name: Type check
         run: pnpm typecheck
 
@@ -63,6 +78,18 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+            nextjs-${{ runner.os }}-
 
       - name: Test
         run: pnpm test

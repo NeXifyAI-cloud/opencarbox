@@ -410,3 +410,11 @@ Only creates a PR if ALL checks pass.
 ## E2E Loop Verification (Auftrag 29)
 
 See `NOTES/loop-test.md` for the complete end-to-end verification procedure.
+
+## Workflow-Manifest & Not-Aus
+- Manifest: `NOTES/automation-manifest.md` ist die zentrale Übersicht für Trigger, Secrets und Abschaltpfade.
+- Quality Gate: `pnpm workflow:manifest-check` validiert, dass jede Datei aus `.github/workflows/` im Manifest geführt ist.
+- Not-Aus pro Automation:
+  1. Workflow im GitHub-UI auf "Disable workflow" setzen.
+  2. Alternativ Trigger in der Workflow-Datei temporär entfernen (`on: workflow_dispatch` only).
+  3. Bei Deploy-Störungen zusätzlich Environment-Schutzregeln (`preview`/`production`) sperren.

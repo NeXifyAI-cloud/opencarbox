@@ -44,9 +44,15 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
-      - name: AI preflight
-        run: npx tsx tools/preflight.ts ai
-        continue-on-error: true
+      - name: Map env aliases
+        run: bash tools/export_env.sh
+
+      - name: AI preflight (fail-closed)
+        run: |
+          [ "$AI_PROVIDER" = "deepseek" ]
+          [ -n "$DEEPSEEK_API_KEY" ]
+          [ -n "$NSCALE_API_KEY" ]
+          npx tsx tools/preflight.ts ai
 
       - name: Find PRs with conflicts
         id: prs

@@ -2,8 +2,19 @@ name: ci
 
 on:
   push:
-    branches: [main]
+    branches:
+      - '**'
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'wiki/**'
+      - 'NOTES/**'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
+      - 'wiki/**'
+      - 'NOTES/**'
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -18,6 +29,9 @@ env:
 jobs:
   quick-checks:
     name: Lint & Type Check
+    if: >-
+      github.event_name != 'push' ||
+      github.ref_name == github.event.repository.default_branch
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +48,9 @@ jobs:
 
       - name: Preflight
         run: npx tsx tools/preflight.ts ci
+
+      - name: Verify automation manifest coverage
+        run: pnpm workflow:manifest-check
 
       - name: 'Guard: forbid OpenAI usage'
         run: bash tools/guard_no_openai.sh
@@ -60,6 +77,14 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+
+      - name: Restore Next.js cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.[jt]s', '**/*.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
 
       - name: Test
         run: pnpm test

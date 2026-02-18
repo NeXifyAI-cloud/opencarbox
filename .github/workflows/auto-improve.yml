@@ -34,6 +34,9 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Map env aliases
+        run: bash tools/export_env.sh
+
       - name: Run full quality checks
         run: |
           pnpm lint

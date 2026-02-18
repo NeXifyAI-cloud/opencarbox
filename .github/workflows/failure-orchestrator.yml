@@ -40,6 +40,8 @@ env:
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
   NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  AI_MAX_CALLS: '20'
+  FORBID_WORKFLOW_EDITS: '1'
 
 jobs:
   route-failure:
@@ -67,10 +69,23 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Map env aliases
+        run: bash tools/export_env.sh
+
+      - name: Enforce DeepSeek fail-closed preflight
+        id: deepseek_guard
+        run: |
+          if [ "${AI_PROVIDER}" != "deepseek" ] || [ -z "${DEEPSEEK_API_KEY}" ] || [ -z "${NSCALE_API_KEY}" ]; then
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
       - name: AI triage eligibility
         id: ai_eligible
         run: |
-          if npx tsx tools/preflight.ts ai >/dev/null 2>&1; then
+          if [ "${{ steps.deepseek_guard.outputs.eligible }}" = "false" ]; then
+            echo "eligible=false" >> "$GITHUB_OUTPUT"
+          elif npx tsx tools/preflight.ts ai >/dev/null 2>&1; then
             echo "eligible=true" >> "$GITHUB_OUTPUT"
           else
             echo "eligible=false" >> "$GITHUB_OUTPUT"
@@ -169,7 +184,7 @@ jobs:
 
           gh pr create \
             --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
-            --base main \
+            --base "${{ github.event.repository.default_branch }}" \
             --head "$BRANCH" \
             --body "AI-Triage für fehlgeschlagenen Workflow. Marker: ${RUN_REF}"
         env:

@@ -1,12 +1,13 @@
 name: Deploy Staging
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
   workflow_dispatch:
 
 concurrency:
-  group: deploy-staging-${{ github.ref }}
+  group: deploy-staging-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -18,12 +19,18 @@ env:
 jobs:
   deploy-staging:
     name: Deploy to Staging
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     environment:
-      name: staging
+      name: preview
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - uses: pnpm/action-setup@v4
 
@@ -34,6 +41,13 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+
+      - name: Map env aliases
+        run: bash tools/export_env.sh
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_PROJEKT_ID: ${{ secrets.VERCEL_PROJEKT_ID }}
 
       - name: Preflight
         run: npx tsx tools/preflight.ts deploy

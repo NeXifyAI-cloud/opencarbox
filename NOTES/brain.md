@@ -112,3 +112,16 @@
 - **Consequences**:
   - Preflight/Setup zeigen fehlende GitLab-Parameter früh als Warnung.
   - Künftige GitLab-Automationen können standardisierte Variablen direkt verwenden.
+
+## ADR-009: Workflow-Hardening mit default-branch-Gating, Manifest-Check und Zeitplan-Automationen
+- **Decision**: Branch-sensitive Workflows verwenden dynamische Default-Branch-Prüfungen (`github.event.repository.default_branch` bzw. `github.event.workflow_run.repository.default_branch`) statt harter Branch-Namen; zusätzlich wird `NOTES/automation-manifest.md` per CI-Check (`pnpm workflow:manifest-check`) als Pflichtdokument validiert.
+- **Alternatives**:
+  - Feste `main`-Filter in jedem Workflow belassen.
+  - Dokumentation ohne maschinelle Validierung pflegen.
+- **Reasoning**:
+  - Reduziert erneute Branch-Mismatch-Ausfälle.
+  - Erzwingt Wartbarkeit bei wachsender Workflow-Anzahl.
+  - Trennt periodische Wartung (SBOM/Healthcheck) von commit-getriebenen Pipelines.
+- **Consequences**:
+  - Neue Workflows müssen im Manifest dokumentiert werden, sonst schlägt CI fehl.
+  - Deploys bleiben serialisiert über Concurrency und laufen nur nach erfolgreicher CI bzw. manuellem Dispatch.

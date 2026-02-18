@@ -1,0 +1,47 @@
+name: health-check
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: health-check
+  cancel-in-progress: true
+
+permissions:
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify health endpoint
+        id: health
+        env:
+          TARGET_URL: ${{ secrets.HEALTHCHECK_URL }}
+        run: |
+          if [ -z "${TARGET_URL}" ]; then
+            echo "degraded=false" >> "$GITHUB_OUTPUT"
+            echo "code=skipped" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          set +e
+          HTTP_CODE=$(curl -sS -o /tmp/health.json -w "%{http_code}" "${TARGET_URL}/api/health")
+          echo "code=$HTTP_CODE" >> "$GITHUB_OUTPUT"
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "degraded=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "degraded=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create degradation issue
+        if: steps.health.outputs.degraded == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "Health check degraded ($(date -u +%Y-%m-%dT%H:%M:%SZ))" \
+            --body "Automated hourly health check failed. HTTP: ${{ steps.health.outputs.code }}" \
+            --label bug --label automated || true

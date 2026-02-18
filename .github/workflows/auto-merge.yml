@@ -3,12 +3,11 @@ name: Auto-Merge
 
 on:
   pull_request:
-    branches: [main]
     types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
   pull-requests: write
-  contents: write
+  contents: read
 
 jobs:
   auto-merge-safe:
@@ -16,10 +15,23 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       github.event.pull_request.head.repo.fork == false &&
-      github.base_ref == 'main' &&
+      github.event.pull_request.base.ref == github.event.repository.default_branch &&
       contains(github.event.pull_request.labels.*.name, 'auto-merge')
 
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Check changed files policy
+        id: changed
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            .github/workflows/**
+            supabase/migrations/**
+            **/*.sql
+            package-lock.json
+            pnpm-lock.yaml
+
       - name: Dependabot metadata
         id: metadata
         if: github.actor == 'dependabot[bot]'
@@ -27,13 +39,20 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Fail on restricted file changes
+        if: steps.changed.outputs.any_changed == 'true'
+        run: |
+          echo "Restricted files changed; auto-merge skipped."
+          echo "Files: ${{ steps.changed.outputs.all_changed_files }}"
+          exit 1
+
       - name: Wait for checks
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
-          running-workflow-name: "Auto-Merge (Trusted Internal PRs)"
+          running-workflow-name: 'Auto-Merge (Trusted Internal PRs)'
 
       - name: Auto-approve trusted Dependabot PRs
         if: >-

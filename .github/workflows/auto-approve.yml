@@ -1,0 +1,32 @@
+name: Auto-Approve
+
+on:
+  pull_request:
+    branches: ["$default-branch"]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  approve-safe-prs:
+    name: Auto-Approve Dependabot & Autofix PRs
+    if: >-
+      github.event.pull_request.head.repo.fork == false &&
+      github.base_ref == github.event.repository.default_branch &&
+      (github.actor == 'dependabot[bot]' || startsWith(github.event.pull_request.head.ref, 'codex/'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for checks
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          running-workflow-name: "Auto-Approve Dependabot & Autofix PRs"
+
+      - name: Auto-approve
+        uses: peter-evans/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

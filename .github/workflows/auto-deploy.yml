@@ -62,9 +62,15 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Preflight
+      - name: Normalize environment aliases
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npx tsx tools/preflight.ts deploy
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts deploy
+
+      - name: Install deployment tools
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: pnpm dlx vercel --version
 
       - name: Pull Vercel Environment
         if: steps.vercel_check.outputs.skip != 'true'

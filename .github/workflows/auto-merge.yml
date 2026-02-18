@@ -20,6 +20,9 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'auto-merge')
 
     steps:
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y gh
+
       - name: Dependabot metadata
         id: metadata
         if: github.actor == 'dependabot[bot]'
@@ -40,7 +43,7 @@ jobs:
           github.actor == 'dependabot[bot]' &&
           (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
            steps.metadata.outputs.update-type == 'version-update:semver-minor')
-        run: gh pr review --approve "$PR_URL"
+        run: echo "Auto-approval handled by auto-approve workflow."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

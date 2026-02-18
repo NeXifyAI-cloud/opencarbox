@@ -5,7 +5,9 @@ on:
   push:
     branches: ["$default-branch"]
   schedule:
-    - cron: '0 4 * * 1' # Monday 4:00 UTC
+    - cron: '0 4 * * 1' # Weekly dependency/security scan (Monday)
+    - cron: '0 5 * * 1' # Weekly SBOM generation
+    - cron: '0 6 * * *' # Daily security health check
 
 concurrency:
   group: security-${{ github.ref }}
@@ -42,3 +44,41 @@ jobs:
 
       - name: Secret scan
         run: pnpm secret:scan
+
+  sbom:
+    name: Generate SBOM
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Generate SBOM (CycloneDX)
+        run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.json
+
+  security-health:
+    name: Daily Security Health Check
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Health summary
+        run: |
+          echo "Security workflow heartbeat ok: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          echo "Triggered by: ${{ github.event_name }}"

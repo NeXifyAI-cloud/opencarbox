@@ -124,3 +124,16 @@
 - **Consequences**:
   - Fehlende AI-Secrets stoppen AI-Workflows früh und sichtbar.
   - Auto-PRs sind auditierbar und entsprechen den geforderten Pflichtfeldern.
+
+
+## ADR-009: Zweistufige Workflow-Automation mit Auto-Approve + Auto-Merge
+- **Decision**: Für sichere PRs wird ein separater `Auto-Approve`-Workflow genutzt (Dependabot + `codex/*`), während `Auto-Merge` nur nach erfolgreichen Checks und Label-Gating die Zusammenführung aktiviert.
+- **Alternatives**:
+  - Auto-Approve und Auto-Merge in einem einzelnen Workflow kombinieren.
+  - Kein automatisches Approve, nur manuelle Freigaben.
+- **Reasoning**:
+  - Trennt Approval- und Merge-Verantwortung klar und reduziert Race-Conditions.
+  - Hält den Merge-Pfad auf den Default-Branch standardisiert (`$default-branch`).
+- **Consequences**:
+  - Sichere Bot-/Autofix-PRs können vollständig ohne manuelle Freigabe durchlaufen, sofern Repo-Environment-Regeln dies zulassen.
+  - Fehler in Auto-Approve/Auto-Merge sind separat im Failure-Orchestrator sichtbar.

@@ -13,6 +13,7 @@ on:
       - auto-improve
       - bootstrap
       - Auto-Merge
+      - Auto-Approve
       - auto-reply
       - codex-controller
       - issue-triage

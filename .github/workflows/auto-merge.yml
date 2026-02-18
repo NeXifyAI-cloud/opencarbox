@@ -12,7 +12,7 @@ permissions:
 jobs:
   auto-merge-safe:
     name: Auto-Merge (Trusted Internal PRs)
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     if: >-
       github.event.pull_request.head.repo.fork == false &&
       github.base_ref == github.event.repository.default_branch &&

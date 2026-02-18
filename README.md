@@ -33,6 +33,7 @@ See `.env.example` for the full list. Core values:
 - `DEEPSEEK_BASE_URL` (optional)
 - `NSCALE_API_KEY`
 - `NSCALE_HEADER_NAME`
+- `OPENCARBOX_RUNNER` (optional; Runner-Label für alle Workflows, sonst `ubuntu-latest`)
 
 ## Local development checks
 
@@ -52,6 +53,7 @@ pnpm build
 ## CI/CD
 
 Workflows:
+- Alle Workflows unterstützen `OPENCARBOX_RUNNER` als zentralen Runner-Override (Fallback `ubuntu-latest`).
 - `.github/workflows/ci.yml`: lint, typecheck, test, build.
 - `.github/workflows/security.yml`: dependency audit.
 - `.github/workflows/auto-reply.yml`: beantwortet Issues, PRs, Reviews und Kommentare automatisch (DeepSeek mit Fallback-Antwort).

@@ -54,17 +54,18 @@
 - Provider-specific headers and retry behavior must remain encapsulated in adapter files.
 
 
-## ADR-004: CI auf GitHub-hosted `ubuntu-latest` ohne AI-Secrets
-- **Decision**: Der primäre CI-Workflow (`.github/workflows/ci.yml`) läuft in beiden Jobs auf `runs-on: ubuntu-latest` (GitHub-hosted) und enthält keine AI-/Deploy-Secrets als Voraussetzung.
+## ADR-004: Standard-CI auf GitHub-hosted ohne AI-Secrets (Runner override-fähig)
+- **Decision**: Alle Workflows verwenden zentral `runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}`. Standard bleibt `ubuntu-latest`, bei gesetzter Repo-Variable `OPENCARBOX_RUNNER` wird der eigene Runner genutzt.
 - **Alternatives**:
-  - Betrieb auf `self-hosted` als Standard-Runner für CI.
-  - Gemischtes Modell mit optionalem Fallback zwischen `self-hosted` und `ubuntu-latest`.
+  - Harte Festlegung auf `ubuntu-latest` in jedem Workflow.
+  - Feste `self-hosted` Labels ohne zentralen Override.
 - **Reasoning**:
-  - PR- und Main-Checks bleiben unabhängig von lokaler Runner-Verfügbarkeit.
-  - Build/Test-Checks sind weiterhin klar von AI-/Deploy-Workflows getrennt.
+  - Ermöglicht systemweiten Runner-Rollout ohne wiederholte Datei-Edits.
+  - CI bleibt ohne AI-/Deploy-Secrets lauffähig.
 - **Consequences**:
-  - CI ist sofort lauffähig ohne eigene Runner-Infrastruktur.
-  - Eine mögliche Rückkehr zu `self-hosted` wird als separate zukünftige Backlog-/ADR-Entscheidung geführt (siehe `NOTES/backlog.md`, A6).
+  - Runner-Umschaltung erfolgt zentral über eine Repo-Variable.
+  - Bei Runner-Ausfällen ist ein schneller Fallback auf `ubuntu-latest` ohne Codeänderung möglich.
+
 
 ## ADR-005: Webhook-basierter Codex-Controller für autonome Pipeline-Steuerung
 - **Decision**: Einführung eines signierten Webhook-Endpunkts `POST /api/webhooks/codex-controller`, der DeepSeek-only Routing-Entscheidungen trifft und über `repository_dispatch` die zuständigen Automationspfade startet.

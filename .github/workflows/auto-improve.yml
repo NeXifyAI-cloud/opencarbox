@@ -23,7 +23,7 @@ env:
 jobs:
   improve:
     name: Quality Checks
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
         with:

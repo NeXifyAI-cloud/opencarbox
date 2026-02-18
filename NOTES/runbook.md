@@ -53,16 +53,16 @@
 
 ## Runner Policy
 
-- CI in `.github/workflows/ci.yml` läuft standardmäßig auf `ubuntu-latest` (GitHub-hosted); der Workflow benötigt dafür keine AI-/Deploy-Secrets.
+- Alle Workflows nutzen zentral `runs-on: ${{ vars.OPENCARBOX_RUNNER != '' && vars.OPENCARBOX_RUNNER || 'ubuntu-latest' }}`. Ohne gesetzte Repo-Variable `OPENCARBOX_RUNNER` läuft weiterhin `ubuntu-latest` (GitHub-hosted).
 - `actions/setup-node@v4` nutzt `cache: pnpm` + `cache-dependency-path: pnpm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
 - Self-hosted Runner können optional für andere Workflows verwendet werden, sind aber keine Voraussetzung für den Standard-CI-Pfad.
 
 ### Troubleshooting: Runner unavailable
 
 1. Prüfen, ob der betroffene Workflow wirklich `self-hosted` verlangt (Workflow-Datei kontrollieren).
-2. Für CI (`ci.yml`) keine Runner-Recovery nötig: erneut auslösen, der Lauf nutzt `ubuntu-latest`.
+2. Prüfe die Repo-Variable `OPENCARBOX_RUNNER`: leer bedeutet GitHub-hosted (`ubuntu-latest`), gesetzt bedeutet eigener Runner-Label.
 3. Für explizit self-hosted Workflows: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
-4. Wenn self-hosted länger ausfällt, Workflow temporär auf `ubuntu-latest` umstellen und Incident im Backlog dokumentieren.
+4. Wenn self-hosted länger ausfällt: `OPENCARBOX_RUNNER` leeren, Run erneut starten, Incident im Backlog dokumentieren.
 
 ## Release Process
 

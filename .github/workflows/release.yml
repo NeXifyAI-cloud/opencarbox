@@ -41,6 +41,9 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
       - name: Lint
         run: pnpm lint
 

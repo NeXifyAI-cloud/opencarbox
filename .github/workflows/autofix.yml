@@ -75,6 +75,10 @@ jobs:
             echo "check_profile=lint-only" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Generate Prisma Client
+        if: steps.classify.outputs.has_changes == 'true'
+        run: pnpm db:generate
+
       - name: Run required checks
         id: required_checks
         if: steps.classify.outputs.has_changes == 'true'
@@ -95,6 +99,9 @@ jobs:
 
       - name: Create PR if changes pass
         if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
         run: |
           BR="codex/autofix-safe-${{ github.event.workflow_run.id }}"
 
@@ -118,8 +125,6 @@ jobs:
             --body "Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet." \
             --base "${{ github.event.workflow_run.head_branch }}" \
             --label autofix
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Log check failure
         if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true'

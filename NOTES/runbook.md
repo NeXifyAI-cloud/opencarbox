@@ -195,7 +195,7 @@ flowchart TD
 | **Vercel flag** | no `--prod` (preview URL) | `--prod` |
 | **Environment** | `preview` | `production` |
 | **PR Comment** | ✅ Preview URL posted/updated | — |
-| **Secrets** | Only `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `VERCEL_TOKEN` | Full deploy secrets (Supabase, DB, etc.) |
+| **Secrets** | Only `VERCEL_ORG_ID`, `NEU_VERCEL_PROJEKT_ID`, `VERCEL_TOKEN` | Full deploy secrets (Supabase, DB, etc.) |
 
 ### Environment Variables
 

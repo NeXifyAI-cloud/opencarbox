@@ -49,6 +49,8 @@ The platform supports multiple AI providers with automatic fallback:
 📖 **See [GitHub Models Setup Guide](docs/github-models-setup.md) for detailed setup instructions.**
 📖 **See [AI Provider System Documentation](docs/ai-provider-system.md) for complete documentation.**
 
+📖 **German guide:** [KI-GitHub-Aktion](docs/ai-github-action-de.md).
+
 ## Local development checks
 
 ```bash

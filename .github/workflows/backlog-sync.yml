@@ -20,7 +20,7 @@ env:
 jobs:
   sync:
     name: Sync Issues to Backlog
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v4
 

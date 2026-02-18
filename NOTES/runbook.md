@@ -53,16 +53,23 @@
 
 ## Runner Policy
 
-- CI in `.github/workflows/ci.yml` läuft standardmäßig auf `ubuntu-latest` (GitHub-hosted); der Workflow benötigt dafür keine AI-/Deploy-Secrets.
+- Alle Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` — der Runner wird systemweit über die Repository-Variable `vars.RUNNER` gesteuert (siehe ADR-010).
+- **Standard:** Ohne gesetzte Variable laufen alle Workflows auf `ubuntu-latest` (GitHub-hosted).
 - `actions/setup-node@v4` nutzt `cache: pnpm` + `cache-dependency-path: pnpm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
-- Self-hosted Runner können optional für andere Workflows verwendet werden, sind aber keine Voraussetzung für den Standard-CI-Pfad.
+- Self-hosted Runner können über `vars.RUNNER = self-hosted` aktiviert werden, sind aber keine Voraussetzung für den Standard-CI-Pfad.
+
+### Runner-Wechsel
+
+1. **Zu self-hosted:** GitHub Settings → Actions → Variables → `RUNNER` auf `self-hosted` setzen (oder spezifisches Label wie `self-hosted-linux`).
+2. **Zurück zu GitHub-hosted:** Variable `RUNNER` löschen oder auf `ubuntu-latest` setzen.
+3. **Validierung nach Wechsel:** CI-Lauf manuell auslösen und prüfen, dass `pnpm lint`, `pnpm typecheck`, `pnpm test` und `pnpm build` erfolgreich durchlaufen.
 
 ### Troubleshooting: Runner unavailable
 
-1. Prüfen, ob der betroffene Workflow wirklich `self-hosted` verlangt (Workflow-Datei kontrollieren).
-2. Für CI (`ci.yml`) keine Runner-Recovery nötig: erneut auslösen, der Lauf nutzt `ubuntu-latest`.
-3. Für explizit self-hosted Workflows: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
-4. Wenn self-hosted länger ausfällt, Workflow temporär auf `ubuntu-latest` umstellen und Incident im Backlog dokumentieren.
+1. Prüfen, welcher Runner aktiv ist: `vars.RUNNER` in GitHub Settings → Actions → Variables kontrollieren.
+2. Falls `vars.RUNNER` nicht gesetzt oder `ubuntu-latest`: keine Runner-Recovery nötig — erneut auslösen.
+3. Falls `self-hosted`: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
+4. **Sofort-Rollback:** Variable `RUNNER` löschen oder auf `ubuntu-latest` setzen — alle Workflows fallen automatisch auf GitHub-hosted zurück.
 
 ## Release Process
 
@@ -224,6 +231,7 @@ RLS smoke tests are not blocking in CI (no database available). They can be run 
   1. Workflow-Name (`name:`) des neuen Workflows in die Orchestrator-Liste übernehmen.
   2. Deduplizierung prüfen: Marker `run-id:<id>` verhindert doppelte offene PRs/Issues.
   3. Fail-closed prüfen: ohne `AI_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` + `NSCALE_API_KEY` darf keine AI-Triage laufen; stattdessen Routing-Issue.
+  4. Runner: `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` verwenden (nie hartcodiertes `ubuntu-latest`).
 
 ### Workflow-Repro-Profile
 

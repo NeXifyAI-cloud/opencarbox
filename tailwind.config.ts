@@ -29,6 +29,10 @@ const config: Config = {
          FARBSYSTEM - Sharon UI Base Tokens (Kein Rot)
          ================================================================= */
       colors: {
+        ocb: {
+          orange: '#FFA800',
+          'orange-hover': '#e09400',
+        },
         /* ---------------------------------------------------------
            shadcn/ui CSS-Variable Tokens (Dark-Mode-kompatibel)
            --------------------------------------------------------- */

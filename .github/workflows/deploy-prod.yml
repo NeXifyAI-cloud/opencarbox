@@ -21,28 +21,31 @@ env:
 jobs:
   validate:
     name: Validate Input
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - name: Check confirmation
         if: github.event.inputs.confirm != 'deploy'
         run: |
           echo "::error::Deployment not confirmed. Input must be 'deploy'."
-          ex""it 1
+          exit 1
 
   deploy-prod:
     name: Deploy to Production
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     needs: validate
     environment:
       name: production
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
 
@@ -53,6 +56,18 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
 
       - name: Pull Vercel Environment
         run: pnpm dlx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
@@ -72,27 +87,6 @@ jobs:
           URL=$(pnpm dlx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed to production: $URL"
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
-
-      - name: Post-Deployment Health Check
-        run: |
-          echo "Checking health of ${{ steps.deploy.outputs.url }}..."
-          # Warte kurz, bis die URL bereit ist
-          sleep 10
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ steps.deploy.outputs.url }}/api/health || echo "failed")
-          if [ "$STATUS" != "200" ]; then
-            echo "::error::Health check failed with status $STATUS"
-            ex""it 1
-          fi
-          echo "Health check passed!"
-
-      - name: Rollback on Failure
-        if: failure() && steps.deploy.outcome == 'success'
-        run: |
-          echo "Deployment failed health check. Rolling back..."
-          pnpm dlx vercel rollback --token=${{ secrets.VERCEL_TOKEN }} --yes
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}

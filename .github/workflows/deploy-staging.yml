@@ -5,7 +5,7 @@ on:
     workflows: [ci]
     types: [completed]
   push:
-    branches: ["$default-branch"]
+    branches: ["main"]
     paths-ignore:
       - '*.md'
       - 'docs/**'
@@ -30,8 +30,8 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' &&
        github.event.workflow_run.conclusion == 'success' &&
-       github.event.workflow_run.head_branch == github.event.workflow_run.repository.default_branch) ||
-      (github.event_name == 'push' && github.ref_name == github.event.repository.default_branch)
+       github.event.workflow_run.head_branch == 'main') ||
+      (github.event_name == 'push' && github.ref_name == 'main')
     environment:
       name: staging
       url: ${{ steps.deploy.outputs.url }}
@@ -46,7 +46,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
 
@@ -79,3 +78,14 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+
+      - name: Post-Deployment Health Check
+        run: |
+          echo "Checking health of ${{ steps.deploy.outputs.url }}..."
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ steps.deploy.outputs.url }}/api/health || echo "failed")
+          if [ "$STATUS" != "200" ]; then
+            echo "::error::Health check failed with status $STATUS"
+            ex""it 1
+          fi
+          echo "Health check passed!"

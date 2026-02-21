@@ -29,6 +29,8 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
 
 jobs:
   lint:
@@ -48,6 +50,18 @@ jobs:
         run: bash tools/guard_no_openai.sh
       - name: Lint
         run: pnpm lint
+      - name: Route failure to Jules
+        if: failure()
+        run: |
+          source tools/export_env.sh
+          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
+            echo "Jules routing skipped."
+            exit 0
+          fi
+          curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $JULES_API_KEY" \
+            -d "{\"source\":\"ci.lint\",\"kind\":\"error\",\"name\":\"ci.lint.failed\",\"metadata\":{\"branch\":\"${{ github.ref_name }}\",\"run_id\":\"${{ github.run_id }}\",\"commit\":\"${{ github.sha }}\"}}"
 
   typecheck:
     name: Type Check

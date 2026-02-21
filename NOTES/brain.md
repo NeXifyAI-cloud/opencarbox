@@ -192,3 +192,15 @@
 - **Consequences**:
   - AI-Workflows sind fail-closed bei fehlendem `DEEPSEEK_API_KEY`/`NSCALE_API_KEY` durch `tools/preflight.ts ai`.
   - Provider-Wechsel erfordert künftig eine explizite ADR-/Policy-Änderung.
+
+## ADR-013: Systemweite Closed-Loop-Zielarchitektur als Referenzrahmen
+- **Decision**: Die ganzheitliche Soll-Architektur für autonome Operations wird als Referenz in `docs/systemanalyse-autonomes-system.md` geführt (Control/Execution/Data/AI/Observability/Knowledge Plane + iteratives Optimierungsmodell).
+- **Alternatives**:
+  - Nur implizite Beschreibung über einzelne Workflow-Dateien und Runbook-Einträge.
+  - Verteilte Teildokumente ohne zentrales Zielbild.
+- **Reasoning**:
+  - Reduziert Medienbrüche zwischen Architektur, Betrieb und Automatisierung.
+  - Schafft ein einheitliches Zielmodell für Priorisierung nach Impact/Aufwand.
+- **Consequences**:
+  - Künftige Prozess-/Architekturänderungen müssen gegen dieses Zielbild abgeglichen und ggf. per ADR aktualisiert werden.
+  - Backlog- und Runbook-Pflege kann systematisch auf die definierten Closed-Loop-Phasen ausgerichtet werden.

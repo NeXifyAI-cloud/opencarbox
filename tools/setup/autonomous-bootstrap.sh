@@ -43,7 +43,7 @@ Set the following repository secrets:
 ```bash
 gh secret set VERCEL_TOKEN --body "YOUR_VERCEL_TOKEN"
 gh secret set VERCEL_ORG_ID --body "YOUR_VERCEL_ORG_ID"
-gh secret set VERCEL_PROJECT_ID --body "YOUR_VERCEL_PROJECT_ID"
+gh secret set NEU_VERCEL_PROJEKT_ID --body "YOUR_VERCEL_PROJECT_ID"
 ```
 
 ### Database (Supabase)

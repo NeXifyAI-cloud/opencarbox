@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    branches: ["$default-branch"]
+    branches: ["main"]
     paths-ignore:
       - '*.md'
       - 'docs/**'
@@ -17,7 +17,7 @@ on:
       - 'LICENSE'
       - '.github/ISSUE_TEMPLATE/**'
   schedule:
-    - cron: '30 4 * * *' # Daily at 04:30 UTC
+    - cron: '30 4 * * *'
   workflow_dispatch:
 
 concurrency:
@@ -29,72 +29,92 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
 
 jobs:
-  quick-checks:
-    name: Lint & Type Check
+  lint:
+    name: Lint
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
-    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
       - run: pnpm i --frozen-lockfile
-
       - name: Preflight
         run: npx tsx tools/preflight.ts ci
-
       - name: 'Guard: forbid OpenAI usage'
         run: bash tools/guard_no_openai.sh
-
       - name: Lint
         run: pnpm lint
+      - name: Route failure to Jules
+        if: failure()
+        run: |
+          source tools/export_env.sh
+          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
+            echo "Jules routing skipped."
+            exit 0
+          fi
+          curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $JULES_API_KEY" \
+            -d "{\"source\":\"ci.lint\",\"kind\":\"error\",\"name\":\"ci.lint.failed\",\"metadata\":{\"branch\":\"${{ github.ref_name }}\",\"run_id\":\"${{ github.run_id }}\",\"commit\":\"${{ github.sha }}\"}}"
 
+  typecheck:
+    name: Type Check
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm i --frozen-lockfile
       - name: Generate Prisma Client
         run: pnpm db:generate
-
       - name: Type check
         run: pnpm typecheck
 
-  test-and-build:
-    name: Test & Build
+  test:
+    name: Unit Tests
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
-    needs: quick-checks
-    if: github.event_name != 'push' || github.ref_name == github.event.repository.default_branch
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
       - run: pnpm i --frozen-lockfile
-
       - name: Generate Prisma Client
         run: pnpm db:generate
+      - name: Test
+        run: pnpm test
 
+  build:
+    name: Build
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - run: pnpm i --frozen-lockfile
+      - name: Generate Prisma Client
+        run: pnpm db:generate
       - name: Restore Next.js build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .next/cache
           key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**') }}
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             nextjs-${{ runner.os }}-
-
-      - name: Test
-        run: pnpm test
-
       - name: Build
         run: pnpm build

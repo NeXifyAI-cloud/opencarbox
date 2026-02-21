@@ -7,10 +7,10 @@
 | `ci.yml` | `push` (`$default-branch`), `pull_request`, daily cron, manual | lint, typecheck, test, build | none | disable workflow |
 | `security.yml` | `push` (`$default-branch`), `pull_request`, weekly cron (Mon 04:00 UTC) | dependency audit, secret scan, SBOM | none | disable workflow |
 | `health-check.yml` | daily cron (05:00 UTC), manual | build health check + optional `/api/health` probe | optional `HEALTHCHECK_URL` | unset `HEALTHCHECK_URL` or disable |
-| `deploy-preview.yml` | `pull_request` (opened/sync/reopen) | preview deployment to Vercel | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | remove `VERCEL_TOKEN` |
-| `deploy-staging.yml` | `push` (`$default-branch`), manual | staging deployment to Vercel | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | disable workflow |
-| `deploy-prod.yml` | manual (`workflow_dispatch`, requires `deploy` confirmation) | manual production deployment | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | disable workflow |
-| `auto-deploy.yml` | `workflow_run` (CI success on default branch), manual | automatic production deployment | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL` | disable workflow |
+| `deploy-preview.yml` | `pull_request` (opened/sync/reopen) | preview deployment to Vercel | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `NEU_VERCEL_PROJEKT_ID` | remove `VERCEL_TOKEN` |
+| `deploy-staging.yml` | `push` (`$default-branch`), manual | staging deployment to Vercel | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `NEU_VERCEL_PROJEKT_ID` | disable workflow |
+| `deploy-prod.yml` | manual (`workflow_dispatch`, requires `deploy` confirmation) | manual production deployment | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `NEU_VERCEL_PROJEKT_ID` | disable workflow |
+| `auto-deploy.yml` | `workflow_run` (CI success on default branch), manual | automatic production deployment | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `NEU_VERCEL_PROJEKT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL` | disable workflow |
 | `auto-approve.yml` | `pull_request_target` (opened/sync/reopen/labeled/ready_for_review) | auto-approve trusted actor and labeled PRs | none | remove labels |
 | `auto-merge.yml` | `pull_request` (labeled/opened/sync/reopen), `workflow_run` (CI) | auto-merge safe PRs when CI passes | none | remove labels |
 | `autofix.yml` | `workflow_run` (CI failure) | safe format/lint fixes on failing branches | none | disable workflow |
@@ -28,19 +28,19 @@
 | `sync-to-main.yml` | `push` (`audit-fix-deploy-*`), daily cron (03:00 UTC), manual | sync audit-fix-deploy branch to main with auto-merge | none | disable workflow |
 | `backlog-sync.yml` | daily cron (05:00 UTC), manual | sync GitHub issues to `NOTES/backlog.md` | none | disable workflow |
 | `release.yml` | `push` (tags `v*.*.*`), manual | build + create GitHub Release | none | disable workflow |
-| `bootstrap.yml` | manual (`workflow_dispatch`) | project initialization (Vercel + Supabase setup) | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | disable workflow |
+| `bootstrap.yml` | manual (`workflow_dispatch`) | project initialization (Vercel + Supabase setup) | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `NEU_VERCEL_PROJEKT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` | disable workflow |
 | `mem0-brain.yml` | `push` (`$default-branch`), every 6h cron, manual | Mem0 AI memory sync + GitLab mirror | `GITLAB_PROJEKT_TOKEN`, `CLASSIC_TOKEN_GITHUB_NEU` | disable workflow |
 | `security-intake.yml` | weekly cron (Mon 04:00 UTC), manual | parse audit findings → create GitHub issues | none | disable workflow |
-| `ai-pr-review.yml` | `pull_request` (opened/synchronize) | AI-powered PR code review via OpenAI | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
-| `ai-issue-analyze.yml` | `issues` (opened/labeled) | AI-powered issue analysis and categorization | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
-| `ai-code-scan.yml` | `push` (`$default-branch`), weekly cron (Mon 00:00 UTC), manual | AI-powered code scanning for vulnerabilities | `OPENAI_API_KEY` | remove `OPENAI_API_KEY` or disable |
+| ~~`ai-pr-review.yml`~~ | ~~`pull_request`~~ | ~~AI-powered PR code review~~ | — | **deprecated/removed** (used forbidden provider) |
+| ~~`ai-issue-analyze.yml`~~ | ~~`issues`~~ | ~~AI-powered issue analysis~~ | — | **deprecated/removed** (used forbidden provider) |
+| ~~`ai-code-scan.yml`~~ | ~~`push`~~ | ~~AI-powered code scanning~~ | — | **deprecated/removed** (used forbidden provider) |
 
 ## Standardized Environment Variables
 
 ### Deployment
 - `VERCEL_TOKEN` — Vercel API token
 - `VERCEL_ORG_ID` — Vercel organization ID
-- `VERCEL_PROJECT_ID` — Vercel project ID
+- `VERCEL_PROJECT_ID` / `NEU_VERCEL_PROJEKT_ID` — Vercel project ID
 
 ### Supabase
 - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
@@ -48,10 +48,9 @@
 - `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key
 - `DATABASE_URL` — direct database connection string
 
-### AI (primary: GitHub Models, fallback: DeepSeek)
-- `AI_PROVIDER` (var) — `github-models` (default) or `deepseek`
+### AI (primary: DeepSeek + NSCALE)
+- `AI_PROVIDER` (var) — `deepseek` (enforced)
 - `AI_AUTO_SELECT` (var) — `true` (default) enables automatic fallback
-- `OPENAI_API_KEY` — OpenAI API key (used by `ai-github-action` workflows)
 - `DEEPSEEK_API_KEY` — DeepSeek API key
 - `NSCALE_API_KEY` — nscale API key
 - `DEEPSEEK_BASE_URL` — DeepSeek base URL (optional)

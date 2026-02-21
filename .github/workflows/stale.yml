@@ -19,7 +19,7 @@ jobs:
     name: Stale Issue Cleanup
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
-      - uses: actions/stale@v9
+      - uses: actions/stale@v10
         with:
           stale-issue-message: >
             This issue has been automatically marked as **stale** because it has
@@ -38,4 +38,38 @@ jobs:
           days-before-pr-close: -1
           exempt-issue-labels: 'security,production,data-loss,priority:critical'
           remove-stale-when-updated: true
-          operations-per-run: 30
+          operations-per-run: 60
+      - uses: actions/stale@v10
+        with:
+          stale-issue-message: >
+            This failure-routing incident has been automatically marked as **stale**
+            because there has been no activity for 7 days.
+            It will be closed in 7 days unless there is new activity.
+          close-issue-message: >
+            Auto-closed: no activity for 14 days. If still relevant, please reopen.
+          stale-issue-label: 'stale'
+          only-labels: 'failure-routing'
+          days-before-stale: 7
+          days-before-close: 7
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          exempt-issue-labels: 'security,production,priority:critical'
+          remove-stale-when-updated: true
+          operations-per-run: 60
+      - uses: actions/stale@v10
+        with:
+          stale-issue-message: >
+            This CI-failure issue has been automatically marked as **stale**
+            because there has been no activity for 7 days.
+            It will be closed in 7 days unless there is new activity.
+          close-issue-message: >
+            Auto-closed: no activity for 14 days. If still relevant, please reopen.
+          stale-issue-label: 'stale'
+          only-labels: 'ci-failure'
+          days-before-stale: 7
+          days-before-close: 7
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          exempt-issue-labels: 'security,production,priority:critical'
+          remove-stale-when-updated: true
+          operations-per-run: 60

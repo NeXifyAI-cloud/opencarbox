@@ -16,17 +16,19 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
 
 jobs:
   sync:
     name: Sync Issues to Backlog
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -36,7 +38,7 @@ jobs:
 
       - name: Fetch open issues
         id: issues
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
@@ -81,3 +83,15 @@ jobs:
           git add NOTES/backlog.md
           git commit -m "chore: sync live issues index in backlog"
           git push
+
+      - name: Route failure to Jules
+        if: failure()
+        run: |
+          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
+            echo "Jules routing skipped."
+            exit 0
+          fi
+          curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $JULES_API_KEY" \
+            -d "{\"source\":\"backlog-sync\",\"kind\":\"error\",\"name\":\"backlog-sync.failed\",\"metadata\":{\"run_id\":\"${{ github.run_id }}\"}}"

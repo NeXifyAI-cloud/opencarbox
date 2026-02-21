@@ -1,0 +1,1 @@
+Learning: Use curl with -H 'Authorization: token $CLASSIC_TOKEN_GITHUB_NEU' to fetch issues from a private repo when gh CLI is missing. Use jq to filter pull_request == null for UI-aligned issue view.

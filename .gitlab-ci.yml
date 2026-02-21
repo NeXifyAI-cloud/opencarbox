@@ -1,5 +1,5 @@
 # GitLab CI/CD Configuration for OpenCarBox
-# Mirrored from GitHub with Mem0 integration
+# Unified with GitHub Actions using pnpm
 
 image: node:20-alpine
 
@@ -12,35 +12,37 @@ stages:
 variables:
   NODE_ENV: production
   CI: "true"
+  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm-store"
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
+    - .pnpm-store
     - node_modules/
     - .next/cache/
 
 before_script:
-  - npm ci --prefer-offline
+  - corepack enable
+  - corepack prepare pnpm@latest --activate
+  - pnpm config set store-dir $PNPM_HOME
+  - pnpm i --frozen-lockfile
 
 analyze:
   stage: analyze
   script:
     - echo "🔍 Analyzing with Mem0 integration"
-    - node scripts/mem0-integration.ts
-    - npm run lint
-    - npm run type-check
+    - npx tsx scripts/mem0-integration.ts
+    - pnpm lint
+    - pnpm typecheck
   artifacts:
     when: always
     paths:
       - .mem0/
-    reports:
-      junit: test-results/junit.xml
 
 test:
   stage: test
   script:
-    - npm run test:unit
-    - npm run test:integration
+    - pnpm test
   artifacts:
     when: always
     paths:
@@ -49,7 +51,7 @@ test:
 build:
   stage: build
   script:
-    - npm run build
+    - pnpm build
   artifacts:
     paths:
       - .next/
@@ -60,14 +62,13 @@ deploy:
   stage: deploy
   script:
     - echo "🚀 Deploying to Vercel"
-    - npm run deploy
+    - pnpm dlx vercel --token=$VERCEL_TOKEN --prod --yes
   only:
     - main
   environment:
     name: production
     url: https://opencarbox.ai
 
-# Mem0 Memory Sync Job
 mem0-sync:
   stage: analyze
   script:
@@ -77,34 +78,13 @@ mem0-sync:
   only:
     - schedules
     - web
-  artifacts:
-    paths:
-      - .mem0/
 
-# Mirror sync from GitHub
-mirror-sync:
-  stage: analyze
-  script:
-    - echo "🔄 Mirroring from GitHub"
-    - git fetch origin
-    - git push --mirror gitlab
-  only:
-    - schedules
-  variables:
-    GIT_STRATEGY: none
-
-# Health check for Mem0 integration
 health-check:
   stage: analyze
   script:
-    - echo "🏥 Health Check for Mem0 Integration"
-    - echo "1. Checking Mem0 directory..."
-    - ls -la .mem0/ || echo "Mem0 directory not found"
-    - echo "2. Checking integration scripts..."
-    - ls -la scripts/mem0-integration.ts scripts/gitlab-sync.sh
-    - echo "3. Checking GitLab connectivity..."
-    - curl -s -H "PRIVATE-TOKEN: $GITLAB_PROJEKT_TOKEN" "https://gitlab.com/api/v4/projects/NeXifyAI-cloud%2Fopencarbox" | jq -r '.name' || echo "GitLab connectivity failed"
+    - echo "🏥 Health Check for Integration"
+    - pnpm tsx scripts/mcp-health-check.sh || echo "MCP Health Check failed"
   artifacts:
     when: always
     paths:
-      - .mem0/health-check.log
+      - health-check.log

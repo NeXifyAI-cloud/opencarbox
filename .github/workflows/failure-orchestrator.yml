@@ -52,6 +52,8 @@ env:
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
   NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
   FORBID_WORKFLOW_EDITS: 'true'
   AI_MAX_CALLS: '3'
 
@@ -66,11 +68,11 @@ jobs:
       ai_eligible: ${{ steps.ai_eligible.outputs.eligible }}
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -85,6 +87,23 @@ jobs:
         run: |
           source tools/export_env.sh
           npx tsx tools/preflight.ts ai
+
+      - name: Route failure event to Jules
+        run: |
+          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
+            echo "Jules routing skipped (missing JULES_API_KEY or JULES_BASE_URL)."
+            exit 0
+          fi
+          jq -n \
+            --arg workflow "${{ github.event.workflow_run.name }}" \
+            --arg conclusion "${{ github.event.workflow_run.conclusion }}" \
+            --arg run_url "${{ github.event.workflow_run.html_url }}" \
+            --arg run_id "${{ github.event.workflow_run.id }}" \
+            '{source:"failure-orchestrator",kind:"error",name:"workflow.failure",metadata:{workflow:$workflow,conclusion:$conclusion,run_url:$run_url,run_id:$run_id}}' \
+            | curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $JULES_API_KEY" \
+                --data-binary @- >/dev/null
 
       - name: AI triage eligibility
         id: ai_eligible
@@ -135,14 +154,14 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -220,6 +239,33 @@ jobs:
             --title "Incident: ${{ github.event.workflow_run.name }} fehlgeschlagen" \
             --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\nMarker: ${RUN_REF}\n\nAuto-Fix war nicht möglich." \
             --label failure-routing --label ai-triage || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  close-resolved-incidents:
+    name: Close Resolved Incidents
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.name != 'failure-orchestrator'
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    permissions:
+      issues: write
+    steps:
+      - name: Install gh and jq
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
+      - name: Close resolved incident issues
+        run: |
+          WF_NAME="${{ github.event.workflow_run.name }}"
+          INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
+          ISSUE_NUMBERS="$(gh issue list --state open --label failure-routing \
+            --json number,title --jq \
+            --arg t "$INCIDENT_TITLE" '[.[] | select(.title == $t)] | .[].number')"
+          for NUM in $ISSUE_NUMBERS; do
+            gh issue comment "$NUM" \
+              --body "✅ Workflow **${WF_NAME}** hat erfolgreich abgeschlossen. Auto-Close." || true
+            gh issue close "$NUM" --reason completed
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

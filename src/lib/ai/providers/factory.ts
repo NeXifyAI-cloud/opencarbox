@@ -5,21 +5,17 @@
 
 import { BaseAIProvider } from './base';
 import { DeepSeekProvider } from './deepseek';
-import { GitHubModelsProvider } from './github-models';
 import type { ProviderConfig, ProviderType } from './types';
 
 /**
  * Create an AI provider instance from configuration
  */
 export function createProvider(config: ProviderConfig): BaseAIProvider {
-  switch (config.type) {
-    case 'github-models':
-      return new GitHubModelsProvider(config);
-    case 'deepseek':
-      return new DeepSeekProvider(config);
-    default:
-      throw new Error(`Unknown provider type: ${config.type}`);
+  if (config.type !== 'deepseek') {
+    throw new Error(`Unknown provider type: ${config.type}`);
   }
+
+  return new DeepSeekProvider(config);
 }
 
 /**

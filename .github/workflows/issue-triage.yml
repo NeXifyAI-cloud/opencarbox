@@ -15,7 +15,7 @@ jobs:
     if: github.event.issue.pull_request == null
     steps:
       - name: Auto-label based on content
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const issue = context.payload.issue;
@@ -73,7 +73,7 @@ jobs:
 
       - name: Auto-assign to default maintainer
         if: github.event.action == 'opened'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const issue = context.payload.issue;
@@ -95,7 +95,7 @@ jobs:
 
       - name: Check for required fields (repro/logs)
         if: github.event.action == 'opened' || github.event.action == 'edited'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const issue = context.payload.issue;

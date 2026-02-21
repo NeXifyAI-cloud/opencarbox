@@ -20,6 +20,8 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
 
 jobs:
   deploy-preview:
@@ -120,3 +122,15 @@ jobs:
                 body,
               });
             }
+
+      - name: Route failure to Jules
+        if: failure()
+        run: |
+          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
+            echo "Jules routing skipped."
+            exit 0
+          fi
+          curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $JULES_API_KEY" \
+            -d "{\"source\":\"deploy-preview\",\"kind\":\"error\",\"name\":\"deploy-preview.failed\",\"metadata\":{\"run_id\":\"${{ github.run_id }}\",\"branch\":\"${{ github.ref_name }}\"}}"

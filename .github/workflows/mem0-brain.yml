@@ -1,0 +1,84 @@
+name: Mem0 Brain Integration
+
+on:
+  push:
+    branches: ["$default-branch"]
+  schedule:
+    - cron: '0 */6 * * *' # Every 6 hours
+  workflow_dispatch:
+
+concurrency:
+  group: mem0-brain-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  mem0-integration:
+    name: Mem0 Sync
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Run Mem0 integration
+        env:
+          GITLAB_PROJEKT_TOKEN: ${{ secrets.GITLAB_PROJEKT_TOKEN }}
+          CLASSIC_TOKEN_GITHUB_NEU: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+        run: npx tsx scripts/mem0-integration.ts
+        continue-on-error: true
+
+      - name: Sync to GitLab
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          GITLAB_PROJEKT_TOKEN: ${{ secrets.GITLAB_PROJEKT_TOKEN }}
+        run: |
+          chmod +x scripts/gitlab-sync.sh
+          bash scripts/gitlab-sync.sh
+        continue-on-error: true
+
+      - name: Update memory documentation
+        env:
+          HUSKY: '0'
+        run: |
+          git config --global user.name "Mem0 Brain"
+          git config --global user.email "mem0@opencarbox.ai"
+          git add .mem0/ 2>/dev/null || true
+          git commit -m "chore: update Mem0 memory" || echo "No changes to commit"
+          git push || echo "Push skipped"
+        continue-on-error: true
+
+  mem0-health-check:
+    name: Health Check
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    needs: mem0-integration
+    if: always()
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check GitLab Connectivity
+        env:
+          GITLAB_PROJEKT_TOKEN: ${{ secrets.GITLAB_PROJEKT_TOKEN }}
+        run: |
+          curl -sf -H "PRIVATE-TOKEN: $GITLAB_PROJEKT_TOKEN" \
+            "https://gitlab.com/api/v4/projects/NeXify-Automate%2Fcarvantooo-opencarbox" \
+            | jq -r '.name' || echo "GitLab check failed (non-critical)"
+        continue-on-error: true
+
+      - name: Health Status
+        run: echo "Mem0 Brain integration cycle complete."

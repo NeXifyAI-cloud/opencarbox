@@ -1,0 +1,67 @@
+name: codex-controller
+
+on:
+  repository_dispatch:
+    types:
+      - codex.run_autofix
+      - codex.run_conflict_resolver
+      - codex.run_auto_improve
+      - codex.open_triage_issue
+
+permissions:
+  contents: read
+  actions: write
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  control:
+    name: Route Dispatch
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install system tools
+        run: sudo apt-get update && sudo apt-get install -y gh
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Normalize environment aliases
+        run: source tools/export_env.sh
+
+      - name: Route dispatch action
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          EVENT_TYPE="${{ github.event.action }}"
+          case "$EVENT_TYPE" in
+            codex.run_autofix)
+              gh workflow run autofix.yml
+              ;;
+            codex.run_conflict_resolver)
+              gh workflow run conflict-resolver.yml
+              ;;
+            codex.run_auto_improve)
+              gh workflow run auto-improve.yml
+              ;;
+            codex.open_triage_issue)
+              gh issue create \
+                --title "AI-Triage requested by codex-controller" \
+                --body "Triggered by repository_dispatch: $EVENT_TYPE" \
+                --label failure-routing || true
+              ;;
+            *)
+              echo "Unsupported event: $EVENT_TYPE"
+              exit 1
+              ;;
+          esac

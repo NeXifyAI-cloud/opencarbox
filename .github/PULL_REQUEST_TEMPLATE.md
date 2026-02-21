@@ -1,44 +1,35 @@
-## 📝 Beschreibung
+## Summary
 
-<!-- Was wurde geändert und warum? -->
+<!-- Kurze Beschreibung der Änderung und Motivation -->
 
-## 🔗 Zugehöriges Issue
+## Checklist
 
-<!-- Verlinke das Issue: Fixes #123 oder Closes #123 -->
+### CI & Quality
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass locally
+- [ ] CI checks are green (ci / quick-checks, ci / test-and-build)
+- [ ] Tests added/updated where behavior changed
 
-## 📋 Art der Änderung
+### Documentation & Operations
+- [ ] NOTES updated (`runbook.md`, `brain.md`, `backlog.md`) if relevant
+- [ ] Documentation updated (`README`, `docs/`) if relevant
+- [ ] Migrations included and runbook updated if database schema changed
 
-- [ ] 🐛 Bugfix (non-breaking change)
-- [ ] ✨ Neues Feature (non-breaking change)
-- [ ] 💥 Breaking Change (fix oder feature mit breaking changes)
-- [ ] 📚 Dokumentation
-- [ ] 🔧 Konfiguration
-- [ ] 🎨 Styling/UI
+### Security & Secrets
+- [ ] No secrets added to code, logs, or docs
+- [ ] `pnpm secret:scan` passes
+- [ ] OPENAI_* / forbidden provider references not introduced
 
-## ✅ Checkliste
+### Deployment & Release
+- [ ] UI changes include screenshot(s)
+- [ ] DB migration / rollback runbook updated if relevant
+- [ ] Vercel Preview deployment verified (if applicable)
 
-- [ ] Code folgt dem Styleguide des Projekts
-- [ ] Selbst-Review durchgeführt
-- [ ] TypeScript strict mode: kein `any`, keine implicit null
-- [ ] Tailwind only: keine Inline-Styles
-- [ ] Deutsche UI-Texte, englischer Code
-- [ ] Tests hinzugefügt (falls anwendbar)
-- [ ] Dokumentation aktualisiert (falls nötig)
+### Orchestrator & Workflows
+- [ ] Bei neuen/umbenannten produktiven Workflows wurde `.github/workflows/failure-orchestrator.yml` (`on.workflow_run.workflows`) in derselben PR aktualisiert
+- [ ] Branch protection contract checked (see NOTES/runbook.md)
 
-## 🧪 Tests
-
-<!-- Wie wurde getestet? -->
-
-## 📸 Screenshots
-
-<!-- Falls UI-Änderungen -->
-
-## 🏷️ Labels
-
-<!-- auto-merge hinzufügen für automatisches Mergen nach Approval -->
-
-## 🤖 Autofix Policy
-
-- [ ] Bei roter CI **kein manueller Merge** ohne dokumentierte Ausnahme
-- [ ] Für `autofix`-PRs: Oracle/Scope-Guard Kommentare geprüft
-- [ ] Keine Änderungen in verbotenen Pfaden (`prisma/migrations/**`, `supabase/migrations/**`, `.env*`, `vercel.json`)
+### Definition of Done
+- [ ] All CI checks green
+- [ ] Code review approved (min 1 reviewer)
+- [ ] Acceptance criteria from linked issue verified
+- [ ] No regressions introduced

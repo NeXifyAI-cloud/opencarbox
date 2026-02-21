@@ -1,6 +1,6 @@
 'use client';
 
-
+import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -53,7 +53,7 @@ export default function AutohandelPage() {
     <div className="pb-20">
       {/* Autohandel Hero */}
       <section className="bg-slate-900 text-white py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-blue opacity-30" />
+        <div className="absolute inset-0 bg-mesh-secondary opacity-30" />
         <div className="container-content relative z-10 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -61,14 +61,14 @@ export default function AutohandelPage() {
             className="max-w-3xl mx-auto"
           >
             <h1 className="text-5xl md:text-7xl font-display font-bold mb-8">
-              Finden Sie Ihr <span className="text-opencarbox-500">Traumauto</span>
+              Finden Sie Ihr <span className="text-secondary-500">Traumauto</span>
             </h1>
             <p className="text-xl text-slate-400 mb-12">
               Premium Gebrauchtwagen mit 100-Punkte-Check, Garantie und
               maßgeschneiderter Finanzierung. Professionell & Fair.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button className="btn-gradient-blue h-14 px-10 text-lg font-bold rounded-xl">
+              <Button className="btn-gradient-secondary h-14 px-10 text-lg font-bold rounded-xl">
                 Bestand ansehen
               </Button>
               <Button variant="outline" className="h-14 px-10 text-lg font-bold border-white/20 hover:bg-white/10 text-white rounded-xl">
@@ -88,14 +88,14 @@ export default function AutohandelPage() {
               <input
                 type="text"
                 placeholder="Marke, Modell oder Schlagwort..."
-                className="w-full h-12 pl-12 pr-4 rounded-lg border border-slate-200 focus:border-opencarbox-500 focus:ring-4 focus:ring-opencarbox-500/10 outline-none transition-all"
+                className="w-full h-12 pl-12 pr-4 rounded-lg border border-slate-200 focus:border-secondary-500 focus:ring-4 focus:ring-secondary-500/10 outline-none transition-all"
               />
             </div>
             <div className="flex gap-4">
               <Button variant="outline" className="h-12 gap-2">
                 <Settings2 className="w-4 h-4" /> Filter
               </Button>
-              <Button className="h-12 btn-gradient-blue px-8 font-bold">
+              <Button className="h-12 btn-gradient-secondary px-8 font-bold">
                 Angebote finden
               </Button>
             </div>
@@ -123,14 +123,16 @@ export default function AutohandelPage() {
               className="card-premium flex flex-col group h-full overflow-hidden"
             >
               <div className="relative aspect-[16/10] overflow-hidden">
-                <img
+                <Image
                   src={v.image}
                   alt={v.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute top-4 left-4">
                   {v.featured && (
-                    <Badge variant="default" className="bg-opencarbox-500 text-white font-bold px-3 py-1">Top Angebot</Badge>
+                    <Badge variant="default" className="bg-secondary-500 text-white font-bold px-3 py-1">Top Angebot</Badge>
                   )}
                 </div>
                 <div className="absolute bottom-4 right-4">
@@ -141,25 +143,25 @@ export default function AutohandelPage() {
               </div>
 
               <div className="p-6 flex flex-col flex-grow">
-                <h3 className="text-xl font-bold mb-4 group-hover:text-opencarbox-600 transition-colors">
+                <h3 className="text-xl font-bold mb-4 group-hover:text-secondary-600 transition-colors">
                   {v.title}
                 </h3>
 
                 <div className="grid grid-cols-2 gap-y-4 gap-x-2 mb-6">
                   <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Calendar className="w-4 h-4 text-opencarbox-500" />
+                    <Calendar className="w-4 h-4 text-secondary-500" />
                     EZ {v.year}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Gauge className="w-4 h-4 text-opencarbox-500" />
+                    <Gauge className="w-4 h-4 text-secondary-500" />
                     {v.mileage.toLocaleString('de-DE')} km
                   </div>
                   <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Fuel className="w-4 h-4 text-opencarbox-500" />
+                    <Fuel className="w-4 h-4 text-secondary-500" />
                     {v.fuel}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-slate-500">
-                    <Settings2 className="w-4 h-4 text-opencarbox-500" />
+                    <Settings2 className="w-4 h-4 text-secondary-500" />
                     {v.transmission}
                   </div>
                 </div>
@@ -168,7 +170,7 @@ export default function AutohandelPage() {
                   <span className="text-xs text-slate-400 flex items-center gap-1 font-medium">
                     <Info className="w-3 h-3" /> Inkl. 12 Monate Garantie
                   </span>
-                  <Button variant="ghost" className="text-opencarbox-600 font-bold gap-1 p-0 hover:bg-transparent hover:gap-2 transition-all">
+                  <Button variant="ghost" className="text-secondary-600 font-bold gap-1 p-0 hover:bg-transparent hover:gap-2 transition-all">
                     Details <ChevronRight className="w-4 h-4" />
                   </Button>
                 </div>

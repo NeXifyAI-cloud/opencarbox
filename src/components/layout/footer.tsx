@@ -24,14 +24,14 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="bg-[#1e3a5f] text-white">
+    <footer className="bg-primary-800 text-white">
       {/* Trust-Badges Sektion */}
-      <div className="border-b border-[#4fd1c5]/20">
+      <div className="border-b border-secondary-400/20">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="flex items-center gap-3 justify-center md:justify-start">
-              <div className="w-10 h-10 rounded-full bg-[#4fd1c5]/10 flex items-center justify-center">
-                <Truck className="w-5 h-5 text-[#4fd1c5]" />
+              <div className="w-10 h-10 rounded-full bg-secondary-400/10 flex items-center justify-center">
+                <Truck className="w-5 h-5 text-secondary-400" />
               </div>
               <div>
                 <p className="font-semibold text-sm">Schneller Versand</p>
@@ -39,8 +39,8 @@ export function Footer() {
               </div>
             </div>
             <div className="flex items-center gap-3 justify-center md:justify-start">
-              <div className="w-10 h-10 rounded-full bg-[#4fd1c5]/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-[#4fd1c5]" />
+              <div className="w-10 h-10 rounded-full bg-secondary-400/10 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-secondary-400" />
               </div>
               <div>
                 <p className="font-semibold text-sm">30 Tage Rückgabe</p>
@@ -48,8 +48,8 @@ export function Footer() {
               </div>
             </div>
             <div className="flex items-center gap-3 justify-center md:justify-start">
-              <div className="w-10 h-10 rounded-full bg-[#4fd1c5]/10 flex items-center justify-center">
-                <CreditCard className="w-5 h-5 text-[#4fd1c5]" />
+              <div className="w-10 h-10 rounded-full bg-secondary-400/10 flex items-center justify-center">
+                <CreditCard className="w-5 h-5 text-secondary-400" />
               </div>
               <div>
                 <p className="font-semibold text-sm">Sichere Zahlung</p>
@@ -57,8 +57,8 @@ export function Footer() {
               </div>
             </div>
             <div className="flex items-center gap-3 justify-center md:justify-start">
-              <div className="w-10 h-10 rounded-full bg-[#4fd1c5]/10 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-[#4fd1c5]" />
+              <div className="w-10 h-10 rounded-full bg-secondary-400/10 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-secondary-400" />
               </div>
               <div>
                 <p className="font-semibold text-sm">Kundenservice</p>
@@ -74,7 +74,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Spalte 1: Unternehmen */}
           <div>
-            <h3 className="text-[#4fd1c5] font-bold text-lg mb-4">
+            <h3 className="text-secondary-400 font-bold text-lg mb-4">
               {companyConfig.name}
             </h3>
             <p className="text-gray-300 text-sm mb-4">
@@ -88,30 +88,30 @@ export function Footer() {
 
           {/* Spalte 2: Kategorien */}
           <div>
-            <h3 className="text-[#4fd1c5] font-bold text-lg mb-4">Shop</h3>
+            <h3 className="text-secondary-400 font-bold text-lg mb-4">Shop</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/kategorien" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/kategorien" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Alle Kategorien
                 </Link>
               </li>
               <li>
-                <Link href="/marken" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/marken" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Marken
                 </Link>
               </li>
               <li>
-                <Link href="/werkstatt" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/werkstatt" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Werkstatt
                 </Link>
               </li>
               <li>
-                <Link href="/fahrzeuge" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/fahrzeuge" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Fahrzeughandel
                 </Link>
               </li>
               <li>
-                <Link href="/angebote" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/angebote" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Angebote
                 </Link>
               </li>
@@ -120,45 +120,45 @@ export function Footer() {
 
           {/* Spalte 3: Service & Rechtliches */}
           <div>
-            <h3 className="text-[#4fd1c5] font-bold text-lg mb-4">Service & Rechtliches</h3>
+            <h3 className="text-secondary-400 font-bold text-lg mb-4">Service & Rechtliches</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/hilfe" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/hilfe" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Hilfe & FAQ
                 </Link>
               </li>
               <li>
-                <Link href="/kontakt" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/kontakt" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Kontakt
                 </Link>
               </li>
               <li>
-                <Link href="/versand" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/versand" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Versand & Lieferung
                 </Link>
               </li>
               <li>
-                <Link href="/zahlung" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/zahlung" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Zahlungsarten
                 </Link>
               </li>
               <li>
-                <Link href="/rueckgabe" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/rueckgabe" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Rückgabe & Widerruf
                 </Link>
               </li>
               <li>
-                <Link href="/impressum" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/impressum" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Impressum
                 </Link>
               </li>
               <li>
-                <Link href="/datenschutz" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/datenschutz" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   Datenschutz
                 </Link>
               </li>
               <li>
-                <Link href="/agb" className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm">
+                <Link href="/agb" className="text-gray-300 hover:text-secondary-400 transition-colors text-sm">
                   AGB
                 </Link>
               </li>
@@ -167,29 +167,29 @@ export function Footer() {
 
           {/* Spalte 4: Kontakt */}
           <div>
-            <h3 className="text-[#4fd1c5] font-bold text-lg mb-4">Kontakt</h3>
+            <h3 className="text-secondary-400 font-bold text-lg mb-4">Kontakt</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-[#4fd1c5] flex-shrink-0 mt-0.5" />
+                <MapPin className="w-5 h-5 text-secondary-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-300 text-sm">
                   {companyConfig.address.street}<br />
                   {companyConfig.address.zip} {companyConfig.address.city}
                 </span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-[#4fd1c5] flex-shrink-0" />
+                <Phone className="w-5 h-5 text-secondary-400 flex-shrink-0" />
                 <a
                   href={`tel:${companyConfig.contact.phone}`}
-                  className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm"
+                  className="text-gray-300 hover:text-secondary-400 transition-colors text-sm"
                 >
                   {companyConfig.contact.phone}
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-[#4fd1c5] flex-shrink-0" />
+                <Mail className="w-5 h-5 text-secondary-400 flex-shrink-0" />
                 <a
                   href={`mailto:${companyConfig.contact.email}`}
-                  className="text-gray-300 hover:text-[#4fd1c5] transition-colors text-sm"
+                  className="text-gray-300 hover:text-secondary-400 transition-colors text-sm"
                 >
                   {companyConfig.contact.email}
                 </a>
@@ -198,34 +198,34 @@ export function Footer() {
 
             {/* Social Media */}
             <div className="mt-6">
-              <p className="text-[#4fd1c5] font-semibold text-sm mb-3">Folgen Sie uns</p>
+              <p className="text-secondary-400 font-semibold text-sm mb-3">Folgen Sie uns</p>
               <div className="flex gap-3">
                 <a
                   href={companyConfig.social?.facebook || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-[#4fd1c5]/10 flex items-center justify-center hover:bg-[#4fd1c5]/20 transition-colors"
+                  className="w-10 h-10 rounded-full bg-secondary-400/10 flex items-center justify-center hover:bg-secondary-400/20 transition-colors"
                   aria-label="Facebook"
                 >
-                  <Facebook className="w-5 h-5 text-[#4fd1c5]" />
+                  <Facebook className="w-5 h-5 text-secondary-400" />
                 </a>
                 <a
                   href={companyConfig.social?.instagram || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-[#4fd1c5]/10 flex items-center justify-center hover:bg-[#4fd1c5]/20 transition-colors"
+                  className="w-10 h-10 rounded-full bg-secondary-400/10 flex items-center justify-center hover:bg-secondary-400/20 transition-colors"
                   aria-label="Instagram"
                 >
-                  <Instagram className="w-5 h-5 text-[#4fd1c5]" />
+                  <Instagram className="w-5 h-5 text-secondary-400" />
                 </a>
                 <a
                   href={companyConfig.social?.twitter || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-[#4fd1c5]/10 flex items-center justify-center hover:bg-[#4fd1c5]/20 transition-colors"
+                  className="w-10 h-10 rounded-full bg-secondary-400/10 flex items-center justify-center hover:bg-secondary-400/20 transition-colors"
                   aria-label="Twitter"
                 >
-                  <Twitter className="w-5 h-5 text-[#4fd1c5]" />
+                  <Twitter className="w-5 h-5 text-secondary-400" />
                 </a>
               </div>
             </div>
@@ -234,7 +234,7 @@ export function Footer() {
       </div>
 
       {/* Copyright Bar */}
-      <div className="border-t border-[#4fd1c5]/20">
+      <div className="border-t border-secondary-400/20">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-2">
             <p className="text-gray-400 text-sm text-center md:text-left">

@@ -203,7 +203,6 @@ npm run workflow:complete
 ### CI/CD
 - [x] GitHub Actions Workflow `.github/workflows/ci-cd.yml`
 - [x] Quality Gate (TypeCheck, Lint, Tests, Build)
-- [x] Security Scan (Snyk)
 - [x] Oracle Sync (auf main branch)
 - [x] Auto-Deploy (Vercel)
 - [ ] **TODO:** Alle GitHub Secrets gesetzt

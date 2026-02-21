@@ -19,11 +19,13 @@
 
 import * as dotenv from 'dotenv';
 import * as fs from 'fs';
-import OpenAI from 'openai';
 import * as path from 'path';
+import { getAiEnv } from '../../src/lib/ai/env';
 import { Memory, MemoryType } from './memory';
 
 dotenv.config();
+
+const aiEnv = getAiEnv();
 
 // ============================================================================
 // CONFIGURATION
@@ -31,9 +33,12 @@ dotenv.config();
 
 const ORACLE_CONFIG = {
   // API Configuration
+  provider: aiEnv.AI_PROVIDER,
   model: process.env.AGENT_MODEL || 'deepseek-chat',
-  apiKey: process.env.DEEPSEEK_API_KEY || '',
-  baseURL: 'https://api.deepseek.com',
+  apiKey: aiEnv.DEEPSEEK_API_KEY,
+  nscaleApiKey: aiEnv.NSCALE_API_KEY,
+  nscaleHeaderName: aiEnv.NSCALE_HEADER_NAME,
+  baseURL: aiEnv.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
 
   // Context Window (DeepSeek: 128K)
   maxContextTokens: 120000,
@@ -52,11 +57,25 @@ const ORACLE_CONFIG = {
   statePath: path.join(process.cwd(), '.cline', 'oracle-state.json'),
 };
 
-// DeepSeek Client (OpenAI-kompatibel)
-const deepseek = new OpenAI({
-  apiKey: ORACLE_CONFIG.apiKey,
-  baseURL: ORACLE_CONFIG.baseURL,
-});
+interface DeepSeekChatMessage {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+interface DeepSeekChatCompletionPayload {
+  model: string;
+  messages: DeepSeekChatMessage[];
+  temperature?: number;
+  max_tokens?: number;
+}
+
+interface DeepSeekChatCompletionResponse {
+  choices: Array<{
+    message?: {
+      content?: string;
+    };
+  }>;
+}
 
 // ============================================================================
 // TYPES
@@ -167,7 +186,7 @@ REGELN FÜR DEINE ANTWORT:
 3. approved=false wenn die Aktion gegen Projektregeln verstößt
 4. nextTask sollte IMMER gefüllt sein wenn sinnvoll`;
 
-      const response = await deepseek.chat.completions.create({
+      const response = await this.requestChatCompletion({
         model: ORACLE_CONFIG.model,
         messages: [
           { role: 'system', content: systemPrompt },
@@ -197,7 +216,7 @@ REGELN FÜR DEINE ANTWORT:
    * Schnelle Analyse ohne vollen Kontext (für einfache Fragen)
    */
   static async quickThink(prompt: string): Promise<string> {
-    const response = await deepseek.chat.completions.create({
+    const response = await this.requestChatCompletion({
       model: ORACLE_CONFIG.model,
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
@@ -778,6 +797,61 @@ Gib konkrete Präventionsmaßnahmen an, um diese Fehler in Zukunft zu vermeiden.
     return patterns;
   }
 
+
+  private static async requestChatCompletion(
+    payload: DeepSeekChatCompletionPayload
+  ): Promise<DeepSeekChatCompletionResponse> {
+    if (ORACLE_CONFIG.provider !== 'deepseek') {
+      throw new Error(`Unsupported AI provider: ${ORACLE_CONFIG.provider}`);
+    }
+
+    const url = `${ORACLE_CONFIG.baseURL.replace(/\/$/, '')}/v1/chat/completions`;
+    const response = await this.withTimeout(
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${ORACLE_CONFIG.apiKey}`,
+          [ORACLE_CONFIG.nscaleHeaderName]: ORACLE_CONFIG.nscaleApiKey || '',
+        } as Record<string, string>,
+        body: JSON.stringify(payload),
+      }),
+      ORACLE_CONFIG.timeoutMs,
+      'DeepSeek request timed out'
+    );
+
+    if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      throw new Error(`DeepSeek error ${response.status}: ${errorBody.slice(0, 300)}`);
+    }
+
+    return this.withTimeout(
+      response.json() as Promise<DeepSeekChatCompletionResponse>,
+      ORACLE_CONFIG.timeoutMs,
+      'DeepSeek response parsing timed out'
+    );
+  }
+
+  private static async withTimeout<T>(
+    promise: Promise<T>,
+    timeoutMs: number,
+    timeoutMessage: string
+  ): Promise<T> {
+    let timeout: NodeJS.Timeout | undefined;
+
+    try {
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeout = setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
+      });
+
+      return await Promise.race([promise, timeoutPromise]);
+    } finally {
+      if (timeout) {
+        clearTimeout(timeout);
+      }
+    }
+  }
+
   // ==========================================================================
   // HELPERS
   // ==========================================================================
@@ -956,7 +1030,7 @@ Gib konkrete Präventionsmaßnahmen an, um diese Fehler in Zukunft zu vermeiden.
 
     // Oracle API Check
     try {
-      const response = await deepseek.chat.completions.create({
+      const response = await this.requestChatCompletion({
         model: ORACLE_CONFIG.model,
         messages: [{ role: 'user', content: 'Respond with exactly: ok' }],
         max_tokens: 10,

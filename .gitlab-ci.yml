@@ -1,0 +1,90 @@
+# GitLab CI/CD Configuration for OpenCarBox
+# Unified with GitHub Actions using pnpm
+
+image: node:20-alpine
+
+stages:
+  - analyze
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_ENV: production
+  CI: "true"
+  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm-store"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pnpm-store
+    - node_modules/
+    - .next/cache/
+
+before_script:
+  - corepack enable
+  - corepack prepare pnpm@latest --activate
+  - pnpm config set store-dir $PNPM_HOME
+  - pnpm i --frozen-lockfile
+
+analyze:
+  stage: analyze
+  script:
+    - echo "🔍 Analyzing with Mem0 integration"
+    - npx tsx scripts/mem0-integration.ts
+    - pnpm lint
+    - pnpm typecheck
+  artifacts:
+    when: always
+    paths:
+      - .mem0/
+
+test:
+  stage: test
+  script:
+    - pnpm test
+  artifacts:
+    when: always
+    paths:
+      - coverage/
+
+build:
+  stage: build
+  script:
+    - pnpm build
+  artifacts:
+    paths:
+      - .next/
+      - public/
+    expire_in: 1 week
+
+deploy:
+  stage: deploy
+  script:
+    - echo "🚀 Deploying to Vercel"
+    - pnpm dlx vercel --token=$VERCEL_TOKEN --prod --yes
+  only:
+    - main
+  environment:
+    name: production
+    url: https://opencarbox.ai
+
+mem0-sync:
+  stage: analyze
+  script:
+    - echo "🧠 Syncing memories with Mem0"
+    - chmod +x scripts/gitlab-sync.sh
+    - bash scripts/gitlab-sync.sh
+  only:
+    - schedules
+    - web
+
+health-check:
+  stage: analyze
+  script:
+    - echo "🏥 Health Check for Integration"
+    - pnpm tsx scripts/mcp-health-check.sh || echo "MCP Health Check failed"
+  artifacts:
+    when: always
+    paths:
+      - health-check.log

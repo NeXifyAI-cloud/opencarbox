@@ -1,0 +1,128 @@
+# Security Intake: Audit Findings → Issues + Dependabot Policy (Auftrag 27)
+name: security-intake
+
+on:
+  schedule:
+    - cron: '0 4 * * 1' # Monday 04:00 UTC (same as security.yml)
+  workflow_dispatch:
+
+concurrency:
+  group: security-intake
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  audit-to-issues:
+    name: Audit → Issues
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+
+      - name: Run audit and parse results
+        id: audit
+        run: |
+          # Run audit, capture output (don't fail the step)
+          pnpm audit --json 2>/dev/null > /tmp/audit.json || true
+
+          # Extract high/critical advisories
+          HIGH_CRIT=$(cat /tmp/audit.json | jq '[.advisories // {} | to_entries[] | select(.value.severity == "high" or .value.severity == "critical")] | length' 2>/dev/null || echo "0")
+          echo "high_critical_count=$HIGH_CRIT" >> "$GITHUB_OUTPUT"
+
+          # Create summary for issue
+          if [ "$HIGH_CRIT" -gt 0 ]; then
+            SUMMARY=$(cat /tmp/audit.json | jq -r '[.advisories // {} | to_entries[] | select(.value.severity == "high" or .value.severity == "critical") | "- **\(.value.module_name)** (\(.value.severity)): \(.value.title)"] | join("\n")' 2>/dev/null || echo "See audit output for details")
+            {
+              echo "summary<<EOF"
+              echo "$SUMMARY"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update security issue
+        if: steps.audit.outputs.high_critical_count != '0'
+        uses: actions/github-script@v8
+        env:
+          AUDIT_COUNT: ${{ steps.audit.outputs.high_critical_count }}
+          AUDIT_SUMMARY: ${{ steps.audit.outputs.summary }}
+        with:
+          script: |
+            const count = process.env.AUDIT_COUNT || '0';
+            const summary = process.env.AUDIT_SUMMARY || 'See audit output for details';
+
+            // Dedup by title hash
+            const title = `Security: ${count} high/critical audit finding(s)`;
+            const { data: existing } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'security',
+              per_page: 50,
+            });
+
+            const existingIssue = existing.find(i =>
+              i.title.startsWith('Security:') && i.title.includes('audit finding')
+            );
+
+            // Ensure labels exist
+            for (const label of ['security', 'priority:high']) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                });
+              } catch {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                  color: label === 'security' ? 'b60205' : 'ff9800',
+                });
+              }
+            }
+
+            const body = [
+              '## Dependency Audit Findings',
+              '',
+              `**${count}** high/critical vulnerabilities detected.`,
+              '',
+              '### Details',
+              summary,
+              '',
+              `_Last scanned: ${new Date().toISOString()}_`,
+            ].join('\n');
+
+            if (existingIssue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: body,
+              });
+              core.info(`Updated existing issue #${existingIssue.number}`);
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: body,
+                labels: ['security', 'priority:high'],
+              });
+              core.info('Created new security audit issue');
+            }

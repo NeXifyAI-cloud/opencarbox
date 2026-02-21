@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnp/
+
+# Build
+.next/
+out/
+build/
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Tests
+coverage/
+test-results/
+playwright-report/
+
+# Misc
+*.log
+*.md
+!README.md
+.cline/
+.mem0/
+.husky/
+frontend/
+storybook-static/
+ausgangsdokumente/
+NOTES/

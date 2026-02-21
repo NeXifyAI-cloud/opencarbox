@@ -1,6 +1,6 @@
 {
-  "buildCommand": "npm install --legacy-peer-deps && npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --frozen-lockfile",
   "framework": "nextjs",
   "regions": ["fra1"],
 
@@ -39,7 +39,7 @@
   "redirects": [
     {
       "source": "/produkte",
-      "destination": "/shop/produkte",
+      "destination": "/shop",
       "permanent": true
     },
     {

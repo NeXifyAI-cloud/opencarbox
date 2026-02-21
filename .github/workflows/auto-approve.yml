@@ -1,0 +1,57 @@
+# Auto-Approve für sichere PRs (Trusted Actors)
+name: Auto-Approve
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
+  pull_request_review_requested:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  auto-approve:
+    name: Auto-Approve Safe PRs
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    if: >-
+      github.event.pull_request.head.repo.fork == false &&
+      (
+        github.actor == 'copilot-swe-agent[bot]' ||
+        github.actor == 'dependabot[bot]' ||
+        github.actor == 'nexifyai-dev' ||
+        contains(github.event.pull_request.labels.*.name, 'auto-merge') ||
+        contains(github.event.pull_request.labels.*.name, 'autofix') ||
+        contains(github.event.pull_request.labels.*.name, 'codex') ||
+        contains(github.event.pull_request.labels.*.name, 'dependencies')
+      )
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        if: github.actor == 'dependabot[bot]'
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve Dependabot patch/minor
+        if: >-
+          github.actor == 'dependabot[bot]' &&
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+           steps.metadata.outputs.update-type == 'version-update:semver-minor')
+        uses: hmarr/auto-approve-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Approve trusted actor PRs
+        if: >-
+          github.actor != 'dependabot[bot]' &&
+          (
+            github.actor == 'copilot-swe-agent[bot]' ||
+            github.actor == 'nexifyai-dev' ||
+            contains(github.event.pull_request.labels.*.name, 'auto-merge') ||
+            contains(github.event.pull_request.labels.*.name, 'autofix') ||
+            contains(github.event.pull_request.labels.*.name, 'codex') ||
+            contains(github.event.pull_request.labels.*.name, 'dependencies')
+          )
+        uses: hmarr/auto-approve-action@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,136 @@
+name: Deploy Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number || github.event.workflow_run.id || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  NODE_VERSION: '20'
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
+
+jobs:
+  deploy-preview:
+    name: Preview Deploy
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    if: |
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork == false) ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'pull_request' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.url }}
+    steps:
+      - name: Check Vercel config
+        id: vercel_check
+        run: |
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "Vercel token not configured — skipping preview deploy."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v6
+        if: steps.vercel_check.outputs.skip != 'true'
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
+
+      - uses: pnpm/action-setup@v4
+        if: steps.vercel_check.outputs.skip != 'true'
+
+      - uses: actions/setup-node@v6
+        if: steps.vercel_check.outputs.skip != 'true'
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - run: pnpm i --frozen-lockfile
+        if: steps.vercel_check.outputs.skip != 'true'
+
+      - name: Preflight
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts deploy
+
+      - name: Pull Vercel Environment
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: pnpm dlx vercel pull --yes --environment=preview --token=${{ env.VERCEL_TOKEN }}
+
+      - name: Build Project
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: pnpm dlx vercel build --token=${{ env.VERCEL_TOKEN }}
+
+      - name: Deploy Preview
+        id: deploy
+        if: steps.vercel_check.outputs.skip != 'true'
+        run: |
+          URL=$(pnpm dlx vercel deploy --prebuilt --token=${{ env.VERCEL_TOKEN }})
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "Deployed preview to: $URL"
+
+      - name: Comment Preview URL on PR
+        if: steps.vercel_check.outputs.skip != 'true' && steps.deploy.outputs.url
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const url = '${{ steps.deploy.outputs.url }}';
+            const body = `🚀 **Preview deployed!**\n\n| Environment | URL |\n|---|---|\n| Preview | ${url} |`;
+            // Resolve PR number from pull_request event or workflow_run context
+            let prNumber = context.issue?.number;
+            if (!prNumber && context.eventName === 'workflow_run') {
+              const prs = context.payload?.workflow_run?.pull_requests || [];
+              prNumber = prs[0]?.number;
+            }
+            if (!prNumber) return;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find(c => c.body.includes('Preview deployed!'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+
+      - name: Route failure to Jules
+        if: failure()
+        run: |
+          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
+            echo "Jules routing skipped."
+            exit 0
+          fi
+          curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $JULES_API_KEY" \
+            -d "{\"source\":\"deploy-preview\",\"kind\":\"error\",\"name\":\"deploy-preview.failed\",\"metadata\":{\"run_id\":\"${{ github.run_id }}\",\"branch\":\"${{ github.ref_name }}\"}}"

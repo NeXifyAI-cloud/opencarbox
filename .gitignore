@@ -76,7 +76,8 @@ supabase/.temp/
 # Local History Extension (VS Code)
 .history/
 
-# Cline State Files (local only)
+# Cline State Files (local only - enthält Secrets)
+.cline/mcp_settings.json
 .cline/resilience-state.json
 .cline/watchdog-state.json
 .cline/watchdog.pid
@@ -87,3 +88,6 @@ supabase/.temp/
 OpenCarBox/
 .vercel
 .env*.local
+
+# Local GitHub Actions self-hosted runner files
+actions-runner/

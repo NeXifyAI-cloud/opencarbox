@@ -1,14 +1,15 @@
-# Default owner
-* @OpenCarBox/maintainers
+# Default owners for all files
+* @NeXifyAI-cloud/core
 
-# CI / Workflow security
-.github/workflows/* @OpenCarBox/maintainers
-scripts/ci-* @OpenCarBox/maintainers
+# Workflows
+.github/ @NeXifyAI-cloud/core
 
-# Security / platform critical surfaces
-src/middleware.ts @OpenCarBox/security-platform
-src/lib/supabase/** @OpenCarBox/security-platform
+# Source code
+src/ @NeXifyAI-cloud/core
 
-# Database ownership
-prisma/** @OpenCarBox/db-owners
-supabase/migrations/** @OpenCarBox/db-owners
+# Database
+prisma/ @NeXifyAI-cloud/core
+supabase/ @NeXifyAI-cloud/core
+
+# Documentation
+docs/ @NeXifyAI-cloud/core

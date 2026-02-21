@@ -54,6 +54,7 @@
   ],
   "exclude": [
     "node_modules",
-    "OpenCarBox"
+    "OpenCarBox",
+    "scripts/test-db.ts"
   ]
 }

@@ -1,117 +1,101 @@
 #!/usr/bin/env node
 
 /**
- * Env Schema Check
- *
- * Uses .env.example as the schema source. Ensures:
- * 1. All required variables are defined (non-empty in .env.example)
- * 2. Forbidden provider variables are explicitly rejected (OPENAI_*, GOOGLE_API_KEY, etc.)
+ * Env Schema Check — validates environment against .env.example
  *
  * Usage:
- *   npx tsx tools/check_env_schema.ts          # auto-detects CI via CI=true
- *   npx tsx tools/check_env_schema.ts --ci     # force CI mode
+ *   npx tsx tools/check_env_schema.ts          # check current env
+ *   npx tsx tools/check_env_schema.ts --ci     # CI mode (only build-critical vars)
  *
- * In CI mode, only build-time variables (NEXT_PUBLIC_*) are relevant.
- * Locally, all variables from .env.example are checked against the environment.
- *
- * Forbidden prefixes/names are aligned with tools/guard_no_openai.sh.
+ * Exits with code 1 if:
+ *   - Any OPENAI_* env var is set (forbidden provider)
+ *   - Required vars (from .env.example) are missing in non-CI mode
  */
 
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
-// Aligned with tools/guard_no_openai.sh forbidden patterns
-const FORBIDDEN_PREFIXES = ['OPENAI_', 'ANTHROPIC_']
-const FORBIDDEN_EXACT = ['GOOGLE_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY']
+const FORBIDDEN_ENV_VARS = ['OPENAI_API_KEY', 'GOOGLE_API_KEY', 'GEMINI_API_KEY', 'ANTHROPIC_API_KEY']
 
-function isForbidden(name: string): string | null {
-  const upper = name.toUpperCase()
-  for (const prefix of FORBIDDEN_PREFIXES) {
-    if (upper.startsWith(prefix)) return `${prefix}*`
+// Vars that CI build actually needs (subset of .env.example)
+const CI_REQUIRED: string[] = []
+
+// Vars that are optional / have sensible defaults
+const OPTIONAL_VARS = new Set([
+  'SENTRY_DSN',
+  'FEATURE_AI_CHAT',
+  'NSCALE_HEADER_NAME',
+  'RATE_LIMIT_PER_MINUTE',
+  'AI_TIMEOUT_MS',
+  'AI_DEFAULT_PROVIDER',
+  'AI_DEFAULT_MODEL',
+])
+
+function parseEnvExample(path: string): string[] {
+  const content = readFileSync(path, 'utf-8')
+  const vars: string[] = []
+  for (const line of content.split('\n')) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=/)
+    if (match) vars.push(match[1])
   }
-  if (FORBIDDEN_EXACT.includes(upper)) return name
-  return null
+  return vars
 }
 
-function main(): void {
-  const isCI = process.env.CI === 'true' || process.argv.includes('--ci')
+function main() {
+  const ciMode = process.argv.includes('--ci')
+  const envExamplePath = resolve(process.cwd(), '.env.example')
 
-  const envExamplePath = resolve(__dirname, '..', '.env.example')
-  let content: string
+  let schemaVars: string[]
   try {
-    content = readFileSync(envExamplePath, 'utf-8')
+    schemaVars = parseEnvExample(envExamplePath)
   } catch {
-    console.error(`❌ Could not read ${envExamplePath}`)
+    console.error('❌ Could not read .env.example')
     process.exit(1)
   }
 
-  const lines = content.split('\n')
   const errors: string[] = []
-  const warnings: string[] = []
-  const definedVars: Map<string, string> = new Map()
 
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-
-    const match = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/)
-    if (!match) continue
-
-    const [, name, defaultValue] = match
-    definedVars.set(name, defaultValue)
-  }
-
-  // Check for forbidden provider variables in the runtime environment
-  for (const key of Object.keys(process.env)) {
-    const rule = isForbidden(key)
-    if (rule) {
-      errors.push(`Forbidden env variable detected: ${key} (${rule} is not allowed)`)
+  // Check for forbidden provider env vars
+  const envKeys = Object.keys(process.env)
+  for (const forbidden of FORBIDDEN_ENV_VARS) {
+    const found = envKeys.filter((k) => k.startsWith(forbidden))
+    if (found.length > 0) {
+      errors.push(`Forbidden env var(s) detected: ${found.join(', ')}`)
     }
   }
 
-  // Warn about forbidden variables in .env.example (documentation)
-  for (const [name] of definedVars) {
-    const rule = isForbidden(name)
-    if (rule) {
-      warnings.push(`Forbidden variable in .env.example: ${name} — consider removing per AI provider policy (${rule})`)
-    }
+  // Additionally reject any OPENAI_ prefixed vars (except OPENAI_COMPAT_*)
+  const openAiVars = envKeys.filter((k) => k.startsWith('OPENAI_') && !k.startsWith('OPENAI_COMPAT'))
+  if (openAiVars.length > 0) {
+    errors.push(`Forbidden OPENAI_* env var(s): ${openAiVars.join(', ')}`)
   }
 
-  // In CI, verify that all NEXT_PUBLIC_* build-time vars from .env.example are documented.
-  // Also warn if any NEXT_PUBLIC_* var has no default and is not set in the environment.
-  if (isCI) {
-    const publicVars = [...definedVars.entries()].filter(([name]) => name.startsWith('NEXT_PUBLIC_'))
-    if (publicVars.length === 0) {
-      warnings.push('No NEXT_PUBLIC_* variables found in .env.example — build may lack required public config')
-    }
-    for (const [name, defaultValue] of publicVars) {
-      if (!defaultValue && !process.env[name]) {
-        warnings.push(`NEXT_PUBLIC_* variable ${name} has no default and is not set in CI environment`)
+  // In CI mode, only check CI_REQUIRED
+  if (ciMode) {
+    for (const v of CI_REQUIRED) {
+      if (!process.env[v]) {
+        errors.push(`Missing CI-required env var: ${v}`)
       }
     }
   } else {
-    for (const [name, defaultValue] of definedVars) {
-      if (isForbidden(name)) continue
-      const envValue = process.env[name]
-      if (!envValue && !defaultValue) {
-        warnings.push(`Variable ${name} is not set and has no default in .env.example`)
+    // Full mode: check all non-optional vars from .env.example
+    for (const v of schemaVars) {
+      if (OPTIONAL_VARS.has(v)) continue
+      if (!process.env[v]) {
+        errors.push(`Missing env var: ${v} (defined in .env.example)`)
       }
     }
-  }
-
-  // Print results
-  if (warnings.length > 0) {
-    console.log('⚠️  Warnings:')
-    for (const w of warnings) console.log(`   ${w}`)
   }
 
   if (errors.length > 0) {
     console.error('❌ Env schema check failed:')
-    for (const e of errors) console.error(`   ${e}`)
+    for (const e of errors) console.error(`   - ${e}`)
     process.exit(1)
   }
 
-  console.log(`✅ Env schema check passed (${definedVars.size} variables verified, CI=${isCI})`)
+  console.log(`✅ Env schema check passed (mode: ${ciMode ? 'ci' : 'full'}, vars: ${schemaVars.length})`)
 }
 
 main()

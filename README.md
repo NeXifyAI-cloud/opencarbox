@@ -28,11 +28,29 @@ See `.env.example` for the full list. Core values:
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
-- `DEEPSEEK_API_KEY`
-- `AI_PROVIDER` (`deepseek`)
-- `DEEPSEEK_BASE_URL` (optional)
-- `NSCALE_API_KEY`
-- `NSCALE_HEADER_NAME`
+
+### AI Provider Configuration
+
+The platform supports multiple AI providers with automatic fallback:
+
+**Primary Provider (GitHub Models - Recommended):**
+- `GITHUB_TOKEN` - GitHub personal access token (automatically available in GitHub Actions)
+- `AI_PROVIDER` - Set to `github-models` (default)
+
+**Fallback Provider (DeepSeek):**
+- `DEEPSEEK_API_KEY` - DeepSeek API key
+- `NSCALE_API_KEY` - NScale API key (if using NScale)
+- `DEEPSEEK_BASE_URL` - DeepSeek API base URL (optional)
+- `NSCALE_HEADER_NAME` - Custom header name for NScale (optional)
+
+**Configuration:**
+- `AI_AUTO_SELECT` - Enable automatic provider fallback (default: `true`)
+
+📖 **See [GitHub Models Setup Guide](docs/github-models-setup.md) for detailed setup instructions.**
+📖 **See [AI Provider System Documentation](docs/ai-provider-system.md) for complete documentation.**
+📖 **See [Continuous AI overview](docs/continuous-ai.md) for collaboration-focused automation concepts.**
+
+📖 **German guide:** [KI-GitHub-Aktion](docs/ai-github-action-de.md).
 
 ## Local development checks
 
@@ -54,7 +72,17 @@ pnpm build
 Workflows:
 - `.github/workflows/ci.yml`: lint, typecheck, test, build.
 - `.github/workflows/security.yml`: dependency audit.
-- `.github/workflows/auto-reply.yml`: beantwortet Issues, PRs, Reviews und Kommentare automatisch (DeepSeek mit Fallback-Antwort).
+- `.github/workflows/auto-reply.yml`: AI-powered automatic responses for Issues, PRs, and comments.
+- `.github/workflows/auto-improve.yml`: AI-powered quality suggestions.
+- `.github/workflows/conflict-resolver.yml`: AI-powered merge conflict resolution.
+- `.github/workflows/failure-orchestrator.yml`: Intelligent workflow failure handling and routing.
+
+All AI workflows support:
+- **GitHub Models** (primary) - Powered by Azure OpenAI via GitHub
+- **DeepSeek** (fallback) - Cost-effective alternative
+- **Automatic fallback** - Seamless provider switching on failure
+
+Configure via repository secrets and variables. See [AI Provider Documentation](docs/ai-provider-system.md).
 
 ## Branch protection (recommended)
 
@@ -72,10 +100,16 @@ Enable these repository rules for `main`:
 
 ## Autonomous problem solver
 
-Run the autonomous reliability workflow (DeepSeek + NSCALE headers mandatory):
+Run the autonomous reliability workflow:
 
 ```bash
 npm run autofix:problems
 ```
 
-The workflow executes lint/typecheck/test/build, asks DeepSeek for iterative remediation commands, applies allowlisted fixes automatically, and stores a run report at `.cline/autonomous-problem-report.json`.
+The workflow:
+1. Executes lint/typecheck/test/build
+2. Uses AI (GitHub Models or DeepSeek) for iterative remediation
+3. Applies allowlisted fixes automatically
+4. Stores run report at `.cline/autonomous-problem-report.json`
+
+**AI Provider:** Automatically selects between GitHub Models (primary) and DeepSeek (fallback) based on availability and configuration.

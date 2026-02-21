@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -81,7 +82,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bewertungen:', error)
+    logger.error('Fehler beim Abrufen der Bewertungen:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -155,7 +156,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Fehler beim Erstellen der Bewertung:', error)
+    logger.error('Fehler beim Erstellen der Bewertung:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -164,7 +165,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET /api/reviews/stats - Bewertungs-Statistiken
-export async function GET_STATS(request: NextRequest) {
+async function _GET_STATS(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const productId = searchParams.get('productId')
@@ -241,7 +242,7 @@ export async function GET_STATS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bewertungs-Statistiken:', error)
+    logger.error('Fehler beim Abrufen der Bewertungs-Statistiken:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -250,7 +251,7 @@ export async function GET_STATS(request: NextRequest) {
 }
 
 // GET /api/reviews/product/:productId - Bewertungen für ein Produkt
-export async function GET_PRODUCT_REVIEWS(request: NextRequest) {
+async function _GET_PRODUCT_REVIEWS(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const productId = searchParams.get('productId')
@@ -310,10 +311,13 @@ export async function GET_PRODUCT_REVIEWS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Produkt-Bewertungen:', error)
+    logger.error('Fehler beim Abrufen der Produkt-Bewertungen:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
     )
   }
 }
+
+// Silence unused variable warnings
+void { _GET_PRODUCT_REVIEWS, _GET_STATS };

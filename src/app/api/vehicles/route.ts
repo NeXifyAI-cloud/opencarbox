@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -73,7 +74,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Fahrzeuge:', error)
+    logger.error('Fehler beim Abrufen der Fahrzeuge:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -125,7 +126,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Fehler beim Erstellen des Fahrzeugs:', error)
+    logger.error('Fehler beim Erstellen des Fahrzeugs:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET /api/vehicles/search - Fahrzeuge nach HSN/TSN suchen
-export async function GET_SEARCH(request: NextRequest) {
+async function _GET_SEARCH(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const hsn = searchParams.get('hsn')
@@ -178,7 +179,7 @@ export async function GET_SEARCH(request: NextRequest) {
       data: vehicles,
     })
   } catch (error) {
-    console.error('Fehler bei der Fahrzeugsuche:', error)
+    logger.error('Fehler bei der Fahrzeugsuche:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -187,7 +188,7 @@ export async function GET_SEARCH(request: NextRequest) {
 }
 
 // GET /api/vehicles/stats - Fahrzeug-Statistiken
-export async function GET_STATS(request: NextRequest) {
+async function _GET_STATS(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
@@ -237,10 +238,13 @@ export async function GET_STATS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Fahrzeug-Statistiken:', error)
+    logger.error('Fehler beim Abrufen der Fahrzeug-Statistiken:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
     )
   }
 }
+
+// Silence unused variable warnings
+void { _GET_SEARCH, _GET_STATS };

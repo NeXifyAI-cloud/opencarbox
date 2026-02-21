@@ -26,28 +26,18 @@ describe('Products API', () => {
     })
 
     it('sollte Produkte mit Pagination zurückgeben', async () => {
-      // Testdaten erstellen
-      await prisma.product.createMany({
-        data: [
-          {
-            sku: 'TEST-001',
-            name: 'Test Produkt 1',
-            slug: 'test-produkt-1',
-            images: '',
-            description: 'Beschreibung 1',
-            price: 99.99,
-            stock: 10,
-          },
-          {
-            sku: 'TEST-002',
-            name: 'Test Produkt 2',
-            slug: 'test-produkt-2',
-            images: '',
-            description: 'Beschreibung 2',
-            price: 149.99,
-            stock: 5,
-          },
-        ],
+      // Testdaten erstellen (einzeln, da SQLite kein createMany unterstützt)
+      await prisma.product.create({
+        data: {
+          sku: 'TEST-001', name: 'Test Produkt 1', slug: 'test-produkt-1',
+          images: '', description: 'Beschreibung 1', price: 99.99, stock: 10,
+        },
+      })
+      await prisma.product.create({
+        data: {
+          sku: 'TEST-002', name: 'Test Produkt 2', slug: 'test-produkt-2',
+          images: '', description: 'Beschreibung 2', price: 149.99, stock: 5,
+        },
       })
 
       const response = await fetch(API_URL)

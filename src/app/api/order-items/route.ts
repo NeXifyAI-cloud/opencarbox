@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bestellpositionen:', error)
+    logger.error('Fehler beim Abrufen der Bestellpositionen:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Fehler beim Erstellen der Bestellposition:', error)
+    logger.error('Fehler beim Erstellen der Bestellposition:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest) {
 }
 
 // GET /api/order-items/order/:orderId - Bestellpositionen einer Bestellung
-export async function GET_ORDER_ITEMS(request: NextRequest) {
+async function _GET_ORDER_ITEMS(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const orderId = searchParams.get('orderId')
@@ -214,7 +215,7 @@ export async function GET_ORDER_ITEMS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bestellpositionen:', error)
+    logger.error('Fehler beim Abrufen der Bestellpositionen:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -223,7 +224,7 @@ export async function GET_ORDER_ITEMS(request: NextRequest) {
 }
 
 // GET /api/order-items/stats - Bestellpositionen-Statistiken
-export async function GET_STATS(request: NextRequest) {
+async function _GET_STATS(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const dateFrom = searchParams.get('dateFrom')
@@ -315,10 +316,13 @@ export async function GET_STATS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bestellpositionen-Statistiken:', error)
+    logger.error('Fehler beim Abrufen der Bestellpositionen-Statistiken:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
     )
   }
 }
+
+// Silence unused variable warnings
+void { _GET_ORDER_ITEMS, _GET_STATS };

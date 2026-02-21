@@ -70,6 +70,7 @@ updates:
       # Major Updates manuell prüfen
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
+    # Auto-merge: patch/minor with green CI are auto-mergeable (see auto-merge.yml)
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -82,6 +83,7 @@ updates:
     labels:
       - "github-actions"
       - "automated"
+      - "auto-merge"
     groups:
       actions:
         patterns:

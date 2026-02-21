@@ -8,67 +8,64 @@ Dieser Leitfaden bietet einen strukturierten, schrittweisen Plan zur sicheren Ü
 
 1.  **Repository-Struktur prüfen:**
     *   `src/`: Next.js App Router Code (Neu).
-    *   `frontend/`: Legacy React-Codebase (Sollte isoliert oder migriert werden).
+    *   `frontend/`: Legacy React-Codebase.
     *   `prisma/`: Datenbank-Schema.
 2.  **Abhängigkeiten analysieren:**
     *   Befehl: `pnpm list`
-    *   Erwartung: Liste aller installierten Pakete ohne kritische Versionskonflikte.
 3.  **Status-Quo Build & Test:**
     *   Befehl: `pnpm run build && pnpm run test`
-    *   Erwartung: Identifikation von Build-Fehlern oder fehlschlagenden Unit-Tests.
 
-## Phase 2: Priorisierte Fehlerbehebung
+## Phase 2: Geheimnisverwaltung (Secrets & Environment)
 
-**Ziel:** Behebung technischer Blocker und Einhaltung der Quality Gates.
+**Ziel:** Sicherstellen, dass alle Dienste (GitHub, Vercel, Supabase, AI) korrekt konfiguriert sind.
 
-1.  **Linter & Quality Gates:**
-    *   Das Repository nutzt `tools/quality-gate.ts`, um `console.log` und Datei-Längen zu prüfen.
-    *   **Maßnahme:** Funktionen über 50 Zeilen (z.B. in `src/components/shop/product-grid.tsx`) in kleinere Sub-Komponenten aufteilen.
-2.  **AI Provider Compliance:**
-    *   Befehl: `./tools/guard_no_openai.sh`
-    *   Erwartung: Keine Funde von OpenAI-Bibliotheken oder API-Keys. Nur DeepSeek ist erlaubt.
-3.  **Kritische Bugfixes:**
-    *   Prüfung von Hooks auf fehlende Abhängigkeiten (z.B. `useMemo` in `ProductGrid`).
+### 1. Lokale Konfiguration (`.env.local`)
+Erstellen Sie eine `.env.local` Datei (diese wird von Git ignoriert) mit den folgenden Schlüsseln:
+- `AI_PROVIDER=deepseek`
+- `DEEPSEEK_API_KEY`
+- `NSCALE_API_KEY`
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `DATABASE_URL` (PostgreSQL Connection String für Supabase)
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `VERCEL_TOKEN` & `VERCEL_PROJEKT_ID`
+- `CLASSIC_TOKEN_GITHUB_NEU` (für automatisierte Skripte)
 
-## Phase 3: CI/CD Stabilisierung
+### 2. Automatisierte Einrichtung der Secrets
+Das Repository enthält Skripte, um Secrets automatisch in GitHub und Vercel zu setzen:
+- **GitHub Secrets:** Nutzen Sie `scripts/set-deploy-secrets.sh`.
+  ```bash
+  export GITHUB_OWNER="NeXifyAI-cloud"
+  export REPO_NAME="opencarbox"
+  export CLASSIC_TOKEN_GITHUB_NEU="..."
+  # ... weitere Variablen exportieren ...
+  ./scripts/set-deploy-secrets.sh
+  ```
+- **Vercel Env Vars:** Wenn `VERCEL_TOKEN` gesetzt ist, wird das obige Skript auch Vercel-Umgebungsvariablen aktualisieren.
+
+## Phase 3: Datenbank-Setup (Supabase)
+
+**Ziel:** Migration des Schemas auf die PostgreSQL-Instanz von Supabase.
+
+1.  **Prisma Provider anpassen:**
+    In `prisma/schema.prisma` muss der Provider für das Deployment von `sqlite` auf `postgresql` umgestellt werden:
+    ```prisma
+    datasource db {
+      provider = "postgresql"
+      url      = env("DATABASE_URL")
+    }
+    ```
+2.  **Schema pushen:**
+    ```bash
+    npx prisma db push
+    ```
+
+## Phase 4: CI/CD Stabilisierung
 
 **Ziel:** Automatisierung der Qualitätssicherung.
 
 1.  **GitHub Actions Workflow:**
-    Erstellen Sie `.github/workflows/ci.yml`:
-    ```yaml
-    name: CI
-    on: [push, pull_request]
-    jobs:
-      build:
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v4
-          - uses: pnpm/action-setup@v3
-          - uses: actions/setup-node@v4
-            with: { node-version: 22, cache: 'pnpm' }
-          - run: pnpm install
-          - run: ./tools/guard_no_openai.sh
-          - run: pnpm run build
-          - run: pnpm run test
-    ```
-2.  **Health Checks:**
-    *   Sicherstellen, dass `/api/health` einen `200 OK` Status zurückgibt.
-
-## Phase 4: Bereitstellungsstrategie (Deployment)
-
-**Ziel:** Reproduzierbare Umgebung in Vercel & Supabase.
-
-1.  **Infrastruktur-Setup:**
-    *   **Vercel:** Region `fra1` (Frankfurt) für DSGVO-Konformität wählen.
-    *   **Supabase:** Projekt in Frankfurt anlegen, Datenbank-URL und Service-Key bereithalten.
-2.  **Umgebungsvariablen (Environment Variables):**
-    Folgende Variablen müssen in Vercel gesetzt werden:
-    *   `NEXT_PUBLIC_SUPABASE_URL`
-    *   `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-    *   `SUPABASE_SERVICE_ROLE_KEY`
-    *   `DEEPSEEK_API_KEY`
-    *   `DATABASE_URL` (Direct Connection für Prisma)
+    Stellen Sie sicher, dass `.github/workflows/auto-deploy.yml` korrekt konfiguriert ist. Alle benötigten Secrets (siehe Phase 2) müssen im GitHub Repository unter *Settings > Secrets and variables > Actions* hinterlegt sein.
 
 ## Phase 5: Validierung & Rollback-Plan
 
@@ -88,11 +85,20 @@ Dieser Leitfaden bietet einen strukturierten, schrittweisen Plan zur sicheren Ü
 | Risiko | Auswirkung | Minimierung |
 | :--- | :--- | :--- |
 | **Bypass Quality Gate** | Instabiler Code | CI-Blocker für fehlgeschlagene Quality-Gate Skripte. |
-| **OpenAI Leak** | Compliance-Verstoß | Automatisierter Guard-Script Check vor jedem Merge. |
+| **OpenAI Leak** | Compliance-Verstoß | Automatisierter Guard-Script Check (`tools/guard_no_openai.sh`). |
 | **Regressions** | UI-Fehler | Einführung von Playwright für visuelle Regressionstests. |
 
-## Häufige Fallstricke (Pitfalls)
+## Liste aller benötigten Umgebungsvariablen
 
-*   **Linter-Hacks:** Vermeiden Sie `console['log']`, um den Linter zu täuschen. Konfigurieren Sie stattdessen `.eslintrc.json` korrekt.
-*   **Große Dateien:** Next.js Komponenten über 50 Zeilen triggern das Quality-Gate. Refaktorieren Sie frühzeitig in `atoms` oder `molecules`.
-*   **Fehlende .env.local:** Lokal schlägt der Server ohne Dummy-Daten für Supabase fehl. Nutzen Sie `env.example` als Vorlage.
+| Variable | Zweck | Platform |
+| :--- | :--- | :--- |
+| `DEEPSEEK_API_KEY` | AI Integration | Vercel, GitHub |
+| `NSCALE_API_KEY` | AI Provider Support | Vercel, GitHub |
+| `DATABASE_URL` | Supabase DB Verbindung | Vercel, GitHub |
+| `NEXT_PUBLIC_SUPABASE_URL` | Client API Zugriff | Vercel, GitHub |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Client Authentifizierung | Vercel, GitHub |
+| `SUPABASE_SERVICE_ROLE_KEY` | Admin Backend Zugriff | Vercel, GitHub |
+| `VERCEL_TOKEN` | Deployment Automatisierung | GitHub |
+| `GH_TOKEN` / `CLASSIC_TOKEN_GITHUB_NEU` | Repository Management | GitHub, Lokale Skripte |
+| `TINYBIRD_TOKEN` | Echtzeit-Analytics | Vercel (optional) |
+| `RENDER_API_KEY` | Cloud Hosting Management | Vercel (optional) |

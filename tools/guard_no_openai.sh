@@ -31,11 +31,32 @@ scan_forbidden() {
   local label="$1"
   local pattern="$2"
 
+  # NOTES/ and docs/ are excluded (documentation may reference forbidden names)
   local out
   if [[ "${USE_RG}" == "true" ]]; then
-    out="$(rg -n --hidden --glob "!${SCRIPT_PATH}" --glob "!${ENV_SCHEMA_PATH}" --glob '!.git' "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
+    out="$(rg -n --hidden \
+      --glob "!${SCRIPT_PATH}" \
+      --glob "!${ENV_SCHEMA_PATH}" \
+      --glob '!.git' \
+      --glob '!*.md' \
+      --glob '!NOTES/**' \
+      --glob '!docs/**' \
+      --glob '!github_issues.json' \
+      --glob '!issues_*.json' \
+      --glob '!all_issues.json' \
+      "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
   else
-    out="$(grep -rn --exclude-dir=.git --exclude="${SCRIPT_PATH##*/}" --exclude="${ENV_SCHEMA_PATH##*/}" -E "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
+    out="$(grep -rn \
+      --exclude-dir=.git \
+      --exclude-dir=NOTES \
+      --exclude-dir=docs \
+      --exclude="${SCRIPT_PATH##*/}" \
+      --exclude="${ENV_SCHEMA_PATH##*/}" \
+      --exclude='*.md' \
+      --exclude='github_issues.json' \
+      --exclude='issues_*.json' \
+      --exclude='all_issues.json' \
+      -E "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
   fi
 
   if [[ -n "${out}" ]]; then

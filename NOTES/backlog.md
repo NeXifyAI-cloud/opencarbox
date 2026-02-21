@@ -114,3 +114,45 @@
 - **Ergebnis:** Alle 25 Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}`. Runner-Wechsel erfordert nur eine Änderung an der Repository-Variable `vars.RUNNER`. Rollback auf `ubuntu-latest` durch Löschen der Variable. ADR-010 dokumentiert Entscheidung und Rollback-Plan.
 - **Abnahmedatum:** 2026-02-18
 
+<!-- AUTO:LIVE_ISSUES_START -->
+
+## Live Issues Index
+
+> Auto-generated — do not edit this section manually.
+> Last updated: 2026-02-21
+
+| # | Title | Labels | Assignees |
+|---|-------|--------|-----------|
+| [#131](https://github.com/NeXifyAI-cloud/opencarbox/issues/131) | CI Failure: ci #100 | `ci-failure` `status:triage` | — |
+| [#133](https://github.com/NeXifyAI-cloud/opencarbox/issues/133) | CI Failure: ci #101 | `ci-failure` `status:triage` | — |
+| [#144](https://github.com/NeXifyAI-cloud/opencarbox/issues/144) | CI Failure: ci #105 | `ci-failure` `status:triage` | — |
+| [#154](https://github.com/NeXifyAI-cloud/opencarbox/issues/154) | CI Failure: ci #108 | `ci-failure` `status:triage` | — |
+| [#155](https://github.com/NeXifyAI-cloud/opencarbox/issues/155) | CI Failure: ci #107 | `ci-failure` `status:triage` | — |
+| [#156](https://github.com/NeXifyAI-cloud/opencarbox/issues/156) | CI Failure: ci #106 | `ci-failure` `status:triage` | — |
+| [#157](https://github.com/NeXifyAI-cloud/opencarbox/issues/157) | CI Failure: ci #104 | `ci-failure` `status:triage` | — |
+| [#122](https://github.com/NeXifyAI-cloud/opencarbox/issues/122) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#123](https://github.com/NeXifyAI-cloud/opencarbox/issues/123) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#124](https://github.com/NeXifyAI-cloud/opencarbox/issues/124) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#125](https://github.com/NeXifyAI-cloud/opencarbox/issues/125) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#132](https://github.com/NeXifyAI-cloud/opencarbox/issues/132) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#134](https://github.com/NeXifyAI-cloud/opencarbox/issues/134) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#135](https://github.com/NeXifyAI-cloud/opencarbox/issues/135) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#136](https://github.com/NeXifyAI-cloud/opencarbox/issues/136) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#137](https://github.com/NeXifyAI-cloud/opencarbox/issues/137) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#138](https://github.com/NeXifyAI-cloud/opencarbox/issues/138) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#139](https://github.com/NeXifyAI-cloud/opencarbox/issues/139) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#140](https://github.com/NeXifyAI-cloud/opencarbox/issues/140) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#141](https://github.com/NeXifyAI-cloud/opencarbox/issues/141) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#145](https://github.com/NeXifyAI-cloud/opencarbox/issues/145) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#146](https://github.com/NeXifyAI-cloud/opencarbox/issues/146) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#147](https://github.com/NeXifyAI-cloud/opencarbox/issues/147) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#152](https://github.com/NeXifyAI-cloud/opencarbox/issues/152) | Incident: conflict-resolver fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#160](https://github.com/NeXifyAI-cloud/opencarbox/issues/160) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#161](https://github.com/NeXifyAI-cloud/opencarbox/issues/161) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#162](https://github.com/NeXifyAI-cloud/opencarbox/issues/162) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#163](https://github.com/NeXifyAI-cloud/opencarbox/issues/163) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#164](https://github.com/NeXifyAI-cloud/opencarbox/issues/164) | Incident: conflict-resolver fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#165](https://github.com/NeXifyAI-cloud/opencarbox/issues/165) | Incident: auto-improve fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#176](https://github.com/NeXifyAI-cloud/opencarbox/issues/176) | Incident: backlog-sync fehlgeschlagen | `failure-routing` `ai-triage` | — |
+
+<!-- AUTO:LIVE_ISSUES_END -->

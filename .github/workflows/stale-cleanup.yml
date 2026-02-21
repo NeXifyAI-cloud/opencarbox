@@ -24,7 +24,7 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -86,7 +86,7 @@ jobs:
     needs: cleanup-stale-prs
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install gh and jq
         run: sudo apt-get update && sudo apt-get install -y gh jq
@@ -139,7 +139,7 @@ jobs:
     needs: [cleanup-stale-prs, auto-merge-ready-prs]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 

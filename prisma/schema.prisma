@@ -1,8 +1,8 @@
 // =============================================================================
-// Prisma Schema - OpenCarBox & Carvantooo
+// Prisma Schema - OpenCarBox & Carvantooo (SQLite-kompatibel)
 // =============================================================================
 // Datenbank-Schema für die Multisite-Plattform
-// @see docs/architecture/system-overview.md
+// SQLite-kompatible Version für lokale Entwicklung
 // =============================================================================
 
 generator client {
@@ -10,9 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "sqlite"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // Für Supabase Connection Pooling
 }
 
 // =============================================================================
@@ -25,9 +24,9 @@ model ProjectMemory {
   type        String   // BEST_PRACTICE | ANTIPATTERN | KNOWLEDGE | TODO
   category    String   // z.B. "supabase", "stripe", "api"
   title       String
-  content     String   @db.Text
-  metadata    Json?    // Flexible zusätzliche Daten
-  tags        String[] // Für Suche
+  content     String
+  metadata    String?  // JSON als String speichern
+  tags        String   // Komma-getrennte Tags für Suche
 
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -35,7 +34,6 @@ model ProjectMemory {
   @@map("project_memory")
   @@index([type])
   @@index([category])
-  @@index([tags])
 }
 
 /// Audit Logs - Protokoll aller Agent-Aktionen
@@ -45,9 +43,9 @@ model AuditLog {
   action        String   // z.B. "create_component", "fix_bug"
   resource      String   // Betroffene Datei/Ressource
   status        String   // SUCCESS | FAILURE | WARNING
-  details       Json?    // Zusätzliche Informationen
-  errorMessage  String?  @map("error_message") @db.Text
-  stackTrace    String?  @map("stack_trace") @db.Text
+  details       String?  // JSON als String
+  errorMessage  String?  @map("error_message")
+  stackTrace    String?  @map("stack_trace")
   durationMs    Int?     @map("duration_ms")
 
   createdAt     DateTime @default(now()) @map("created_at")
@@ -70,7 +68,7 @@ model User {
   name          String?
   phone         String?
   image         String?
-  role          UserRole  @default(CUSTOMER)
+  role          String    @default("CUSTOMER") // CUSTOMER, EMPLOYEE, ADMIN
 
   // Relationen
   addresses     Address[]
@@ -86,18 +84,11 @@ model User {
   @@map("users")
 }
 
-/// Benutzerrollen
-enum UserRole {
-  CUSTOMER      // Kunde
-  EMPLOYEE      // Mitarbeiter
-  ADMIN         // Administrator
-}
-
 /// Adressen (Liefer- und Rechnungsadressen)
 model Address {
   id            String      @id @default(cuid())
   userId        String      @map("user_id")
-  type          AddressType @default(SHIPPING)
+  type          String      @default("SHIPPING") // SHIPPING, BILLING
 
   // Adressfelder
   firstName     String      @map("first_name")
@@ -122,11 +113,6 @@ model Address {
   updatedAt     DateTime    @updatedAt @map("updated_at")
 
   @@map("addresses")
-}
-
-enum AddressType {
-  SHIPPING
-  BILLING
 }
 
 // =============================================================================
@@ -208,12 +194,12 @@ model Product {
   sku           String    @unique // Artikelnummer
   name          String
   slug          String    @unique
-  description   String?   @db.Text
+  description   String?
 
   // Preise
-  price         Decimal   @db.Decimal(10, 2)
-  comparePrice  Decimal?  @map("compare_price") @db.Decimal(10, 2) // UVP/Streichpreis
-  costPrice     Decimal?  @map("cost_price") @db.Decimal(10, 2) // Einkaufspreis
+  price         Float
+  comparePrice  Float?    @map("compare_price") // UVP/Streichpreis
+  costPrice     Float?    @map("cost_price") // Einkaufspreis
 
   // Lager
   stock         Int       @default(0)
@@ -221,7 +207,7 @@ model Product {
   trackStock    Boolean   @default(true) @map("track_stock")
 
   // Medien
-  images        String[]  // Array von Bild-URLs
+  images        String    // Komma-getrennte Bild-URLs
 
   // Kategorisierung
   categoryId    String?   @map("category_id")
@@ -263,11 +249,11 @@ model ProductVariant {
 
   sku           String    @unique
   name          String    // z.B. "Größe M"
-  price         Decimal?  @db.Decimal(10, 2) // Überschreibt Produktpreis wenn gesetzt
+  price         Float?    // Überschreibt Produktpreis wenn gesetzt
   stock         Int       @default(0)
 
   // Attribute
-  attributes    Json?     // z.B. { "size": "M", "color": "rot" }
+  attributes    String?   // JSON als String: { "size": "M", "color": "rot" }
 
   // Timestamps
   createdAt     DateTime  @default(now()) @map("created_at")
@@ -298,19 +284,13 @@ model ProductRelation {
   id            String    @id @default(cuid())
   productId     String    @map("product_id")
   relatedId     String    @map("related_id")
-  type          RelationType @default(RELATED)
+  type          String    @default("RELATED") // RELATED, FREQUENTLY_BOUGHT, ACCESSORY
 
   product       Product   @relation("RelatedFrom", fields: [productId], references: [id], onDelete: Cascade)
   related       Product   @relation("RelatedTo", fields: [relatedId], references: [id], onDelete: Cascade)
 
   @@unique([productId, relatedId])
   @@map("product_relations")
-}
-
-enum RelationType {
-  RELATED           // Ähnliche Produkte
-  FREQUENTLY_BOUGHT // Häufig zusammen gekauft
-  ACCESSORY         // Zubehör
 }
 
 // =============================================================================
@@ -329,19 +309,19 @@ model Order {
   billingAddressId  String?     @map("billing_address_id")
 
   // Preise
-  subtotal          Decimal     @db.Decimal(10, 2)
-  shippingCost      Decimal     @default(0) @map("shipping_cost") @db.Decimal(10, 2)
-  taxAmount         Decimal     @default(0) @map("tax_amount") @db.Decimal(10, 2)
-  discount          Decimal     @default(0) @db.Decimal(10, 2)
-  total             Decimal     @db.Decimal(10, 2)
+  subtotal          Float
+  shippingCost      Float       @default(0) @map("shipping_cost")
+  taxAmount         Float       @default(0) @map("tax_amount")
+  discount          Float       @default(0)
+  total             Float
 
   // Zahlung
   paymentMethod     String?     @map("payment_method")
   paymentIntentId   String?     @unique @map("payment_intent_id") // Stripe Payment Intent
-  paymentStatus     PaymentStatus @default(PENDING) @map("payment_status")
+  paymentStatus     String      @default("PENDING") @map("payment_status") // PENDING, PAID, FAILED, REFUNDED
 
   // Status
-  status            OrderStatus @default(PENDING)
+  status            String      @default("PENDING") // PENDING, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
 
   // Versand
   shippingMethod    String?     @map("shipping_method")
@@ -350,8 +330,8 @@ model Order {
   deliveredAt       DateTime?   @map("delivered_at")
 
   // Notizen
-  customerNote      String?     @map("customer_note") @db.Text
-  internalNote      String?     @map("internal_note") @db.Text
+  customerNote      String?     @map("customer_note")
+  internalNote      String?     @map("internal_note")
 
   // Relationen
   user              User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -376,31 +356,15 @@ model OrderItem {
   // Produktdaten (zum Zeitpunkt der Bestellung)
   sku           String
   name          String
-  price         Decimal   @db.Decimal(10, 2)
+  price         Float
   quantity      Int
-  total         Decimal   @db.Decimal(10, 2)
+  total         Float
 
   // Relationen
   order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product       Product?  @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   @@map("order_items")
-}
-
-enum OrderStatus {
-  PENDING       // Ausstehend
-  PROCESSING    // In Bearbeitung
-  SHIPPED       // Versendet
-  DELIVERED     // Zugestellt
-  CANCELLED     // Storniert
-  REFUNDED      // Erstattet
-}
-
-enum PaymentStatus {
-  PENDING       // Ausstehend
-  PAID          // Bezahlt
-  FAILED        // Fehlgeschlagen
-  REFUNDED      // Erstattet
 }
 
 // =============================================================================
@@ -431,12 +395,12 @@ model Service {
 
   name          String
   slug          String    @unique
-  description   String?   @db.Text
+  description   String?
 
   // Preise
-  priceFrom     Decimal?  @map("price_from") @db.Decimal(10, 2)
-  priceTo       Decimal?  @map("price_to") @db.Decimal(10, 2)
-  priceType     PriceType @default(FIXED) @map("price_type")
+  priceFrom     Float?    @map("price_from")
+  priceTo       Float?    @map("price_to")
+  priceType     String    @default("FIXED") @map("price_type") // FIXED, FROM, ON_REQUEST
 
   // Dauer
   durationMinutes Int?    @map("duration_minutes")
@@ -457,12 +421,6 @@ model Service {
   @@map("services")
 }
 
-enum PriceType {
-  FIXED         // Festpreis
-  FROM          // Ab-Preis
-  ON_REQUEST    // Auf Anfrage
-}
-
 /// Werkstatt-Termine
 model Appointment {
   id            String    @id @default(cuid())
@@ -480,11 +438,11 @@ model Appointment {
   customerPhone String?   @map("customer_phone")
 
   // Status
-  status        AppointmentStatus @default(PENDING)
+  status        String    @default("PENDING") // PENDING, CONFIRMED, IN_PROGRESS, COMPLETED, CANCELLED, NO_SHOW
 
   // Notizen
-  customerNote  String?   @map("customer_note") @db.Text
-  internalNote  String?   @map("internal_note") @db.Text
+  customerNote  String?   @map("customer_note")
+  internalNote  String?   @map("internal_note")
 
   // Relationen
   user          User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -496,15 +454,6 @@ model Appointment {
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   @@map("appointments")
-}
-
-enum AppointmentStatus {
-  PENDING       // Anfrage
-  CONFIRMED     // Bestätigt
-  IN_PROGRESS   // In Bearbeitung
-  COMPLETED     // Abgeschlossen
-  CANCELLED     // Abgesagt
-  NO_SHOW       // Nicht erschienen
 }
 
 // =============================================================================
@@ -520,7 +469,7 @@ model Review {
   // Bewertung
   rating        Int       // 1-5
   title         String?
-  content       String?   @db.Text
+  content       String?
 
   // Status
   isVerified    Boolean   @default(false) @map("is_verified") // Verifizierter Kauf
@@ -535,4 +484,16 @@ model Review {
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   @@map("reviews")
+}
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  level     String   // info, warn, error
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([createdAt])
+  @@map("system_logs")
 }

@@ -1,0 +1,50 @@
+name: Self-Hosted Runner Smoke
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+
+concurrency:
+  group: self-hosted-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  runner-health:
+    name: Runner Health Check
+    runs-on: [self-hosted, Windows, X64]
+    timeout-minutes: 10
+    steps:
+      - name: Runner info
+        shell: pwsh
+        run: |
+          Write-Host "RunnerName=$env:RUNNER_NAME"
+          Write-Host "RunnerOS=$env:RUNNER_OS"
+          Write-Host "RunnerArch=$env:RUNNER_ARCH"
+          Write-Host "MachineName=$env:COMPUTERNAME"
+
+      - name: Toolchain check
+        shell: pwsh
+        run: |
+          node --version
+          npm --version
+          pnpm --version
+
+      - name: GitHub checkout
+        uses: actions/checkout@v4
+
+      - name: Workspace write check
+        shell: pwsh
+        run: |
+          $path = Join-Path $env:RUNNER_TEMP 'runner-write-test.txt'
+          'ok' | Set-Content -Path $path -Encoding UTF8
+          Get-Content -Path $path
+
+      - name: Network reachability
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri 'https://api.github.com/meta' -UseBasicParsing | Out-Null
+          Write-Host 'GitHub API reachable.'

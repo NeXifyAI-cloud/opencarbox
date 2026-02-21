@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import { deepseekChatCompletion } from '@/lib/ai/deepseekClient';
-import { sendJulesEvent } from '@/lib/jules/client';
 
 const chatMessageSchema = z.object({
   role: z.enum(['system', 'user', 'assistant']),
@@ -148,18 +147,7 @@ async function callWithRetry(payload: z.infer<typeof chatRequestSchema>) {
 }
 
 export async function POST(request: Request) {
-  await sendJulesEvent({
-    source: 'api.ai.chat',
-    kind: 'request',
-    name: 'chat.post.received',
-  });
-
   if (!isAiChatEnabled()) {
-    await sendJulesEvent({
-      source: 'api.ai.chat',
-      kind: 'error',
-      name: 'chat.feature_disabled',
-    });
     return errorResponse('FEATURE_DISABLED', 'AI chat is disabled by FEATURE_AI_CHAT flag.');
   }
 
@@ -168,18 +156,8 @@ export async function POST(request: Request) {
   } catch (rateLimitError) {
     if (rateLimitError && typeof rateLimitError === 'object' && 'code' in rateLimitError) {
       const parsed = rateLimitError as { code: ApiErrorCode; message: string; details?: Record<string, unknown> };
-      await sendJulesEvent({
-        source: 'api.ai.chat',
-        kind: 'error',
-        name: 'chat.rate_limited',
-      });
       return errorResponse(parsed.code, parsed.message, parsed.details);
     }
-    await sendJulesEvent({
-      source: 'api.ai.chat',
-      kind: 'error',
-      name: 'chat.rate_limit_internal_error',
-    });
     return errorResponse('INTERNAL_ERROR', 'Unexpected error in rate limiting.');
   }
 
@@ -188,34 +166,17 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch {
-    await sendJulesEvent({
-      source: 'api.ai.chat',
-      kind: 'error',
-      name: 'chat.invalid_json',
-    });
     return errorResponse('INVALID_JSON', 'Invalid JSON body.');
   }
 
   const parsed = chatRequestSchema.safeParse(body);
 
   if (!parsed.success) {
-    await sendJulesEvent({
-      source: 'api.ai.chat',
-      kind: 'error',
-      name: 'chat.validation_failed',
-    });
     return errorResponse('VALIDATION_ERROR', 'Validation failed.', parsed.error.flatten());
   }
 
   try {
     const { response, attempt, maxAttempts } = await callWithRetry(parsed.data);
-
-    await sendJulesEvent({
-      source: 'api.ai.chat',
-      kind: 'event',
-      name: 'chat.completed',
-      metadata: { attempt, maxAttempts },
-    });
 
     return NextResponse.json({
       success: true,
@@ -232,11 +193,6 @@ export async function POST(request: Request) {
     const upstreamStatus = parseUpstreamStatus(error);
 
     if (error instanceof Error && error.message.includes('timed out')) {
-      await sendJulesEvent({
-        source: 'api.ai.chat',
-        kind: 'error',
-        name: 'chat.timeout',
-      });
       return errorResponse('UPSTREAM_TIMEOUT', 'AI provider request timed out.', {
         timeoutMs: CHAT_TIMEOUT_MS,
         retries: CHAT_RETRY_COUNT,
@@ -244,23 +200,11 @@ export async function POST(request: Request) {
     }
 
     if (upstreamStatus && upstreamStatus >= 400 && upstreamStatus <= 599) {
-      await sendJulesEvent({
-        source: 'api.ai.chat',
-        kind: 'error',
-        name: 'chat.upstream_error',
-        metadata: { upstreamStatus },
-      });
       return errorResponse('UPSTREAM_ERROR', 'AI provider request failed.', {
         upstreamStatus,
         message: error instanceof Error ? error.message : 'Unknown AI provider error.',
       });
     }
-
-    await sendJulesEvent({
-      source: 'api.ai.chat',
-      kind: 'error',
-      name: 'chat.internal_error',
-    });
 
     return errorResponse('INTERNAL_ERROR', 'Unexpected AI chat failure.', {
       message: error instanceof Error ? error.message : 'Unknown error',

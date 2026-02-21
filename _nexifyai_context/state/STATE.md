@@ -14,3 +14,11 @@
 - Prisma Client Singleton und Audit-Logger implementiert.
 - Sicherheits- und Refusal-Dokumentation erstellt.
 - Linter und Tests erfolgreich durchgeführt.
+
+## Sicherheits-Vorfall ()
+- **Typ:** Leak von Secrets im Chat.
+- **Maßnahme:** Meldung an den User, Empfehlung zur Rotation, kein Speichern der Keys im System.
+
+## Sicherheits-Vorfall (2026-02-21)
+- **Typ:** Leak von Secrets im Chat.
+- **Maßnahme:** Meldung an den User, Empfehlung zur Rotation, kein Speichern der Keys im System.

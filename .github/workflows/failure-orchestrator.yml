@@ -52,8 +52,6 @@ env:
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
   NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
-  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
   FORBID_WORKFLOW_EDITS: 'true'
   AI_MAX_CALLS: '3'
 
@@ -87,23 +85,6 @@ jobs:
         run: |
           source tools/export_env.sh
           npx tsx tools/preflight.ts ai
-
-      - name: Route failure event to Jules
-        run: |
-          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
-            echo "Jules routing skipped (missing JULES_API_KEY or JULES_BASE_URL)."
-            exit 0
-          fi
-          jq -n \
-            --arg workflow "${{ github.event.workflow_run.name }}" \
-            --arg conclusion "${{ github.event.workflow_run.conclusion }}" \
-            --arg run_url "${{ github.event.workflow_run.html_url }}" \
-            --arg run_id "${{ github.event.workflow_run.id }}" \
-            '{source:"failure-orchestrator",kind:"error",name:"workflow.failure",metadata:{workflow:$workflow,conclusion:$conclusion,run_url:$run_url,run_id:$run_id}}' \
-            | curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
-                -H "Content-Type: application/json" \
-                -H "Authorization: Bearer $JULES_API_KEY" \
-                --data-binary @- >/dev/null
 
       - name: AI triage eligibility
         id: ai_eligible

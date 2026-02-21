@@ -3,7 +3,6 @@ import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 
 import { deepseekChatCompletion } from '@/lib/ai/deepseekClient';
-import { sendJulesEvent } from '@/lib/jules/client';
 
 type ControllerAction = 'run_autofix' | 'run_conflict_resolver' | 'run_auto_improve' | 'open_triage_issue' | 'ignore';
 
@@ -130,18 +129,7 @@ export async function POST(request: Request) {
   const rawBody = await request.text();
   const signatureHeader = request.headers.get('x-codex-signature-256');
 
-  await sendJulesEvent({
-    source: 'api.webhooks.codex-controller',
-    kind: 'request',
-    name: 'webhook.received',
-  });
-
   if (!verifySignature(rawBody, signatureHeader)) {
-    await sendJulesEvent({
-      source: 'api.webhooks.codex-controller',
-      kind: 'error',
-      name: 'webhook.invalid_signature',
-    });
     return NextResponse.json(
       {
         success: false,
@@ -158,11 +146,6 @@ export async function POST(request: Request) {
   try {
     payload = JSON.parse(rawBody);
   } catch {
-    await sendJulesEvent({
-      source: 'api.webhooks.codex-controller',
-      kind: 'error',
-      name: 'webhook.invalid_json',
-    });
     return NextResponse.json(
       {
         success: false,
@@ -180,13 +163,6 @@ export async function POST(request: Request) {
   try {
     const decision = await decideAction(eventType, payload);
 
-    await sendJulesEvent({
-      source: 'api.webhooks.codex-controller',
-      kind: 'decision',
-      name: `webhook.decision.${decision.action}`,
-      metadata: { eventType },
-    });
-
     if (decision.action !== 'ignore') {
       await dispatchGitHubEvent(ACTION_TO_DISPATCH_EVENT[decision.action], {
         source: 'codex-controller-webhook',
@@ -203,12 +179,6 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    await sendJulesEvent({
-      source: 'api.webhooks.codex-controller',
-      kind: 'error',
-      name: 'webhook.routing_failed',
-      metadata: { eventType },
-    });
     return NextResponse.json(
       {
         success: false,

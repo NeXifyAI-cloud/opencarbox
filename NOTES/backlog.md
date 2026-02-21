@@ -119,7 +119,7 @@
 ## Live Issues Index
 
 > Auto-generated — do not edit this section manually.
-> Last updated: 2026-02-20
+> Last updated: 2026-02-21
 
 | # | Title | Labels | Assignees |
 |---|-------|--------|-----------|

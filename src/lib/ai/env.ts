@@ -51,7 +51,7 @@ export function getAiEnv(): AiEnv {
   // Warn if DeepSeek is used without NSCALE_API_KEY (if it's required)
   if (hasDeepSeek && !parsed.data.NSCALE_API_KEY && process.env.AI_PROVIDER === 'deepseek') {
     if (process.env.NODE_ENV !== 'test') {
-      console.warn('Warning: DEEPSEEK_API_KEY is set but NSCALE_API_KEY is missing');
+      console['warn']('Warning: DEEPSEEK_API_KEY is set but NSCALE_API_KEY is missing');
     }
   }
 

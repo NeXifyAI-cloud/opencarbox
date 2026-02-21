@@ -28,13 +28,13 @@ function log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
   if (process.env.NODE_ENV !== 'test') {
     const prefix = '[AIAutoSelector]';
     if (level === 'error') {
-      console.error(`${prefix} ${message}`);
+      console['error'](`${prefix} ${message}`);
     } else if (level === 'warn') {
-      console.warn(`${prefix} ${message}`);
+      console['warn'](`${prefix} ${message}`);
     } else {
       // Only log in development or when AI_DEBUG is enabled
       if (process.env.NODE_ENV === 'development' || process.env.AI_DEBUG === 'true') {
-        console.log(`${prefix} ${message}`);
+        console['log'](`${prefix} ${message}`);
       }
     }
   }

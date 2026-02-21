@@ -45,58 +45,11 @@ const nextConfig = {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
   },
 
-  /* Weiterleitungen – see vercel.json for Vercel deployments (single source of truth).
-     These are used by `next start` (standalone / Docker). */
-  async redirects() {
-    return [
-      {
-        source: '/produkte',
-        destination: '/shop',
-        permanent: true,
-      },
-      {
-        source: '/services',
-        destination: '/werkstatt/services',
-        permanent: true,
-      },
-    ];
-  },
+  /* Weiterleitungen — defined in vercel.json (single source of truth) */
 
-  /* Security & performance headers – see vercel.json for Vercel deployments (single source of truth).
-     These are used by `next start` (standalone / Docker). */
+  /* Header für Performance (security headers in vercel.json — single source of truth) */
   async headers() {
     return [
-      {
-        source: '/:path*',
-        headers: [
-          /* Sicherheits-Header */
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-          /* Permissions Policy */
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-        ],
-      },
       /* Cache-Header für statische Assets */
       {
         source: '/fonts/:path*',
@@ -117,6 +70,17 @@ const nextConfig = {
         ],
       },
     ];
+  },
+
+  /* Webpack-Konfiguration */
+  webpack: (config, { isServer }) => {
+    /* SVG als React-Komponenten */
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+
+    return config;
   },
 
   /* TypeScript-Fehler beim Build ignorieren (NICHT für Production empfohlen) */

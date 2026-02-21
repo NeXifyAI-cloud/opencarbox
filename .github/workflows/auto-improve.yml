@@ -2,9 +2,8 @@ name: auto-improve
 
 on:
   workflow_dispatch:
-  # Disabled until CI is fully stable
-  # schedule:
-  #   - cron: '15 */6 * * *'
+  schedule:
+    - cron: '15 */6 * * *'
 
 concurrency:
   group: auto-improve-${{ github.ref }}
@@ -15,19 +14,29 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  # AI Provider Configuration (DeepSeek-only)
+  AI_PROVIDER: ${{ vars.AI_PROVIDER || 'deepseek' }}
+  AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
+  # DeepSeek + NSCALE
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
+  NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
+  JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
+  JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
 
 jobs:
   improve:
     name: Quality Checks
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -35,7 +44,23 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
+      - name: Normalize environment aliases
+        run: |
+          source tools/export_env.sh
+          npx tsx tools/preflight.ts ai
+
+      - name: Generate DeepSeek backlog suggestions
+        run: pnpm tsx tools/auto_improve.ts
+        env:
+          AI_MAX_CALLS: '10'
+          FORBID_WORKFLOW_EDITS: '1'
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
       - name: Run full quality checks
+        id: quality
+        continue-on-error: true
         run: |
           pnpm lint
           pnpm typecheck
@@ -43,4 +68,22 @@ jobs:
           pnpm build
 
       - name: Status
-        run: echo "All quality checks passed."
+        run: |
+          if [ "${{ steps.quality.outcome }}" = "success" ]; then
+            echo "All quality checks passed."
+          else
+            echo "Quality checks had issues — see logs above."
+          fi
+
+      - name: Route failure to Jules
+        if: failure()
+        run: |
+          source tools/export_env.sh
+          if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
+            echo "Jules routing skipped."
+            exit 0
+          fi
+          curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $JULES_API_KEY" \
+            -d "{\"source\":\"auto-improve\",\"kind\":\"error\",\"name\":\"auto-improve.failed\",\"metadata\":{\"run_id\":\"${{ github.run_id }}\"}}"

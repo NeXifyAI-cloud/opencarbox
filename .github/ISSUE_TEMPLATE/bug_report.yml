@@ -41,3 +41,5 @@ body:
     attributes:
       label: Relevant logs (redact secrets)
       render: shell
+    validations:
+      required: true

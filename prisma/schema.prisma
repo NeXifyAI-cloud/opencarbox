@@ -38,6 +38,7 @@ model ProjectMemory {
 
 /// Audit Logs - Protokoll aller Agent-Aktionen
 model AuditLog {
+  user          String   // Agent oder Benutzer-ID
   id            String   @id @default(cuid())
   action        String   // z.B. "create_component", "fix_bug"
   resource      String   // Betroffene Datei/Ressource

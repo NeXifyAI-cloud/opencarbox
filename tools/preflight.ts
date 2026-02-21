@@ -56,22 +56,26 @@ function main() {
       throw new Error(`Forbidden OpenAI-prefixed env detected: ${forbiddenOpenAiEnv.join(", ")}`);
     }
 
-    const provider = must("AI_PROVIDER");
+    const provider = optional("AI_PROVIDER") || "deepseek";
     if (provider !== "deepseek") {
-      throw new Error("AI_PROVIDER must be deepseek");
+      throw new Error("AI_PROVIDER must be 'deepseek'");
     }
 
     must("DEEPSEEK_API_KEY");
     must("NSCALE_API_KEY");
     optional("DEEPSEEK_BASE_URL");
     optional("NSCALE_HEADER_NAME");
+
+    optional("AI_AUTO_SELECT");
+    optional("AI_TIMEOUT_MS");
+    optional("AI_HEALTH_CHECK_INTERVAL_MS");
     optionalInt("AI_MAX_CALLS");
     optionalIntAny("max_conflict_files", "MAX_CONFLICT_FILES");
     optionalIntAny("max_file_bytes", "MAX_FILE_BYTES");
     optionalIntAny("binary_heuristic_threshold", "BINARY_HEURISTIC_THRESHOLD");
     optional("FORBID_WORKFLOW_EDITS");
 
-    console.log("Preflight(ai): OK");
+    console.log(`Preflight(ai): OK (provider: ${provider}, nscale: required)`);
     return;
   }
 

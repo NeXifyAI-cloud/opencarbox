@@ -88,7 +88,7 @@ git remote set-url origin git@github.com:u4231458123-droid/OpenCarBox_NEW.git
 
 Die Setup-Skripte akzeptieren jetzt zusätzlich zu `GH_TOKEN` auch:
 
-- `CLASSIC_TOKEN_GITHUB`
+- `CLASSIC_TOKEN_GITHUB_NEU`
 - `GITHUB_TOKEN`
 
 Wenn `GH_TOKEN` leer ist, wird automatisch einer der beiden Fallbacks verwendet.

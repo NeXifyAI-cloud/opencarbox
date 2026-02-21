@@ -25,7 +25,7 @@ pnpm dev
    pnpm lint        # ESLint
    pnpm typecheck   # TypeScript
    pnpm test        # Unit tests
-   pnpm build       # Production build
+   pnpm quality-gate # Full quality check
    ```
 4. Commit with a descriptive message
 5. Open a Pull Request against `main`
@@ -36,8 +36,7 @@ pnpm dev
 - **Tailwind CSS only** — no inline styles, use design tokens
 - **Path aliases** — use `@/` imports (e.g., `import { x } from '@/lib/utils'`)
 - **Formatting** — Prettier (semi-false, single quotes, width 100)
-- **AI Policy** — only DeepSeek + NSCALE providers allowed; `OPENAI_*` is forbidden
-- **8px Grid** — all spacing in 8px increments
+- **AI Policy** — only DeepSeek + NSCALE providers allowed
 
 ## Branch Naming
 
@@ -48,22 +47,12 @@ pnpm dev
 ## Pull Request Guidelines
 
 - PRs require CI to pass (lint + typecheck + test + build)
-- PRs require at least one code review approval
+- PRs require code review approval
 - Keep changes focused and small
-- Update documentation (`NOTES/`, `docs/`, `README`) if needed
-- Complete the Definition of Done checklist in the PR template
-- See `NOTES/runbook.md` for the Branch Protection Contract
-
-## Adding Environment Variables
-
-1. Add the variable with a placeholder value to `.env.example`
-2. No changes to `tools/check_env_schema.ts` are needed; it automatically validates variables listed in `.env.example`
-3. Set the variable in Vercel (Preview + Production) and CI secrets as needed
-4. Document in `NOTES/runbook.md` under the appropriate section
+- Update documentation if needed
 
 ## Security
 
 - Never commit secrets, API keys, or tokens
 - Run `pnpm secret:scan` before committing
-- `OPENAI_*` environment variables are explicitly forbidden
 - Report security issues via [SECURITY.md](./SECURITY.md)

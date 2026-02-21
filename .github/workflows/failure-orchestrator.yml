@@ -242,6 +242,33 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  close-resolved-incidents:
+    name: Close Resolved Incidents
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.name != 'failure-orchestrator'
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    permissions:
+      issues: write
+    steps:
+      - name: Install gh and jq
+        run: sudo apt-get update && sudo apt-get install -y gh jq
+
+      - name: Close resolved incident issues
+        run: |
+          WF_NAME="${{ github.event.workflow_run.name }}"
+          INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
+          ISSUE_NUMBERS="$(gh issue list --state open --label failure-routing \
+            --json number,title --jq \
+            --arg t "$INCIDENT_TITLE" '[.[] | select(.title == $t)] | .[].number')"
+          for NUM in $ISSUE_NUMBERS; do
+            gh issue comment "$NUM" \
+              --body "✅ Workflow **${WF_NAME}** hat erfolgreich abgeschlossen. Auto-Close." || true
+            gh issue close "$NUM" --reason completed
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   create-routing-issue:
     name: Manual Triage Issue
     needs: [route-failure, ai-triage]

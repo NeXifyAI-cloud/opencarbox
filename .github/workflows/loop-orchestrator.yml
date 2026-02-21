@@ -129,6 +129,45 @@ jobs:
               labels: ['ci-failure', 'status:triage'],
             });
 
+  ci-success-close-issues:
+    name: CI Success → Close Issues
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - name: Close resolved CI failure issues for branch
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const branch = run.head_branch;
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure',
+              per_page: 50,
+            });
+            const branchIssues = issues.filter(i =>
+              i.body && i.body.includes(`\`${branch}\``)
+            );
+            for (const issue of branchIssues) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: `✅ CI passed on \`${branch}\` (run [#${run.run_number}](${run.html_url})). Auto-closing.`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+            }
+
   pr-failure-comment:
     name: Comment on PR with Failure
     if: >-

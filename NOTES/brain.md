@@ -113,82 +113,28 @@
   - Preflight/Setup zeigen fehlende GitLab-Parameter früh als Warnung.
   - Künftige GitLab-Automationen können standardisierte Variablen direkt verwenden.
 
-## ADR-008: Fail-closed AI-Workflows mit standardisiertem PR-Body
-- **Decision**: `conflict-resolver.yml`, `auto-improve.yml` und `failure-orchestrator.yml` führen vor AI-Aktivitäten verpflichtend `tools/export_env.sh` + `tools/preflight.ts ai` aus (fail-closed). Automatisch erzeugte PR-Bodies enthalten standardisiert die Abschnitte „Was geändert“, „Warum“, „Wie getestet“, „Risiko/Backout“.
+## ADR-008: Env-Schema-Check über `.env.example` als Single Source of Truth
+- **Decision**: `tools/check_env_schema.ts` nutzt `.env.example` als deklaratives Schema für alle Umgebungsvariablen. Neue Variablen müssen zuerst dort ergänzt werden. Verbotene Provider-Variablen (`OPENAI_*`, `GOOGLE_API_KEY`, `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`) werden sowohl im Environment als auch in `.env.example` geprüft.
 - **Alternatives**:
-  - Soft-Gating mit `continue-on-error` im Preflight.
-  - Freitext-PR-Bodies ohne einheitliche Incident-Struktur.
+  - Manuelle Prüfung ohne automatisierten Check.
+  - Separate Schema-Datei unabhängig von `.env.example`.
 - **Reasoning**:
-  - Erzwingt DeepSeek-only/NSCALE-Pflicht deterministisch vor jedem AI-Lauf.
-  - Verbessert Nachvollziehbarkeit und Backout-Fähigkeit automatischer Fix-PRs.
+  - `.env.example` existiert bereits als Dokumentation; nutzt es doppelt als Laufzeit-Schema.
+  - CI-Modus (`--ci`) beschränkt Prüfung auf Build-relevante Variablen, während lokaler Modus alle prüft.
+  - Forbidden-Provider-Alignment mit `tools/guard_no_openai.sh` stellt konsistente Policy-Durchsetzung sicher.
 - **Consequences**:
-  - Fehlende AI-Secrets stoppen AI-Workflows früh und sichtbar.
-  - Auto-PRs sind auditierbar und entsprechen den geforderten Pflichtfeldern.
+  - `pnpm env:check` kann lokal und in CI als Preflight genutzt werden.
+  - Alle neuen Variablen folgen einem dokumentierten Workflow: `.env.example` → `env:check` → Vercel/CI Secrets.
 
-## ADR-009: Fail-closed Auto-Reply + secret-freie Controller/Autofix-Orchestrierung
-- **Decision**: `auto-reply.yml` führt vor der Antwortgenerierung verpflichtend `tools/export_env.sh` und `tools/preflight.ts ai` aus und bricht bei fehlendem DeepSeek/NSCALE-Setup oder leerer DeepSeek-Antwort hart ab (kein stiller Fallback). `autofix.yml` und `codex-controller.yml` wurden auf nicht-AI-spezifische Umgebungen reduziert und führen nur Env-Normalisierung aus.
+## ADR-009: Preview/Production Deploy-Trennung über dedizierte Workflows
+- **Decision**: Preview-Deployments werden durch `deploy-preview.yml` (Trigger: `pull_request`) gesteuert, Production-Deployments durch `auto-deploy.yml` (Trigger: `workflow_run` nach CI auf `main`). Kein gemeinsamer Workflow mit Environment-Schalter.
 - **Alternatives**:
-  - Soft-Fallback im Auto-Reply (Template-Antwort ohne AI bei Fehlern).
-  - Beibehalten unnötiger AI-Secrets in Workflows ohne direkten AI-Request.
+  - Ein einzelner Deploy-Workflow mit Environment-Parameter.
+  - Preview nur über Vercel Git Integration ohne eigenen Workflow.
 - **Reasoning**:
-  - Verhindert intransparente Reply-Pfade ohne DeepSeek/NSCALE-Header.
-  - Reduziert Secret-Abhängigkeiten in Dispatch-/Safe-Autofix-Workflows.
-  - Erzwingt explizite Tool-Installation (`gh`/`jq`) dort, wo CLI-Aufrufe stattfinden.
+  - Klare Trennung von Berechtigungen (Preview braucht kein `--prod`).
+  - Preview-Workflows können eigene Preflight-Checks ausführen (z. B. Env-Schema-Check).
+  - Production-Deploys sind an erfolgreiche CI gebunden, nicht an PR-Events.
 - **Consequences**:
-  - Auto-Reply scheitert sichtbar bei fehlerhafter AI-Konfiguration statt stiller Platzhalter-Kommentare.
-  - Autofix/Controller bleiben ausführbar ohne AI-Secrets und sind klarer voneinander abgegrenzt.
-
-## ADR-010: Systemweite Runner-Konfiguration via `vars.RUNNER`
-- **Decision**: Alle Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` statt hartcodiertem `ubuntu-latest`. Die Repository-Variable `vars.RUNNER` steuert den Runner systemweit.
-- **Alternatives**:
-  - Runner weiterhin in jedem Workflow einzeln hartcodieren.
-  - Nur CI-Workflows parametrisieren, Rest bleibt fix.
-- **Reasoning**:
-  - Ein Wechsel zwischen `ubuntu-latest` und `self-hosted` (oder anderen Runnern) erfordert nur eine Änderung an der Repository-Variable statt 25 Workflow-Dateien.
-  - Erfüllt A6-Kriterium: „Rollback auf `ubuntu-latest` ist als einzelner, dokumentierter Workflow-Change möglich."
-  - Ohne gesetzte Variable bleibt das Verhalten identisch zu vorher (`ubuntu-latest`).
-- **Consequences**:
-  - Runner-Wechsel ist eine Konfigurationsänderung in GitHub Settings → Variables, kein Code-Change.
-  - Neue Workflows müssen `${{ vars.RUNNER || 'ubuntu-latest' }}` statt `ubuntu-latest` verwenden.
-  - Rollback: Variable löschen oder auf `ubuntu-latest` setzen — alle Workflows fallen automatisch auf GitHub-hosted zurück.
-
-## ADR-011: Self-Hosted Runner Deployment
-- **Decision**: Die CI/CD-Pipeline wird um eine self-hosted Runner-Infrastruktur ergänzt. Alle Workflows nutzen weiterhin `${{ vars.RUNNER || 'ubuntu-latest' }}` (ADR-010), sodass Aktivierung und Rollback rein über die Repository-Variable `vars.RUNNER` erfolgen.
-- **Motivation**:
-  - Kürzere CI-Laufzeiten durch dedizierte Hardware statt geteilter GitHub-Runner-Kapazitäten.
-  - Bessere Kontrolle über Secrets (DeepSeek, NSCALE, Supabase, Vercel) — Runner unter eigener Verwaltung ermöglichen striktere Netzwerkkontrollen.
-  - AI-Workflows benötigen spezielle Abhängigkeiten (`gh`, `jq`, Node.js, pnpm), die auf self-hosted Runnern vorinstalliert und versioniert werden können.
-  - Weniger `cancel-in-progress`-Auslösungen durch schnellere, parallele Builds.
-- **Alternatives**:
-  - Weiterhin ausschließlich GitHub-hosted Runner nutzen (Status quo).
-  - Nur AI-Workflows auf self-hosted Runner migrieren, Rest bleibt auf `ubuntu-latest`.
-  - Larger GitHub-hosted Runner (kostenpflichtig) statt eigener Infrastruktur.
-- **Risiken**:
-  - Runner-Ausfall: Wird durch Fallback auf `ubuntu-latest` über ADR-010-Mechanismus abgefangen — Variable löschen oder auf `ubuntu-latest` setzen.
-  - Wartungsaufwand: OS-Updates, Node.js/pnpm-Upgrades und Runner-Agent-Updates müssen regelmäßig eingespielt werden.
-  - Sicherheit: Runner-Server muss gehärtet sein (Firewall, SSH-only-Zugang, minimale Angriffsfläche).
-- **Provisioning-Anforderungen**:
-  - Dedizierter Server/VM mit min. 4 CPU, 8 GB RAM, 50 GB SSD.
-  - Vorinstalliert: Node.js (LTS), pnpm, `gh` CLI, `jq`, Git, Docker (optional).
-  - Runner-Agent registriert unter Settings → Actions → Runners mit Label `self-hosted` (oder `self-hosted-build`).
-  - Secrets als Systemd-Service-Umgebungsvariablen oder via `.env`-Datei (nicht im Repository).
-- **Rollback-Plan**:
-  1. `vars.RUNNER` in GitHub Settings → Actions → Variables auf `ubuntu-latest` setzen oder löschen.
-  2. Alle Workflows fallen sofort auf GitHub-hosted Runner zurück — kein Code-Change nötig.
-  3. CI-Lauf manuell auslösen und validieren (`pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`).
-- **Consequences**:
-  - Self-hosted Runner sind produktionsbereit für alle Workflow-Typen (CI, Deploy, AI, Ops).
-  - `tools/export_env.sh` und `tools/preflight.ts` prüfen fehlende Variablen am Beginn jedes Workflows.
-  - Monitoring (CPU, RAM, Disk, Runner-Version) muss als Betriebsaufgabe etabliert werden (siehe Runbook).
-
-## ADR-012: DeepSeek-only Defaults in allen AI-Automations-Workflows
-- **Decision**: `auto-improve.yml`, `conflict-resolver.yml`, `auto-reply.yml` und `failure-orchestrator.yml` setzen standardmäßig `AI_PROVIDER=deepseek` und entfernen GitHub-Models-Defaultpfade aus den Workflow-Umgebungsvariablen.
-- **Alternatives**:
-  - Mixed-Provider-Default (`github-models` primär, DeepSeek fallback).
-  - Provider-Auswahl nur über Laufzeit-Flags ohne Workflow-Defaults.
-- **Reasoning**:
-  - Erzwingt die operative DeepSeek-only-Policy bereits auf Workflow-Ebene.
-  - Reduziert Fehlkonfigurationen, bei denen AI-Runs versehentlich gegen andere Provider laufen.
-- **Consequences**:
-  - AI-Workflows sind fail-closed bei fehlendem `DEEPSEEK_API_KEY`/`NSCALE_API_KEY` durch `tools/preflight.ts ai`.
-  - Provider-Wechsel erfordert künftig eine explizite ADR-/Policy-Änderung.
+  - Zwei Workflows zu pflegen, aber mit klaren, nicht-überlappenden Verantwortlichkeiten.
+  - Preview-URLs werden automatisch als PR-Kommentar gepostet.

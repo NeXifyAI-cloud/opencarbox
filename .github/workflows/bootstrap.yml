@@ -10,15 +10,15 @@ env:
   NODE_VERSION: '20'
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
-  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+  NEU_VERCEL_PROJEKT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.NEU_VERCEL_PROJEKT_ID }}
+  NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_PROJEKT_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY || secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
   SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
 
 jobs:
   bootstrap:
     name: Bootstrap Project
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -40,9 +40,7 @@ jobs:
         run: pnpm i --frozen-lockfile
 
       - name: Preflight
-        run: |
-          source tools/export_env.sh
-          npx tsx tools/preflight.ts ci
+        run: npx tsx tools/preflight.ts ci
 
       - name: Run bootstrap (idempotent)
         run: |

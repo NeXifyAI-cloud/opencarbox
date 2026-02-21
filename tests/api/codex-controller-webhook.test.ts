@@ -61,7 +61,7 @@ describe('POST /api/webhooks/codex-controller', () => {
     process.env.GH_PAT = 'ghp_test';
 
     vi.mocked(deepseekChatCompletion).mockResolvedValue({
-      choices: [{ message: { role: 'assistant', content: JSON.stringify({ action: 'run_autofix', reason: 'CI failure detected' }) }, index: 0 }],
+      choices: [{ message: { content: JSON.stringify({ action: 'run_autofix', reason: 'CI failure detected' }) } }],
     });
 
     vi.stubGlobal('fetch', fetchMock);
@@ -80,7 +80,7 @@ describe('POST /api/webhooks/codex-controller', () => {
     process.env.CODEX_WEBHOOK_SECRET = 'secret';
 
     vi.mocked(deepseekChatCompletion).mockResolvedValue({
-      choices: [{ message: { role: 'assistant', content: JSON.stringify({ action: 'run_autofix', reason: 'CI failure detected' }) }, index: 0 }],
+      choices: [{ message: { content: JSON.stringify({ action: 'run_autofix', reason: 'CI failure detected' }) } }],
     });
 
     const response = await POST(signedRequest({ workflow: 'ci', conclusion: 'failure' }));

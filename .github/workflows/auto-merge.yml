@@ -1,16 +1,10 @@
-# Fully Autonomous Auto-Merge Pipeline
+# Auto-Merge für vertrauenswürdige interne PRs und Dependabot
 name: Auto-Merge
 
 on:
   pull_request:
-    types: [labeled, opened, synchronize, reopened]
-  workflow_run:
-    workflows: [ci]
-    types: [completed]
-
-concurrency:
-  group: auto-merge-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: false
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
 
 permissions:
   pull-requests: write
@@ -18,82 +12,41 @@ permissions:
 
 jobs:
   auto-merge-safe:
-    name: Auto-Merge (Autonomous)
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    name: Auto-Merge (Trusted Internal PRs)
+    runs-on: ubuntu-latest
     if: >-
-      github.event.pull_request.draft == false &&
       github.event.pull_request.head.repo.fork == false &&
-      (
-        github.actor == 'copilot-swe-agent[bot]' ||
-        github.actor == 'dependabot[bot]' ||
-        github.actor == 'nexifyai-dev' ||
-        contains(github.event.pull_request.labels.*.name, 'auto-merge') ||
-        contains(github.event.pull_request.labels.*.name, 'autofix') ||
-        contains(github.event.pull_request.labels.*.name, 'codex')
-      )
+      github.base_ref == 'main' &&
+      contains(github.event.pull_request.labels.*.name, 'auto-merge')
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install gh and jq
-        run: sudo apt-get update && sudo apt-get install -y gh jq
-
-      - name: Check for workflow or migration changes
-        id: safety_check
-        run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          
-          # Get changed files
-          CHANGED_FILES=$(gh pr view "$PR_NUMBER" --json files --jq '.files[].path')
-          
-          # Check for protected paths
-          if echo "$CHANGED_FILES" | grep -E '^\.github/workflows/|^supabase/migrations/'; then
-            echo "blocked=true" >> "$GITHUB_OUTPUT"
-            echo "::warning::PR touches workflow or migration files - requires human review"
-          else
-            echo "blocked=false" >> "$GITHUB_OUTPUT"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check CI status
-        id: ci_check
-        if: steps.safety_check.outputs.blocked != 'true'
-        run: |
-          PR_NUMBER="${{ github.event.pull_request.number }}"
-          
-          # Check all PR checks
-          CHECK_STATUS=$(gh pr checks "$PR_NUMBER" --json state --jq 'all(.state == "SUCCESS")')
-          
-          if [ "$CHECK_STATUS" = "true" ]; then
-            echo "passed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "passed=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::CI checks not yet passing"
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Dependabot metadata
         id: metadata
-        if: github.actor == 'dependabot[bot]' && steps.safety_check.outputs.blocked != 'true' && steps.ci_check.outputs.passed == 'true'
+        if: github.actor == 'dependabot[bot]'
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Auto-approve PR
-        if: steps.safety_check.outputs.blocked != 'true' && steps.ci_check.outputs.passed == 'true'
-        run: gh pr review --approve "$PR_NUMBER"
-        env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HUSKY: '0'
+      - name: Wait for checks
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+          running-workflow-name: "Auto-Merge (Trusted Internal PRs)"
 
-      - name: Auto-merge PR
-        if: steps.safety_check.outputs.blocked != 'true' && steps.ci_check.outputs.passed == 'true'
-        run: gh pr merge --squash --auto "$PR_NUMBER"
+      - name: Auto-approve trusted Dependabot PRs
+        if: >-
+          github.actor == 'dependabot[bot]' &&
+          (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+           steps.metadata.outputs.update-type == 'version-update:semver-minor')
+        run: gh pr review --approve "$PR_URL"
         env:
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HUSKY: '0'
+
+      - name: Enable auto-merge
+        run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

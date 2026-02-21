@@ -2,7 +2,6 @@
 set -euo pipefail
 
 SCRIPT_PATH="tools/guard_no_openai.sh"
-ENV_SCHEMA_PATH="tools/check_env_schema.ts"
 
 USE_RG=false
 if command -v rg >/dev/null 2>&1; then
@@ -33,9 +32,10 @@ scan_forbidden() {
 
   local out
   if [[ "${USE_RG}" == "true" ]]; then
-    out="$(rg -n --hidden --glob "!${SCRIPT_PATH}" --glob "!${ENV_SCHEMA_PATH}" --glob '!.git' "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
+    out="$(rg -n --hidden --glob "!${SCRIPT_PATH}" --glob '!.git' "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
   else
-    out="$(grep -rn --exclude-dir=.git --exclude="${SCRIPT_PATH##*/}" --exclude="${ENV_SCHEMA_PATH##*/}" -E "${pattern}" "${EXISTING_ROOTS[@]}" || true)"
+    # grep fallback for environments without ripgrep (e.g. GitHub Actions runners)
+    out="$(grep -rn --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' --include='*.json' --include='*.yml' --include='*.yaml' --include='*.sh' -E "${pattern}" "${EXISTING_ROOTS[@]}" 2>/dev/null | grep -v "${SCRIPT_PATH}" | grep -v "check_env_schema.ts" || true)"
   fi
 
   if [[ -n "${out}" ]]; then

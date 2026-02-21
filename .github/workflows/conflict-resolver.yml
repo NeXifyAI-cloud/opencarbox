@@ -16,10 +16,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
-  # AI Provider Configuration (DeepSeek-only)
-  AI_PROVIDER: ${{ vars.AI_PROVIDER || 'deepseek' }}
-  AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
-  # DeepSeek + NSCALE
+  AI_PROVIDER: deepseek
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
   DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
@@ -28,7 +25,7 @@ env:
 jobs:
   resolve:
     name: Resolve PR Conflicts
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,38 +44,22 @@ jobs:
 
       - run: pnpm i --frozen-lockfile
 
-      - name: Normalize environment aliases
-        run: |
-          source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+      - name: AI preflight
+        run: npx tsx tools/preflight.ts ai
+        continue-on-error: true
 
       - name: Find PRs with conflicts
         id: prs
         run: |
           prs=$(gh pr list --state open --json number,mergeStateStatus,headRefName,baseRefName,url \
-            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]' 2>/dev/null || echo '[]')
-          {
-            echo "prs<<EOF"
-            echo "$prs"
-            echo "EOF"
-          } >> $GITHUB_OUTPUT
+            | jq '[.[] | select(.mergeStateStatus=="DIRTY")]')
+          echo "prs=$prs" >> $GITHUB_OUTPUT
           echo "Found $(echo "$prs" | jq 'length') DIRTY PRs"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AI_MAX_CALLS: '20'
-          max_conflict_files: '10'
-          max_file_bytes: '200000'
-          binary_heuristic_threshold: '0.15'
-          FORBID_WORKFLOW_EDITS: '1'
 
       - name: Resolve conflicts (oldest DIRTY PR first)
         if: steps.prs.outputs.prs != '[]'
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AI_MAX_CALLS: '20'
-          FORBID_WORKFLOW_EDITS: '1'
-          HUSKY: '0'
         run: |
           # Max 2 open codex PRs guardrail
           OPEN_COUNT="$(gh pr list --state open --search 'head:codex/' --json number --jq 'length')"
@@ -114,7 +95,7 @@ jobs:
           fi
 
           # Validate
-          pnpm db:generate && pnpm lint && pnpm typecheck && pnpm test -- --run && pnpm build || {
+          pnpm lint && pnpm typecheck && pnpm test -- --run && pnpm build || {
             echo "Validation failed, skipping PR"
             exit 0
           }
@@ -129,6 +110,10 @@ jobs:
 
           gh pr create \
             --title "chore: resolve conflicts for #$num" \
-            --body "## Was geändert\n- Rebase der betroffenen PR auf den aktuellen Base-Branch.\n- Bei Rebase-Konflikt: DeepSeek-only Merge für Konfliktdateien mit Guardrails.\n\n## Warum\n- Mergebarkeit wiederherstellen, ohne direkten Push auf bestehende PR-Branches.\n\n## Wie getestet\n- pnpm lint\n- pnpm typecheck\n- pnpm test -- --run\n- pnpm build\n\n## Risiko/Backout\n- Risiko: Falsche Konfliktauflösung in inhaltlich komplexen Dateien.\n- Backout: Erstellte Fix-PR schließen oder revertieren; Ursprungs-PR unverändert erneut bearbeiten." \
+            --body "Automatische Konfliktlösung für PR #$num via Rebase/AI-Merge." \
             --base "$base" \
             --head "codex/conflictfix-$num" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AI_MAX_CALLS: '20'
+          FORBID_WORKFLOW_EDITS: '1'

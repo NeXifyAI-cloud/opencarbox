@@ -56,7 +56,7 @@ describe('POST /api/ai/chat', () => {
 
     vi.mocked(deepseekChatCompletion).mockResolvedValue({
       id: 'cmpl-1',
-      choices: [{ message: { role: 'assistant', content: 'Antwort' }, index: 0 }],
+      choices: [{ message: { role: 'assistant', content: 'Antwort' } }],
     });
 
     const response = await POST(

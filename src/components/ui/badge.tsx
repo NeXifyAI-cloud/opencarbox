@@ -8,15 +8,19 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
+        // Sharon UI Base Tokens Varianten
         default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
         secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+        destructive: "border-transparent bg-error text-error-foreground hover:bg-error/80",
         outline: "text-foreground",
-        carvantooo: "border-transparent bg-carvantooo-100 text-carvantooo-800 hover:bg-carvantooo-200",
-        opencarbox: "border-transparent bg-opencarbox-100 text-opencarbox-800 hover:bg-opencarbox-200",
-        success: "border-transparent bg-success-50 text-success-700",
-        warning: "border-transparent bg-warning-50 text-warning-700",
-        error: "border-transparent bg-error-50 text-error-700",
+        // Status Varianten mit Sharon UI Farben
+        success: "border-transparent bg-success-50 text-success-700 hover:bg-success-100",
+        warning: "border-transparent bg-warning-50 text-warning-700 hover:bg-warning-100",
+        error: "border-transparent bg-error-50 text-error-700 hover:bg-error-100",
+        info: "border-transparent bg-info-50 text-info-700 hover:bg-info-100",
+        // OpenCarBox spezifische Varianten
+        primary: "border-transparent bg-primary-100 text-primary-800 hover:bg-primary-200",
+        "secondary-solid": "border-transparent bg-secondary-100 text-secondary-800 hover:bg-secondary-200",
       },
     },
     defaultVariants: {

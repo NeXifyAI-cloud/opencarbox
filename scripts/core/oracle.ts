@@ -812,8 +812,8 @@ Gib konkrete Präventionsmaßnahmen an, um diese Fehler in Zukunft zu vermeiden.
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${ORACLE_CONFIG.apiKey}`,
-          [ORACLE_CONFIG.nscaleHeaderName]: ORACLE_CONFIG.nscaleApiKey || '',
-        } as Record<string, string>,
+          [ORACLE_CONFIG.nscaleHeaderName]: ORACLE_CONFIG.nscaleApiKey,
+        },
         body: JSON.stringify(payload),
       }),
       ORACLE_CONFIG.timeoutMs,

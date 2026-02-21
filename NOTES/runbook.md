@@ -53,75 +53,111 @@
 
 ## Runner Policy
 
-- Alle Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` — der Runner wird systemweit über die Repository-Variable `vars.RUNNER` gesteuert (siehe ADR-010, ADR-011).
-- **Standard:** Ohne gesetzte Variable laufen alle Workflows auf `ubuntu-latest` (GitHub-hosted).
+- CI in `.github/workflows/ci.yml` läuft standardmäßig auf `ubuntu-latest` (GitHub-hosted); der Workflow benötigt dafür keine AI-/Deploy-Secrets.
 - `actions/setup-node@v4` nutzt `cache: pnpm` + `cache-dependency-path: pnpm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
-- Self-hosted Runner werden über `vars.RUNNER = self-hosted` (oder spezifisches Label wie `self-hosted-build`) aktiviert.
-
-### Self-Hosted Runner Provisioning (ADR-011)
-
-1. **Server-Anforderungen:** Dedizierte VM oder Bare-Metal mit min. 4 CPU, 8 GB RAM, 50 GB SSD, Ubuntu 22.04+.
-2. **System-Abhängigkeiten installieren:**
-   ```bash
-   sudo apt-get update && sudo apt-get install -y git curl jq docker.io
-   # Node.js LTS
-   curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
-   sudo apt-get install -y nodejs
-   # pnpm
-   corepack enable && corepack prepare pnpm@latest --activate
-   # GitHub CLI
-   sudo apt-get install -y gh
-   ```
-3. **Runner-Agent registrieren:** GitHub Settings → Actions → Runners → „New self-hosted runner" — Anweisungen folgen und Label `self-hosted` (oder `self-hosted-build`) vergeben.
-4. **Als Systemd-Service starten:**
-   ```bash
-   sudo ./svc.sh install && sudo ./svc.sh start
-   ```
-5. **Secrets auf dem Runner hinterlegen:** DeepSeek-/NSCALE-Keys, Supabase- und Vercel-Tokens als Systemd-Umgebungsvariablen (z. B. `/etc/systemd/system/actions.runner.*.service.d/override.conf`) — nicht im Repository speichern.
-
-### Runner-Wechsel
-
-1. **Zu self-hosted:** GitHub Settings → Actions → Variables → `RUNNER` auf `self-hosted` setzen (oder spezifisches Label wie `self-hosted-build`).
-2. **Zurück zu GitHub-hosted:** Variable `RUNNER` löschen oder auf `ubuntu-latest` setzen.
-3. **Validierung nach Wechsel:** CI-Lauf manuell auslösen und prüfen, dass `pnpm lint`, `pnpm typecheck`, `pnpm test` und `pnpm build` erfolgreich durchlaufen.
-
-### Monitoring & Wartung
-
-- **CPU/RAM/Disk:** Regelmäßig überwachen (z. B. via Prometheus Node Exporter, htop, oder Cloud-Monitoring).
-- **Runner-Version:** Runner-Agent regelmäßig aktualisieren — GitHub zeigt in Settings → Runners an, ob ein Update verfügbar ist.
-- **OS-Patches:** Monatliches Patch-Fenster definieren; nach Updates CI-Lauf manuell validieren.
-- **Node.js/pnpm-Updates:** Bei LTS-Wechsel pnpm/Node.js auf dem Runner aktualisieren und CI-Stack testen.
-- **Failover:** Bei Runner-Ausfall `vars.RUNNER` auf `ubuntu-latest` setzen — Workflows fallen automatisch auf GitHub-hosted zurück (kein Code-Change nötig).
+- Self-hosted Runner können optional für andere Workflows verwendet werden, sind aber keine Voraussetzung für den Standard-CI-Pfad.
 
 ### Troubleshooting: Runner unavailable
 
-1. Prüfen, welcher Runner aktiv ist: `vars.RUNNER` in GitHub Settings → Actions → Variables kontrollieren.
-2. Falls `vars.RUNNER` nicht gesetzt oder `ubuntu-latest`: keine Runner-Recovery nötig — erneut auslösen.
-3. Falls `self-hosted`: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
-4. **Sofort-Rollback:** Variable `RUNNER` löschen oder auf `ubuntu-latest` setzen — alle Workflows fallen automatisch auf GitHub-hosted zurück.
+1. Prüfen, ob der betroffene Workflow wirklich `self-hosted` verlangt (Workflow-Datei kontrollieren).
+2. Für CI (`ci.yml`) keine Runner-Recovery nötig: erneut auslösen, der Lauf nutzt `ubuntu-latest`.
+3. Für explizit self-hosted Workflows: Runner-Service, Labels und Online-Status in GitHub Settings → Actions → Runners prüfen.
+4. Wenn self-hosted länger ausfällt, Workflow temporär auf `ubuntu-latest` umstellen und Incident im Backlog dokumentieren.
 
-## Release Process
+## Branch Protection Contract
 
-1. Merge only through PR into protected `main`.
-2. Ensure required CI checks are green.
-3. Deploy to Vercel Preview, then Production.
+> These rules **must** be enforced in GitHub Settings → Branches → `main`.
+> This section is the authoritative contract; changes require a PR with team review.
 
-### How to Release (SemVer)
+| Rule                          | Value                                     |
+| ----------------------------- | ----------------------------------------- |
+| Protected branch              | `main`                                    |
+| Required status checks        | `ci / quick-checks`, `ci / test-and-build` |
+| Require PR reviews            | min 1 approval                            |
+| Dismiss stale approvals       | recommended (optional)                    |
+| Require linear history        | optional                                  |
+| Include administrators        | recommended                               |
+| Allow force pushes            | **never**                                 |
+| Allow deletions               | **never**                                 |
 
-1. Ensure `main` is stable and all CI checks pass.
-2. Create and push a SemVer tag:
+### Optional blocking checks
+
+- `Security` (from `security.yml`) — recommended as required once stable
+- `env-schema-check` (from `deploy-preview.yml`) — advisory
+
+## Release Process (SemVer)
+
+### How to release
+
+1. Ensure `main` is green and all PRs are merged.
+2. Create a SemVer tag locally:
    ```bash
    git tag v1.2.3
    git push origin v1.2.3
    ```
-3. The `release.yml` workflow triggers automatically:
-   - Runs full validation: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
-   - Generates release notes from git log (no AI generation)
-   - Creates a GitHub Release with changelog
-4. Alternatively, trigger manually via **Actions → Release → Run workflow** with the tag name.
-5. Verify the GitHub Release was created under **Releases**.
+3. The `release.yml` workflow triggers automatically on `v*.*.*` tags.
+4. Alternatively, trigger a release manually via **Actions → Release → Run workflow**.
+5. The workflow runs lint, typecheck, test, build, then creates a GitHub Release with auto-generated notes.
+6. **No AI is used** for release note generation — notes come from `git log` and GitHub's built-in release notes.
 
-> **Note:** Release notes are generated from git commit history using `git log`. No OpenAI or AI-based generation is used.
+### Versioning policy
+
+- **Major** (`v2.0.0`): Breaking changes to public API or database schema
+- **Minor** (`v1.1.0`): New features, non-breaking
+- **Patch** (`v1.0.1`): Bug fixes, dependency updates
+
+## Preview vs Production Deployment
+
+| Trigger            | Environment | Workflow              | Vercel flag |
+| ------------------ | ----------- | --------------------- | ----------- |
+| Pull Request       | Preview     | `deploy-preview.yml`  | (no `--prod`) |
+| Push/merge to main | Production  | `auto-deploy.yml`     | `--prod`    |
+| Manual dispatch    | Production  | `deploy-prod.yml`     | `--prod`    |
+
+### Environment variables by context
+
+- **Preview**: Uses Vercel Preview environment. Secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`. No production database credentials.
+- **Production**: Uses Vercel Production environment. Full secret set including `DATABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+- **CI**: Only needs build-time vars (`NEXT_PUBLIC_*`). No deploy secrets.
+
+> **Naming convention**: The canonical secret name is `VERCEL_PROJECT_ID`. Legacy alias `VERCEL_PROJEKT_ID` is supported in `auto-deploy.yml` for backwards compatibility but should not be used for new configuration.
+
+## Env Variable Management
+
+### Adding a new environment variable
+
+1. Add the variable with a placeholder to `.env.example`.
+2. Run `pnpm env:check` to verify the schema still passes.
+3. Set the variable in Vercel Dashboard (Preview + Production) and/or GitHub Secrets as needed.
+4. Document the variable's purpose in this runbook if it affects operations.
+
+> **Rule**: `OPENAI_*` variables are explicitly rejected by `tools/check_env_schema.ts` and `tools/guard_no_openai.sh`.
+
+## RLS Smoke Tests
+
+### Running locally
+
+```bash
+# Requires Supabase CLI with a running local instance
+pnpm db:rls:check
+```
+
+This executes `supabase/tests/rls_smoke.sql` against the local Supabase instance and verifies:
+- RLS is enabled on security-relevant tables
+- Expected policies exist
+
+### In CI
+
+RLS checks are available as a manual `workflow_dispatch` — not blocking CI by default since they require a running Supabase instance.
+
+## Legacy section: Deploy to Vercel
+
+> **Deprecated**: See [Preview vs Production Deployment](#preview-vs-production-deployment) above for the current process.
+> This section is kept for historical reference only.
+
+1. Merge only through PR into protected `main`.
+2. Ensure required CI checks are green.
+3. ~~Deploy to Vercel Preview, then Production.~~ → Now automated via `deploy-preview.yml` (PR) and `auto-deploy.yml` (main).
 
 ## Quality Gates by Milestone
 
@@ -133,48 +169,35 @@
 
 ```mermaid
 flowchart TD
-  A[push default-branch / pull_request] --> B[ci.yml: quick-checks]
+  A[push main / pull_request] --> B[ci.yml: quick-checks]
   B -->|lint + typecheck OK| C[ci.yml: test-and-build]
-  C -->|success on default-branch| D[auto-deploy.yml via workflow_run]
+  C -->|success on main| D[auto-deploy.yml via workflow_run]
   D --> E[Vercel production deploy]
-  F[schedule 04:30 UTC / workflow_dispatch] --> B
-  G[Dependabot / autofix PR] --> H[auto-approve.yml]
-  H --> I[auto-merge.yml]
-  J[schedule 05:00 UTC] --> K[health-check.yml]
-  L[schedule Mon 04:00 UTC] --> M[security.yml: audit + SBOM]
+  A -->|pull_request| F[deploy-preview.yml]
+  F --> G[env-schema-check]
+  G -->|OK| H[Vercel preview deploy]
+  H --> I[PR comment with URL]
+  J[push tag v*.*.*] --> K[release.yml]
+  K --> L[lint + typecheck + test + build]
+  L --> M[GitHub Release]
 ```
 
 ### Workflow Responsibilities
 
 - **CI (`.github/workflows/ci.yml`)**
-  - Trigger: `push` auf default branch, `pull_request`, `schedule` (täglich 04:30 UTC), `workflow_dispatch`
-  - Pfadfilter: Reine Doku-Änderungen (`*.md`, `docs/`, `NOTES/`, `LICENSE`) lösen keinen Build aus
+  - Trigger: `push` auf `main` und `pull_request`
   - Stufe 1 (schnell): `quick-checks` mit `lint` + `typecheck`
   - Stufe 2 (langsam): `test-and-build` mit `test` + `build` (nur wenn Stufe 1 erfolgreich)
-  - Caching: **pnpm** via `actions/setup-node` + **Next.js build cache** via `actions/cache@v4`
+  - Paketmanager/Cache: **pnpm** + `actions/setup-node` cache `pnpm`
   - Concurrency: ein Lauf pro Branch/PR-Ref, ältere Läufe werden abgebrochen
 
 - **Deploy (`.github/workflows/auto-deploy.yml`)**
   - Trigger:
-    - automatisch nur über `workflow_run` nach erfolgreichem `ci` auf default branch
+    - automatisch nur über `workflow_run` nach erfolgreichem `ci` auf `main`
     - manuell über `workflow_dispatch` (optional, für Wartung)
   - Aufgabe: ausschließlich Deployment (Vercel pull/build/deploy)
   - Paketmanager/Cache: **pnpm** + `pnpm dlx`
   - Concurrency: ein Deployment-Lauf pro Branch-Ref
-
-- **Auto-Approve (`.github/workflows/auto-approve.yml`)**
-  - Trigger: `pull_request_target` (opened/synchronize/reopened)
-  - Genehmigt automatisch sichere PRs: Dependabot patch/minor Updates und PRs mit `autofix` Label
-  - Verwendet `hmarr/auto-approve-action@v4`
-
-- **Health Check (`.github/workflows/health-check.yml`)**
-  - Trigger: `schedule` (täglich 05:00 UTC), `workflow_dispatch`
-  - Prüft: lint, typecheck, test, build, dependency freshness
-  - Stellt sicher, dass der default branch jederzeit buildbar bleibt
-
-- **Security (`.github/workflows/security.yml`)**
-  - Trigger: `pull_request`, `push` auf default branch, `schedule` (wöchentlich Mo 04:00 UTC)
-  - Jobs: Dependency Audit + Secret Scan + SBOM-Generierung (Software Bill of Materials)
 
 - **Konsolidierung**
   - Es gibt nur noch einen primären CI-Workflow: `.github/workflows/ci.yml`
@@ -186,59 +209,12 @@ flowchart TD
 - Redeploy previous successful Vercel deployment.
 - If migration-related, apply compensating migration (never edit historical migration files).
 
-## Preview vs Production Deployment
-
-| Aspect | Preview | Production |
-|--------|---------|------------|
-| **Trigger** | `pull_request` (opened/synchronize/reopened) | `workflow_run` after successful CI on `main` |
-| **Workflow** | `deploy-preview.yml` | `auto-deploy.yml` |
-| **Vercel flag** | no `--prod` (preview URL) | `--prod` |
-| **Environment** | `preview` | `production` |
-| **PR Comment** | ✅ Preview URL posted/updated | — |
-| **Secrets** | Only `VERCEL_ORG_ID`, `NEU_VERCEL_PROJEKT_ID`, `VERCEL_TOKEN` | Full deploy secrets (Supabase, DB, etc.) |
-
-### Environment Variables
-
-- **Preview** secrets are configured in GitHub Environment `preview` — only Vercel credentials needed for build.
-- **Production** secrets are configured in GitHub Environment `production` — includes Supabase, database, and AI provider keys.
-- New env vars must always be added to `.env.example` first, then to the appropriate GitHub Environment.
-
-## Adding New Environment Variables
-
-1. Add the variable to `.env.example` with a placeholder value.
-2. Run `pnpm env:check` locally to verify the schema is consistent.
-3. Add the variable to the appropriate GitHub Environment (preview/production) or repository secrets.
-4. If the variable is optional, add it to the `OPTIONAL_VARS` set in `tools/check_env_schema.ts`.
-5. If the variable is only needed in CI builds, add it to the `CI_REQUIRED` array.
-6. **Never** add `OPENAI_*` variables (except `OPENAI_COMPAT_*`) — these are rejected by the env check.
-
 ## Incident Steps
 
 1. Triage impact and severity.
 2. Check `/api/health` and CI status.
 3. Capture metadata-only logs (no prompts/PII/secrets).
 4. Create backlog item with acceptance criteria before closing incident.
-
-## RLS Smoke Tests
-
-Minimal SQL-based tests to verify Row Level Security is configured correctly.
-
-### Running Locally
-
-```bash
-# Requires psql and DATABASE_URL pointing to a Supabase instance
-pnpm db:rls:check
-```
-
-### What is Tested
-
-- RLS is **enabled** for all public tables (profiles, products, orders, etc.)
-- At least one **policy** exists per table
-- Tables not yet created are skipped
-
-### In CI
-
-RLS smoke tests are not blocking in CI (no database available). They can be run manually via `workflow_dispatch` or locally against a Supabase instance.
 
 ### Incident-Handling: Label-Robustheit im Autofix-Fallback
 
@@ -260,7 +236,6 @@ RLS smoke tests are not blocking in CI (no database available). They can be run 
   1. Workflow-Name (`name:`) des neuen Workflows in die Orchestrator-Liste übernehmen.
   2. Deduplizierung prüfen: Marker `run-id:<id>` verhindert doppelte offene PRs/Issues.
   3. Fail-closed prüfen: ohne `AI_PROVIDER=deepseek` + `DEEPSEEK_API_KEY` + `NSCALE_API_KEY` darf keine AI-Triage laufen; stattdessen Routing-Issue.
-  4. Runner: `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` verwenden (nie hartcodiertes `ubuntu-latest`).
 
 ### Workflow-Repro-Profile
 
@@ -271,25 +246,11 @@ RLS smoke tests are not blocking in CI (no database available). They can be run 
   - `bootstrap`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
   - `Security`: nur sicherheitsrelevanter Check `pnpm audit --prod` (entspricht `security.yml`)
   - `Auto-Deploy Production`: `pnpm lint`, `pnpm typecheck`, `pnpm build`
+  - `Deploy Preview`: `npx tsx tools/check_env_schema.ts --ci`, `pnpm build`
+  - `Release`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+  - `RLS Smoke Tests`: `psql $DATABASE_URL -f supabase/tests/rls_smoke.sql`
   - `__default__`: `pnpm lint`, `pnpm typecheck`
 - Pflege-Regel: Bei neuen produktiven Workflows sowohl `on.workflow_run.workflows` als auch das Repro-Profil in derselben PR ergänzen.
-
-## Branch Protection Contract
-
-The following rules **must** be enforced on the `main` branch via GitHub repository settings:
-
-| Rule | Value |
-|------|-------|
-| **Protected branch** | `main` |
-| **Required status checks** | `ci / quick-checks`, `ci / test-and-build` |
-| **Blocking security check** | `security` (if configured) |
-| **Require PR reviews** | min 1 approval |
-| **Dismiss stale approvals** | optional (recommended) |
-| **Require linear history** | optional |
-| **Allow force push** | disabled |
-| **Allow deletions** | disabled |
-
-> **Note:** These rules cannot be enforced via PR — they must be configured in GitHub UI under Settings → Branches → Branch protection rules. This section serves as a documented contract.
 
 ## Codex Controller Webhook
 
@@ -320,150 +281,3 @@ The following rules **must** be enforced on the `main` branch via GitHub reposit
 - **401 Invalid webhook signature**: Secret-Mismatch zwischen Sender und `CODEX_WEBHOOK_SECRET`.
 - **502 ROUTING_FAILED**: Prüfe `GH_PAT/GITHUB_TOKEN` und `GITHUB_REPOSITORY`.
 - **Kein Folgeworkflow**: Prüfe `repository_dispatch`-Typ gegen erlaubte Typen in `codex-controller.yml`.
-
-## Issue Triage (Auftrag 21)
-
-### Triage Rules
-- **Auto-Labels:** Issues are labeled based on title/body keywords:
-  - `type:bug`, `type:feature`, `docs`, `ci`, `security`, `db`, `ai`, `priority:high`
-- **Auto-Assign:** New issues are assigned to the repository owner by default.
-- **Repro Check (bugs):** Bug reports missing repro steps, expected behavior, or actual behavior get `needs-info` label + a checklist comment.
-- **Ready for Dev:** Issues with all required fields get `ready-for-dev` label.
-
-### Label Semantics
-| Label | Meaning |
-|-------|---------|
-| `type:bug` | Bug report |
-| `type:feature` | Feature request |
-| `status:triage` | Awaiting initial triage |
-| `needs-info` | Missing required information from reporter |
-| `ready-for-dev` | All info present, ready for development |
-| `ci-failure` | CI pipeline failure |
-| `autofix-candidate` | Can potentially be auto-fixed (lint/format/deps) |
-| `needs-human` | Requires manual investigation |
-| `flaky-test` | Test is flaky/non-deterministic |
-| `transient` | Transient/network failure |
-| `stale` | No activity for 14+ days with needs-info |
-| `security` | Security-related issue |
-| `priority:critical` | Critical priority |
-| `priority:high` | High priority |
-| `priority:medium` | Medium priority |
-| `priority:low` | Low priority |
-| `ci-retry` | Issue tracked for CI retry |
-
-### SLA Policy
-- `needs-info` → 14 days idle → `stale` label + warning comment
-- `stale` → 7 more days idle → auto-close with reopen instructions
-- **Never auto-close:** `security`, `production`, `data-loss`, `priority:critical`
-
-### PR Labeler
-- `.github/labeler.yml` auto-labels PRs by changed file paths (frontend, api, db, ci, docs, tests, config, tooling, dependencies)
-- Triggered via `pull_request_target` on opened/synchronize
-
-## Loop Orchestrator (Auftrag 22)
-
-### CI Failure → Issue Pipeline
-1. CI workflow fails → `loop-orchestrator.yml` creates an issue with:
-   - Failed job names + log links
-   - Failed step names
-   - Branch and commit info
-   - Deduplication marker (`ci-run-<id>`)
-2. If the failing CI run has an associated PR, a comment is posted with the failure summary.
-3. When an issue gets `ready-for-dev` label, an acknowledgment comment is posted.
-
-### Deterministic Summaries Only
-- No AI text generation in the loop orchestrator
-- All summaries are constructed from GitHub API metadata (job names, step names, URLs)
-
-## CI Retry & Flaky Guard (Auftrag 24)
-
-### Retry Policy
-- **Max 1 automatic retry** per failing CI run
-- Only retries for **transient** failures (network timeouts, registry errors)
-- **Never retries:** lint, typecheck, test, build failures
-
-### Failure Classification (`tools/ci_failure_classify.ts`)
-| Class | Retryable | Example Pattern |
-|-------|-----------|-----------------|
-| `network-transient` | ✅ | ETIMEDOUT, ECONNRESET |
-| `registry-timeout` | ✅ | ERR_PNPM_FETCH, registry timeout |
-| `lint` | ❌ | ESLint errors |
-| `format` | ❌ | Prettier check failed |
-| `typecheck` | ❌ | TS errors |
-| `test-flaky` | ✅ | Test timed out |
-| `test-deterministic` | ❌ | Assertion failures |
-| `build` | ❌ | Build/module errors |
-| `deps` | ❌ | Lockfile issues |
-| `unknown` | ❌ | Unrecognized |
-
-### Flaky Test Handling
-- Flaky tests get `flaky-test` label on the tracking issue
-- No autofix PR for flaky tests — only tracking
-- Existing flaky test issue gets updated with new occurrences
-
-## Autofix Engine (Auftrag 23)
-
-### Safe Fix Rules
-The autofix engine (`autofix.yml`) applies ONLY these deterministic fixes:
-1. **Format/Lint:** `prettier --write . && eslint . --fix`
-2. **Lockfile regeneration:** Only when error is clearly `ERR_PNPM_OUTDATED_LOCKFILE`
-
-### What is NEVER auto-fixed
-- TypeScript type errors
-- Test assertion failures
-- Build errors (module resolution, etc.)
-- Database migrations
-- Security vulnerabilities
-- Any file outside the allowlist
-
-### Validation
-After applying fixes, the engine runs the full check suite (lint → typecheck → test → build).
-Only creates a PR if ALL checks pass.
-
-## Autofix Guardrails (Auftrag 28)
-
-### Policy (`tools/autofix_policy.ts`)
-- **Allowed files:** `src/`, `tests/`, `tools/`, config files
-- **Blocked files:** migrations, `.env`, secrets, lockfiles, CODEOWNERS
-- **Max changed files:** 20 per autofix PR
-- **Max diff size:** 500 lines
-- **Cooldown:** 1 autofix PR per SHA per 6 hours
-- **PR limit:** Max 2 open autofix PRs at any time
-
-### Concurrency
-- Each autofix run is scoped to `autofix-<branch>` concurrency group
-- `cancel-in-progress: true` prevents parallel runs
-
-## Stale Issue Policy (Auftrag 25)
-
-- Only targets issues with `needs-info` label
-- 14 days no activity → `stale` label + warning
-- 7 more days → auto-close
-- Exempt labels: `security`, `production`, `data-loss`, `priority:critical`
-- Runs daily at 06:00 UTC
-- Can be dry-run via `workflow_dispatch`
-
-## Backlog Sync (Auftrag 26)
-
-- Daily job (05:00 UTC) syncs open issues to `NOTES/backlog.md`
-- Only replaces the auto-generated block (between `<!-- AUTO:LIVE_ISSUES_START -->` and `<!-- AUTO:LIVE_ISSUES_END -->`)
-- Manual backlog notes are preserved
-- Issues sorted by priority labels
-- Can be triggered via `workflow_dispatch`
-
-## Security Intake (Auftrag 27)
-
-### Audit → Issues
-- Weekly scan (Monday 04:00 UTC) runs `pnpm audit`
-- High/critical findings create or update a single tracking issue
-- Deduplication: reuses existing open security audit issue
-
-### Dependabot Policy
-- Auto-merge: patch/minor updates with green CI via `auto-merge.yml`
-- Major updates: always require manual review
-- GitHub Actions updates: grouped and auto-mergeable with `auto-merge` label
-- Security policy violations: never auto-merged
-
-## E2E Loop Verification (Auftrag 29)
-
-See `NOTES/loop-test.md` for the complete end-to-end verification procedure.

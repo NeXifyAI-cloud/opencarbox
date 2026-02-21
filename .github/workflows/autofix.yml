@@ -16,6 +16,9 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  AI_PROVIDER: deepseek
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
 
 jobs:
   safe_autofix:
@@ -24,7 +27,7 @@ jobs:
       github.event.workflow_run.conclusion == 'failure' &&
       github.event.workflow_run.name == 'ci' &&
       github.event.workflow_run.head_repository.full_name == github.repository
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,13 +41,7 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install system tools
-        run: sudo apt-get update && sudo apt-get install -y jq gh
-
       - run: pnpm i --frozen-lockfile
-
-      - name: Normalize environment aliases
-        run: source tools/export_env.sh
 
       - name: Safe fixes (format + lint)
         run: |
@@ -75,10 +72,6 @@ jobs:
             echo "check_profile=lint-only" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Generate Prisma Client
-        if: steps.classify.outputs.has_changes == 'true'
-        run: pnpm db:generate
-
       - name: Run required checks
         id: required_checks
         if: steps.classify.outputs.has_changes == 'true'
@@ -99,9 +92,6 @@ jobs:
 
       - name: Create PR if changes pass
         if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HUSKY: '0'
         run: |
           BR="codex/autofix-safe-${{ github.event.workflow_run.id }}"
 
@@ -123,9 +113,18 @@ jobs:
           gh pr create \
             --title "chore: safe autofix" \
             --body "Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet." \
-            --base "${{ github.event.workflow_run.head_branch }}" \
+            --base main \
             --label autofix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Log check failure
+      - name: Create incident issue on check failure
         if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true'
-        run: echo "Autofix changes were created but checks failed. Skipping PR creation."
+        run: |
+          gh label create incident --color b60205 --description "Incident requiring manual follow-up" 2>/dev/null || true
+          gh issue create \
+            --title "Incident: autofix checks fehlgeschlagen (Run ${{ github.event.workflow_run.id }})" \
+            --body "Autofix-Änderungen wurden erstellt, aber die Checks sind fehlgeschlagen. Manuelle Analyse erforderlich." \
+            --label incident --label autofix
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

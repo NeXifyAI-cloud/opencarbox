@@ -7,9 +7,14 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to release (e.g. v1.2.3) — must already exist'
-        required: true
+        description: 'Tag to release (e.g. v1.2.3). Must already exist.'
+        required: false
         type: string
+      dry_run:
+        description: 'Dry run — skip GitHub Release creation'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: release-${{ github.ref }}
@@ -24,12 +29,22 @@ env:
 jobs:
   release:
     name: Build & Release
-    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
+      - name: Validate tag format
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          TAG="${{ inputs.tag || github.ref_name }}"
+          if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid tag format: '$TAG'. Must match v*.*.*  (e.g. v1.2.3)."
+            echo "When using workflow_dispatch, provide a valid SemVer tag input."
+            exit 1
+          fi
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          ref: ${{ inputs.tag || github.ref }}
 
       - uses: pnpm/action-setup@v4
 
@@ -40,6 +55,9 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm i --frozen-lockfile
+
+      - name: 'Guard: forbid OpenAI usage'
+        run: bash tools/guard_no_openai.sh
 
       - name: Generate Prisma Client
         run: pnpm db:generate
@@ -70,8 +88,10 @@ jobs:
           echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
+        if: ${{ !inputs.dry_run }}
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.tag || github.ref_name }}
           generate_release_notes: true
           body: |
             ## Changes

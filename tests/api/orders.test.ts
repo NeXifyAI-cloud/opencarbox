@@ -26,18 +26,24 @@ describe('Orders API', () => {
     })
 
     it('sollte Bestellungen mit Pagination zurückgeben', async () => {
-      // Testdaten erstellen (einzeln, da SQLite kein createMany unterstützt)
-      await prisma.order.create({
-        data: {
-          orderNumber: 'CV-TEST-0001', userId: 'user-001',
-          subtotal: 99.99, total: 99.99, status: 'PENDING',
-        },
-      })
-      await prisma.order.create({
-        data: {
-          orderNumber: 'CV-TEST-0002', userId: 'user-002',
-          subtotal: 149.99, total: 149.99, status: 'PROCESSING',
-        },
+      // Testdaten erstellen
+      await prisma.order.createMany({
+        data: [
+          {
+            orderNumber: 'CV-TEST-0001',
+            userId: 'user-001',
+            subtotal: 99.99,
+            total: 99.99,
+            status: 'PENDING',
+          },
+          {
+            orderNumber: 'CV-TEST-0002',
+            userId: 'user-002',
+            subtotal: 149.99,
+            total: 149.99,
+            status: 'PROCESSING',
+          },
+        ],
       })
 
       const response = await fetch(API_URL)

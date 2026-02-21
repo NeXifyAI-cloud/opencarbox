@@ -2,11 +2,7 @@
   "compilerOptions": {
     /* Basis-Konfiguration */
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,37 +14,26 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+
     /* Next.js Plugin */
     "plugins": [
       {
         "name": "next"
       }
     ],
+
     /* Pfad-Aliase für saubere Imports */
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
-      ],
-      "@/hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@/stores/*": [
-        "./src/stores/*"
-      ],
-      "@/types/*": [
-        "./src/types/*"
-      ],
-      "@/styles/*": [
-        "./src/styles/*"
-      ]
+      "@/*": ["./src/*"],
+      "@/components/*": ["./src/components/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/hooks/*": ["./src/hooks/*"],
+      "@/stores/*": ["./src/stores/*"],
+      "@/types/*": ["./src/types/*"],
+      "@/styles/*": ["./src/styles/*"]
     },
+
     /* Strikte Typ-Prüfung (gemäß project_specs.md) */
     "strictNullChecks": true,
     "strictFunctionTypes": true,
@@ -63,10 +48,9 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
     "next-env.d.ts",
-    ".next/types/**/*.ts"
+    "**/*.ts",
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules",

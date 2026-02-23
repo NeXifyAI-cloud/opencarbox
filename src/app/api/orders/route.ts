@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     
     // Entferne userId wenn es null oder undefined ist
     if (!orderData.userId) {
-      const { userId: _, ...rest } = orderData
+      const { userId: _userId, ...rest } = orderData // eslint-disable-line @typescript-eslint/no-unused-vars
       const order = await prisma.order.create({
         data: rest,
       })

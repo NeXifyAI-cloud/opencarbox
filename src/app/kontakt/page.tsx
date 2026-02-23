@@ -3,6 +3,7 @@
 import { Footer } from '@/components/layout/footer';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 import { companyConfig } from '@/config/company';
 import { motion } from 'framer-motion';
 import {
@@ -37,10 +38,11 @@ export default function KontaktPage() {
         {/* Hero Section */}
         <div className="relative bg-slate-900 overflow-hidden min-h-[300px] flex items-center">
           <div className="absolute inset-0">
-            <img
+            <Image
               alt="Car showroom interior background"
               className="w-full h-full object-cover opacity-20"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFhqg0HylnWFzV31qF5NyjqvFlmpzSDfJOZpzEkqIC2xxq2oOQ1h97m17lUyd2Km9Lf8gcR8aIMtCF9P8nqA_g5g2rG8-s3Ih2RlTC8zHPnM_xkvBFQcrvZkrIa6Z8fbd4sHnyzlfWvRMvFEJLHQjFVtl0uT9DJHlU_HmtEKwj5qVGJ0VNgDc5xzd2pHon6iPyDJlMIwa9_FR-GWxpNfc51xyNubXfIc6DjTPuoNvC_k8NOreFrg3At7WZV9KoFdKh7nSP4X_AQzQ"
+              fill
             />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent"></div>
           </div>

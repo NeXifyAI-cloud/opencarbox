@@ -10,24 +10,14 @@ describe('Users API', () => {
     await prisma.user.deleteMany()
     
     // Testbenutzer erstellen
-    await prisma.user.createMany({
-      data: [
-        {
-          email: 'customer@test.com',
-          name: 'Test Kunde',
-          role: 'CUSTOMER',
-        },
-        {
-          email: 'admin@test.com',
-          name: 'Test Admin',
-          role: 'ADMIN',
-        },
-        {
-          email: 'employee@test.com',
-          name: 'Test Mitarbeiter',
-          role: 'EMPLOYEE',
-        },
-      ],
+    await prisma.user.create({
+      data: { email: 'customer@test.com', name: 'Test Kunde', role: 'CUSTOMER' },
+    })
+    await prisma.user.create({
+      data: { email: 'admin@test.com', name: 'Test Admin', role: 'ADMIN' },
+    })
+    await prisma.user.create({
+      data: { email: 'employee@test.com', name: 'Test Mitarbeiter', role: 'EMPLOYEE' },
     })
   })
 

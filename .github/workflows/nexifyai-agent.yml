@@ -1,0 +1,297 @@
+name: NeXifyAI Autonomous Agent
+
+on:
+  schedule:
+    # Alle 30 Minuten aktiv
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'Specific task to execute (optional)'
+        required: false
+        type: string
+  issues:
+    types: [opened, labeled, assigned]
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
+  workflow_run:
+    workflows: ["ci", "Security", "failure-orchestrator"]
+    types: [completed]
+
+concurrency:
+  group: nexifyai-agent-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+  checks: write
+  statuses: write
+
+env:
+  NODE_VERSION: '20'
+  DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+  NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
+  MEM0_API_KEY: ${{ secrets.MEM0_API_KEY }}
+  SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+  SUPABASE_PROJEKT_URL: ${{ secrets.SUPABASE_PROJEKT_URL }}
+  VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
+  GH_TOKEN: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+  AGENT_MODE: ${{ vars.NEXIFYAI_AGENT_MODE || 'autonomous' }}
+
+jobs:
+  # ─────────────────────────────────────────────
+  # JOB 1: Triage – Was muss getan werden?
+  # ─────────────────────────────────────────────
+  triage:
+    name: 🔍 Triage & Prioritize
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    outputs:
+      has_security: ${{ steps.analyze.outputs.has_security }}
+      has_failing_ci: ${{ steps.analyze.outputs.has_failing_ci }}
+      open_issues: ${{ steps.analyze.outputs.open_issues }}
+      open_prs: ${{ steps.analyze.outputs.open_prs }}
+      priority_task: ${{ steps.analyze.outputs.priority_task }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Analyze repo state
+        id: analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+        run: |
+          # Open security issues
+          SEC=$(gh issue list --label "security" --state open --json number | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d))")
+          echo "has_security=$([ $SEC -gt 0 ] && echo true || echo false)" >> $GITHUB_OUTPUT
+
+          # Failing CI runs
+          FAIL=$(gh run list --limit 5 --json conclusion | python3 -c "import sys,json; d=json.load(sys.stdin); print(any(r['conclusion']=='failure' for r in d))")
+          echo "has_failing_ci=$FAIL" >> $GITHUB_OUTPUT
+
+          # Open issues / PRs count
+          echo "open_issues=$(gh issue list --state open --json number | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))')" >> $GITHUB_OUTPUT
+          echo "open_prs=$(gh pr list --state open --json number | python3 -c 'import sys,json; print(len(json.load(sys.stdin)))')" >> $GITHUB_OUTPUT
+
+          # Priority task
+          if [ "$SEC" -gt 0 ]; then
+            echo "priority_task=security_fix" >> $GITHUB_OUTPUT
+          elif [ "$FAIL" = "True" ]; then
+            echo "priority_task=ci_repair" >> $GITHUB_OUTPUT
+          else
+            echo "priority_task=optimize" >> $GITHUB_OUTPUT
+          fi
+
+          echo "📊 Security Issues: $SEC | Failing CI: $FAIL"
+
+  # ─────────────────────────────────────────────
+  # JOB 2: Security Fix – Sofort bei Vulnerabilities
+  # ─────────────────────────────────────────────
+  security-fix:
+    name: 🔒 Auto Security Fix
+    needs: triage
+    if: needs.triage.outputs.has_security == 'true'
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Run audit fix
+        run: |
+          pnpm audit fix --force || true
+          pnpm audit fix || true
+
+      - name: Commit and create PR if changes
+        env:
+          GH_TOKEN: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+        run: |
+          git config user.name "NeXifyAI Agent"
+          git config user.email "agent@nexifyai.cloud"
+          if git diff --quiet; then
+            echo "No changes from audit fix"
+          else
+            BRANCH="fix/security-audit-$(date +%Y%m%d-%H%M)"
+            git checkout -b $BRANCH
+            git add package.json pnpm-lock.yaml
+            git commit -m "fix(security): auto-fix vulnerability findings [NeXifyAI Agent]"
+            git push origin $BRANCH
+            gh pr create \
+              --title "🔒 Security: Auto-fix vulnerability findings" \
+              --body "Automatisch durch NeXifyAI Agent behoben. Bitte reviewen und mergen." \
+              --base main \
+              --label "security,auto-fix"
+          fi
+
+  # ─────────────────────────────────────────────
+  # JOB 3: CI Repair – Failing pipelines reparieren
+  # ─────────────────────────────────────────────
+  ci-repair:
+    name: 🔧 CI Repair
+    needs: triage
+    if: needs.triage.outputs.has_failing_ci == 'true'
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+
+      - name: Analyze CI failure and create issue
+        env:
+          GH_TOKEN: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+        run: |
+          # Letzten fehlgeschlagenen Run analysieren
+          FAILED_RUN=$(gh run list --limit 10 --json name,conclusion,url,databaseId \
+            | python3 -c "
+import sys,json
+runs = json.load(sys.stdin)
+failed = [r for r in runs if r['conclusion'] == 'failure']
+if failed:
+    r = failed[0]
+    print(r['name'] + '|' + str(r['databaseId']) + '|' + r['url'])
+")
+          if [ -n "$FAILED_RUN" ]; then
+            NAME=$(echo $FAILED_RUN | cut -d'|' -f1)
+            RUN_ID=$(echo $FAILED_RUN | cut -d'|' -f2)
+            URL=$(echo $FAILED_RUN | cut -d'|' -f3)
+            
+            echo "Failed CI: $NAME (ID: $RUN_ID)"
+            
+            # Re-run the failed workflow
+            gh run rerun $RUN_ID --failed || true
+          fi
+
+  # ─────────────────────────────────────────────
+  # JOB 4: PR Review & Auto-Merge
+  # ─────────────────────────────────────────────
+  pr-management:
+    name: 📬 PR Management
+    needs: triage
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    if: ${{ !cancelled() }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Review and manage PRs
+        env:
+          GH_TOKEN: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+        run: |
+          # Dependabot/Auto PRs mit grünen Checks auto-mergen
+          gh pr list --state open --json number,title,author,statusCheckRollup,labels \
+            | python3 << 'PYEOF'
+import sys, json, subprocess, os
+
+prs = json.load(sys.stdin)
+for pr in prs:
+    num = pr['number']
+    title = pr['title']
+    author = pr.get('author', {}).get('login', '')
+    checks = pr.get('statusCheckRollup') or []
+    labels = [l['name'] for l in (pr.get('labels') or [])]
+    
+    # Alle Checks grün?
+    all_pass = all(c.get('state') in ('SUCCESS', 'NEUTRAL') or c.get('conclusion') in ('success', 'neutral', 'skipped') for c in checks) if checks else False
+    
+    # Auto-merge für: deps updates, auto-fix PRs mit grünen Checks
+    is_auto = author in ('dependabot[bot]', 'github-actions[bot]') or 'auto-fix' in labels or title.startswith('deps(deps):')
+    
+    if is_auto and all_pass and checks:
+        print(f"Auto-merging PR #{num}: {title[:60]}")
+        subprocess.run(['gh', 'pr', 'merge', str(num), '--auto', '--squash'], capture_output=True)
+    elif is_auto and not checks:
+        print(f"PR #{num} waiting for checks: {title[:60]}")
+    else:
+        print(f"Manual review needed - PR #{num}: {title[:60]}")
+PYEOF
+
+  # ─────────────────────────────────────────────
+  # JOB 5: Issue Triage & Labels
+  # ─────────────────────────────────────────────
+  issue-management:
+    name: 📋 Issue Management
+    needs: triage
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    if: ${{ !cancelled() }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Triage open issues
+        env:
+          GH_TOKEN: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+        run: |
+          gh issue list --state open --json number,title,labels,createdAt \
+            | python3 << 'PYEOF'
+import sys, json, subprocess
+from datetime import datetime, timezone
+
+issues = json.load(sys.stdin)
+for issue in issues:
+    num = issue['number']
+    title = issue['title'].lower()
+    labels = [l['name'] for l in (issue.get('labels') or [])]
+    
+    new_labels = []
+    
+    # Auto-labeling basierend auf Titel
+    if any(w in title for w in ['security', 'vulnerability', 'cve', 'exploit']):
+        if 'security' not in labels:
+            new_labels.append('security')
+    if any(w in title for w in ['bug', 'error', 'fail', 'broken', 'crash']):
+        if 'bug' not in labels:
+            new_labels.append('bug')
+    if any(w in title for w in ['ci', 'pipeline', 'workflow', 'action']):
+        if 'ci/cd' not in labels:
+            new_labels.append('ci/cd')
+    if any(w in title for w in ['performance', 'slow', 'lcp', 'cls']):
+        if 'performance' not in labels:
+            new_labels.append('performance')
+    
+    if new_labels:
+        print(f"Labeling issue #{num} with: {new_labels}")
+        for label in new_labels:
+            subprocess.run(['gh', 'issue', 'edit', str(num), '--add-label', label], capture_output=True)
+PYEOF
+
+  # ─────────────────────────────────────────────
+  # JOB 6: Health Report
+  # ─────────────────────────────────────────────
+  health-report:
+    name: 📊 Health Report
+    needs: [triage, security-fix, ci-repair, pr-management, issue-management]
+    if: always()
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate and post health summary
+        env:
+          GH_TOKEN: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
+        run: |
+          OPEN_ISSUES=${{ needs.triage.outputs.open_issues }}
+          OPEN_PRS=${{ needs.triage.outputs.open_prs }}
+          SEC=${{ needs.triage.outputs.has_security }}
+          CI_FAIL=${{ needs.triage.outputs.has_failing_ci }}
+          PRIORITY=${{ needs.triage.outputs.priority_task }}
+          
+          echo "## 🤖 NeXifyAI Agent Report - $(date -u '+%Y-%m-%d %H:%M UTC')"
+          echo ""
+          echo "| Metric | Value |"
+          echo "|--------|-------|"
+          echo "| Open Issues | $OPEN_ISSUES |"
+          echo "| Open PRs | $OPEN_PRS |"
+          echo "| Security Issues | $SEC |"
+          echo "| CI Failing | $CI_FAIL |"
+          echo "| Priority Task | $PRIORITY |"
+          echo ""
+          echo "✅ Agent cycle complete."

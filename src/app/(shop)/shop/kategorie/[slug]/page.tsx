@@ -1,5 +1,6 @@
 'use client';
 
+import * as React from 'react';
 import { ProductFilter } from '@/components/shop/product-filter';
 import { ProductGrid } from '@/components/shop/product-grid';
 import { ProductSort } from '@/components/shop/product-sort';
@@ -10,12 +11,14 @@ import { ChevronRight, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default function CategoryPage({ params }: CategoryPageProps) {
+  const { slug } = React.use(params);
+
   const normalizeCategorySlug = (value: string) => value
     .trim()
     .toLowerCase()
@@ -29,19 +32,19 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
 
-  const slugToCategoryName = (slug: string) => slug
+  const slugToCategoryName = (val: string) => val
     .split('-')
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  const normalizedSlug = normalizeCategorySlug(params.slug);
+  const normalizedSlug = normalizeCategorySlug(slug);
   const products = featuredProducts.filter(
     (product) => normalizeCategorySlug(product.category) === normalizedSlug,
   );
 
   const matchedCategoryName = products[0]?.category;
-  const categoryName = matchedCategoryName || slugToCategoryName(normalizedSlug || params.slug);
+  const categoryName = matchedCategoryName || slugToCategoryName(normalizedSlug || slug);
   const isValidCategory = Boolean(products.length);
 
   return (

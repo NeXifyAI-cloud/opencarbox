@@ -55,7 +55,7 @@ git push origin main
 
 ```powershell
 # SSH Key generieren (falls nicht vorhanden)
-ssh-keygen -t ed25519 -C "pascal@nexify.ai"
+ssh-keygen -t ed25519 -C "u6288408171@gmail.com"
 
 # Public Key anzeigen
 Get-Content ~/.ssh/id_ed25519.pub

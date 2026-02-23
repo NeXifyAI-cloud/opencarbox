@@ -26,7 +26,7 @@ export const companyConfig = {
 
   contact: {
     phone: "01 7981310",
-    email: "office@opencarbox.co.at",
+    email: "u6288408171@gmail.com",
     website: "www.carvantooo.at"
   },
 

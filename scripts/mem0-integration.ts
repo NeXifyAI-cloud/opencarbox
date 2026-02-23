@@ -309,7 +309,7 @@ jobs:
       - name: Update memory documentation
         run: |
           git config --global user.name "Mem0 Brain"
-          git config --global user.email "mem0@opencarbox.ai"
+          git config --global user.email "u6288408171@gmail.com"
           git add .mem0/
           git commit -m "chore: update Mem0 memory" || echo "No changes to commit"
           git push

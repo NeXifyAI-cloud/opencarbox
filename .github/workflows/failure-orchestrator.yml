@@ -38,6 +38,9 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  contents: write
+  issues: write
+  pull-requests: write
   contents: read
   pull-requests: read
   issues: write
@@ -149,7 +152,10 @@ jobs:
       needs.route-failure.outputs.ai_eligible == 'true' &&
       needs.route-failure.outputs.marker_exists != 'true'
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
-    permissions:
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
       contents: write
       pull-requests: write
       issues: write
@@ -250,7 +256,10 @@ jobs:
       needs.route-failure.outputs.marker_exists != 'true' &&
       needs.route-failure.outputs.ai_eligible != 'true'
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
-    permissions:
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
       issues: write
     steps:
       - name: Create manual triage issue

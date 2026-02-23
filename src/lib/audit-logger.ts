@@ -1,4 +1,5 @@
 import prisma from './prisma';
+import { logger } from './logger';
 
 export type AuditLogStatus = 'SUCCESS' | 'FAILURE' | 'WARNING';
 
@@ -41,14 +42,14 @@ export async function logEvent({
       },
     });
 
-    // In der Entwicklung auch in die Konsole loggen
+    // In der Entwicklung auch via Logger ausgeben
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[AuditLog] [${status}] ${user}: ${action} bei ${resource}`);
+      logger.info(`[AuditLog] [${status}] ${user}: ${action} bei ${resource}`);
     }
 
     return logEntry;
   } catch (error) {
-    console.error('Fehler beim Erstellen des Audit-Logs:', error);
+    logger.error('Fehler beim Erstellen des Audit-Logs:', error);
     // Wir werfen den Fehler nicht weiter, um den Hauptfluss nicht zu unterbrechen,
     // loggen ihn aber kritisch.
     return null;

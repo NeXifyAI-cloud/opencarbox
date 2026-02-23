@@ -34,7 +34,7 @@ jobs:
           pnpm --version
 
       - name: GitHub checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Workspace write check
         shell: pwsh

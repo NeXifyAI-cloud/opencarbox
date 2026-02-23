@@ -4,6 +4,7 @@
   "description": "OpenCarBox & Carvantooo - Premium Automotive Multisite Platform",
   "private": true,
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

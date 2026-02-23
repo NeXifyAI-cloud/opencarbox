@@ -1,10 +1,10 @@
 # Anstehende Aufgaben
 
 ## Sicherheits-Infrastruktur
-- [ ] Implementierung des Audit-Loggers (`src/lib/audit-logger.ts`)
-- [ ] Anpassung des Prisma-Schemas für `AuditLog`
-- [ ] Erstellung der Sicherheits-Dokumentation (`docs/SAFETY_PROTOCOLS.md`)
-- [ ] Erstellung des Refusal-Workflows (`docs/REFUSAL_WORKFLOW.md`)
+- [x] Implementierung des Audit-Loggers (`src/lib/audit-logger.ts`)
+- [x] Anpassung des Prisma-Schemas für `AuditLog`
+- [x] Erstellung der Sicherheits-Dokumentation (`docs/SAFETY_PROTOCOLS.md`)
+- [x] Erstellung des Refusal-Workflows (`docs/REFUSAL_WORKFLOW.md`)
 
 ## Projekt-Tasks (Phase 2/3)
 - [ ] TASK-022: Shop - Produktkatalog finalisieren

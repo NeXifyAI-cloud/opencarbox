@@ -1,14 +1,13 @@
 import type { Config } from 'tailwindcss';
-import { designTokens } from './src/config/design-tokens';
 
 /**
  * Tailwind CSS Konfiguration für OpenCarBox & Carvantooo
  *
- * Dieses Designsystem implementiert die Sharon UI Base Tokens v2.0
- * mit professionellem Blau (#3B82F6) für OpenCarBox und Teal (#14B8A6) für Carvantooo
+ * Dieses Designsystem implementiert die Premium "Automotive Premium" Ästhetik
+ * mit dem Rot-Blau Farbkonzept gemäß project_specs.md
  *
- * @see src/config/design-tokens.ts
- * @see sharon_ui_base_tokens.md
+ * @see /docs/design-system/colors.md
+ * @see /docs/design-system/typography.md
  */
 const config: Config = {
   darkMode: ['class'],
@@ -57,33 +56,164 @@ const config: Config = {
         ring: 'hsl(var(--ring))',
         input: 'hsl(var(--input))',
 
-        /* Primary - OpenCarBox (Werkstatt & Autohandel) */
-        primary: designTokens.primary,
-        
-        /* Secondary - Carvantooo Shop */
-        secondary: designTokens.secondary,
-        
-        /* Accent - Highlight-Farbe */
-        accent: designTokens.accent,
-        
-        /* Semantic Colors */
-        success: designTokens.success,
-        warning: designTokens.warning,
-        error: designTokens.error,
-        info: designTokens.info,
-        
-        /* Neutral Colors */
-        neutral: designTokens.neutral,
-        
+        /* Primary - Professionelles Blau (Corporate Identity) */
+        primary: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6', // DEFAULT
+          600: '#2563EB', // Hover
+          700: '#1D4ED8', // Active
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          950: '#172554',
+          DEFAULT: '#3B82F6',
+          light: '#60A5FA',
+          dark: '#1D4ED8',
+          foreground: '#FFFFFF',
+        },
+        /* Secondary - Modernes Teal (Akzente) */
+        secondary: {
+          50: '#F0FDFA',
+          100: '#CCFBF1',
+          200: '#99F6E4',
+          300: '#5EEAD4',
+          400: '#2DD4BF',
+          500: '#14B8A6', // DEFAULT
+          600: '#0D9488', // Hover
+          700: '#0F766E', // Active
+          800: '#115E59',
+          900: '#134E4A',
+          950: '#042F2E',
+          DEFAULT: '#14B8A6',
+          light: '#2DD4BF',
+          dark: '#0F766E',
+          foreground: '#FFFFFF',
+        },
+        /* Accent - Für besondere Hervorhebungen */
+        accent: {
+          50: '#FEFCE8',
+          100: '#FEF9C3',
+          200: '#FEF08A',
+          300: '#FDE047',
+          400: '#FACC15',
+          500: '#EAB308', // DEFAULT
+          600: '#CA8A04',
+          700: '#A16207',
+          800: '#854D0E',
+          900: '#713F12',
+          DEFAULT: '#EAB308',
+          light: '#FDE047',
+          dark: '#CA8A04',
+          foreground: '#000000',
+        },
+        /* Neutral - Sharon UI Neutral Scale */
+        neutral: {
+          50: '#FAFAFA',
+          100: '#F4F4F5',
+          200: '#E4E4E7',
+          300: '#D4D4D8',
+          400: '#A1A1AA',
+          500: '#71717A',
+          600: '#52525B',
+          700: '#3F3F46',
+          800: '#27272A',
+          900: '#18181B',
+          950: '#09090B',
+        },
+        /* Status-Farben */
+        success: {
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981', // DEFAULT
+          600: '#059669',
+          700: '#047857',
+          800: '#065F46',
+          900: '#064E3B',
+          DEFAULT: '#10B981',
+          light: '#34D399',
+          dark: '#059669',
+          foreground: '#FFFFFF',
+        },
+        warning: {
+          50: '#FFFBEB',
+          100: '#FEF3C7',
+          200: '#FDE68A',
+          300: '#FCD34D',
+          400: '#FBBF24',
+          500: '#F59E0B', // DEFAULT
+          600: '#D97706',
+          700: '#B45309',
+          800: '#92400E',
+          900: '#78350F',
+          DEFAULT: '#F59E0B',
+          light: '#FCD34D',
+          dark: '#D97706',
+          foreground: '#000000',
+        },
+        error: {
+          50: '#FEF2F2',
+          100: '#FEE2E2',
+          200: '#FECACA',
+          300: '#FCA5A5',
+          400: '#F87171',
+          500: '#EF4444', // DEFAULT
+          600: '#DC2626',
+          700: '#B91C1C',
+          800: '#991B1B',
+          900: '#7F1D1D',
+          DEFAULT: '#EF4444',
+          light: '#FCA5A5',
+          dark: '#DC2626',
+          foreground: '#FFFFFF',
+        },
+        info: {
+          50: '#EFF6FF',
+          100: '#DBEAFE',
+          200: '#BFDBFE',
+          300: '#93C5FD',
+          400: '#60A5FA',
+          500: '#3B82F6', // DEFAULT
+          600: '#2563EB',
+          700: '#1D4ED8',
+          800: '#1E40AF',
+          900: '#1E3A8A',
+          DEFAULT: '#3B82F6',
+          light: '#60A5FA',
+          dark: '#1D4ED8',
+          foreground: '#FFFFFF',
+        },
         /* Background & Surface */
-        background: designTokens.background,
-        surface: designTokens.surface,
-        
-        /* Text Colors */
-        text: designTokens.text,
-        
-        /* Border Colors */
-        border: designTokens.border,
+        background: {
+          DEFAULT: 'hsl(var(--background))',
+          secondary: '#FAFAFA',
+          tertiary: '#F4F4F5',
+        },
+        surface: {
+          DEFAULT: '#FFFFFF',
+          elevated: '#FFFFFF',
+          overlay: 'rgba(0, 0, 0, 0.5)',
+        },
+        /* Text */
+        text: {
+          primary: '#18181B',
+          secondary: '#71717A',
+          tertiary: '#A1A1AA',
+          disabled: '#D4D4D8',
+          inverse: '#FFFFFF',
+        },
+        /* Border */
+        border: {
+          DEFAULT: 'hsl(var(--border))',
+          strong: '#D4D4D8',
+          subtle: '#F4F4F5',
+        },
+
       },
 
       /* =================================================================

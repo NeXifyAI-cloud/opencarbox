@@ -41,16 +41,10 @@ export async function logEvent({
       },
     });
 
-    // In der Entwicklung auch in die Konsole loggen
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`[AuditLog] [${status}] ${user}: ${action} bei ${resource}`);
-    }
-
     return logEntry;
   } catch (error) {
-    console.error('Fehler beim Erstellen des Audit-Logs:', error);
-    // Wir werfen den Fehler nicht weiter, um den Hauptfluss nicht zu unterbrechen,
-    // loggen ihn aber kritisch.
+    // Fehler beim Logging werden absichtlich ignoriert, um den Hauptfluss nicht zu unterbrechen.
+    // In einer produktiven Umgebung sollte hier ein externes Monitoring informiert werden.
     return null;
   }
 }

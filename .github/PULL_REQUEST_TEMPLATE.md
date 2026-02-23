@@ -1,35 +1,25 @@
-## Summary
+## 📋 Beschreibung
 
-<!-- Kurze Beschreibung der Änderung und Motivation -->
+<!-- Was wurde geändert? Warum? -->
 
-## Checklist
+## 🔗 Referenz
 
-### CI & Quality
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass locally
-- [ ] CI checks are green (ci / quick-checks, ci / test-and-build)
-- [ ] Tests added/updated where behavior changed
+Closes #<!-- Issue-Nummer -->
 
-### Documentation & Operations
-- [ ] NOTES updated (`runbook.md`, `brain.md`, `backlog.md`) if relevant
-- [ ] Documentation updated (`README`, `docs/`) if relevant
-- [ ] Migrations included and runbook updated if database schema changed
+## ✅ Checkliste
 
-### Security & Secrets
-- [ ] No secrets added to code, logs, or docs
-- [ ] `pnpm secret:scan` passes
-- [ ] OPENAI_* / forbidden provider references not introduced
+- [ ] `pnpm lint` – 0 Errors
+- [ ] `pnpm typecheck` – 0 Errors  
+- [ ] `pnpm test` – alle Tests grün
+- [ ] `pnpm build` – erfolgreich
+- [ ] Dual-Brand Regel eingehalten (G9)
+- [ ] Kein OpenAI/Google AI verwendet (ADR-003)
+- [ ] Dokumentation aktualisiert (falls nötig)
 
-### Deployment & Release
-- [ ] UI changes include screenshot(s)
-- [ ] DB migration / rollback runbook updated if relevant
-- [ ] Vercel Preview deployment verified (if applicable)
+## 🎨 Screenshots (UI-Änderungen)
 
-### Orchestrator & Workflows
-- [ ] Bei neuen/umbenannten produktiven Workflows wurde `.github/workflows/failure-orchestrator.yml` (`on.workflow_run.workflows`) in derselben PR aktualisiert
-- [ ] Branch protection contract checked (see NOTES/runbook.md)
+<!-- Screenshots vor/nach einfügen wenn UI betroffen -->
 
-### Definition of Done
-- [ ] All CI checks green
-- [ ] Code review approved (min 1 reviewer)
-- [ ] Acceptance criteria from linked issue verified
-- [ ] No regressions introduced
+## ⚠️ Breaking Changes
+
+<!-- Keine / oder beschreiben was sich ändert -->

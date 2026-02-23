@@ -1,35 +1,42 @@
-name: Feature request
-description: Propose a product or engineering improvement
-title: "[FEATURE]: "
+name: ✨ Feature Request
+description: Neue Funktion vorschlagen
+title: "feat: "
 labels: ["type:feature", "status:triage"]
 body:
-  - type: markdown
+  - type: dropdown
+    id: area
     attributes:
-      value: |
-        Thanks for suggesting an improvement.
+      label: Bereich
+      options:
+        - area:shop (Carvantooo #FFB300)
+        - area:werkstatt (OpenCarBox #FFA800)
+        - area:autohandel (OpenCarBox #FFA800)
+        - area:infra
+    validations:
+      required: true
   - type: textarea
     id: problem
     attributes:
-      label: Problem statement
-      description: Which user or business problem should be solved?
+      label: Problem / Motivation
+      description: Welches Problem löst dieses Feature?
     validations:
       required: true
   - type: textarea
     id: solution
     attributes:
-      label: Proposed solution
+      label: Vorgeschlagene Lösung
     validations:
       required: true
   - type: textarea
-    id: alternatives
+    id: kpi
     attributes:
-      label: Alternatives considered
-  - type: textarea
-    id: acceptance
+      label: KPI-Auswirkung
+      description: Welche KPI-Ziele werden beeinflusst?
+  - type: dropdown
+    id: milestone
     attributes:
-      label: Acceptance criteria
-      placeholder: |
-        - [ ] Criterion 1
-        - [ ] Criterion 2
-    validations:
-      required: true
+      label: Phase
+      options:
+        - "Phase 1: Core Commerce (MVP)"
+        - "Phase 2: Feature Complete"
+        - "Phase 3: Production Ready"

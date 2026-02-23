@@ -1,0 +1,30 @@
+name: ⚙️ CI/CD Failure
+description: CI/CD Pipeline Fehler melden
+title: "ci: Pipeline failure - "
+labels: ["area:infra", "type:bug", "priority:high"]
+body:
+  - type: input
+    id: workflow
+    attributes:
+      label: Workflow Name
+      placeholder: "ci / deploy-prod / security"
+    validations:
+      required: true
+  - type: input
+    id: run_url
+    attributes:
+      label: Run URL
+      placeholder: "https://github.com/NeXifyAI-cloud/opencarbox/actions/runs/..."
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Fehlermeldung
+      description: Relevante Teile des Fehler-Logs
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Mögliche Ursache / Fix

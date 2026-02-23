@@ -57,7 +57,7 @@ export function ProductsList() {
         throw new Error(data.error || 'Fehler beim Laden der Produkte')
       }
     } catch (err) {
-      // console.error('Fehler beim Laden der Produkte:', err)
+      // logger.error('Fehler beim Laden der Produkte:', err)
       setError(err instanceof Error ? err.message : 'Unbekannter Fehler')
       
       // Fallback: Mock-Daten für Entwicklung
@@ -106,7 +106,7 @@ export function ProductsList() {
 
   const handleAddToCart = (product: Product) => {
     // Hier würde später die Cart-Logik implementiert werden
-    // console.log('Produkt zum Warenkorb hinzugefügt:', product)
+    // logger.info('Produkt zum Warenkorb hinzugefügt:', product)
     alert(`${product.name} wurde zum Warenkorb hinzugefügt!`)
   }
 
@@ -199,7 +199,7 @@ export function ProductsList() {
                 variant="outline" 
                 className="flex-1"
                 onClick={() => {
-                  // console.log('Details anzeigen:', product)
+                  // logger.info('Details anzeigen:', product)
                   // Hier würde später die Detailansicht geöffnet werden
                 }}
               >

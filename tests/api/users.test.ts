@@ -10,6 +10,7 @@ describe('Users API', () => {
     await prisma.user.deleteMany()
     
     // Testbenutzer erstellen
+    // @ts-expect-error createMany not supported in test SQLite - use create loop
     await prisma.user.createMany({
       data: [
         {

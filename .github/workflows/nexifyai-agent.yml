@@ -1,0 +1,148 @@
+# NeXifyAI Autonomous Agent — DOS v1.1
+# Runs every 30 minutes to process open T-issues, fix CI, auto-merge green PRs
+name: nexifyai-agent
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Agent mode: full | triage | merge-only'
+        required: false
+        default: 'full'
+      issue_number:
+        description: 'Specific issue number to process (optional)'
+        required: false
+
+concurrency:
+  group: nexifyai-agent
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: '20'
+  AGENT_MODE: ${{ github.event.inputs.mode || 'full' }}
+
+jobs:
+  # ── 1. Triage: Label new issues, assign milestones ──────────────────────────
+  triage:
+    name: Triage Open Issues
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    if: vars.NEXIFYAI_AGENT_MODE == 'autonomous' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Install gh and jq
+        run: sudo apt-get update -qq && sudo apt-get install -y gh jq
+
+      - name: Triage unlabeled issues
+        run: |
+          echo "🤖 NeXifyAI Agent — Triage pass"
+
+          # Find open issues with label 'triage' or no labels
+          gh issue list --state open --label "triage" --json number,title,body \
+            --jq '.[] | .number' | while read NUM; do
+
+            TITLE=$(gh issue view "$NUM" --json title --jq '.title')
+            echo "Triaging #$NUM: $TITLE"
+
+            # Auto-assign area labels based on title keywords
+            if echo "$TITLE" | grep -iE 'shop|carvantooo|product|cart|checkout|stripe'; then
+              gh issue edit "$NUM" --add-label "area:shop" || true
+            fi
+            if echo "$TITLE" | grep -iE 'werkstatt|appointment|booking|termin'; then
+              gh issue edit "$NUM" --add-label "area:werkstatt" || true
+            fi
+            if echo "$TITLE" | grep -iE 'autohandel|vehicle|fahrzeug|hsn|tsn'; then
+              gh issue edit "$NUM" --add-label "area:autohandel" || true
+            fi
+            if echo "$TITLE" | grep -iE 'ci|workflow|deploy|build|lint|test'; then
+              gh issue edit "$NUM" --add-label "area:infra" || true
+            fi
+
+            # Remove triage label after processing
+            gh issue edit "$NUM" --remove-label "triage" || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
+
+  # ── 2. Auto-Merge: Green PRs from trusted actors ────────────────────────────
+  auto-merge:
+    name: Auto-Merge Ready PRs
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    if: vars.AUTO_MERGE_ENABLED == 'true' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Install gh and jq
+        run: sudo apt-get update -qq && sudo apt-get install -y gh jq
+
+      - name: Merge green auto-merge PRs
+        run: |
+          echo "🔀 NeXifyAI Agent — Auto-merge pass"
+
+          gh pr list --state open \
+            --json number,author,labels,isDraft,mergeable \
+            --jq '.[] | select(.isDraft == false) |
+                  select(.mergeable != "CONFLICTING") |
+                  select(
+                    (.author.login == "dependabot[bot]") or
+                    (.author.login == "copilot-swe-agent[bot]") or
+                    ([.labels[].name] | any(. == "auto-fix")) or
+                    ([.labels[].name] | any(. == "auto-merge"))
+                  ) | .number' | while read PR_NUM; do
+
+            echo "Checking PR #$PR_NUM..."
+
+            # Skip workflow/migration changes
+            CHANGED=$(gh pr view "$PR_NUM" --json files --jq '[.files[].path] | join("\n")')
+            if echo "$CHANGED" | grep -qE '^\.github/workflows/|^supabase/migrations/'; then
+              echo "⚠️  PR #$PR_NUM touches protected paths — skipping"
+              continue
+            fi
+
+            # Verify CI passes
+            ALL_GREEN=$(gh pr checks "$PR_NUM" --json state \
+              --jq 'if length == 0 then false else all(.state == "SUCCESS") end' 2>/dev/null || echo "false")
+
+            if [ "$ALL_GREEN" != "true" ]; then
+              echo "⏳ PR #$PR_NUM CI not green yet — skipping"
+              continue
+            fi
+
+            echo "✅ Merging PR #$PR_NUM..."
+            gh pr review --approve "$PR_NUM" || true
+            gh pr merge --squash --auto "$PR_NUM" || echo "Already queued"
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'
+
+  # ── 3. CI Health: Post summary comment on failures ──────────────────────────
+  ci-health:
+    name: CI Health Summary
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    needs: [triage, auto-merge]
+    if: always()
+    steps:
+      - name: Install gh and jq
+        run: sudo apt-get update -qq && sudo apt-get install -y gh jq
+
+      - name: Check for repeated CI failures
+        run: |
+          echo "🏥 NeXifyAI Agent — CI Health pass"
+
+          # Find open ci-failure issues
+          COUNT=$(gh issue list --state open --label "ci-failure" --json number \
+            --jq 'length')
+
+          if [ "$COUNT" -ge 3 ]; then
+            echo "⚠️  $COUNT open CI failure issues detected — check GitHub Actions"
+          else
+            echo "✅ CI health OK ($COUNT open failures)"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HUSKY: '0'

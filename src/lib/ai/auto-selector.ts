@@ -34,7 +34,7 @@ function log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
     } else {
       // Only log in development or when AI_DEBUG is enabled
       if (process.env.NODE_ENV === 'development' || process.env.AI_DEBUG === 'true') {
-        console.log(`${prefix} ${message}`);
+        console.log(`${prefix} ${message}`); // eslint-disable-line no-console
       }
     }
   }

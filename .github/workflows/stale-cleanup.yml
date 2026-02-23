@@ -59,7 +59,9 @@ jobs:
           # Find open PRs with codex or ci labels older than 6 hours
           SIX_HOURS_AGO=$(date -u -d '6 hours ago' +%Y-%m-%dT%H:%M:%SZ)
           
-          SUPERSEDED_PRS=$(gh pr list --state open --label codex,ci --json number,createdAt,headRefName --jq --arg cutoff "$SIX_HOURS_AGO" '.[] | select(.createdAt < $cutoff) | .number')
+          SUPERSEDED_PRS=$(gh pr list --state open --label "codex" --json number,createdAt,headRefName --jq --arg cutoff "$SIX_HOURS_AGO" '.[] | select(.createdAt < $cutoff) | .number')
+          SUPERSEDED_PRS="$SUPERSEDED_PRS $(gh pr list --state open --label "ci" --json number,createdAt,headRefName --jq --arg cutoff "$SIX_HOURS_AGO" '.[] | select(.createdAt < $cutoff) | .number')"
+          SUPERSEDED_PRS=$(echo "$SUPERSEDED_PRS" | tr ' ' '\n' | sort -u | grep -v '^$')
           
           if [ -z "$SUPERSEDED_PRS" ]; then
             echo "✅ No superseded PRs found"
@@ -133,44 +135,29 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: '0'
 
-  sync-pr-116:
-    name: Sync PR #116
+  label-long-running-prs:
+    name: Label Long-Running PRs
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     needs: [cleanup-stale-prs, auto-merge-ready-prs]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - name: Install gh and jq
         run: sudo apt-get update && sudo apt-get install -y gh jq
 
-      - name: Update and enable auto-merge on PR #116
+      - name: Label PRs open > 7 days without activity
         run: |
-          echo "🔍 Checking PR #116 status..."
-          
-          # Check if PR #116 exists and is open
-          PR_STATE=$(gh pr view 116 --json state --jq '.state' 2>/dev/null || echo "NOT_FOUND")
-          
-          if [ "$PR_STATE" != "OPEN" ]; then
-            echo "PR #116 is not open (state: $PR_STATE) - skipping"
+          echo "🔍 Finding long-running open PRs..."
+          SEVEN_DAYS_AGO=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          LONG_PRS=$(gh pr list --state open --json number,updatedAt,labels \
+            --jq --arg cutoff "$SEVEN_DAYS_AGO" \
+            '.[] | select(.updatedAt < $cutoff) | select([.labels[].name] | index("stale") | not) | .number')
+          if [ -z "$LONG_PRS" ]; then
+            echo "✅ No long-running PRs found"
             exit 0
           fi
-          
-          echo "PR #116 is open, checking if rebase needed..."
-          
-          # Check if PR is behind base branch
-          MERGEABLE=$(gh pr view 116 --json mergeable --jq '.mergeable')
-          
-          if [ "$MERGEABLE" = "CONFLICTING" ]; then
-            echo "⚠️  PR #116 has conflicts - manual intervention required"
-            exit 0
-          fi
-          
-          # Enable auto-merge
-          echo "✅ Enabling auto-merge on PR #116..."
-          gh pr merge --squash --auto 116 || echo "Auto-merge already enabled or not possible"
+          for PR_NUM in $LONG_PRS; do
+            echo "Labeling PR #$PR_NUM as stale..."
+            gh pr edit "$PR_NUM" --add-label "stale" || true
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: '0'

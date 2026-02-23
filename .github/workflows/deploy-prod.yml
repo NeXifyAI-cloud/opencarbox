@@ -27,7 +27,7 @@ jobs:
         if: github.event.inputs.confirm != 'deploy'
         run: |
           echo "::error::Deployment not confirmed. Input must be 'deploy'."
-          ex""it 1
+          exit 1
 
   deploy-prod:
     name: Deploy to Production
@@ -84,7 +84,7 @@ jobs:
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ steps.deploy.outputs.url }}/api/health || echo "failed")
           if [ "$STATUS" != "200" ]; then
             echo "::error::Health check failed with status $STATUS"
-            ex""it 1
+            exit 1
           fi
           echo "Health check passed!"
 

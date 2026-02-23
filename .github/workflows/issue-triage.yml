@@ -5,6 +5,10 @@ on:
   issues:
     types: [opened, edited, reopened, labeled]
 
+concurrency:
+  group: issue-triage-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 permissions:
   issues: write
 

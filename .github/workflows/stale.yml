@@ -11,6 +11,10 @@ on:
         required: false
         default: 'true'
 
+concurrency:
+  group: stale
+  cancel-in-progress: false
+
 permissions:
   issues: write
 

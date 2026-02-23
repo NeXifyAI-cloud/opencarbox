@@ -302,6 +302,7 @@ async function main() {
       action: 'seed_database',
       resource: 'prisma/seed.ts',
       status: 'SUCCESS',
+      user: 'system',
       details: JSON.stringify({ 
         tablesCreated: 15, 
         recordsCreated: 20,

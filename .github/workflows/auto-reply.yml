@@ -8,6 +8,10 @@ on:
   pull_request:
     types: [opened]
 
+concurrency:
+  group: auto-reply-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
   issues: write

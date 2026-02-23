@@ -128,7 +128,8 @@ jobs:
           PR_COUNT="$(gh pr list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
 
           # Check for open issue with exact incident title (robust dedup, independent of search parser behavior)
-          WF_ISSUE_COUNT="$(gh issue list --state open --label failure-routing --json title --jq --arg title "$INCIDENT_TITLE" '[.[] | select(.title == $title)] | length')"
+          WF_ISSUE_COUNT="$(gh issue list --state open --label failure-routing --json title \
+            --jq '.[].title' | grep -cxF "$INCIDENT_TITLE" || echo 0)"
 
           echo "marker_issue_count=$ISSUE_COUNT"
           echo "marker_pr_count=$PR_COUNT"
@@ -259,8 +260,8 @@ jobs:
           WF_NAME="${{ github.event.workflow_run.name }}"
           INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
           ISSUE_NUMBERS="$(gh issue list --state open --label failure-routing \
-            --json number,title --jq \
-            --arg t "$INCIDENT_TITLE" '[.[] | select(.title == $t)] | .[].number')"
+            --json number,title \
+            --jq '.[] | select(.title == env.INCIDENT_TITLE) | .number')"
           for NUM in $ISSUE_NUMBERS; do
             gh issue comment "$NUM" \
               --body "✅ Workflow **${WF_NAME}** hat erfolgreich abgeschlossen. Auto-Close." || true

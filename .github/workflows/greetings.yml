@@ -2,15 +2,34 @@ name: Greetings
 
 on: [pull_request_target, issues]
 
+concurrency:
+  group: greetings-${{ github.event.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+permissions:
+  issues: write
+  pull-requests: write
+
 jobs:
   greeting:
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      pull-requests: write
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
-    - uses: actions/first-interaction@v3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: "Message that will be displayed on users' first issue"
-        pr-message: "Message that will be displayed on users' first pull request"
+      - uses: actions/first-interaction@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            👋 Danke für dein erstes Issue im OpenCarBox-Repo!
+
+            Unser NeXifyAI-Agent wird es automatisch triagen und labeln.
+            Bitte stelle sicher, dass das Issue:
+            - Ein klares Ziel/Problem beschreibt
+            - Den betroffenen Bereich nennt (Shop, Werkstatt, Autohandel)
+
+            Bei Fragen: @NeXify-Chat-it-Automate-it pingen.
+          pr-message: |
+            🚀 Danke für deinen ersten PR im OpenCarBox-Repo!
+
+            Bitte checke die [Contribution-Guidelines](../wiki) und stelle sicher,
+            dass alle CI-Checks grün sind. Das NeXifyAI-System prüft deinen PR automatisch.
+
+            Bei Fragen: @NeXify-Chat-it-Automate-it pingen.

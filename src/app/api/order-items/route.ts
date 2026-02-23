@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -72,7 +73,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bestellpositionen:', error)
+    logger.error('Fehler beim Abrufen der Bestellpositionen:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -151,7 +152,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Fehler beim Erstellen der Bestellposition:', error)
+    logger.error('Fehler beim Erstellen der Bestellposition:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -214,7 +215,7 @@ async function _GET_ORDER_ITEMS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bestellpositionen:', error)
+    logger.error('Fehler beim Abrufen der Bestellpositionen:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -315,7 +316,7 @@ async function _GET_STATS(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Bestellpositionen-Statistiken:', error)
+    logger.error('Fehler beim Abrufen der Bestellpositionen-Statistiken:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }

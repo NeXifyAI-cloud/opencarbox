@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from '@/lib/logger'
 import { PrismaClient } from '@prisma/client'
 import { z } from 'zod'
 
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Services:', error)
+    logger.error('Fehler beim Abrufen der Services:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Fehler beim Erstellen des Services:', error)
+    logger.error('Fehler beim Erstellen des Services:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -152,7 +153,7 @@ async function _GET_CATEGORIES(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Fehler beim Abrufen der Service-Kategorien:', error)
+    logger.error('Fehler beim Abrufen der Service-Kategorien:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }
@@ -188,7 +189,7 @@ async function _POST_CATEGORY(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
-    console.error('Fehler beim Erstellen der Service-Kategorie:', error)
+    logger.error('Fehler beim Erstellen der Service-Kategorie:', error)
     return NextResponse.json(
       { success: false, error: 'Interner Serverfehler' },
       { status: 500 }

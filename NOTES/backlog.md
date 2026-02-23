@@ -10,22 +10,22 @@
 ## Milestone 2 — Vertical Slice (Auth/Settings)
 - [ ] Auth flow with protected dashboard route group.
   - **Akzeptanzkriterien:**
-    - Supabase Auth angebunden, Login/Logout funktioniert.
-    - Dashboard-Routen sind nur für authentifizierte Nutzer erreichbar.
-    - E2E-Test oder manueller Nachweis vorhanden.
+    - Supabase Auth login/logout functional
+    - Dashboard routes protected via middleware
+    - Session state managed via `@supabase/ssr`
 - [ ] Persisted settings with Supabase + RLS.
   - **Akzeptanzkriterien:**
-    - Settings-Tabelle hat RLS aktiviert.
-    - Nutzer kann nur eigene Settings lesen/schreiben.
-    - `pnpm db:rls:check` zeigt keine offenen RLS-Lücken.
+    - User settings stored in Supabase with RLS policies
+    - Settings read/write via TanStack Query
+    - RLS smoke tests pass for settings table
 - [x] Implement `/api/health` endpoint and status page.
 - [x] Implement `/api/ai/chat` with validation and tests.
 
 ## Milestone 3 — Providers + NSCALE (DeepSeek-only)
 - [ ] DeepSeek provider adapter.
   - **Akzeptanzkriterien:**
-    - Adapter implementiert und getestet.
-    - `AI_PROVIDER=deepseek` erzwungen, kein Fallback auf andere Provider.
+    - Provider interface implemented in `src/lib/ai/providers/deepseek.ts`
+    - Only `AI_PROVIDER=deepseek` accepted at runtime
 - [ ] DeepSeek adapter hardening (strict request schema, header enforcement, deterministic error mapping).
   - **Akzeptanzkriterien:**
     - Laufzeitvalidierung blockiert alle Provider außer `AI_PROVIDER=deepseek`.
@@ -48,15 +48,24 @@
 - [ ] Add optional `autofix.yml` safe-fix pipeline.
 - [ ] Document label/project setup and runbook operations.
 
-## Ops — Repo Standards & CI/CD
-- [x] PR/Issue Templates, CODEOWNERS, CONTRIBUTING.md, SECURITY.md (Auftrag 13).
-- [x] Branch Protection Contract documented in NOTES/runbook.md (Auftrag 14).
-- [x] Release Workflow with SemVer tags + workflow_dispatch (Auftrag 15).
-- [x] Vercel Preview deploy on PR, Production deploy on main (Auftrag 16).
-- [x] Env Sync Check via `tools/check_env_schema.ts` (Auftrag 17).
-- [x] Supabase RLS Smoke Tests via `supabase/tests/rls_smoke.sql` (Auftrag 18).
-- [x] Next.js hardening: headers/redirects single-source in vercel.json (Auftrag 19).
-- [x] Definition of Done gate in PR template + Backlog grooming (Auftrag 20).
+## Ops Milestones
+
+### Ops-1 — CI/CD & Templates ✅
+- [x] PR/Issue templates with DoD checklist
+- [x] CODEOWNERS ownership rules
+- [x] Branch protection contract documented
+- [x] Release workflow with SemVer tags
+- [x] Preview deploy on PR, production deploy on main
+
+### Ops-2 — Guards & Checks
+- [x] Env schema check (`tools/check_env_schema.ts`)
+- [x] RLS smoke tests (`supabase/tests/rls_smoke.sql`)
+- [x] Next.js hardening (deduplicated headers, vercel.json as contract)
+
+### Ops-3 — Future
+- [ ] Incident-Issue automation with standard template (A4)
+- [ ] Release checklist as PR template extension (A5)
+- [x] Optional self-hosted runner evaluation (A6) — via `vars.RUNNER` systemweit konfigurierbar
 
 ## Automation Backlog
 
@@ -94,14 +103,56 @@
 - **Zieltermin:** 2026-03-27
 
 ### A5 — Release-Checklist als PR-Template-Erweiterung — Priorität: Niedrig
-- **Status:** ⏳ In Review (integriert in PR-Template-DoD, Abnahme nach produktivem Einsatz)
-- **Abnahmedatum:** tbd (nach Merge & Verifizierung)
-
-### A6 — Optionaler Umstieg von CI auf self-hosted Runner (separate ADR) — Priorität: Mittel
 - **Akzeptanzkriterien:**
-  - Eine neue ADR dokumentiert Anlass, Risiko, Kosten und Rollback für den Umstieg von `ubuntu-latest` auf `self-hosted` in `ci.yml`.
-  - Es existiert ein reproduzierbarer Runner-Betriebsnachweis (Provisioning, Labels, Monitoring, Patch-Management, Ausfallprozess).
-  - Ein Validierungslauf zeigt, dass `pnpm lint`, `pnpm typecheck`, `pnpm test` und `pnpm build` auf self-hosted stabil durchlaufen.
-  - Rollback auf `ubuntu-latest` ist als einzelner, dokumentierter Workflow-Change möglich und getestet.
-- **Zieltermin:** 2026-04-10
+  - Das PR-Template enthält eine dedizierte Release-Checklist (Versioning, Changelog, Migration, Rollback-Hinweise).
+  - Die Checklist ist in regulären PRs nutzbar, ohne den normalen Entwicklungsfluss übermäßig zu belasten.
+  - Dokumentation beschreibt, wann die Release-Checklist vollständig abgearbeitet werden muss.
+- **Zieltermin:** 2026-04-03
 
+### A6 — Systemweite Runner-Konfiguration via `vars.RUNNER` (ADR-010) — Priorität: Mittel
+- **Status:** ✅ Erledigt
+- **Ergebnis:** Alle 25 Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}`. Runner-Wechsel erfordert nur eine Änderung an der Repository-Variable `vars.RUNNER`. Rollback auf `ubuntu-latest` durch Löschen der Variable. ADR-010 dokumentiert Entscheidung und Rollback-Plan.
+- **Abnahmedatum:** 2026-02-18
+
+<!-- AUTO:LIVE_ISSUES_START -->
+
+## Live Issues Index
+
+> Auto-generated — do not edit this section manually.
+> Last updated: 2026-02-21
+
+| # | Title | Labels | Assignees |
+|---|-------|--------|-----------|
+| [#131](https://github.com/NeXifyAI-cloud/opencarbox/issues/131) | CI Failure: ci #100 | `ci-failure` `status:triage` | — |
+| [#133](https://github.com/NeXifyAI-cloud/opencarbox/issues/133) | CI Failure: ci #101 | `ci-failure` `status:triage` | — |
+| [#144](https://github.com/NeXifyAI-cloud/opencarbox/issues/144) | CI Failure: ci #105 | `ci-failure` `status:triage` | — |
+| [#154](https://github.com/NeXifyAI-cloud/opencarbox/issues/154) | CI Failure: ci #108 | `ci-failure` `status:triage` | — |
+| [#155](https://github.com/NeXifyAI-cloud/opencarbox/issues/155) | CI Failure: ci #107 | `ci-failure` `status:triage` | — |
+| [#156](https://github.com/NeXifyAI-cloud/opencarbox/issues/156) | CI Failure: ci #106 | `ci-failure` `status:triage` | — |
+| [#157](https://github.com/NeXifyAI-cloud/opencarbox/issues/157) | CI Failure: ci #104 | `ci-failure` `status:triage` | — |
+| [#122](https://github.com/NeXifyAI-cloud/opencarbox/issues/122) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#123](https://github.com/NeXifyAI-cloud/opencarbox/issues/123) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#124](https://github.com/NeXifyAI-cloud/opencarbox/issues/124) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#125](https://github.com/NeXifyAI-cloud/opencarbox/issues/125) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#132](https://github.com/NeXifyAI-cloud/opencarbox/issues/132) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#134](https://github.com/NeXifyAI-cloud/opencarbox/issues/134) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#135](https://github.com/NeXifyAI-cloud/opencarbox/issues/135) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#136](https://github.com/NeXifyAI-cloud/opencarbox/issues/136) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#137](https://github.com/NeXifyAI-cloud/opencarbox/issues/137) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#138](https://github.com/NeXifyAI-cloud/opencarbox/issues/138) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#139](https://github.com/NeXifyAI-cloud/opencarbox/issues/139) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#140](https://github.com/NeXifyAI-cloud/opencarbox/issues/140) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#141](https://github.com/NeXifyAI-cloud/opencarbox/issues/141) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#145](https://github.com/NeXifyAI-cloud/opencarbox/issues/145) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#146](https://github.com/NeXifyAI-cloud/opencarbox/issues/146) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#147](https://github.com/NeXifyAI-cloud/opencarbox/issues/147) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#152](https://github.com/NeXifyAI-cloud/opencarbox/issues/152) | Incident: conflict-resolver fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#160](https://github.com/NeXifyAI-cloud/opencarbox/issues/160) | Incident: ci fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#161](https://github.com/NeXifyAI-cloud/opencarbox/issues/161) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#162](https://github.com/NeXifyAI-cloud/opencarbox/issues/162) | Incident: autofix fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#163](https://github.com/NeXifyAI-cloud/opencarbox/issues/163) | Incident: Deploy Preview fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#164](https://github.com/NeXifyAI-cloud/opencarbox/issues/164) | Incident: conflict-resolver fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#165](https://github.com/NeXifyAI-cloud/opencarbox/issues/165) | Incident: auto-improve fehlgeschlagen | `failure-routing` `ai-triage` | — |
+| [#176](https://github.com/NeXifyAI-cloud/opencarbox/issues/176) | Incident: backlog-sync fehlgeschlagen | `failure-routing` `ai-triage` | — |
+
+<!-- AUTO:LIVE_ISSUES_END -->

@@ -38,6 +38,7 @@ model ProjectMemory {
 
 /// Audit Logs - Protokoll aller Agent-Aktionen
 model AuditLog {
+  user          String   // Agent oder Benutzer-ID
   id            String   @id @default(cuid())
   action        String   // z.B. "create_component", "fix_bug"
   resource      String   // Betroffene Datei/Ressource
@@ -483,4 +484,16 @@ model Review {
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   @@map("reviews")
+}
+
+model SystemLog {
+  id        String   @id @default(uuid())
+  level     String   // info, warn, error
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([level])
+  @@index([createdAt])
+  @@map("system_logs")
 }

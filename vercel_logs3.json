@@ -1,0 +1,637 @@
+[
+{"created":1771936945786,"date":1771936945786,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936945786593048558500000","text":"Running build in Washington, D.C., USA (East) – iad1 (Turbo Build Machine)","type":"stdout","serial":"1771936945786593048558500000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936945787,"date":1771936945787,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936945787593048558500000","text":"Build machine configuration: 30 cores, 60 GB","type":"stdout","serial":"1771936945787593048558500000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936945870,"date":1771936945870,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936945870593048558500002","text":"Cloning github.com/NeXifyAI-cloud/opencarbox (Branch: main, Commit: ad19865)","type":"stdout","serial":"1771936945870593048558500002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936945871,"date":1771936945871,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936945871593048558500001","text":"Previous build caches not available.","type":"stdout","serial":"1771936945871593048558500001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946372,"date":1771936946372,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946372593048558500000","text":"Cloning completed: 501.000ms","type":"stdout","serial":"1771936946372593048558500000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946436,"date":1771936946436,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946436593048558500000","text":"Found .vercelignore","type":"stdout","serial":"1771936946436593048558500000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500000","text":"Removed 169 ignored files defined in .vercelignore","type":"stdout","serial":"1771936946451593048558500000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500001","text":"  /.cline/auto_approve.json","type":"stdout","serial":"1771936946451593048558500001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500002","text":"  /.cline/custom_commands.md","type":"stdout","serial":"1771936946451593048558500002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500003","text":"  /.cline/mcp_settings.example.json","type":"stdout","serial":"1771936946451593048558500003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500004","text":"  /.cline/oracle-context-cache.json","type":"stdout","serial":"1771936946451593048558500004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500005","text":"  /.cline/oracle-context.json","type":"stdout","serial":"1771936946451593048558500005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500006","text":"  /.cline/oracle-first-state.json","type":"stdout","serial":"1771936946451593048558500006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500007","text":"  /.cline/oracle-state.json","type":"stdout","serial":"1771936946451593048558500007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500008","text":"  /.cline/README.md","type":"stdout","serial":"1771936946451593048558500008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500009","text":"  /.git/config","type":"stdout","serial":"1771936946451593048558500009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936946451,"date":1771936946451,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936946451593048558500010","text":"  /.git/description","type":"stdout","serial":"1771936946451593048558500010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936947446,"date":1771936947446,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936947446821894350800000","text":"Warning: Detected \"engines\": { \"node\": \">=18.17.0\" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: https://vercel.link/node-version","type":"stderr","serial":"1771936947446821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"warning"}
+,
+{"created":1771936947446,"date":1771936947446,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936947446821894350800001","text":"Running \"vercel build\"","type":"stdout","serial":"1771936947446821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936947919,"date":1771936947919,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936947919821894350800000","text":"Vercel CLI 50.22.0","type":"stderr","serial":"1771936947919821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936948154,"date":1771936948154,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936948154821894350800000","text":"Warning: Detected \"engines\": { \"node\": \">=18.17.0\" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: https://vercel.link/node-version","type":"stderr","serial":"1771936948154821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"warning"}
+,
+{"created":1771936948211,"date":1771936948211,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936948211821894350800000","text":"Detected `pnpm-lock.yaml` version 9 generated by pnpm@10.x with package.json#packageManager pnpm@9.12.3","type":"stdout","serial":"1771936948211821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936948216,"date":1771936948216,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936948216821894350800000","text":"Running \"install\" command: `pnpm install`...","type":"stdout","serial":"1771936948216821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936950041,"date":1771936950041,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936950041821894350800000","text":"Lockfile is up to date, resolution step is skipped","type":"stdout","serial":"1771936950041821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936950113,"date":1771936950113,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936950113821894350800000","text":"Progress: resolved 1, reused 0, downloaded 0, added 0","type":"stdout","serial":"1771936950113821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936950285,"date":1771936950285,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936950285821894350800000","text":"Packages: +1171","type":"stdout","serial":"1771936950285821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936950285,"date":1771936950285,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936950285821894350800001","text":"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++","type":"stdout","serial":"1771936950285821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936951117,"date":1771936951117,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936951117821894350800000","text":"Progress: resolved 1171, reused 0, downloaded 189, added 183","type":"stdout","serial":"1771936951117821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936952121,"date":1771936952121,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936952121821894350800000","text":"Progress: resolved 1171, reused 0, downloaded 634, added 633","type":"stdout","serial":"1771936952121821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936953121,"date":1771936953121,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936953121821894350800000","text":"Progress: resolved 1171, reused 0, downloaded 1168, added 1167","type":"stdout","serial":"1771936953121821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936953888,"date":1771936953888,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936953888821894350800000","text":"Progress: resolved 1171, reused 0, downloaded 1171, added 1171, done","type":"stdout","serial":"1771936953888821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954161,"date":1771936954161,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954161821894350800000","text":".../node_modules/core-js-pure postinstall$ node -e \"try{require('./postinstall')}catch(e){}\"","type":"stdout","serial":"1771936954161821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954194,"date":1771936954194,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954194821894350800000","text":".../esbuild@0.25.12/node_modules/esbuild postinstall$ node install.js","type":"stdout","serial":"1771936954194821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954194,"date":1771936954194,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954194821894350800001","text":".../sharp@0.34.5/node_modules/sharp install$ node install/check.js || npm run build","type":"stdout","serial":"1771936954194821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954218,"date":1771936954218,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954218821894350800000","text":".../sharp@0.33.5/node_modules/sharp install$ node install/check","type":"stdout","serial":"1771936954218821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954218,"date":1771936954218,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954218821894350800001","text":".../esbuild@0.21.5/node_modules/esbuild postinstall$ node install.js","type":"stdout","serial":"1771936954218821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954220,"date":1771936954220,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954220821894350800000","text":".../node_modules/core-js-pure postinstall: Done","type":"stdout","serial":"1771936954220821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954296,"date":1771936954296,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954296821894350800000","text":".../esbuild@0.25.12/node_modules/esbuild postinstall: Done","type":"stdout","serial":"1771936954296821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954319,"date":1771936954319,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954319821894350800000","text":".../esbuild@0.21.5/node_modules/esbuild postinstall: Done","type":"stdout","serial":"1771936954319821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954334,"date":1771936954334,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954334821894350800000","text":".../sharp@0.34.5/node_modules/sharp install: Done","type":"stdout","serial":"1771936954334821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954343,"date":1771936954343,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954343821894350800000","text":".../node_modules/unrs-resolver postinstall$ napi-postinstall unrs-resolver 1.11.1 check","type":"stdout","serial":"1771936954343821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954371,"date":1771936954371,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954371821894350800000","text":".../sharp@0.33.5/node_modules/sharp install: Done","type":"stdout","serial":"1771936954371821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954372,"date":1771936954372,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954372821894350800000","text":".../node_modules/@prisma/engines postinstall$ node scripts/postinstall.js","type":"stdout","serial":"1771936954372821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954400,"date":1771936954400,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954400821894350800000","text":".../esbuild@0.27.3/node_modules/esbuild postinstall$ node install.js","type":"stdout","serial":"1771936954400821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954425,"date":1771936954425,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954425821894350800000","text":".../node_modules/unrs-resolver postinstall: Done","type":"stdout","serial":"1771936954425821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954477,"date":1771936954477,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954477821894350800000","text":".../esbuild@0.27.3/node_modules/esbuild postinstall: Done","type":"stdout","serial":"1771936954477821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954847,"date":1771936954847,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954847821894350800000","text":".../node_modules/@prisma/engines postinstall: Done","type":"stdout","serial":"1771936954847821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936954951,"date":1771936954951,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936954951821894350800000","text":".../prisma@5.10.0/node_modules/prisma preinstall$ node scripts/preinstall-entry.js","type":"stdout","serial":"1771936954951821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955010,"date":1771936955010,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955010821894350800000","text":".../prisma@5.10.0/node_modules/prisma preinstall: Done","type":"stdout","serial":"1771936955010821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955083,"date":1771936955083,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955083821894350800000","text":".../node_modules/@prisma/client postinstall$ node scripts/postinstall.js","type":"stdout","serial":"1771936955083821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955557,"date":1771936955557,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955557821894350800000","text":".../node_modules/@prisma/client postinstall: Prisma schema loaded from prisma/schema.prisma","type":"stdout","serial":"1771936955557821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800000","text":".../node_modules/@prisma/client postinstall: ✔ Generated Prisma Client (v5.10.0) to ./node_modules/.pnpm/@prisma+client@5.10.0_prisma@5.10.0/node_modules/@prisma/client in 142ms","type":"stdout","serial":"1771936955955821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800001","text":".../node_modules/@prisma/client postinstall: Start using Prisma Client in Node.js (See: https://pris.ly/d/client)","type":"stdout","serial":"1771936955955821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800002","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771936955955821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800003","text":".../node_modules/@prisma/client postinstall: import { PrismaClient } from '@prisma/client'","type":"stdout","serial":"1771936955955821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800004","text":".../node_modules/@prisma/client postinstall: const prisma = new PrismaClient()","type":"stdout","serial":"1771936955955821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800005","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771936955955821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800006","text":".../node_modules/@prisma/client postinstall: or start using Prisma Client at the edge (See: https://pris.ly/d/accelerate)","type":"stdout","serial":"1771936955955821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800007","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771936955955821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800008","text":".../node_modules/@prisma/client postinstall: import { PrismaClient } from '@prisma/client/edge'","type":"stdout","serial":"1771936955955821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800009","text":".../node_modules/@prisma/client postinstall: const prisma = new PrismaClient()","type":"stdout","serial":"1771936955955821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800010","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771936955955821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955955,"date":1771936955955,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955955821894350800011","text":".../node_modules/@prisma/client postinstall: See other ways of importing Prisma Client: http://pris.ly/d/importing-client","type":"stdout","serial":"1771936955955821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955956,"date":1771936955956,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955956821894350800000","text":".../node_modules/@prisma/client postinstall: ┌─────────────────────────────────────────────────────────────┐","type":"stdout","serial":"1771936955956821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955956,"date":1771936955956,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955956821894350800001","text":".../node_modules/@prisma/client postinstall: │  Deploying your app to serverless or edge functions?        │","type":"stdout","serial":"1771936955956821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955956,"date":1771936955956,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955956821894350800002","text":".../node_modules/@prisma/client postinstall: │  Try Prisma Accelerate for connection pooling and caching.  │","type":"stdout","serial":"1771936955956821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955956,"date":1771936955956,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955956821894350800003","text":".../node_modules/@prisma/client postinstall: │  https://pris.ly/cli/accelerate                             │","type":"stdout","serial":"1771936955956821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936955956,"date":1771936955956,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936955956821894350800004","text":".../node_modules/@prisma/client postinstall: └─────────────────────────────────────────────────────────────┘","type":"stdout","serial":"1771936955956821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956160,"date":1771936956160,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956160821894350800000","text":".../node_modules/@prisma/client postinstall: Done","type":"stdout","serial":"1771936956160821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956612,"date":1771936956612,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956612821894350800000","text":"","type":"stdout","serial":"1771936956612821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956612,"date":1771936956612,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956612821894350800001","text":"dependencies:","type":"stdout","serial":"1771936956612821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956612,"date":1771936956612,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956612821894350800002","text":"+ @hookform/resolvers 3.10.0","type":"stdout","serial":"1771936956612821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956612,"date":1771936956612,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956612821894350800003","text":"+ @prisma/client 5.10.0","type":"stdout","serial":"1771936956612821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956612,"date":1771936956612,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956612821894350800004","text":"+ @radix-ui/react-accordion 1.2.12","type":"stdout","serial":"1771936956612821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956612,"date":1771936956612,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956612821894350800005","text":"+ @radix-ui/react-alert-dialog 1.1.15","type":"stdout","serial":"1771936956612821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800000","text":"+ @radix-ui/react-avatar 1.1.11","type":"stdout","serial":"1771936956613821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800001","text":"+ @radix-ui/react-checkbox 1.3.3","type":"stdout","serial":"1771936956613821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800002","text":"+ @radix-ui/react-dialog 1.1.15","type":"stdout","serial":"1771936956613821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800003","text":"+ @radix-ui/react-dropdown-menu 2.1.16","type":"stdout","serial":"1771936956613821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800004","text":"+ @radix-ui/react-label 2.1.8","type":"stdout","serial":"1771936956613821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800005","text":"+ @radix-ui/react-popover 1.1.15","type":"stdout","serial":"1771936956613821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800006","text":"+ @radix-ui/react-select 2.2.6","type":"stdout","serial":"1771936956613821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800007","text":"+ @radix-ui/react-separator 1.1.8","type":"stdout","serial":"1771936956613821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800008","text":"+ @radix-ui/react-slot 1.2.4","type":"stdout","serial":"1771936956613821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800009","text":"+ @radix-ui/react-tabs 1.1.13","type":"stdout","serial":"1771936956613821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800010","text":"+ @radix-ui/react-toast 1.2.15","type":"stdout","serial":"1771936956613821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800011","text":"+ @radix-ui/react-tooltip 1.2.8","type":"stdout","serial":"1771936956613821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800012","text":"+ @stripe/stripe-js 3.5.0","type":"stdout","serial":"1771936956613821894350800012","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800013","text":"+ @supabase/ssr 0.8.0","type":"stdout","serial":"1771936956613821894350800013","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800014","text":"+ @supabase/supabase-js 2.97.0","type":"stdout","serial":"1771936956613821894350800014","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800015","text":"+ @tanstack/react-query 5.90.21","type":"stdout","serial":"1771936956613821894350800015","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800016","text":"+ class-variance-authority 0.7.1","type":"stdout","serial":"1771936956613821894350800016","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800017","text":"+ clsx 2.1.1","type":"stdout","serial":"1771936956613821894350800017","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800018","text":"+ date-fns 3.6.0","type":"stdout","serial":"1771936956613821894350800018","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800019","text":"+ dotenv 17.3.1","type":"stdout","serial":"1771936956613821894350800019","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800020","text":"+ framer-motion 11.18.2","type":"stdout","serial":"1771936956613821894350800020","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800021","text":"+ lucide-react 0.575.0","type":"stdout","serial":"1771936956613821894350800021","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800022","text":"+ meilisearch 0.38.0","type":"stdout","serial":"1771936956613821894350800022","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800023","text":"+ next 15.5.10","type":"stdout","serial":"1771936956613821894350800023","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800024","text":"+ next-themes 0.4.6","type":"stdout","serial":"1771936956613821894350800024","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800025","text":"+ node-fetch 3.3.2","type":"stdout","serial":"1771936956613821894350800025","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800026","text":"+ pg 8.18.0","type":"stdout","serial":"1771936956613821894350800026","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800027","text":"+ react 18.3.1","type":"stdout","serial":"1771936956613821894350800027","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800028","text":"+ react-dom 18.3.1","type":"stdout","serial":"1771936956613821894350800028","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800029","text":"+ react-hook-form 7.71.2","type":"stdout","serial":"1771936956613821894350800029","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800030","text":"+ resend 3.5.0","type":"stdout","serial":"1771936956613821894350800030","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800031","text":"+ sonner 2.0.7","type":"stdout","serial":"1771936956613821894350800031","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800032","text":"+ stripe 14.25.0","type":"stdout","serial":"1771936956613821894350800032","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800033","text":"+ tailwind-merge 2.6.1","type":"stdout","serial":"1771936956613821894350800033","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956613,"date":1771936956613,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956613821894350800034","text":"+ tailwindcss-animate 1.0.7","type":"stdout","serial":"1771936956613821894350800034","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800000","text":"+ zod 3.25.76","type":"stdout","serial":"1771936956614821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800001","text":"+ zustand 4.5.7","type":"stdout","serial":"1771936956614821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800002","text":"","type":"stdout","serial":"1771936956614821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800003","text":"devDependencies:","type":"stdout","serial":"1771936956614821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800004","text":"+ @playwright/test 1.58.2","type":"stdout","serial":"1771936956614821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800005","text":"+ @storybook/addon-a11y 8.6.15","type":"stdout","serial":"1771936956614821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800006","text":"+ @storybook/addon-essentials 8.6.14","type":"stdout","serial":"1771936956614821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800007","text":"+ @storybook/addon-interactions 8.6.14","type":"stdout","serial":"1771936956614821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800008","text":"+ @storybook/nextjs 8.6.15","type":"stdout","serial":"1771936956614821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800009","text":"+ @storybook/react 8.6.15","type":"stdout","serial":"1771936956614821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800010","text":"+ @testing-library/jest-dom 6.9.1","type":"stdout","serial":"1771936956614821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800011","text":"+ @testing-library/react 16.3.2","type":"stdout","serial":"1771936956614821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800012","text":"+ @testing-library/user-event 14.6.1","type":"stdout","serial":"1771936956614821894350800012","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800013","text":"+ @types/node 20.19.33","type":"stdout","serial":"1771936956614821894350800013","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800014","text":"+ @types/react 18.3.28","type":"stdout","serial":"1771936956614821894350800014","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800015","text":"+ @types/react-dom 18.3.7","type":"stdout","serial":"1771936956614821894350800015","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800016","text":"+ @typescript-eslint/eslint-plugin 7.18.0","type":"stdout","serial":"1771936956614821894350800016","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800017","text":"+ @typescript-eslint/parser 7.18.0","type":"stdout","serial":"1771936956614821894350800017","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800018","text":"+ @vitejs/plugin-react 4.7.0","type":"stdout","serial":"1771936956614821894350800018","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800019","text":"+ @vitest/coverage-v8 1.6.1","type":"stdout","serial":"1771936956614821894350800019","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800020","text":"+ @vitest/ui 1.6.1","type":"stdout","serial":"1771936956614821894350800020","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800021","text":"+ autoprefixer 10.4.24","type":"stdout","serial":"1771936956614821894350800021","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800022","text":"+ eslint 8.57.1","type":"stdout","serial":"1771936956614821894350800022","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800023","text":"+ eslint-config-next 14.2.35","type":"stdout","serial":"1771936956614821894350800023","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800024","text":"+ glob 13.0.6","type":"stdout","serial":"1771936956614821894350800024","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800025","text":"+ husky 9.1.7","type":"stdout","serial":"1771936956614821894350800025","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800026","text":"+ jsdom 28.1.0","type":"stdout","serial":"1771936956614821894350800026","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800027","text":"+ lint-staged 15.5.2","type":"stdout","serial":"1771936956614821894350800027","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800028","text":"+ postcss 8.5.6","type":"stdout","serial":"1771936956614821894350800028","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800029","text":"+ prettier 3.8.1","type":"stdout","serial":"1771936956614821894350800029","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800030","text":"+ prettier-plugin-tailwindcss 0.7.2","type":"stdout","serial":"1771936956614821894350800030","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800031","text":"+ prisma 5.10.0","type":"stdout","serial":"1771936956614821894350800031","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800032","text":"+ tailwindcss 3.4.19","type":"stdout","serial":"1771936956614821894350800032","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800033","text":"+ tsx 4.21.0","type":"stdout","serial":"1771936956614821894350800033","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800034","text":"+ typescript 5.9.3","type":"stdout","serial":"1771936956614821894350800034","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800035","text":"+ vitest 1.6.1","type":"stdout","serial":"1771936956614821894350800035","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956614,"date":1771936956614,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956614821894350800036","text":"","type":"stdout","serial":"1771936956614821894350800036","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956824,"date":1771936956824,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956824821894350800000","text":"","type":"stdout","serial":"1771936956824821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956824,"date":1771936956824,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956824821894350800001","text":"> opencarbox-carvantooo@1.0.0 postinstall /vercel/path0","type":"stdout","serial":"1771936956824821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956824,"date":1771936956824,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956824821894350800002","text":"> node scripts/postinstall.js","type":"stdout","serial":"1771936956824821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956824,"date":1771936956824,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956824821894350800003","text":"","type":"stdout","serial":"1771936956824821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956879,"date":1771936956879,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956879821894350800000","text":"[postinstall] Prisma Generator Check:","type":"stdout","serial":"1771936956879821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956879,"date":1771936956879,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956879821894350800001","text":"  DATABASE_URL: ❌ MISSING","type":"stdout","serial":"1771936956879821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956879,"date":1771936956879,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956879821894350800002","text":"  CI Environment: ✅ YES","type":"stdout","serial":"1771936956879821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956879,"date":1771936956879,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956879821894350800003","text":"  Vercel Build: ✅ YES","type":"stdout","serial":"1771936956879821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956879,"date":1771936956879,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956879821894350800004","text":"  .env.local exists: ❌ NO","type":"stdout","serial":"1771936956879821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956879,"date":1771936956879,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956879821894350800005","text":"[postinstall] ⏭️  Skipping prisma generate (Vercel Build + Missing DATABASE_URL)","type":"stdout","serial":"1771936956879821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956879,"date":1771936956879,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956879821894350800006","text":"[postinstall] ℹ️  Using schema validation fallback","type":"stdout","serial":"1771936956879821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956882,"date":1771936956882,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956882821894350800000","text":"","type":"stdout","serial":"1771936956882821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956882,"date":1771936956882,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956882821894350800001","text":"> opencarbox-carvantooo@1.0.0 prepare /vercel/path0","type":"stdout","serial":"1771936956882821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956882,"date":1771936956882,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956882821894350800002","text":"> husky || true","type":"stdout","serial":"1771936956882821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956882,"date":1771936956882,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956882821894350800003","text":"","type":"stdout","serial":"1771936956882821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956946,"date":1771936956946,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956946821894350800000","text":"fatal: not in a git directory","type":"stdout","serial":"1771936956946821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936956949,"date":1771936956949,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936956949821894350800000","text":"Done in 7.3s","type":"stdout","serial":"1771936956949821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936957089,"date":1771936957089,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936957089821894350800000","text":"Detected Next.js version: 15.5.10","type":"stdout","serial":"1771936957089821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936957089,"date":1771936957089,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936957089821894350800001","text":"Running \"pnpm install && pnpm build\"","type":"stdout","serial":"1771936957089821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936957786,"date":1771936957786,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936957786821894350800000","text":"Lockfile is up to date, resolution step is skipped","type":"stdout","serial":"1771936957786821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936957904,"date":1771936957904,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936957904821894350800000","text":"Packages: -102","type":"stdout","serial":"1771936957904821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936957904,"date":1771936957904,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936957904821894350800001","text":"--------------------------------------------------------------------------------","type":"stdout","serial":"1771936957904821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958481,"date":1771936958481,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958481821894350800000","text":"","type":"stdout","serial":"1771936958481821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958481,"date":1771936958481,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958481821894350800001","text":"devDependencies:","type":"stdout","serial":"1771936958481821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958481,"date":1771936958481,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958481821894350800002","text":"- @playwright/test 1.58.2","type":"stdout","serial":"1771936958481821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958481,"date":1771936958481,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958481821894350800003","text":"- @storybook/addon-a11y 8.6.15","type":"stdout","serial":"1771936958481821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958481,"date":1771936958481,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958481821894350800004","text":"- @storybook/addon-essentials 8.6.14","type":"stdout","serial":"1771936958481821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800000","text":"- @storybook/addon-interactions 8.6.14","type":"stdout","serial":"1771936958482821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800001","text":"- @storybook/nextjs 8.6.15","type":"stdout","serial":"1771936958482821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800002","text":"- @storybook/react 8.6.15","type":"stdout","serial":"1771936958482821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800003","text":"- @testing-library/jest-dom 6.9.1","type":"stdout","serial":"1771936958482821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800004","text":"- @testing-library/react 16.3.2","type":"stdout","serial":"1771936958482821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800005","text":"- @testing-library/user-event 14.6.1","type":"stdout","serial":"1771936958482821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800006","text":"- @types/node 20.19.33","type":"stdout","serial":"1771936958482821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800007","text":"- @types/react 18.3.28","type":"stdout","serial":"1771936958482821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800008","text":"- @types/react-dom 18.3.7","type":"stdout","serial":"1771936958482821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800009","text":"- @typescript-eslint/eslint-plugin 7.18.0","type":"stdout","serial":"1771936958482821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800010","text":"- @typescript-eslint/parser 7.18.0","type":"stdout","serial":"1771936958482821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800011","text":"- @vitejs/plugin-react 4.7.0","type":"stdout","serial":"1771936958482821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800012","text":"- @vitest/coverage-v8 1.6.1","type":"stdout","serial":"1771936958482821894350800012","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800013","text":"- @vitest/ui 1.6.1","type":"stdout","serial":"1771936958482821894350800013","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800014","text":"- autoprefixer 10.4.24","type":"stdout","serial":"1771936958482821894350800014","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800015","text":"- eslint 8.57.1","type":"stdout","serial":"1771936958482821894350800015","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800016","text":"- eslint-config-next 14.2.35","type":"stdout","serial":"1771936958482821894350800016","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800017","text":"- glob 13.0.6","type":"stdout","serial":"1771936958482821894350800017","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800018","text":"- husky 9.1.7","type":"stdout","serial":"1771936958482821894350800018","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800019","text":"- jsdom 28.1.0","type":"stdout","serial":"1771936958482821894350800019","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800020","text":"- lint-staged 15.5.2","type":"stdout","serial":"1771936958482821894350800020","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800021","text":"- postcss 8.5.6","type":"stdout","serial":"1771936958482821894350800021","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800022","text":"- prettier 3.8.1","type":"stdout","serial":"1771936958482821894350800022","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800023","text":"- prettier-plugin-tailwindcss 0.7.2","type":"stdout","serial":"1771936958482821894350800023","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800024","text":"- prisma 5.10.0","type":"stdout","serial":"1771936958482821894350800024","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800025","text":"- tailwindcss 3.4.19","type":"stdout","serial":"1771936958482821894350800025","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800026","text":"- tsx 4.21.0","type":"stdout","serial":"1771936958482821894350800026","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800027","text":"- typescript 5.9.3","type":"stdout","serial":"1771936958482821894350800027","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800028","text":"- vitest 1.6.1","type":"stdout","serial":"1771936958482821894350800028","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958482,"date":1771936958482,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958482821894350800029","text":"","type":"stdout","serial":"1771936958482821894350800029","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958670,"date":1771936958670,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958670821894350800000","text":"","type":"stdout","serial":"1771936958670821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958670,"date":1771936958670,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958670821894350800001","text":"> opencarbox-carvantooo@1.0.0 postinstall /vercel/path0","type":"stdout","serial":"1771936958670821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958670,"date":1771936958670,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958670821894350800002","text":"> node scripts/postinstall.js","type":"stdout","serial":"1771936958670821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958670,"date":1771936958670,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958670821894350800003","text":"","type":"stdout","serial":"1771936958670821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958695,"date":1771936958695,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958695821894350800000","text":"[postinstall] Prisma Generator Check:","type":"stdout","serial":"1771936958695821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958695,"date":1771936958695,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958695821894350800001","text":"  DATABASE_URL: ❌ MISSING","type":"stdout","serial":"1771936958695821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958695,"date":1771936958695,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958695821894350800002","text":"  CI Environment: ✅ YES","type":"stdout","serial":"1771936958695821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958696,"date":1771936958696,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958696821894350800000","text":"  Vercel Build: ✅ YES","type":"stdout","serial":"1771936958696821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958696,"date":1771936958696,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958696821894350800001","text":"  .env.local exists: ❌ NO","type":"stdout","serial":"1771936958696821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958696,"date":1771936958696,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958696821894350800002","text":"[postinstall] ⏭️  Skipping prisma generate (Vercel Build + Missing DATABASE_URL)","type":"stdout","serial":"1771936958696821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958696,"date":1771936958696,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958696821894350800003","text":"[postinstall] ℹ️  Using schema validation fallback","type":"stdout","serial":"1771936958696821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958699,"date":1771936958699,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958699821894350800000","text":"","type":"stdout","serial":"1771936958699821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958699,"date":1771936958699,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958699821894350800001","text":"> opencarbox-carvantooo@1.0.0 prepare /vercel/path0","type":"stdout","serial":"1771936958699821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958699,"date":1771936958699,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958699821894350800002","text":"> husky || true","type":"stdout","serial":"1771936958699821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958699,"date":1771936958699,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958699821894350800003","text":"","type":"stdout","serial":"1771936958699821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936958702,"date":1771936958702,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958702821894350800000","text":"sh: line 1: husky: command not found","type":"stderr","serial":"1771936958702821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936958703,"date":1771936958703,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936958703821894350800000","text":"Done in 1.3s","type":"stdout","serial":"1771936958703821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959326,"date":1771936959326,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959326821894350800000","text":"","type":"stdout","serial":"1771936959326821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959326,"date":1771936959326,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959326821894350800001","text":"> opencarbox-carvantooo@1.0.0 build /vercel/path0","type":"stdout","serial":"1771936959326821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959326,"date":1771936959326,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959326821894350800002","text":"> next build","type":"stdout","serial":"1771936959326821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959326,"date":1771936959326,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959326821894350800003","text":"","type":"stdout","serial":"1771936959326821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959820,"date":1771936959820,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959820821894350800000","text":"Attention: Next.js now collects completely anonymous telemetry regarding usage.","type":"stdout","serial":"1771936959820821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959821,"date":1771936959821,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959821821894350800000","text":"This information is used to shape Next.js' roadmap and prioritize features.","type":"stdout","serial":"1771936959821821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959821,"date":1771936959821,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959821821894350800001","text":"You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:","type":"stdout","serial":"1771936959821821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959821,"date":1771936959821,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959821821894350800002","text":"https://nextjs.org/telemetry","type":"stdout","serial":"1771936959821821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959821,"date":1771936959821,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959821821894350800003","text":"","type":"stdout","serial":"1771936959821821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959895,"date":1771936959895,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959895821894350800000","text":"   ▲ Next.js 15.5.10","type":"stdout","serial":"1771936959895821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959896,"date":1771936959896,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959896821894350800000","text":"   - Experiments (use with caution):","type":"stdout","serial":"1771936959896821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959896,"date":1771936959896,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959896821894350800001","text":"     · optimizePackageImports","type":"stdout","serial":"1771936959896821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959896,"date":1771936959896,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959896821894350800002","text":"","type":"stdout","serial":"1771936959896821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936959926,"date":1771936959926,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936959926821894350800000","text":"   Creating an optimized production build ...","type":"stdout","serial":"1771936959926821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965329,"date":1771936965329,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965329821894350800000","text":"<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (133kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)","type":"stderr","serial":"1771936965329821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965413,"date":1771936965413,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965413821894350800000","text":"Failed to compile.","type":"stderr","serial":"1771936965413821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965413,"date":1771936965413,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965413821894350800001","text":"","type":"stderr","serial":"1771936965413821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965413,"date":1771936965413,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965413821894350800002","text":"src/app/layout.tsx","type":"stderr","serial":"1771936965413821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965413,"date":1771936965413,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965413821894350800003","text":"An error occurred in `next/font`.","type":"stderr","serial":"1771936965413821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965413,"date":1771936965413,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965413821894350800004","text":"","type":"stderr","serial":"1771936965413821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800000","text":"Error: Cannot find module 'tailwindcss'","type":"stderr","serial":"1771936965414821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800001","text":"Require stack:","type":"stderr","serial":"1771936965414821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800002","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js","type":"stderr","serial":"1771936965414821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800003","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js","type":"stderr","serial":"1771936965414821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800004","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/index.js","type":"stderr","serial":"1771936965414821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800005","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack-config.js","type":"stderr","serial":"1771936965414821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800006","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js","type":"stderr","serial":"1771936965414821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800007","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/collect-build-traces.js","type":"stderr","serial":"1771936965414821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800008","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/index.js","type":"stderr","serial":"1771936965414821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800009","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/cli/next-build.js","type":"stderr","serial":"1771936965414821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800010","text":"    at Module.<anonymous> (node:internal/modules/cjs/loader:1421:15)","type":"stderr","serial":"1771936965414821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800011","text":"    at /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require-hook.js:57:36","type":"stderr","serial":"1771936965414821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965414,"date":1771936965414,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965414821894350800012","text":"    at require.resolve (node:internal/modules/helpers:163:19)","type":"stderr","serial":"1771936965414821894350800012","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800000","text":"    at loadPlugin (/vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)","type":"stderr","serial":"1771936965415821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800001","text":"    at /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56","type":"stderr","serial":"1771936965415821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800002","text":"    at Array.map (<anonymous>)","type":"stderr","serial":"1771936965415821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800003","text":"    at getPostCssPlugins (/vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)","type":"stderr","serial":"1771936965415821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800004","text":"    at async /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36","type":"stderr","serial":"1771936965415821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800005","text":"","type":"stderr","serial":"1771936965415821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800006","text":"src/app/layout.tsx","type":"stderr","serial":"1771936965415821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800007","text":"An error occurred in `next/font`.","type":"stderr","serial":"1771936965415821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800008","text":"","type":"stderr","serial":"1771936965415821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800009","text":"Error: Cannot find module 'tailwindcss'","type":"stderr","serial":"1771936965415821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800010","text":"Require stack:","type":"stderr","serial":"1771936965415821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800011","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js","type":"stderr","serial":"1771936965415821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800012","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js","type":"stderr","serial":"1771936965415821894350800012","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800013","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/index.js","type":"stderr","serial":"1771936965415821894350800013","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800014","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack-config.js","type":"stderr","serial":"1771936965415821894350800014","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800015","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js","type":"stderr","serial":"1771936965415821894350800015","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800016","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/collect-build-traces.js","type":"stderr","serial":"1771936965415821894350800016","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800017","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/index.js","type":"stderr","serial":"1771936965415821894350800017","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800018","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/cli/next-build.js","type":"stderr","serial":"1771936965415821894350800018","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800019","text":"    at Module.<anonymous> (node:internal/modules/cjs/loader:1421:15)","type":"stderr","serial":"1771936965415821894350800019","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965415,"date":1771936965415,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965415821894350800020","text":"    at /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require-hook.js:57:36","type":"stderr","serial":"1771936965415821894350800020","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800000","text":"    at require.resolve (node:internal/modules/helpers:163:19)","type":"stderr","serial":"1771936965416821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800001","text":"    at loadPlugin (/vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)","type":"stderr","serial":"1771936965416821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800002","text":"    at /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56","type":"stderr","serial":"1771936965416821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800003","text":"    at Array.map (<anonymous>)","type":"stderr","serial":"1771936965416821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800004","text":"    at getPostCssPlugins (/vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)","type":"stderr","serial":"1771936965416821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800005","text":"    at async /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36","type":"stderr","serial":"1771936965416821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800006","text":"","type":"stderr","serial":"1771936965416821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800007","text":"src/app/layout.tsx","type":"stderr","serial":"1771936965416821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800008","text":"An error occurred in `next/font`.","type":"stderr","serial":"1771936965416821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800009","text":"","type":"stderr","serial":"1771936965416821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800010","text":"Error: Cannot find module 'tailwindcss'","type":"stderr","serial":"1771936965416821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800011","text":"Require stack:","type":"stderr","serial":"1771936965416821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800012","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js","type":"stderr","serial":"1771936965416821894350800012","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800013","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js","type":"stderr","serial":"1771936965416821894350800013","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800014","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/index.js","type":"stderr","serial":"1771936965416821894350800014","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800015","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack-config.js","type":"stderr","serial":"1771936965416821894350800015","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800016","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js","type":"stderr","serial":"1771936965416821894350800016","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800017","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/collect-build-traces.js","type":"stderr","serial":"1771936965416821894350800017","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800018","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/index.js","type":"stderr","serial":"1771936965416821894350800018","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800019","text":"- /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/cli/next-build.js","type":"stderr","serial":"1771936965416821894350800019","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800020","text":"    at Module.<anonymous> (node:internal/modules/cjs/loader:1421:15)","type":"stderr","serial":"1771936965416821894350800020","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800021","text":"    at /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/server/require-hook.js:57:36","type":"stderr","serial":"1771936965416821894350800021","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800022","text":"    at require.resolve (node:internal/modules/helpers:163:19)","type":"stderr","serial":"1771936965416821894350800022","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800023","text":"    at loadPlugin (/vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)","type":"stderr","serial":"1771936965416821894350800023","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800024","text":"    at /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56","type":"stderr","serial":"1771936965416821894350800024","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965416,"date":1771936965416,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965416821894350800025","text":"    at Array.map (<anonymous>)","type":"stderr","serial":"1771936965416821894350800025","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800000","text":"    at getPostCssPlugins (/vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)","type":"stderr","serial":"1771936965417821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800001","text":"    at async /vercel/path0/node_modules/.pnpm/next@15.5.10_@babel+core@7.29.0_@playwright+test@1.58.2_react-dom@18.3.1_react@18.3.1__react@18.3.1/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36","type":"stderr","serial":"1771936965417821894350800001","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800002","text":"","type":"stderr","serial":"1771936965417821894350800002","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800003","text":"./src/app/(autohandel)/fahrzeuge/page.tsx","type":"stderr","serial":"1771936965417821894350800003","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800004","text":"Module not found: Can't resolve '@/components/ui/badge'","type":"stderr","serial":"1771936965417821894350800004","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800005","text":"","type":"stderr","serial":"1771936965417821894350800005","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800006","text":"https://nextjs.org/docs/messages/module-not-found","type":"stderr","serial":"1771936965417821894350800006","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800007","text":"","type":"stderr","serial":"1771936965417821894350800007","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800008","text":"./src/app/(autohandel)/fahrzeuge/page.tsx","type":"stderr","serial":"1771936965417821894350800008","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800009","text":"Module not found: Can't resolve '@/components/ui/button'","type":"stderr","serial":"1771936965417821894350800009","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800010","text":"","type":"stderr","serial":"1771936965417821894350800010","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800011","text":"https://nextjs.org/docs/messages/module-not-found","type":"stderr","serial":"1771936965417821894350800011","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800012","text":"","type":"stderr","serial":"1771936965417821894350800012","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800013","text":"","type":"stderr","serial":"1771936965417821894350800013","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965417,"date":1771936965417,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965417821894350800014","text":"> Build failed because of webpack errors","type":"stderr","serial":"1771936965417821894350800014","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."}}
+,
+{"created":1771936965454,"date":1771936965454,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965454821894350800000","text":" ELIFECYCLE  Command failed with exit code 1.","type":"stdout","serial":"1771936965454821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+,
+{"created":1771936965477,"date":1771936965477,"deploymentId":"dpl_EyQZ3c3LNV8cyJ25WrTt4wTjDkqZ","id":"1771936965477821894350800000","text":"Error: Command \"pnpm install && pnpm build\" exited with 1","type":"stderr","serial":"1771936965477821894350800000","info":{"type":"build","name":"bld_k9zpx9zts","entrypoint":"."},"level":"error"}
+]

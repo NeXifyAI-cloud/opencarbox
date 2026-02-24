@@ -1,0 +1,455 @@
+[
+{"created":1771941410328,"date":1771941410328,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941410328950491409000000","text":"Running build in Washington, D.C., USA (East) – iad1 (Turbo Build Machine)","type":"stdout","serial":"1771941410328950491409000000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941410328,"date":1771941410328,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941410328950491409000001","text":"Build machine configuration: 30 cores, 60 GB","type":"stdout","serial":"1771941410328950491409000001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941410415,"date":1771941410415,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941410415950491409000000","text":"Cloning github.com/NeXifyAI-cloud/opencarbox (Branch: main, Commit: 1375b71)","type":"stdout","serial":"1771941410415950491409000000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941410415,"date":1771941410415,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941410415950491409000002","text":"Previous build caches not available.","type":"stdout","serial":"1771941410415950491409000002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941410925,"date":1771941410925,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941410925950491409000000","text":"Cloning completed: 510.000ms","type":"stdout","serial":"1771941410925950491409000000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411010,"date":1771941411010,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411010950491409000000","text":"Found .vercelignore","type":"stdout","serial":"1771941411010950491409000000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000000","text":"Removed 169 ignored files defined in .vercelignore","type":"stdout","serial":"1771941411032950491409000000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000001","text":"  /.cline/auto_approve.json","type":"stdout","serial":"1771941411032950491409000001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000002","text":"  /.cline/custom_commands.md","type":"stdout","serial":"1771941411032950491409000002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000003","text":"  /.cline/mcp_settings.example.json","type":"stdout","serial":"1771941411032950491409000003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000004","text":"  /.cline/oracle-context-cache.json","type":"stdout","serial":"1771941411032950491409000004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000005","text":"  /.cline/oracle-context.json","type":"stdout","serial":"1771941411032950491409000005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000006","text":"  /.cline/oracle-first-state.json","type":"stdout","serial":"1771941411032950491409000006","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000007","text":"  /.cline/oracle-state.json","type":"stdout","serial":"1771941411032950491409000007","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000008","text":"  /.cline/README.md","type":"stdout","serial":"1771941411032950491409000008","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000009","text":"  /.git/config","type":"stdout","serial":"1771941411032950491409000009","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941411032,"date":1771941411032,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941411032950491409000010","text":"  /.git/description","type":"stdout","serial":"1771941411032950491409000010","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941412011,"date":1771941412011,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941412011373454944800000","text":"Warning: Detected \"engines\": { \"node\": \">=18.17.0\" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: https://vercel.link/node-version","type":"stderr","serial":"1771941412011373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."},"level":"warning"}
+,
+{"created":1771941412011,"date":1771941412011,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941412011373454944800001","text":"Running \"vercel build\"","type":"stdout","serial":"1771941412011373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941412488,"date":1771941412488,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941412488373454944800000","text":"Vercel CLI 50.22.0","type":"stderr","serial":"1771941412488373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941412739,"date":1771941412739,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941412739373454944800000","text":"Warning: Detected \"engines\": { \"node\": \">=18.17.0\" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: https://vercel.link/node-version","type":"stderr","serial":"1771941412739373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."},"level":"warning"}
+,
+{"created":1771941412796,"date":1771941412796,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941412796373454944800000","text":"Detected `pnpm-lock.yaml` version 9 generated by pnpm@10.x with package.json#packageManager pnpm@9.12.3","type":"stdout","serial":"1771941412796373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941412800,"date":1771941412800,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941412800373454944800000","text":"Running \"install\" command: `pnpm install`...","type":"stdout","serial":"1771941412800373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941414581,"date":1771941414581,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941414581373454944800000","text":"Lockfile is up to date, resolution step is skipped","type":"stdout","serial":"1771941414581373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941414643,"date":1771941414643,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941414643373454944800000","text":"Progress: resolved 1, reused 0, downloaded 0, added 0","type":"stdout","serial":"1771941414643373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941414739,"date":1771941414739,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941414739373454944800000","text":"Packages: +1171","type":"stdout","serial":"1771941414739373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941414739,"date":1771941414739,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941414739373454944800001","text":"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++","type":"stdout","serial":"1771941414739373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941415648,"date":1771941415648,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941415648373454944800000","text":"Progress: resolved 1171, reused 0, downloaded 213, added 209","type":"stdout","serial":"1771941415648373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941416652,"date":1771941416652,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941416652373454944800000","text":"Progress: resolved 1171, reused 0, downloaded 633, added 630","type":"stdout","serial":"1771941416652373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941417657,"date":1771941417657,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941417657373454944800000","text":"Progress: resolved 1171, reused 0, downloaded 1122, added 1118","type":"stdout","serial":"1771941417657373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418540,"date":1771941418540,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418540373454944800000","text":"Progress: resolved 1171, reused 0, downloaded 1171, added 1171, done","type":"stdout","serial":"1771941418540373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418826,"date":1771941418826,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418826373454944800000","text":".../node_modules/core-js-pure postinstall$ node -e \"try{require('./postinstall')}catch(e){}\"","type":"stdout","serial":"1771941418826373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418854,"date":1771941418854,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418854373454944800000","text":".../sharp@0.34.5/node_modules/sharp install$ node install/check.js || npm run build","type":"stdout","serial":"1771941418854373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418855,"date":1771941418855,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418855373454944800000","text":".../sharp@0.33.5/node_modules/sharp install$ node install/check","type":"stdout","serial":"1771941418855373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418855,"date":1771941418855,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418855373454944800001","text":".../esbuild@0.25.12/node_modules/esbuild postinstall$ node install.js","type":"stdout","serial":"1771941418855373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418856,"date":1771941418856,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418856373454944800000","text":".../esbuild@0.21.5/node_modules/esbuild postinstall$ node install.js","type":"stdout","serial":"1771941418856373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418920,"date":1771941418920,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418920373454944800000","text":".../node_modules/core-js-pure postinstall: Done","type":"stdout","serial":"1771941418920373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418973,"date":1771941418973,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418973373454944800000","text":".../esbuild@0.25.12/node_modules/esbuild postinstall: Done","type":"stdout","serial":"1771941418973373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418975,"date":1771941418975,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418975373454944800000","text":".../sharp@0.34.5/node_modules/sharp install: Done","type":"stdout","serial":"1771941418975373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418975,"date":1771941418975,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418975373454944800001","text":".../sharp@0.33.5/node_modules/sharp install: Done","type":"stdout","serial":"1771941418975373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941418986,"date":1771941418986,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941418986373454944800000","text":".../node_modules/@prisma/engines postinstall$ node scripts/postinstall.js","type":"stdout","serial":"1771941418986373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419014,"date":1771941419014,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419014373454944800000","text":".../esbuild@0.21.5/node_modules/esbuild postinstall: Done","type":"stdout","serial":"1771941419014373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419015,"date":1771941419015,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419015373454944800000","text":".../node_modules/unrs-resolver postinstall$ napi-postinstall unrs-resolver 1.11.1 check","type":"stdout","serial":"1771941419015373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419044,"date":1771941419044,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419044373454944800000","text":".../esbuild@0.27.3/node_modules/esbuild postinstall$ node install.js","type":"stdout","serial":"1771941419044373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419088,"date":1771941419088,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419088373454944800000","text":".../node_modules/unrs-resolver postinstall: Done","type":"stdout","serial":"1771941419088373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419110,"date":1771941419110,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419110373454944800000","text":".../esbuild@0.27.3/node_modules/esbuild postinstall: Done","type":"stdout","serial":"1771941419110373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419513,"date":1771941419513,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419513373454944800000","text":".../node_modules/@prisma/engines postinstall: Done","type":"stdout","serial":"1771941419513373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419616,"date":1771941419616,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419616373454944800000","text":".../prisma@5.10.0/node_modules/prisma preinstall$ node scripts/preinstall-entry.js","type":"stdout","serial":"1771941419616373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419669,"date":1771941419669,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419669373454944800000","text":".../prisma@5.10.0/node_modules/prisma preinstall: Done","type":"stdout","serial":"1771941419669373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941419748,"date":1771941419748,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941419748373454944800000","text":".../node_modules/@prisma/client postinstall$ node scripts/postinstall.js","type":"stdout","serial":"1771941419748373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420205,"date":1771941420205,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420205373454944800000","text":".../node_modules/@prisma/client postinstall: Prisma schema loaded from prisma/schema.prisma","type":"stdout","serial":"1771941420205373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420597,"date":1771941420597,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420597373454944800000","text":".../node_modules/@prisma/client postinstall: ✔ Generated Prisma Client (v5.10.0) to ./node_modules/.pnpm/@prisma+client@5.10.0_prisma@5.10.0/node_modules/@prisma/client in 142ms","type":"stdout","serial":"1771941420597373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420597,"date":1771941420597,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420597373454944800001","text":".../node_modules/@prisma/client postinstall: Start using Prisma Client in Node.js (See: https://pris.ly/d/client)","type":"stdout","serial":"1771941420597373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800000","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771941420598373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800001","text":".../node_modules/@prisma/client postinstall: import { PrismaClient } from '@prisma/client'","type":"stdout","serial":"1771941420598373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800002","text":".../node_modules/@prisma/client postinstall: const prisma = new PrismaClient()","type":"stdout","serial":"1771941420598373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800003","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771941420598373454944800003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800004","text":".../node_modules/@prisma/client postinstall: or start using Prisma Client at the edge (See: https://pris.ly/d/accelerate)","type":"stdout","serial":"1771941420598373454944800004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800005","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771941420598373454944800005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800006","text":".../node_modules/@prisma/client postinstall: import { PrismaClient } from '@prisma/client/edge'","type":"stdout","serial":"1771941420598373454944800006","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800007","text":".../node_modules/@prisma/client postinstall: const prisma = new PrismaClient()","type":"stdout","serial":"1771941420598373454944800007","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800008","text":".../node_modules/@prisma/client postinstall: ```","type":"stdout","serial":"1771941420598373454944800008","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800009","text":".../node_modules/@prisma/client postinstall: See other ways of importing Prisma Client: http://pris.ly/d/importing-client","type":"stdout","serial":"1771941420598373454944800009","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800010","text":".../node_modules/@prisma/client postinstall: ┌─────────────────────────────────────────────────────────────┐","type":"stdout","serial":"1771941420598373454944800010","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800011","text":".../node_modules/@prisma/client postinstall: │  Deploying your app to serverless or edge functions?        │","type":"stdout","serial":"1771941420598373454944800011","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800012","text":".../node_modules/@prisma/client postinstall: │  Try Prisma Accelerate for connection pooling and caching.  │","type":"stdout","serial":"1771941420598373454944800012","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800013","text":".../node_modules/@prisma/client postinstall: │  https://pris.ly/cli/accelerate                             │","type":"stdout","serial":"1771941420598373454944800013","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420598,"date":1771941420598,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420598373454944800014","text":".../node_modules/@prisma/client postinstall: └─────────────────────────────────────────────────────────────┘","type":"stdout","serial":"1771941420598373454944800014","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941420802,"date":1771941420802,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941420802373454944800000","text":".../node_modules/@prisma/client postinstall: Done","type":"stdout","serial":"1771941420802373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800000","text":"","type":"stdout","serial":"1771941421259373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800001","text":"dependencies:","type":"stdout","serial":"1771941421259373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800002","text":"+ @hookform/resolvers 3.10.0","type":"stdout","serial":"1771941421259373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800003","text":"+ @prisma/client 5.10.0","type":"stdout","serial":"1771941421259373454944800003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800004","text":"+ @radix-ui/react-accordion 1.2.12","type":"stdout","serial":"1771941421259373454944800004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800005","text":"+ @radix-ui/react-alert-dialog 1.1.15","type":"stdout","serial":"1771941421259373454944800005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800006","text":"+ @radix-ui/react-avatar 1.1.11","type":"stdout","serial":"1771941421259373454944800006","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800007","text":"+ @radix-ui/react-checkbox 1.3.3","type":"stdout","serial":"1771941421259373454944800007","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800008","text":"+ @radix-ui/react-dialog 1.1.15","type":"stdout","serial":"1771941421259373454944800008","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800009","text":"+ @radix-ui/react-dropdown-menu 2.1.16","type":"stdout","serial":"1771941421259373454944800009","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800010","text":"+ @radix-ui/react-label 2.1.8","type":"stdout","serial":"1771941421259373454944800010","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800011","text":"+ @radix-ui/react-popover 1.1.15","type":"stdout","serial":"1771941421259373454944800011","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800012","text":"+ @radix-ui/react-select 2.2.6","type":"stdout","serial":"1771941421259373454944800012","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800013","text":"+ @radix-ui/react-separator 1.1.8","type":"stdout","serial":"1771941421259373454944800013","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800014","text":"+ @radix-ui/react-slot 1.2.4","type":"stdout","serial":"1771941421259373454944800014","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800015","text":"+ @radix-ui/react-tabs 1.1.13","type":"stdout","serial":"1771941421259373454944800015","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800016","text":"+ @radix-ui/react-toast 1.2.15","type":"stdout","serial":"1771941421259373454944800016","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800017","text":"+ @radix-ui/react-tooltip 1.2.8","type":"stdout","serial":"1771941421259373454944800017","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800018","text":"+ @stripe/stripe-js 3.5.0","type":"stdout","serial":"1771941421259373454944800018","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800019","text":"+ @supabase/ssr 0.8.0","type":"stdout","serial":"1771941421259373454944800019","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800020","text":"+ @supabase/supabase-js 2.97.0","type":"stdout","serial":"1771941421259373454944800020","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800021","text":"+ @tanstack/react-query 5.90.21","type":"stdout","serial":"1771941421259373454944800021","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800022","text":"+ class-variance-authority 0.7.1","type":"stdout","serial":"1771941421259373454944800022","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800023","text":"+ clsx 2.1.1","type":"stdout","serial":"1771941421259373454944800023","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800024","text":"+ date-fns 3.6.0","type":"stdout","serial":"1771941421259373454944800024","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800025","text":"+ dotenv 17.3.1","type":"stdout","serial":"1771941421259373454944800025","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800026","text":"+ framer-motion 11.18.2","type":"stdout","serial":"1771941421259373454944800026","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800027","text":"+ lucide-react 0.575.0","type":"stdout","serial":"1771941421259373454944800027","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800028","text":"+ meilisearch 0.38.0","type":"stdout","serial":"1771941421259373454944800028","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800029","text":"+ next 15.5.10","type":"stdout","serial":"1771941421259373454944800029","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800030","text":"+ next-themes 0.4.6","type":"stdout","serial":"1771941421259373454944800030","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800031","text":"+ node-fetch 3.3.2","type":"stdout","serial":"1771941421259373454944800031","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800032","text":"+ pg 8.18.0","type":"stdout","serial":"1771941421259373454944800032","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800033","text":"+ react 18.3.1","type":"stdout","serial":"1771941421259373454944800033","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800034","text":"+ react-dom 18.3.1","type":"stdout","serial":"1771941421259373454944800034","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800035","text":"+ react-hook-form 7.71.2","type":"stdout","serial":"1771941421259373454944800035","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800036","text":"+ resend 3.5.0","type":"stdout","serial":"1771941421259373454944800036","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800037","text":"+ sonner 2.0.7","type":"stdout","serial":"1771941421259373454944800037","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800038","text":"+ stripe 14.25.0","type":"stdout","serial":"1771941421259373454944800038","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800039","text":"+ tailwind-merge 2.6.1","type":"stdout","serial":"1771941421259373454944800039","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800040","text":"+ tailwindcss-animate 1.0.7","type":"stdout","serial":"1771941421259373454944800040","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800041","text":"+ zod 3.25.76","type":"stdout","serial":"1771941421259373454944800041","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421259,"date":1771941421259,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421259373454944800042","text":"+ zustand 4.5.7","type":"stdout","serial":"1771941421259373454944800042","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800000","text":"","type":"stdout","serial":"1771941421260373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800001","text":"devDependencies:","type":"stdout","serial":"1771941421260373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800002","text":"+ @playwright/test 1.58.2","type":"stdout","serial":"1771941421260373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800003","text":"+ @storybook/addon-a11y 8.6.15","type":"stdout","serial":"1771941421260373454944800003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800004","text":"+ @storybook/addon-essentials 8.6.14","type":"stdout","serial":"1771941421260373454944800004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800005","text":"+ @storybook/addon-interactions 8.6.14","type":"stdout","serial":"1771941421260373454944800005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800006","text":"+ @storybook/nextjs 8.6.15","type":"stdout","serial":"1771941421260373454944800006","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800007","text":"+ @storybook/react 8.6.15","type":"stdout","serial":"1771941421260373454944800007","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800008","text":"+ @testing-library/jest-dom 6.9.1","type":"stdout","serial":"1771941421260373454944800008","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800009","text":"+ @testing-library/react 16.3.2","type":"stdout","serial":"1771941421260373454944800009","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800010","text":"+ @testing-library/user-event 14.6.1","type":"stdout","serial":"1771941421260373454944800010","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800011","text":"+ @types/node 20.19.33","type":"stdout","serial":"1771941421260373454944800011","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800012","text":"+ @types/react 18.3.28","type":"stdout","serial":"1771941421260373454944800012","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800013","text":"+ @types/react-dom 18.3.7","type":"stdout","serial":"1771941421260373454944800013","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800014","text":"+ @typescript-eslint/eslint-plugin 7.18.0","type":"stdout","serial":"1771941421260373454944800014","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800015","text":"+ @typescript-eslint/parser 7.18.0","type":"stdout","serial":"1771941421260373454944800015","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800016","text":"+ @vitejs/plugin-react 4.7.0","type":"stdout","serial":"1771941421260373454944800016","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800017","text":"+ @vitest/coverage-v8 1.6.1","type":"stdout","serial":"1771941421260373454944800017","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800018","text":"+ @vitest/ui 1.6.1","type":"stdout","serial":"1771941421260373454944800018","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800019","text":"+ autoprefixer 10.4.24","type":"stdout","serial":"1771941421260373454944800019","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800020","text":"+ eslint 8.57.1","type":"stdout","serial":"1771941421260373454944800020","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800021","text":"+ eslint-config-next 14.2.35","type":"stdout","serial":"1771941421260373454944800021","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800022","text":"+ glob 13.0.6","type":"stdout","serial":"1771941421260373454944800022","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421260,"date":1771941421260,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421260373454944800023","text":"+ husky 9.1.7","type":"stdout","serial":"1771941421260373454944800023","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800000","text":"+ jsdom 28.1.0","type":"stdout","serial":"1771941421261373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800001","text":"+ lint-staged 15.5.2","type":"stdout","serial":"1771941421261373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800002","text":"+ postcss 8.5.6","type":"stdout","serial":"1771941421261373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800003","text":"+ prettier 3.8.1","type":"stdout","serial":"1771941421261373454944800003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800004","text":"+ prettier-plugin-tailwindcss 0.7.2","type":"stdout","serial":"1771941421261373454944800004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800005","text":"+ prisma 5.10.0","type":"stdout","serial":"1771941421261373454944800005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800006","text":"+ tailwindcss 3.4.19","type":"stdout","serial":"1771941421261373454944800006","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800007","text":"+ tsx 4.21.0","type":"stdout","serial":"1771941421261373454944800007","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800008","text":"+ typescript 5.9.3","type":"stdout","serial":"1771941421261373454944800008","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800009","text":"+ vitest 1.6.1","type":"stdout","serial":"1771941421261373454944800009","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421261,"date":1771941421261,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421261373454944800010","text":"","type":"stdout","serial":"1771941421261373454944800010","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421476,"date":1771941421476,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421476373454944800000","text":"","type":"stdout","serial":"1771941421476373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421477,"date":1771941421477,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421477373454944800000","text":"> opencarbox-carvantooo@1.0.0 postinstall /vercel/path0","type":"stdout","serial":"1771941421477373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421477,"date":1771941421477,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421477373454944800001","text":"> DATABASE_URL=${DATABASE_URL:-file:./dev.db} prisma generate","type":"stdout","serial":"1771941421477373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421477,"date":1771941421477,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421477373454944800002","text":"","type":"stdout","serial":"1771941421477373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941421866,"date":1771941421866,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941421866373454944800000","text":"Prisma schema loaded from prisma/schema.prisma","type":"stdout","serial":"1771941421866373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422225,"date":1771941422225,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422225373454944800000","text":"","type":"stdout","serial":"1771941422225373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422225,"date":1771941422225,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422225373454944800001","text":"✔ Generated Prisma Client (v5.10.0) to ./node_modules/.pnpm/@prisma+client@5.10.0_prisma@5.10.0/node_modules/@prisma/client in 126ms","type":"stdout","serial":"1771941422225373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422225,"date":1771941422225,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422225373454944800002","text":"","type":"stdout","serial":"1771941422225373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422225,"date":1771941422225,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422225373454944800003","text":"Start using Prisma Client in Node.js (See: https://pris.ly/d/client)","type":"stdout","serial":"1771941422225373454944800003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422225,"date":1771941422225,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422225373454944800004","text":"```","type":"stdout","serial":"1771941422225373454944800004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422225,"date":1771941422225,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422225373454944800005","text":"import { PrismaClient } from '@prisma/client'","type":"stdout","serial":"1771941422225373454944800005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800000","text":"const prisma = new PrismaClient()","type":"stdout","serial":"1771941422226373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800001","text":"```","type":"stdout","serial":"1771941422226373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800002","text":"or start using Prisma Client at the edge (See: https://pris.ly/d/accelerate)","type":"stdout","serial":"1771941422226373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800003","text":"```","type":"stdout","serial":"1771941422226373454944800003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800004","text":"import { PrismaClient } from '@prisma/client/edge'","type":"stdout","serial":"1771941422226373454944800004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800005","text":"const prisma = new PrismaClient()","type":"stdout","serial":"1771941422226373454944800005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800006","text":"```","type":"stdout","serial":"1771941422226373454944800006","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800007","text":"","type":"stdout","serial":"1771941422226373454944800007","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800008","text":"See other ways of importing Prisma Client: http://pris.ly/d/importing-client","type":"stdout","serial":"1771941422226373454944800008","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800009","text":"","type":"stdout","serial":"1771941422226373454944800009","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800010","text":"┌─────────────────────────────────────────────────────────────┐","type":"stdout","serial":"1771941422226373454944800010","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800011","text":"│  Deploying your app to serverless or edge functions?        │","type":"stdout","serial":"1771941422226373454944800011","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800012","text":"│  Try Prisma Accelerate for connection pooling and caching.  │","type":"stdout","serial":"1771941422226373454944800012","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800013","text":"│  https://pris.ly/cli/accelerate                             │","type":"stdout","serial":"1771941422226373454944800013","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800014","text":"└─────────────────────────────────────────────────────────────┘","type":"stdout","serial":"1771941422226373454944800014","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422226,"date":1771941422226,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422226373454944800015","text":"","type":"stdout","serial":"1771941422226373454944800015","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422429,"date":1771941422429,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422429373454944800000","text":"","type":"stdout","serial":"1771941422429373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422430,"date":1771941422430,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422430373454944800000","text":"> opencarbox-carvantooo@1.0.0 prepare /vercel/path0","type":"stdout","serial":"1771941422430373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422430,"date":1771941422430,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422430373454944800001","text":"> husky || true","type":"stdout","serial":"1771941422430373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422430,"date":1771941422430,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422430373454944800002","text":"","type":"stdout","serial":"1771941422430373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422487,"date":1771941422487,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422487373454944800000","text":"fatal: not in a git directory","type":"stdout","serial":"1771941422487373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422490,"date":1771941422490,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422490373454944800000","text":"Done in 8.3s","type":"stdout","serial":"1771941422490373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422608,"date":1771941422608,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422608373454944800000","text":"Detected Next.js version: 15.5.10","type":"stdout","serial":"1771941422608373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941422609,"date":1771941422609,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941422609373454944800000","text":"Running \"pnpm install && pnpm build\"","type":"stdout","serial":"1771941422609373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423296,"date":1771941423296,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423296373454944800000","text":"Lockfile is up to date, resolution step is skipped","type":"stdout","serial":"1771941423296373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423409,"date":1771941423409,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423409373454944800000","text":"Packages: -102","type":"stdout","serial":"1771941423409373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423409,"date":1771941423409,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423409373454944800001","text":"--------------------------------------------------------------------------------","type":"stdout","serial":"1771941423409373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800000","text":"","type":"stdout","serial":"1771941423983373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800001","text":"devDependencies:","type":"stdout","serial":"1771941423983373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800002","text":"- @playwright/test 1.58.2","type":"stdout","serial":"1771941423983373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800003","text":"- @storybook/addon-a11y 8.6.15","type":"stdout","serial":"1771941423983373454944800003","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800004","text":"- @storybook/addon-essentials 8.6.14","type":"stdout","serial":"1771941423983373454944800004","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800005","text":"- @storybook/addon-interactions 8.6.14","type":"stdout","serial":"1771941423983373454944800005","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800006","text":"- @storybook/nextjs 8.6.15","type":"stdout","serial":"1771941423983373454944800006","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800007","text":"- @storybook/react 8.6.15","type":"stdout","serial":"1771941423983373454944800007","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800008","text":"- @testing-library/jest-dom 6.9.1","type":"stdout","serial":"1771941423983373454944800008","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800009","text":"- @testing-library/react 16.3.2","type":"stdout","serial":"1771941423983373454944800009","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800010","text":"- @testing-library/user-event 14.6.1","type":"stdout","serial":"1771941423983373454944800010","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800011","text":"- @types/node 20.19.33","type":"stdout","serial":"1771941423983373454944800011","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800012","text":"- @types/react 18.3.28","type":"stdout","serial":"1771941423983373454944800012","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800013","text":"- @types/react-dom 18.3.7","type":"stdout","serial":"1771941423983373454944800013","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800014","text":"- @typescript-eslint/eslint-plugin 7.18.0","type":"stdout","serial":"1771941423983373454944800014","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800015","text":"- @typescript-eslint/parser 7.18.0","type":"stdout","serial":"1771941423983373454944800015","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800016","text":"- @vitejs/plugin-react 4.7.0","type":"stdout","serial":"1771941423983373454944800016","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800017","text":"- @vitest/coverage-v8 1.6.1","type":"stdout","serial":"1771941423983373454944800017","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800018","text":"- @vitest/ui 1.6.1","type":"stdout","serial":"1771941423983373454944800018","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800019","text":"- autoprefixer 10.4.24","type":"stdout","serial":"1771941423983373454944800019","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800020","text":"- eslint 8.57.1","type":"stdout","serial":"1771941423983373454944800020","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800021","text":"- eslint-config-next 14.2.35","type":"stdout","serial":"1771941423983373454944800021","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800022","text":"- glob 13.0.6","type":"stdout","serial":"1771941423983373454944800022","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800023","text":"- husky 9.1.7","type":"stdout","serial":"1771941423983373454944800023","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800024","text":"- jsdom 28.1.0","type":"stdout","serial":"1771941423983373454944800024","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800025","text":"- lint-staged 15.5.2","type":"stdout","serial":"1771941423983373454944800025","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800026","text":"- postcss 8.5.6","type":"stdout","serial":"1771941423983373454944800026","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800027","text":"- prettier 3.8.1","type":"stdout","serial":"1771941423983373454944800027","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800028","text":"- prettier-plugin-tailwindcss 0.7.2","type":"stdout","serial":"1771941423983373454944800028","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800029","text":"- prisma 5.10.0","type":"stdout","serial":"1771941423983373454944800029","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800030","text":"- tailwindcss 3.4.19","type":"stdout","serial":"1771941423983373454944800030","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800031","text":"- tsx 4.21.0","type":"stdout","serial":"1771941423983373454944800031","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800032","text":"- typescript 5.9.3","type":"stdout","serial":"1771941423983373454944800032","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800033","text":"- vitest 1.6.1","type":"stdout","serial":"1771941423983373454944800033","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941423983,"date":1771941423983,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941423983373454944800034","text":"","type":"stdout","serial":"1771941423983373454944800034","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941424169,"date":1771941424169,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941424169373454944800000","text":"","type":"stdout","serial":"1771941424169373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941424170,"date":1771941424170,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941424170373454944800000","text":"> opencarbox-carvantooo@1.0.0 postinstall /vercel/path0","type":"stdout","serial":"1771941424170373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941424170,"date":1771941424170,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941424170373454944800001","text":"> DATABASE_URL=${DATABASE_URL:-file:./dev.db} prisma generate","type":"stdout","serial":"1771941424170373454944800001","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941424170,"date":1771941424170,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941424170373454944800002","text":"","type":"stdout","serial":"1771941424170373454944800002","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."}}
+,
+{"created":1771941424175,"date":1771941424175,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941424175373454944800000","text":"sh: line 1: prisma: command not found","type":"stderr","serial":"1771941424175373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."},"level":"error"}
+,
+{"created":1771941424176,"date":1771941424176,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941424176373454944800000","text":" ELIFECYCLE  Command failed.","type":"stdout","serial":"1771941424176373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."},"level":"error"}
+,
+{"created":1771941424205,"date":1771941424205,"deploymentId":"dpl_3RrhNKML2NxAATHxzm8qyxdiZsoc","id":"1771941424205373454944800000","text":"Error: Command \"pnpm install && pnpm build\" exited with 1","type":"stderr","serial":"1771941424205373454944800000","info":{"type":"build","name":"bld_6lujliaq3","entrypoint":"."},"level":"error"}
+]

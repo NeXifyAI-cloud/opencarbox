@@ -214,7 +214,7 @@
   - [x] Animationen
 
 ### TASK-022: Shop - Produktkatalog
-- **Status:** 🔄 IN ARBEIT
+- **Status:** ✅ ERLEDIGT
 - **Priorität:** KRITISCH
 - **Abhängigkeiten:** TASK-020, TASK-005
 - **Beschreibung:** Produktlisten und -details

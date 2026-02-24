@@ -3,11 +3,11 @@
 <!-- plan-status:start -->
 ## 📌 Plan-Status (automatisch aus `docs/tasks/master_plan.md`)
 
-- ✅ **Erledigt:** 11
+- ✅ **Erledigt:** 12
 - 🔄 **In Arbeit:** 2
-- ⬜ **Offen:** 20
-- 📊 **Gesamtfortschritt:** 33% (11/33)
-- 🗓️ **Zuletzt aktualisiert:** 2026-02-16
+- ⬜ **Offen:** 0
+- 📊 **Gesamtfortschritt:** 86% (12/14)
+- 🗓️ **Zuletzt aktualisiert:** 2026-02-24
 
 > Quelle: `docs/tasks/master_plan.md` ist die einzige Truth-Quelle für Task-Status.
 <!-- plan-status:end -->
@@ -16,11 +16,11 @@
 ## 📈 Weekly-Status (automatisch aus `docs/tasks/master_plan.md`)
 
 ### Kennzahlen
-- ✅ **Erledigt:** 11
+- ✅ **Erledigt:** 12
 - 🔄 **In Arbeit:** 2
-- ⬜ **Offen:** 20
-- 📊 **Gesamtfortschritt:** 33% (11/33)
-- 🗓️ **Zuletzt aktualisiert:** 2026-02-16
+- ⬜ **Offen:** 0
+- 📊 **Gesamtfortschritt:** 36% (12/33)
+- 🗓️ **Zuletzt aktualisiert:** 2026-02-24
 
 ### Kritischer Pfad (Priorität: KRITISCH)
 - ✅ **TASK-001** – Projekt-Initialisierung (ERLEDIGT)
@@ -28,21 +28,21 @@
 - ✅ **TASK-010** – shadcn/ui Setup (ERLEDIGT)
 - ✅ **TASK-011** – Atoms - Basis-Komponenten (ERLEDIGT)
 - ✅ **TASK-020** – Multisite-Routing (ERLEDIGT)
-- 🔄 **TASK-022** – Shop - Produktkatalog (IN ARBEIT)
-- ⬜ **TASK-023** – Shop - HSN/TSN Fahrzeugsuche (OFFEN)
-- ⬜ **TASK-024** – Shop - Warenkorb (OFFEN)
-- ⬜ **TASK-025** – Shop - Checkout (OFFEN)
-- ⬜ **TASK-030** – Stripe Integration (OFFEN)
-- ⬜ **TASK-050** – Testing (OFFEN)
-- ⬜ **TASK-051** – Staging-Deployment (OFFEN)
-- ⬜ **TASK-052** – Production-Launch (OFFEN)
+- ✅ **TASK-022** – Shop - Produktkatalog (ERLEDIGT)
+- ❓ **TASK-023** – Shop - HSN/TSN Fahrzeugsuche (UNBEKANNT)
+- 🔄 **TASK-024** – Shop - Warenkorb (IN ARBEIT)
+- 🔄 **TASK-025** – Shop - Checkout (IN ARBEIT)
+- ❓ **TASK-030** – Stripe Integration (UNBEKANNT)
+- ❓ **TASK-050** – Testing (UNBEKANNT)
+- ❓ **TASK-051** – Staging-Deployment (UNBEKANNT)
+- ❓ **TASK-052** – Production-Launch (UNBEKANNT)
 
 ### Nächste 5 Prioritäten
-- 🔄 **TASK-022** – Shop - Produktkatalog [KRITISCH]
-- ⬜ **TASK-023** – Shop - HSN/TSN Fahrzeugsuche [KRITISCH]
-- ⬜ **TASK-024** – Shop - Warenkorb [KRITISCH]
-- ⬜ **TASK-025** – Shop - Checkout [KRITISCH]
-- ⬜ **TASK-030** – Stripe Integration [KRITISCH]
+- ❓ **TASK-023** – Shop - HSN/TSN Fahrzeugsuche [KRITISCH]
+- 🔄 **TASK-024** – Shop - Warenkorb [KRITISCH]
+- 🔄 **TASK-025** – Shop - Checkout [KRITISCH]
+- ❓ **TASK-030** – Stripe Integration [KRITISCH]
+- ❓ **TASK-050** – Testing [KRITISCH]
 
 > Quelle: `docs/tasks/master_plan.md` ist die einzige Truth-Quelle für Task-Status.
 <!-- weekly-status:end -->

@@ -1,13 +1,18 @@
 # Anstehende Aufgaben
 
-## Sicherheits-Infrastruktur
-- [x] Implementierung des Audit-Loggers (`src/lib/audit-logger.ts`)
-- [x] Anpassung des Prisma-Schemas für `AuditLog`
-- [x] Erstellung der Sicherheits-Dokumentation (`docs/SAFETY_PROTOCOLS.md`)
-- [x] Erstellung des Refusal-Workflows (`docs/REFUSAL_WORKFLOW.md`)
-
-## Projekt-Tasks (Phase 2/3)
-- [ ] TASK-022: Shop - Produktkatalog finalisieren
-- [ ] TASK-023: Shop - HSN/TSN Fahrzeugsuche
-- [ ] TASK-024: Shop - Warenkorb
+## Shop (Phase 3)
+- [x] TASK-022: Shop - Produktkatalog finalisieren (Implementiert)
+- [x] TASK-023: Shop - HSN/TSN Fahrzeugsuche (Implementiert)
+- [ ] TASK-024: Shop - Warenkorb (Nächster Schritt)
 - [ ] TASK-025: Shop - Checkout
+- [ ] TASK-030: Stripe Integration
+
+## Infrastruktur & Governance
+- [x] Branding-Update auf DOS v1.1 (#FFB300 / #FFA800)
+- [x] Tracking-System G4 implementiert (`src/lib/events.ts`)
+- [x] Quality Gate Pass (0 TS Errors)
+- [ ] TASK-031: Meilisearch Integration (Produktsuche)
+
+## Verifikation
+- [ ] DB-Migrations auf Produktion pushen (sobald Konnektivität stabil)
+- [ ] E2E Tests für HSN/TSN Search Flow

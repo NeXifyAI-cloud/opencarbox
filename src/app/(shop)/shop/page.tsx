@@ -1,45 +1,46 @@
-'use client';
-
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
-import {
-    Car,
-    CheckCircle2,
-    ChevronRight,
-    Clock,
-    Search,
-    ShieldCheck,
-    Star,
-    Truck,
-    Zap
-} from 'lucide-react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  CheckCircle2,
+  Truck,
+  ShieldCheck,
+  Zap,
+  Star
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
+import { FeaturedProductsSection } from '@/components/shop/featured-products-section';
+import { HsnTsnFinder } from '@/components/shop/hsn-tsn-finder';
+import { PageTracker } from '@/components/analytics/page-tracker';
 
-/**
- * Carvantooo Shop Landing Page - kfzteile24 Inspired Premium Design
- */
-export default function ShopPage() {
+export default function ShopHomePage() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      {/* 1. Top Vehicle Finder Section (kfzteile24 Style) */}
-      <section className="bg-slate-900 pt-8 pb-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-primary opacity-10" />
-        <div className="container-content relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="bg-slate-50">
+      <PageTracker />
 
-            {/* Left: Headline */}
+      {/* 1. Hero Section with Search */}
+      <section className="relative bg-slate-900 pt-16 pb-24 overflow-hidden">
+        {/* Background Patterns */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_20%_30%,#3b82f6_0%,transparent_50%)]" />
+          <div className="absolute bottom-0 right-0 w-full h-full bg-[radial-gradient(circle_at_80%_70%,#ef4444_0%,transparent_50%)]" />
+        </div>
+
+        <div className="container-content relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Left: Content */}
             <div className="lg:col-span-5 text-white">
-              <Badge variant="primary" className="mb-4">
-                Carvantooo Parts & Service
+              <Badge className="bg-primary-500/20 text-primary-400 border-primary-500/30 mb-6 backdrop-blur-sm">
+                Marktplatz für Profis & Private
               </Badge>
-              <h1 className="text-4xl md:text-5xl font-display font-bold mb-6 leading-tight">
-                Die richtigen Teile für <span className="text-primary-500 italic">Dein Auto.</span>
+              <h1 className="text-4xl md:text-6xl font-display font-black leading-tight mb-6">
+                Alles für dein <span className="text-primary-500">Auto</span> aus einer Hand.
               </h1>
-              <p className="text-slate-400 text-lg mb-8 max-w-md">
-                Finden Sie garantiert passende Ersatzteile mit unserer HSN/TSN Suche oder über Ihr Fahrzeugmodell.
+              <p className="text-lg text-slate-400 mb-8 leading-relaxed max-w-lg">
+                Über 3 Millionen Ersatzteile, Reifen und Zubehör von Top-Marken.
+                Geprüfte Qualität direkt nach Hause geliefert.
               </p>
 
               <div className="hidden lg:flex items-center gap-6 mt-12">
@@ -65,45 +66,7 @@ export default function ShopPage() {
 
             {/* Right: Finder Card */}
             <div className="lg:col-span-7">
-              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-                <div className="flex border-b">
-                  <button className="flex-1 py-4 text-sm font-bold border-b-2 border-primary-500 text-slate-900 flex items-center justify-center gap-2">
-                    <Search className="w-4 h-4 text-primary-500" /> HSN/TSN Suche
-                  </button>
-                  <button className="flex-1 py-4 text-sm font-bold text-slate-500 hover:text-slate-900 flex items-center justify-center gap-2 bg-slate-50">
-                    <Car className="w-4 h-4" /> Fahrzeug wählen
-                  </button>
-                </div>
-
-                <div className="p-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">HSN (2.1)</label>
-                      <Input placeholder="z.B. 0603" className="h-12 text-lg font-mono uppercase" maxLength={4} />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 uppercase mb-2 tracking-wider">TSN (2.2)</label>
-                      <Input placeholder="z.B. ADO" className="h-12 text-lg font-mono uppercase" maxLength={3} />
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-50 rounded-xl p-4 flex items-start gap-4 mb-6 border border-slate-100">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm flex-shrink-0">
-                      <Clock className="w-5 h-5 text-primary-500" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-slate-600 leading-relaxed font-medium">
-                        Sie finden diese Nummern in Ihrem Fahrzeugschein im mittleren Teil unter 2.1 und 2.2.
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button variant="gradient-primary" size="xl" className="w-full rounded-xl shadow-lg shadow-primary-500/20 group">
-                    Passende Teile finden
-                    <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </div>
-              </div>
+              <HsnTsnFinder />
             </div>
           </div>
         </div>
@@ -133,7 +96,7 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* 3. Category Tiles (kfzteile24 Style) */}
+      {/* 3. Category Tiles */}
       <section className="py-16 container-content">
         <div className="flex items-end justify-between mb-10">
           <div>
@@ -173,7 +136,10 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* 4. Promotional Banners */}
+      {/* 4. Featured Products */}
+      <FeaturedProductsSection />
+
+      {/* 5. Promotional Banners */}
       <section className="py-8 container-content">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="bg-primary-500 rounded-3xl p-8 relative overflow-hidden group">
@@ -202,7 +168,7 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* 5. Featured Brands */}
+      {/* 6. Featured Brands */}
       <section className="py-20 bg-slate-100/50 mt-12">
         <div className="container-content">
           <div className="text-center mb-12">
@@ -210,7 +176,6 @@ export default function ShopPage() {
             <p className="text-slate-500">Nur Originalqualität von führenden Automobilzulieferern.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
-             {/* Mock Logos */}
              {['BOSCH', 'ATE', 'MANN', 'BREMBO', 'SACHS', 'CASTROL'].map(brand => (
                <span key={brand} className="text-2xl font-black text-slate-400 tracking-tighter">{brand}</span>
              ))}

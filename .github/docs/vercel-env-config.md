@@ -281,17 +281,17 @@ curl -X DELETE \
 2. **Settings → Build & Development Settings**
    ```plaintext
    Framework: Next.js
-   Build Command: pnpm build
+   Build Command: npm run build
    Output Directory: .next
-   Install Command: pnpm install
+   Install Command: npm install
    ```
 
 3. **vercel.json** (in repository root)
    ```json
    {
-     "buildCommand": "pnpm build",
-     "devCommand": "pnpm dev",
-     "installCommand": "pnpm install",
+     "buildCommand": "npm run build",
+     "devCommand": "npm dev",
+     "installCommand": "npm install",
      "env": {
        "NEXT_PUBLIC_APP_NAME": "@link /project/settings/environment-variables"
      },

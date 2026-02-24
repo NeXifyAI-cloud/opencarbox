@@ -303,7 +303,7 @@ Each provider tracks:
 
 4. Test the new setup:
    ```bash
-   pnpm test
+   npm run test
    ```
 
 ### Migrating to New Client API

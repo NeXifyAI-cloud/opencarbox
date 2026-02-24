@@ -65,22 +65,22 @@ EOF
 
 ```bash
 # Install dependencies
-pnpm install
+npm install
 
 # Run preflight check
-pnpm tsx tools/preflight.ts ai
+npm tsx tools/preflight.ts ai
 # Expected: Preflight(ai): OK (provider: github-models, fallback: enabled)
 
 # Run type check
-pnpm typecheck
+npm run typecheck
 # Expected: No errors in src/lib/ai
 
 # Run tests
-pnpm test -- --run
+npm run test -- --run
 # Expected: All tests passing
 
 # Test AI request (optional)
-pnpm tsx -e "
+npm tsx -e "
 import { aiChatCompletion } from './src/lib/ai/client';
 const response = await aiChatCompletion({
   model: 'gpt-4o',
@@ -126,7 +126,7 @@ Files to review:
 
 ### Unit Tests
 
-- [ ] Run all tests: `pnpm test -- --run`
+- [ ] Run all tests: `npm run test -- --run`
 - [ ] Verify AI-related tests pass:
   - [ ] `tests/api/ai-chat.test.ts`
   - [ ] `tests/api/codex-controller-webhook.test.ts`
@@ -140,7 +140,7 @@ export AI_PROVIDER=github-models
 export GITHUB_TOKEN=your_token
 
 # Run AI tools
-pnpm tsx tools/auto_improve.ts
+npm tsx tools/auto_improve.ts
 # Expected: Should generate suggestions using GitHub Models
 ```
 
@@ -152,7 +152,7 @@ export AI_PROVIDER=github-models
 export AI_AUTO_SELECT=true
 
 # Run AI tools
-pnpm tsx tools/auto_improve.ts
+npm tsx tools/auto_improve.ts
 # Expected: Should fall back to DeepSeek and work
 ```
 

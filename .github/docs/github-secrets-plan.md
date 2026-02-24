@@ -362,7 +362,7 @@ env:
 
 **BETTER:**
 ```yaml
-- run: pnpm run ai:triage
+- run: npm run ai:triage
   env:
     DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
     DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}

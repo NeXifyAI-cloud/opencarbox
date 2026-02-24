@@ -51,16 +51,16 @@ NSCALE_API_KEY=your_nscale_key      # If using NScale
 
 ```bash
 # Run preflight check
-pnpm tsx tools/preflight.ts ai
+npm tsx tools/preflight.ts ai
 
 # Should output:
 # Preflight(ai): OK (provider: github-models, fallback: enabled)
 
 # Run tests
-pnpm test
+npm run test
 
 # Try a simple AI request
-pnpm tsx -e "
+npm tsx -e "
 import { aiChatCompletion } from './src/lib/ai/client';
 const response = await aiChatCompletion({
   model: 'gpt-4o',
@@ -139,7 +139,7 @@ echo $GITHUB_TOKEN
 echo $DEEPSEEK_API_KEY
 
 # Run preflight
-pnpm tsx tools/preflight.ts ai
+npm tsx tools/preflight.ts ai
 ```
 
 ### "GITHUB_TOKEN or GITHUB_MODELS_API_KEY required"
@@ -168,13 +168,13 @@ echo "GITHUB_TOKEN=ghp_your_token" >> .env
 **Solution:**
 ```bash
 # Regenerate Prisma client
-pnpm db:generate
+npm db:generate
 
 # Run type check
-pnpm typecheck
+npm run typecheck
 
 # Run tests with verbose output
-pnpm test -- --reporter=verbose
+npm run test -- --reporter=verbose
 ```
 
 ## Advanced Configuration

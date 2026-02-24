@@ -15,7 +15,7 @@
 - Separate environment variables via GitHub Environments
 
 ### Local Development
-- `pnpm dev` — standard Next.js dev server
+- `npm dev` — standard Next.js dev server
 - `docker compose up` — containerized development (optional)
 
 ## How it is Operated
@@ -39,7 +39,7 @@
 
 - **Error tracking**: Sentry (`SENTRY_DSN`)
 - **Build status**: GitHub Actions status badges
-- **Dependency health**: pnpm audit in `security.yml` (weekly schedule)
+- **Dependency health**: npm audit in `security.yml` (weekly schedule)
 - **Secret hygiene**: `secret:scan` in CI + Husky pre-commit
 
 ## Branch Strategy
@@ -56,12 +56,12 @@
 
 ## Definition of Done
 
-- [ ] Build green (`pnpm build`)
-- [ ] Tests green (`pnpm test`)
-- [ ] Lint green (`pnpm lint`)
-- [ ] Type check green (`pnpm typecheck`)
-- [ ] Security checks green (`pnpm secret:scan`, `pnpm audit`)
-- [ ] Quality gate passes (`pnpm quality-gate`)
+- [ ] Build green (`npm run build`)
+- [ ] Tests green (`npm run test`)
+- [ ] Lint green (`npm run lint`)
+- [ ] Type check green (`npm run typecheck`)
+- [ ] Security checks green (`npm run secret:scan`, `npm audit`)
+- [ ] Quality gate passes (`npm run quality-gate`)
 - [ ] No forbidden AI providers (`guard_no_openai.sh`)
 - [ ] PR reviewed and approved
 - [ ] Documentation updated if needed

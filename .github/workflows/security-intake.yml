@@ -23,22 +23,19 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - run: pnpm i --frozen-lockfile
+      - run: npm ci
 
       - name: Run audit and parse results
         id: audit
         run: |
           # Run audit, capture output (don't fail the step)
-          pnpm audit --json 2>/dev/null > /tmp/audit.json || true
+          npm run audit --json 2>/dev/null > /tmp/audit.json || true
 
           # Extract high/critical advisories
           HIGH_CRIT=$(cat /tmp/audit.json | jq '[.advisories // {} | to_entries[] | select(.value.severity == "high" or .value.severity == "critical")] | length' 2>/dev/null || echo "0")

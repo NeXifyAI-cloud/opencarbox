@@ -9,22 +9,22 @@ Um Fehler in der CI lokal zu finden, können die folgenden Befehle in der angege
 ### Build & Tests
 ```bash
 # 1. Abhängigkeiten installieren
-pnpm i --frozen-lockfile
+npm i --frozen-lockfile
 
 # 2. Prisma Client generieren
-pnpm db:generate
+npm db:generate
 
 # 3. Linting
-pnpm lint
+npm run lint
 
 # 4. Type Check
-pnpm typecheck
+npm run typecheck
 
 # 5. Unit Tests
-pnpm test
+npm run test
 
 # 6. Build
-pnpm build
+npm run build
 ```
 
 ### Preflight Checks
@@ -50,12 +50,12 @@ Die Pipeline führt automatisch einen Rollback durch, wenn der Health-Check nach
 ### Manueller Rollback
 Falls ein manueller Rollback erforderlich ist:
 ```bash
-pnpm dlx vercel rollback --token=$VERCEL_TOKEN --yes
+npm dlx vercel rollback --token=$VERCEL_TOKEN --yes
 ```
 Oder über das Vercel Dashboard das gewünschte vorherige Deployment auswählen und auf "Redeploy" bzw. "Promote to Production" klicken.
 
 ### Häufige Fehler
-1. **pnpm Lock-File Konflikt**: Sicherstellen, dass `pnpm-lock.yaml` aktuell ist und keine `package-lock.json` existiert.
+1. **npm Lock-File Konflikt**: Sicherstellen, dass `npm-lock.yaml` aktuell ist und keine `package-lock.json` existiert.
 2. **Fehlende Secrets**: Überprüfe, ob alle erforderlichen Secrets (VERCEL_TOKEN, VERCEL_PROJECT_ID, etc.) in den GitHub/GitLab Einstellungen hinterlegt sind.
 3. **Datenbank-Migrationen**: Bei Fehlern im Build/Start-Prozess prüfen, ob Prisma-Migrationen erfolgreich auf die Ziel-Datenbank angewendet wurden.
 

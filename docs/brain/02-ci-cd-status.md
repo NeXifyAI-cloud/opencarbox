@@ -6,8 +6,8 @@
 
 | Workflow | File | Trigger | Status | Notes |
 |----------|------|---------|--------|-------|
-| ci | `ci.yml` | push main, PR | ✅ Fixed | pnpm version conflict resolved |
-| Security | `security.yml` | push main, PR, weekly schedule | ✅ Fixed | pnpm version conflict resolved |
+| ci | `ci.yml` | push main, PR | ✅ Fixed | npm version conflict resolved |
+| Security | `security.yml` | push main, PR, weekly schedule | ✅ Fixed | npm version conflict resolved |
 | Auto-Deploy | `auto-deploy.yml` | ci success on main, manual | ✅ Fixed | Deploys to Vercel |
 | Autofix | `autofix.yml` | ci failure | ✅ Fixed | Auto-formats + lint fix |
 | Auto-Merge | `auto-merge.yml` | PR labeled | ✅ Active | Merges approved PRs |
@@ -24,14 +24,14 @@
 
 ## Fix Applied (2026-02-17)
 
-**Problem**: All workflows using `pnpm/action-setup@v4` failed with:
+**Problem**: All workflows using `npm/action-setup@v4` failed with:
 ```
-Error: Multiple versions of pnpm specified:
+Error: Multiple versions of npm specified:
   - version 9 in the GitHub Action config with the key "version"
-  - version pnpm@9.12.3 in the package.json with the key "packageManager"
+  - version npm@9.12.3 in the package.json with the key "packageManager"
 ```
 
-**Root cause**: `pnpm/action-setup@v4` reads `packageManager` from `package.json` and conflicts when `version` is also provided.
+**Root cause**: `npm/action-setup@v4` reads `packageManager` from `package.json` and conflicts when `version` is also provided.
 
 **Fix**: Removed `version: ${{ env.PNPM_VERSION }}` and `PNPM_VERSION` env from all 9 affected workflows.
 
@@ -42,8 +42,8 @@ quick-checks (Lint & Type Check)
   └─▶ test-and-build (Test & Build)
 ```
 
-1. Checkout + pnpm setup + Node 20
-2. `pnpm i --frozen-lockfile`
+1. Checkout + npm setup + Node 20
+2. `npm i --frozen-lockfile`
 3. Preflight check (`tools/preflight.ts ci`)
 4. Guard: no OpenAI usage (`tools/guard_no_openai.sh`)
 5. Lint (`next lint`)

@@ -11,11 +11,11 @@ Dieses Dokument fasst den aktuellen Zustand der CI/CD-Pipeline zusammen und iden
 - **Kein automatischer Rollback**: Bei Fehlern nach dem Deployment muss manuell eingegriffen werden.
 
 ### GitLab CI
-- **Technologie-Mismatch**: Nutzt `npm` statt `pnpm`. Da das Projekt `pnpm-lock.yaml` verwendet, kann dies zu inkonsistenten Abhängigkeiten und Build-Fehlern in der GitLab-Umgebung führen.
+- **Technologie-Mismatch**: Nutzt `npm` statt `npm`. Da das Projekt `npm-lock.yaml` verwendet, kann dies zu inkonsistenten Abhängigkeiten und Build-Fehlern in der GitLab-Umgebung führen.
 - **Redundanz**: Spiegelt viele Funktionen von GitHub wider, ohne klare Abgrenzung.
 
 ### Security
-- **Abhängigkeits-Audits**: Vorhanden, aber pnpm-Caching wird nicht optimal genutzt.
+- **Abhängigkeits-Audits**: Vorhanden, aber npm-Caching wird nicht optimal genutzt.
 
 ## Identifizierte Probleme & Bottlenecks
 1. **Pipeline-Laufzeit**: Die sequentielle Natur der `ci.yml` ist der größte Zeitfresser.
@@ -26,4 +26,4 @@ Dieses Dokument fasst den aktuellen Zustand der CI/CD-Pipeline zusammen und iden
 1. **Parallelisierung**: Umstellung der `ci.yml` auf parallele Jobs.
 2. **Effizienz**: Bereinigung der Deployment-Workflows.
 3. **Automatisierung**: Einführung von Post-Deploy Health-Checks und Rollback-Logik.
-4. **Konsistenz**: Umstellung der GitLab CI auf `pnpm`.
+4. **Konsistenz**: Umstellung der GitLab CI auf `npm`.

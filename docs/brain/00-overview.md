@@ -19,7 +19,7 @@ Premium Automotive Multisite Platform — three sites sharing one codebase:
 | Framework | Next.js 14.2.35 (App Router) |
 | Language | TypeScript 5.9.3 (strict) |
 | Runtime | Node.js ≥ 18.17 |
-| Package Manager | pnpm 9.12.3 |
+| Package Manager | npm 9.12.3 |
 | UI | React 18.3, shadcn/ui, Radix UI, Tailwind CSS 3.4 |
 | State | Zustand (client), TanStack Query (server) |
 | Database | PostgreSQL via Supabase |

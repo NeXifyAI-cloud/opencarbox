@@ -147,7 +147,7 @@ This repository operates with **full autonomy** for routine operations. After in
 1. **Route Failure**: Determine if AI triage is eligible
 2. **AI Triage**: 
    - Run safe autofix (format/lint)
-   - Validate fix (`pnpm lint && typecheck && test && build`)
+   - Validate fix (`npm run lint && typecheck && test && build`)
    - Create fix PR if successful
    - Fall back to issue creation if fix fails
 3. **Deduplication**: Skip if marker already exists for this run ID
@@ -175,8 +175,8 @@ This repository operates with **full autonomy** for routine operations. After in
 1. Check if `VERCEL_TOKEN` is set
 2. Skip gracefully if not configured
 3. Pull Vercel environment (production)
-4. Build project with `pnpm dlx vercel build --prod`
-5. Deploy with `pnpm dlx vercel deploy --prebuilt --prod`
+4. Build project with `npm dlx vercel build --prod`
+5. Deploy with `npm dlx vercel deploy --prebuilt --prod`
 6. Comment deployment URL on commit
 7. Fail hard on deploy errors (`continue-on-error: false`)
 

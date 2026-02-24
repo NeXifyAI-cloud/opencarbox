@@ -6,8 +6,8 @@
 
 | # | Bug | Status | Root Cause |
 |---|-----|--------|------------|
-| 1 | pnpm version conflict in all workflows | ✅ Fixed | `pnpm/action-setup@v4` conflicts when both `version` param and `packageManager` in package.json are set |
-| 2 | pnpm-lock.yaml out of sync with package.json | ✅ Fixed | `autoprefixer` and `postcss` specifiers changed without lockfile refresh |
+| 1 | npm version conflict in all workflows | ✅ Fixed | `npm/action-setup@v4` conflicts when both `version` param and `packageManager` in package.json are set |
+| 2 | npm-lock.yaml out of sync with package.json | ✅ Fixed | `autoprefixer` and `postcss` specifiers changed without lockfile refresh |
 
 ## Priority 2 (Warnings)
 

@@ -33,16 +33,13 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - run: pnpm i --frozen-lockfile
+      - run: npm ci
 
       - name: Normalize environment aliases
         run: |
@@ -50,22 +47,22 @@ jobs:
           npx tsx tools/preflight.ts ai
 
       - name: Generate DeepSeek backlog suggestions
-        run: pnpm tsx tools/auto_improve.ts
+        run: npx tsx tools/auto_improve.ts
         env:
           AI_MAX_CALLS: '10'
           FORBID_WORKFLOW_EDITS: '1'
 
       - name: Generate Prisma Client
-        run: pnpm db:generate
+        run: npm run db:generate
 
       - name: Run full quality checks
         id: quality
         continue-on-error: true
         run: |
-          pnpm lint
-          pnpm typecheck
-          pnpm test
-          pnpm build
+          npm run lint
+          npm run typecheck
+          npm run test
+          npm run build
 
       - name: Status
         run: |

@@ -5,7 +5,7 @@
 ## Checklist
 
 ### CI & Quality
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass locally
+- [ ] `npm run lint`, `npm run typecheck`, `npm run test`, and `npm run build` pass locally
 - [ ] CI checks are green (ci / quick-checks, ci / test-and-build)
 - [ ] Tests added/updated where behavior changed
 
@@ -16,7 +16,7 @@
 
 ### Security & Secrets
 - [ ] No secrets added to code, logs, or docs
-- [ ] `pnpm secret:scan` passes
+- [ ] `npm run secret:scan` passes
 - [ ] OPENAI_* / forbidden provider references not introduced
 
 ### Deployment & Release

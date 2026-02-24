@@ -6,33 +6,33 @@
 
 | Command | Description |
 |---------|-------------|
-| `pnpm dev` | Development server |
-| `pnpm build` | Production build |
-| `pnpm start` | Production server |
-| `pnpm lint` | ESLint (next lint) |
-| `pnpm typecheck` | TypeScript `tsc --noEmit` |
-| `pnpm test` | Vitest unit tests |
-| `pnpm test:e2e` | Playwright end-to-end |
-| `pnpm test:coverage` | Vitest with coverage |
-| `pnpm format:check` | Prettier check |
-| `pnpm format` | Prettier write |
+| `npm dev` | Development server |
+| `npm run build` | Production build |
+| `npm start` | Production server |
+| `npm run lint` | ESLint (next lint) |
+| `npm run typecheck` | TypeScript `tsc --noEmit` |
+| `npm run test` | Vitest unit tests |
+| `npm run test:e2e` | Playwright end-to-end |
+| `npm run test:coverage` | Vitest with coverage |
+| `npm format:check` | Prettier check |
+| `npm format` | Prettier write |
 
 ## Database
 
 | Command | Description |
 |---------|-------------|
-| `pnpm db:generate` | Generate Prisma client |
-| `pnpm db:push` | Push schema to Supabase |
-| `pnpm db:migrate` | Run Prisma migrations |
-| `pnpm db:seed` | Seed database |
-| `pnpm db:studio` | Open Prisma Studio |
+| `npm db:generate` | Generate Prisma client |
+| `npm db:push` | Push schema to Supabase |
+| `npm db:migrate` | Run Prisma migrations |
+| `npm db:seed` | Seed database |
+| `npm db:studio` | Open Prisma Studio |
 
 ## Quality & Security
 
 | Command | Description |
 |---------|-------------|
-| `pnpm quality-gate` | Full quality checks (TS, console, any, docs) |
-| `pnpm secret:scan` | Scan for leaked secrets |
+| `npm run quality-gate` | Full quality checks (TS, console, any, docs) |
+| `npm run secret:scan` | Scan for leaked secrets |
 | `bash tools/guard_no_openai.sh` | Verify no forbidden AI providers |
 | `npx tsx tools/preflight.ts ci` | CI preflight validation |
 
@@ -40,10 +40,10 @@
 
 | Command | Description |
 |---------|-------------|
-| `pnpm oracle:status` | Check Oracle system state |
-| `pnpm oracle:before "action" "desc"` | Pre-change consultation |
-| `pnpm oracle:after "action" "desc"` | Post-change recording |
-| `pnpm oracle:sync` | Sync Oracle data |
+| `npm oracle:status` | Check Oracle system state |
+| `npm oracle:before "action" "desc"` | Pre-change consultation |
+| `npm oracle:after "action" "desc"` | Post-change recording |
+| `npm oracle:sync` | Sync Oracle data |
 
 ## CI Preflight Modes
 
@@ -62,7 +62,7 @@ Separate React CRA app. Not part of main CI pipeline.
 |---------|-------------|
 | `npm start` | Dev server |
 | `npm run build` | Production build |
-| `npm test` | Tests |
+| `npm run test` | Tests |
 
 ## External Services
 

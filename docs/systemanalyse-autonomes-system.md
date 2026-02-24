@@ -31,12 +31,12 @@
   - Mehrere Betriebsmodi (lokal, Docker, Vercel, CI) müssen strikt harmonisiert bleiben.
 
 ### 1.4 Paketmanager und Dependency-Lage
-- Primär: `pnpm@9.12.3` (`packageManager` gesetzt).
+- Primär: `npm@9.12.3` (`packageManager` gesetzt).
 - npm ist vorhanden, wird aber teils noch indirekt genutzt (Skripte/Tools nennen `npm run ...`).
 - Kein Hinweis auf aktive yarn/pip/composer-Project-Locks im Root.
 - Konsequenz:
-  - Mischbetrieb pnpm/npm erhöht Drift-Risiko.
-  - Lockfile-Disziplin ist essenziell (bereits mit `pnpm-lock.yaml` vorhanden).
+  - Mischbetrieb npm/npm erhöht Drift-Risiko.
+  - Lockfile-Disziplin ist essenziell (bereits mit `npm-lock.yaml` vorhanden).
 
 ### 1.5 Laufzeitumgebungen
 - Beobachtet: Node 20, Python 3.12, PHP 8.4-dev, Java 21, Git.
@@ -99,7 +99,7 @@
 
 ### 2.3 Inkonsistenzen
 - Doku beschreibt teils noch Multi-Provider-Fallback, während Policy DeepSeek-only fordert.
-- pnpm als Standard, aber Mischsignale mit npm-Aufrufen.
+- npm als Standard, aber Mischsignale mit npm-Aufrufen.
 
 ### 2.4 Sicherheitslücken / Sicherheitsrisiken
 - Hauptrisiko ist nicht ein einzelner CVE-Hinweis im Repo, sondern Konfigurationsdrift:
@@ -184,7 +184,7 @@
 
 ### 4.3 Standardisierte Konfigurations-/Versionsstrategie
 - Strikter Standard-Env-Namensraum + zentrales Mapping-Script.
-- Single package manager policy (pnpm), lockfile strikt.
+- Single package manager policy (npm), lockfile strikt.
 - Version Pinning für kritische Tooling-Komponenten in CI.
 - Konfigurations-Drift-Checks als eigener Workflow (docs/workflow/scripts parity).
 

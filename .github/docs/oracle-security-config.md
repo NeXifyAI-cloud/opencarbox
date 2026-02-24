@@ -737,7 +737,7 @@ export const logger = new SecureLogger();
   id: deepseek
   run: |
     set +e  # Don't fail on error, catch it
-    OUTPUT=$(pnpm exec ts-node scripts/oracle/auto-reply.ts 2>&1)
+    OUTPUT=$(npm exec ts-node scripts/oracle/auto-reply.ts 2>&1)
     STATUS=$?
     set -e
 

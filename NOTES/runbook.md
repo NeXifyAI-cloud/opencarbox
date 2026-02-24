@@ -2,8 +2,8 @@
 
 ## Operations
 
-- Start local app: `pnpm dev`.
-- Validate quality gate: `pnpm lint && pnpm typecheck && pnpm test && pnpm build`.
+- Start local app: `npm dev`.
+- Validate quality gate: `npm run lint && npm run typecheck && npm run test && npm run build`.
 - Apply Supabase migrations via Supabase CLI or SQL editor using files in `supabase/migrations`.
 
 ## AI Provider Policy (Production + CI)
@@ -34,7 +34,7 @@
 - **Owner:** Tech Lead (oder benannter Release-Manager im aktuellen Sprint).
 - **Single Source of Truth:** `docs/tasks/master_plan.md` ist die einzige Truth-Quelle für Task-Status.
 - **Aktualisierungsrhythmus:**
-  - Bei jedem Merge auf `main` `pnpm report:plan-status` ausführen.
+  - Bei jedem Merge auf `main` `npm report:plan-status` ausführen.
   - Zusätzlich vor jedem Weekly-Status-Update und vor Releases ausführen.
   - Änderungen an Task-Status immer zuerst in `docs/tasks/master_plan.md` pflegen, danach `STATUS_REPORT.md` via Script aktualisieren.
 
@@ -55,7 +55,7 @@
 
 - Alle Workflows nutzen `runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}` — der Runner wird systemweit über die Repository-Variable `vars.RUNNER` gesteuert (siehe ADR-010, ADR-011).
 - **Standard:** Ohne gesetzte Variable laufen alle Workflows auf `ubuntu-latest` (GitHub-hosted).
-- `actions/setup-node@v4` nutzt `cache: pnpm` + `cache-dependency-path: pnpm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
+- `actions/setup-node@v4` nutzt `cache: npm` + `cache-dependency-path: npm-lock.yaml`, damit Cache-Hits auf GitHub-hosted Runnern stabil bleiben.
 - Self-hosted Runner werden über `vars.RUNNER = self-hosted` (oder spezifisches Label wie `self-hosted-build`) aktiviert.
 
 ### Self-Hosted Runner Provisioning (ADR-011)
@@ -67,8 +67,8 @@
    # Node.js LTS
    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
    sudo apt-get install -y nodejs
-   # pnpm
-   corepack enable && corepack prepare pnpm@latest --activate
+   # npm
+   corepack enable && corepack prepare npm@latest --activate
    # GitHub CLI
    sudo apt-get install -y gh
    ```
@@ -83,14 +83,14 @@
 
 1. **Zu self-hosted:** GitHub Settings → Actions → Variables → `RUNNER` auf `self-hosted` setzen (oder spezifisches Label wie `self-hosted-build`).
 2. **Zurück zu GitHub-hosted:** Variable `RUNNER` löschen oder auf `ubuntu-latest` setzen.
-3. **Validierung nach Wechsel:** CI-Lauf manuell auslösen und prüfen, dass `pnpm lint`, `pnpm typecheck`, `pnpm test` und `pnpm build` erfolgreich durchlaufen.
+3. **Validierung nach Wechsel:** CI-Lauf manuell auslösen und prüfen, dass `npm run lint`, `npm run typecheck`, `npm run test` und `npm run build` erfolgreich durchlaufen.
 
 ### Monitoring & Wartung
 
 - **CPU/RAM/Disk:** Regelmäßig überwachen (z. B. via Prometheus Node Exporter, htop, oder Cloud-Monitoring).
 - **Runner-Version:** Runner-Agent regelmäßig aktualisieren — GitHub zeigt in Settings → Runners an, ob ein Update verfügbar ist.
 - **OS-Patches:** Monatliches Patch-Fenster definieren; nach Updates CI-Lauf manuell validieren.
-- **Node.js/pnpm-Updates:** Bei LTS-Wechsel pnpm/Node.js auf dem Runner aktualisieren und CI-Stack testen.
+- **Node.js/npm-Updates:** Bei LTS-Wechsel npm/Node.js auf dem Runner aktualisieren und CI-Stack testen.
 - **Failover:** Bei Runner-Ausfall `vars.RUNNER` auf `ubuntu-latest` setzen — Workflows fallen automatisch auf GitHub-hosted zurück (kein Code-Change nötig).
 
 ### Troubleshooting: Runner unavailable
@@ -115,7 +115,7 @@
    git push origin v1.2.3
    ```
 3. The `release.yml` workflow triggers automatically:
-   - Runs full validation: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
+   - Runs full validation: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`
    - Generates release notes from git log (no AI generation)
    - Creates a GitHub Release with changelog
 4. Alternatively, trigger manually via **Actions → Release → Run workflow** with the tag name.
@@ -151,7 +151,7 @@ flowchart TD
   - Pfadfilter: Reine Doku-Änderungen (`*.md`, `docs/`, `NOTES/`, `LICENSE`) lösen keinen Build aus
   - Stufe 1 (schnell): `quick-checks` mit `lint` + `typecheck`
   - Stufe 2 (langsam): `test-and-build` mit `test` + `build` (nur wenn Stufe 1 erfolgreich)
-  - Caching: **pnpm** via `actions/setup-node` + **Next.js build cache** via `actions/cache@v4`
+  - Caching: **npm** via `actions/setup-node` + **Next.js build cache** via `actions/cache@v4`
   - Concurrency: ein Lauf pro Branch/PR-Ref, ältere Läufe werden abgebrochen
 
 - **Deploy (`.github/workflows/auto-deploy.yml`)**
@@ -159,7 +159,7 @@ flowchart TD
     - automatisch nur über `workflow_run` nach erfolgreichem `ci` auf default branch
     - manuell über `workflow_dispatch` (optional, für Wartung)
   - Aufgabe: ausschließlich Deployment (Vercel pull/build/deploy)
-  - Paketmanager/Cache: **pnpm** + `pnpm dlx`
+  - Paketmanager/Cache: **npm** + `npm dlx`
   - Concurrency: ein Deployment-Lauf pro Branch-Ref
 
 - **Auto-Approve (`.github/workflows/auto-approve.yml`)**
@@ -206,7 +206,7 @@ flowchart TD
 ## Adding New Environment Variables
 
 1. Add the variable to `.env.example` with a placeholder value.
-2. Run `pnpm env:check` locally to verify the schema is consistent.
+2. Run `npm env:check` locally to verify the schema is consistent.
 3. Add the variable to the appropriate GitHub Environment (preview/production) or repository secrets.
 4. If the variable is optional, add it to the `OPTIONAL_VARS` set in `tools/check_env_schema.ts`.
 5. If the variable is only needed in CI builds, add it to the `CI_REQUIRED` array.
@@ -227,7 +227,7 @@ Minimal SQL-based tests to verify Row Level Security is configured correctly.
 
 ```bash
 # Requires psql and DATABASE_URL pointing to a Supabase instance
-pnpm db:rls:check
+npm db:rls:check
 ```
 
 ### What is Tested
@@ -267,11 +267,11 @@ RLS smoke tests are not blocking in CI (no database available). They can be run 
 - Der Step `Reproduce failed checks` in `.github/workflows/failure-orchestrator.yml` nutzt eine zentrale Mapping-Tabelle (`WORKFLOW_REPRO_PROFILES`) statt `case`-Verzweigung.
 - Jedes Profil enthält die deterministische Befehlsfolge zur Reproduktion je Workflow-Name.
 - Aktuelle Profile:
-  - `ci`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
-  - `bootstrap`: `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`
-  - `Security`: nur sicherheitsrelevanter Check `pnpm audit --prod` (entspricht `security.yml`)
-  - `Auto-Deploy Production`: `pnpm lint`, `pnpm typecheck`, `pnpm build`
-  - `__default__`: `pnpm lint`, `pnpm typecheck`
+  - `ci`: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`
+  - `bootstrap`: `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`
+  - `Security`: nur sicherheitsrelevanter Check `npm audit --prod` (entspricht `security.yml`)
+  - `Auto-Deploy Production`: `npm run lint`, `npm run typecheck`, `npm run build`
+  - `__default__`: `npm run lint`, `npm run typecheck`
 - Pflege-Regel: Bei neuen produktiven Workflows sowohl `on.workflow_run.workflows` als auch das Repro-Profil in derselben PR ergänzen.
 
 ## Branch Protection Contract
@@ -454,7 +454,7 @@ Only creates a PR if ALL checks pass.
 ## Security Intake (Auftrag 27)
 
 ### Audit → Issues
-- Weekly scan (Monday 04:00 UTC) runs `pnpm audit`
+- Weekly scan (Monday 04:00 UTC) runs `npm audit`
 - High/critical findings create or update a single tracking issue
 - Deduplication: reuses existing open security audit issue
 

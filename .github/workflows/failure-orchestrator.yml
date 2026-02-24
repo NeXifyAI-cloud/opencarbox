@@ -69,19 +69,16 @@ jobs:
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
     steps:
       - uses: actions/checkout@v6
-
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: pnpm i --frozen-lockfile
+      - run: npm ci
 
       - name: Sanitize user input
         run: |
@@ -163,19 +160,16 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
-
-      - uses: pnpm/action-setup@v4
-
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: pnpm i --frozen-lockfile
+      - run: npm ci
 
       - name: Sanitize user input
         run: |
@@ -199,8 +193,8 @@ jobs:
       - name: Attempt safe autofix
         if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
-          pnpm -s prettier --write . 2>/dev/null || true
-          pnpm -s eslint . --fix 2>/dev/null || true
+          npx prettier --write . 2>/dev/null || true
+          npx eslint . --fix 2>/dev/null || true
         env:
           AI_MAX_CALLS: '20'
           max_conflict_files: '10'
@@ -213,7 +207,7 @@ jobs:
         if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
           set +e
-          pnpm db:generate && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+          npm run db:generate && npm run lint && npm run typecheck && npm run test && npm run build
           echo "status=$?" >> "$GITHUB_OUTPUT"
 
       - name: Create fix PR
@@ -239,7 +233,7 @@ jobs:
             --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
             --base "${{ github.event.workflow_run.head_branch }}" \
             --head "$BRANCH" \
-            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- pnpm lint\n- pnpm typecheck\n- pnpm test\n- pnpm build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
+            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- npm run lint\n- npm run typecheck\n- npm run test\n- npm run build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
 
       - name: Fallback issue
         if: steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0'

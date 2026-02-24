@@ -27,5 +27,5 @@
 *.eot binary
 
 # Lock files — do not diff
-pnpm-lock.yaml -diff
+package-lock.json -diff
 package-lock.json -diff

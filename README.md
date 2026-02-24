@@ -5,9 +5,9 @@ Next.js App Router project with Supabase-backed auth/data and AI provider integr
 ## Quick start
 
 ```bash
-pnpm install
+npm install
 cp .env.example .env.local
-pnpm dev
+npm dev
 ```
 
 ## System start with Supabase Access Token
@@ -15,8 +15,8 @@ pnpm dev
 Use the startup wrapper to normalize legacy token names and boot the app:
 
 ```bash
-pnpm system:check   # validates token/env mapping without starting dev server
-pnpm system:start   # starts Next.js dev server
+npm system:check   # validates token/env mapping without starting dev server
+npm system:start   # starts Next.js dev server
 ```
 
 `tools/export_env.sh` now maps `SUPABASE_TOKEN` and `supabase_access_token` to `SUPABASE_ACCESS_TOKEN` automatically.
@@ -55,10 +55,10 @@ The platform supports multiple AI providers with automatic fallback:
 ## Local development checks
 
 ```bash
-pnpm lint
-pnpm typecheck
-pnpm test -- --run
-pnpm build
+npm run lint
+npm run typecheck
+npm run test -- --run
+npm run build
 ```
 
 ## Supabase notes

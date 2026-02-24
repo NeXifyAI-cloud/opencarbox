@@ -17,7 +17,7 @@ SEARCH_ROOTS=(
   ".github/workflows"
   "package.json"
   "package-lock.json"
-  "pnpm-lock.yaml"
+
 )
 
 EXISTING_ROOTS=()

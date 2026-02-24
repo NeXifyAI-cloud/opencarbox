@@ -5,8 +5,8 @@
 ## PR1: Fix CI & Repo Standards ✅
 
 **Files changed:**
-- `.github/workflows/*.yml` — Remove pnpm version conflict
-- `pnpm-lock.yaml` — Refresh lockfile
+- `.github/workflows/*.yml` — Remove npm version conflict
+- `npm-lock.yaml` — Refresh lockfile
 - `docs/brain/*` — Repository documentation
 - `CODEOWNERS` — Code ownership
 - `.editorconfig` — Editor settings
@@ -15,7 +15,7 @@
 
 **Verify:**
 ```bash
-pnpm lint && pnpm typecheck && pnpm test
+npm run lint && npm run typecheck && npm run test
 # All workflows YAML valid
 ```
 

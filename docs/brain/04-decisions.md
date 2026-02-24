@@ -2,12 +2,12 @@
 
 > Last updated: 2026-02-17
 
-## ADR-001: Remove explicit pnpm version from workflows
+## ADR-001: Remove explicit npm version from workflows
 
 - **Date**: 2026-02-17
-- **Context**: `pnpm/action-setup@v4` fails when `version` is specified both in the action config and via `packageManager` in `package.json`. All CI runs were broken.
-- **Decision**: Remove `version: ${{ env.PNPM_VERSION }}` from all workflows and rely on `packageManager: "pnpm@9.12.3"` in `package.json` as single source of truth.
-- **Consequences**: pnpm version is managed in one place (`package.json`). Upgrading pnpm only requires changing `package.json`.
+- **Context**: `npm/action-setup@v4` fails when `version` is specified both in the action config and via `packageManager` in `package.json`. All CI runs were broken.
+- **Decision**: Remove `version: ${{ env.PNPM_VERSION }}` from all workflows and rely on `packageManager: "npm@9.12.3"` in `package.json` as single source of truth.
+- **Consequences**: npm version is managed in one place (`package.json`). Upgrading npm only requires changing `package.json`.
 
 ## ADR-002: Vercel as primary deployment target
 

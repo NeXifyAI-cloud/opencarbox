@@ -31,7 +31,7 @@ jobs:
         run: |
           node --version
           npm --version
-          pnpm --version
+          npm run --version
 
       - name: GitHub checkout
         uses: actions/checkout@v4

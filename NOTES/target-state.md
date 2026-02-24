@@ -12,16 +12,16 @@
 ## B) CI/CD Definition of Done (DoD)
 
 ### CI (`.github/workflows/ci.yml`)
-- [x] `pnpm lint` must pass (warnings allowed, errors block).
-- [x] `pnpm typecheck` must pass (zero errors).
-- [x] `pnpm test` must pass (all tests green).
-- [x] `pnpm build` must succeed.
+- [x] `npm run lint` must pass (warnings allowed, errors block).
+- [x] `npm run typecheck` must pass (zero errors).
+- [x] `npm run test` must pass (all tests green).
+- [x] `npm run build` must succeed.
 - [x] `tools/preflight.ts ci` must pass.
 - [x] `tools/guard_no_openai.sh` must pass (DeepSeek-only policy).
 
 ### Security (`.github/workflows/security.yml`)
-- [x] `pnpm secret:scan` must pass (blocking).
-- [x] `pnpm audit --prod` runs (non-blocking, informational).
+- [x] `npm run secret:scan` must pass (blocking).
+- [x] `npm audit --prod` runs (non-blocking, informational).
 - Critical audit findings → create GitHub Issue for tracking.
 
 ### Deploy (`.github/workflows/auto-deploy.yml`)

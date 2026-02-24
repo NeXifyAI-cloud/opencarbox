@@ -41,7 +41,7 @@ const CONFIG = {
     'npm run test -- --run',
     'npm run build',
     'npm install',
-    'pnpm install',
+    'npm install',
   ]),
 };
 

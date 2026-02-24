@@ -10,10 +10,10 @@ git clone https://github.com/NeXifyAI-cloud/opencarbox.git
 cd opencarbox
 
 # Install dependencies
-pnpm install
+npm install
 
 # Start development server
-pnpm dev
+npm dev
 ```
 
 ## Development Workflow
@@ -22,10 +22,10 @@ pnpm dev
 2. Make your changes
 3. Run quality checks:
    ```bash
-   pnpm lint        # ESLint
-   pnpm typecheck   # TypeScript
-   pnpm test        # Unit tests
-   pnpm quality-gate # Full quality check
+   npm run lint        # ESLint
+   npm run typecheck   # TypeScript
+   npm run test        # Unit tests
+   npm run quality-gate # Full quality check
    ```
 4. Commit with a descriptive message
 5. Open a Pull Request against `main`
@@ -54,5 +54,5 @@ pnpm dev
 ## Security
 
 - Never commit secrets, API keys, or tokens
-- Run `pnpm secret:scan` before committing
+- Run `npm run secret:scan` before committing
 - Report security issues via [SECURITY.md](./SECURITY.md)

@@ -7,8 +7,8 @@ source "$(dirname "$0")/../tools/export_env.sh"
 
 MODE="${1:-dev}"
 
-if ! command -v pnpm >/dev/null 2>&1; then
-  echo "pnpm is required to start the system." >&2
+if ! command -v npm >/dev/null 2>&1; then
+  echo "npm is required to start the system." >&2
   exit 1
 fi
 
@@ -24,7 +24,7 @@ if [[ "$MODE" == "check" ]]; then
 fi
 
 if [[ "$MODE" == "prod" ]]; then
-  exec pnpm start
+  exec npm start
 fi
 
-exec pnpm dev
+exec npm run dev

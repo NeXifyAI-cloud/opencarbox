@@ -27,7 +27,6 @@ const BLOCKED_PATTERNS: RegExp[] = [
   /\.secret/,
   /SECRETS/i,
   /^\.github\/CODEOWNERS$/,
-  /pnpm-lock\.yaml$/,
   /package-lock\.json$/,
 ];
 

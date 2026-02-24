@@ -11,7 +11,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
-      exclude: [
+      exclude: ['node_modules/**','**/node_modules/**','.pnpm/**',
         'node_modules/',
         'src/test/',
         '**/*.test.{ts,tsx}',
@@ -26,7 +26,7 @@ export default defineConfig({
       },
     },
     include: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
-    exclude: ['node_modules/', 'tests/e2e/**'],
+    exclude: ['node_modules/**','**/node_modules/**','.pnpm/**','node_modules/', 'tests/e2e/**'],
   },
   resolve: {
     alias: {

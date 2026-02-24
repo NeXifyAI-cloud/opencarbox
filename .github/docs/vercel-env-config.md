@@ -94,7 +94,7 @@ DIRECT_URL = postgresql://user:pass@direct.supabase.co:5432/postgres
 NEXT_PUBLIC_SUPABASE_URL = https://prod-supabase.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY = <REDACTED_JWT>
 SUPABASE_SERVICE_ROLE_KEY = <REDACTED_JWT>
-SUPABASE_ACCESS_TOKEN = <REDACTED_TOKEN>_...
+SUPABASE_ACCESS_TOKEN = <REDACTED_TOKEN>
 
 # Stripe (Production Account)
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = pk_live_prod...

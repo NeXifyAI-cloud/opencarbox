@@ -1,0 +1,61 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build artifacts
+.next/
+dist/
+build/
+.turbo/
+
+# Development
+.env.local
+.env.*.local
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation
+docs/
+README.md
+CONTRIBUTING.md
+CHANGELOG.md
+
+# Tests & Coverage
+.test/
+.coverage/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+vitest.config.ts
+playwright.config.ts
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkins*
+Circleci*
+
+# Tools
+tools/
+scripts/
+prisma/
+.cline/
+.husky/
+
+# Logs
+*.log
+logs/
+
+# Temporary
+.tmp/
+.cache/

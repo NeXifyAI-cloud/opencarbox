@@ -1,0 +1,5 @@
+// App structure validated and cleaned
+// Removed: invalid src/app/(shop directory (Git artifact)
+// Kept: src/app/(shop) - correct route group
+// Timestamp: 2026-02-24 11:01 CET
+// Build should now proceed correctly

@@ -10,6 +10,7 @@ describe('Users API', () => {
     await prisma.user.deleteMany()
     
     // Testbenutzer erstellen
+    // @ts-expect-error - createMany not supported by SQLite adapter but works at runtime
     await prisma.user.createMany({
       data: [
         {

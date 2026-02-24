@@ -1,9 +1,10 @@
 # Täglicher Health-Check für Build- und Dependency-Integrität
+# Bei Fehler: OpenClaw Bot-Issue wird automatisch erstellt + analysiert
 name: health-check
 
 on:
   schedule:
-    - cron: '0 5 * * *' # Daily at 05:00 UTC
+    - cron: '0 5 * * *' # Täglich 05:00 UTC
   workflow_dispatch:
 
 concurrency:
@@ -21,12 +22,16 @@ jobs:
   health:
     name: Build Health Check
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    outputs:
+      failed_step: ${{ steps.tracker.outputs.failed_step }}
+      failed_log:  ${{ steps.tracker.outputs.failed_log }}
+
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -35,27 +40,130 @@ jobs:
       - run: pnpm i --frozen-lockfile
 
       - name: Generate Prisma Client
+        id: prisma
         run: pnpm db:generate
+        continue-on-error: true
 
       - name: Lint
+        id: lint
         run: pnpm lint
+        continue-on-error: true
 
       - name: Type check
+        id: typecheck
         run: pnpm typecheck
+        continue-on-error: true
 
       - name: Test
+        id: test
         run: pnpm test
+        continue-on-error: true
 
       - name: Build
+        id: build
         run: pnpm build
+        continue-on-error: true
 
       - name: Dependency freshness
+        id: outdated
         run: pnpm outdated || true
 
       - name: API health check
+        id: api_health
         run: |
           if [ -z "${{ secrets.HEALTHCHECK_URL }}" ]; then
-            echo "HEALTHCHECK_URL not configured - skipping /api/health probe."
+            echo "HEALTHCHECK_URL not configured – skipping /api/health probe."
             exit 0
           fi
           curl --fail --silent --show-error "${{ secrets.HEALTHCHECK_URL }}/api/health"
+        continue-on-error: true
+
+      # ── Fehler sammeln ──────────────────────────────────────────────────
+      - name: Collect failed steps
+        id: tracker
+        run: |
+          FAILED=""
+          [ "${{ steps.prisma.outcome }}"     = "failure" ] && FAILED="$FAILED prisma"
+          [ "${{ steps.lint.outcome }}"       = "failure" ] && FAILED="$FAILED lint"
+          [ "${{ steps.typecheck.outcome }}"  = "failure" ] && FAILED="$FAILED typecheck"
+          [ "${{ steps.test.outcome }}"       = "failure" ] && FAILED="$FAILED test"
+          [ "${{ steps.build.outcome }}"      = "failure" ] && FAILED="$FAILED build"
+          [ "${{ steps.api_health.outcome }}" = "failure" ] && FAILED="$FAILED api_health"
+
+          FAILED="${FAILED## }"  # trim leading space
+          echo "failed_step=$FAILED" >> "$GITHUB_OUTPUT"
+
+          if [ -n "$FAILED" ]; then
+            echo "::error::Health-Check fehlgeschlagen in: $FAILED"
+            exit 1
+          fi
+          echo "✅ Alle Health-Check-Schritte erfolgreich."
+
+  # ── Bei Fehler: Issue öffnen → OpenClaw Bot analysiert automatisch ───────
+  notify-openclaw:
+    name: OpenClaw Bot – Incident Issue
+    needs: health
+    if: failure()
+    runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
+    permissions:
+      issues: write
+    steps:
+      - name: Create health-check incident issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const failed   = '${{ needs.health.outputs.failed_step }}' || 'unbekannte Schritte';
+            const runUrl   = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+            const runDate  = new Date().toISOString().slice(0, 10);
+
+            // Dedup: kein doppeltes Issue für denselben Tag
+            const existing = await github.rest.issues.listForRepo({
+              owner:  context.repo.owner,
+              repo:   context.repo.repo,
+              state:  'open',
+              labels: 'monitoring,health-check',
+            });
+
+            const todayTitle = `🔴 Health-Check fehlgeschlagen – ${runDate}`;
+            if (existing.data.some(i => i.title === todayTitle)) {
+              core.info('Incident-Issue für heute existiert bereits – überspringe.');
+              return;
+            }
+
+            // Sicherstellen, dass Labels existieren
+            for (const [name, color, desc] of [
+              ['monitoring',    'e4e669', 'Monitoring-Alert'],
+              ['health-check',  'd93f0b', 'Health-Check Failure'],
+              ['openclaw-bot',  '5319e7', 'OpenClaw Bot analysiert'],
+            ]) {
+              try { await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name }); }
+              catch { await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color, description: desc }); }
+            }
+
+            await github.rest.issues.create({
+              owner:  context.repo.owner,
+              repo:   context.repo.repo,
+              title:  todayTitle,
+              labels: ['monitoring', 'health-check', 'openclaw-bot', 'priority:high'],
+              body: [
+                '## 🔴 Täglicher Health-Check fehlgeschlagen',
+                '',
+                `**Datum:** ${runDate}`,
+                `**Fehlgeschlagene Schritte:** \`${failed}\``,
+                `**Run:** ${runUrl}`,
+                '',
+                '---',
+                '',
+                '> OpenClaw Bot analysiert dieses Issue automatisch und schlägt Lösungen vor.',
+                '',
+                '### Betroffene Bereiche',
+                failed.split(' ').map(s => `- [ ] \`${s}\``).join('\n'),
+                '',
+                '### Nächste Schritte',
+                '- [ ] Logs im verlinkten Run prüfen',
+                '- [ ] Fehlerbehebung umsetzen',
+                '- [ ] Issue schließen sobald Health-Check wieder grün',
+              ].join('\n'),
+            });
+
+            core.info(`✅ OpenClaw Bot Incident-Issue erstellt: ${todayTitle}`);

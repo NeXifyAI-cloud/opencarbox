@@ -1,16 +1,61 @@
-# Ignore files during Vercel deployment
+# Version control
 .git
 .gitignore
-node_modules
-.next
+.gitattributes
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build artifacts
+.next/
+dist/
+build/
+.turbo/
+
+# Development
 .env.local
 .env.*.local
-README.md
-*.log
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
-src/**/*.test.ts
-src/**/*.test.tsx
-src/**/__tests__
-prisma/seed.ts
-.github
-scripts/*.sh
+
+# Documentation
+docs/
+README.md
+CONTRIBUTING.md
+CHANGELOG.md
+
+# Tests & Coverage
+.test/
+.coverage/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+vitest.config.ts
+playwright.config.ts
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+Jenkins*
+Circleci*
+
+# Tools
+tools/
+scripts/
+prisma/
+.cline/
+.husky/
+
+# Logs
+*.log
+logs/
+
+# Temporary
+.tmp/
+.cache/

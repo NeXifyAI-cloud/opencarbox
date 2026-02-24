@@ -4,7 +4,7 @@
   "description": "OpenCarBox & Carvantooo - Premium Automotive Multisite Platform",
   "private": true,
   "scripts": {
-    "postinstall": "prisma generate",
+    "postinstall": "node -e \"const fs = require('fs'); !fs.existsSync('.env.local') && process.env.DATABASE_URL === undefined && process.env.CI && !process.env.VERCEL ? console.log('⚠️  Skipping prisma generate in CI') : require('child_process').execSync('prisma generate', {stdio: 'inherit'})\" || prisma generate || true",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

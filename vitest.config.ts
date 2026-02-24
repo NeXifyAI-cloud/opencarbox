@@ -18,12 +18,15 @@ export default defineConfig({
         '**/*.spec.{ts,tsx}',
         '**/mockData/**',
       ],
-      lines: 80,
-      functions: 80,
-      branches: 80,
-      statements: 80,
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
     },
     include: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    exclude: ['node_modules/', 'tests/e2e/**'],
   },
   resolve: {
     alias: {

@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Get session from Supabase
-    const cookieStore = cookies()
+    const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

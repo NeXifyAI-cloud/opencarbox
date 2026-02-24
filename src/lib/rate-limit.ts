@@ -31,7 +31,7 @@ export interface RateLimitResult {
 
 export function createRateLimiter(config: RateLimitConfig) {
   return async (request: NextRequest): Promise<RateLimitResult> => {
-    const key = config.key?.(request) || request.ip || 'unknown'
+    const key = config.key?.(request) || request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
     const now = Date.now()
 
     const current = requestCounts.get(key) || { count: 0, resetTime: now + config.windowMs }

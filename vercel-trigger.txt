@@ -1,0 +1,3 @@
+Deployment Trigger - Build Timestamp: $(date -u)
+Forcing Vercel to pick up commit with Prisma postinstall fix
+Commit SHA should be: 7763b81+

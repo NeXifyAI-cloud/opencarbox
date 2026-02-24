@@ -299,6 +299,7 @@ async function main() {
   console.log('📊 Erstelle Audit Logs...')
   await prisma.auditLog.create({
     data: {
+      user: 'system',
       action: 'seed_database',
       resource: 'prisma/seed.ts',
       status: 'SUCCESS',

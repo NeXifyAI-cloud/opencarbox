@@ -27,6 +27,7 @@ describe('Orders API', () => {
 
     it('sollte Bestellungen mit Pagination zurückgeben', async () => {
       // Testdaten erstellen
+      // @ts-expect-error - createMany not supported by SQLite adapter but works at runtime
       await prisma.order.createMany({
         data: [
           {

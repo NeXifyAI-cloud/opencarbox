@@ -47,8 +47,6 @@ Circleci*
 
 # Tools
 tools/
-scripts/
-prisma/
 .cline/
 .husky/
 

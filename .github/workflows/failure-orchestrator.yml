@@ -69,6 +69,8 @@ jobs:
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -78,7 +80,10 @@ jobs:
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
+
+      - name: Generate Prisma Client
+        run: npx prisma generate || echo "No prisma schema found"
 
       - name: Sanitize user input
         run: |
@@ -158,8 +163,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
           persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v6
         with:
@@ -170,7 +175,10 @@ jobs:
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
+
+      - name: Generate Prisma Client
+        run: npx prisma generate || echo "No prisma schema found"
 
       - name: Sanitize user input
         run: |

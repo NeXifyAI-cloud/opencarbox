@@ -38,14 +38,17 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
           persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
+
+      - name: Generate Prisma Client
+        run: npx prisma generate || echo "No prisma schema found"
 
       - name: Preflight
         run: |

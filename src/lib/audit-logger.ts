@@ -34,7 +34,7 @@ export async function logEvent({
         resource,
         status,
         user,
-        details: details !== undefined ? JSON.stringify(details) : undefined,
+        details: details != null ? JSON.stringify(details) : undefined,
         errorMessage,
         stackTrace,
         durationMs,

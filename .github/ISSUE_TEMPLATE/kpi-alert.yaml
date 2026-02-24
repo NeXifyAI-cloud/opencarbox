@@ -1,0 +1,185 @@
+name: "📉 KPI Alert"
+description: "Alert: KPI deviation detected (DOS v1.1)"
+title: "[KPI-ALERT] "
+labels: ["type:kpi-alert", "status:investigation", "priority:high"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 📉 KPI Alert (DOS v1.1)
+        
+        **Automated KPI alert**: A business KPI has deviated from target. Investigate immediately.
+  
+  - type: dropdown
+    id: funnel
+    attributes:
+      label: "🎯 Funnel"
+      description: "Which funnel is impacted?"
+      options:
+        - "🛒 Shop (Carvantooo - E-Commerce)"
+        - "🔧 Werkstatt (Workshop - Appointment)"
+        - "🚗 Autohandel (Dealership - Inquiry)"
+      options:
+        - "🛒 Shop (Carvantooo)"
+        - "🔧 Werkstatt (Workshop)"
+        - "🚗 Autohandel (Dealership)"
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: kpi_name
+    attributes:
+      label: "📊 KPI Metric"
+      description: "Which KPI deviated?"
+      options:
+        - "🛒 Shop: `add_to_cart_rate` (target ≥ 8%)"
+        - "🛒 Shop: `checkout_conversion_rate` (target ≥ 35%)"
+        - "🛒 Shop: `cart_abandonment_rate` (target < 65%)"
+        - "🔧 Werkstatt: `booking_rate` (target ≥ 40%)"
+        - "🔧 Werkstatt: `no_show_rate` (target ≤ 10%)"
+        - "🔧 Werkstatt: `booking_abandonment_rate` (target ≤ 55%)"
+        - "🚗 Autohandel: `inquiry_submission_rate` (target ≥ 5%)"
+        - "🚗 Autohandel: `view_to_inquiry_ratio` (target ≥ 2%)"
+        - "⚡ Performance: `lcp` (target ≤ 2.5s)"
+        - "⚡ Performance: `cls` (target ≤ 0.1)"
+        - "⚡ Performance: `inp` (target ≤ 200ms)"
+        - "⚡ Performance: `ttfb` (target ≤ 600ms)"
+        - "🔍 Other (describe below)"
+    validations:
+      required: true
+  
+  - type: input
+    id: current_value
+    attributes:
+      label: "📉 Current Value"
+      description: "What is the current KPI value?"
+      placeholder: "e.g., 5.2%, 2800ms, 0.15"
+    validations:
+      required: true
+  
+  - type: input
+    id: target_value
+    attributes:
+      label: "🎯 Target Value"
+      description: "What was the target?"
+      placeholder: "e.g., ≥8%, ≤2.5s, ≤0.1"
+    validations:
+      required: true
+  
+  - type: input
+    id: deviation_percent
+    attributes:
+      label: "📊 Deviation %"
+      description: "How much off target? (calculated)"
+      placeholder: "e.g., -35%, +12%"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: time_detected
+    attributes:
+      label: "⏰ Detection Timeline"
+      description: "When was this first detected? When did it start declining?"
+      placeholder: |
+        - Detected at: 2026-02-24 14:30 CET
+        - Started declining: ~2026-02-24 12:00 CET (estimate)
+        - Duration: ~2.5 hours
+        - Affected users: ~500
+    validations:
+      required: true
+  
+  - type: textarea
+    id: recent_changes
+    attributes:
+      label: "🔍 Recent Changes (Root Cause Analysis)"
+      description: "What changed recently that could cause this?"
+      placeholder: |
+        - Deployments in last 24h: [list commits/PRs]
+        - Database migrations: [if any]
+        - Feature flags enabled/disabled: [if any]
+        - Traffic spike detected: [metrics]
+        - Third-party service issues: [check Supabase, Stripe, etc.]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: impact
+    attributes:
+      label: "💼 Business Impact"
+      description: "What is the business impact of this deviation?"
+      placeholder: |
+        - Revenue impact: ~€X per hour
+        - User experience impact: [describe]
+        - Escalation required: [yes/no, who]
+        - Estimated fix time: [hours]
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "🚨 Severity (SLA)"
+      description: "How critical is this?"
+      options:
+        - "🔴 CRITICAL (SEV-1): > 25% deviation, > 1000 users impacted → P0, resolve in 1h"
+        - "🟠 HIGH (SEV-2): > 10% deviation, > 100 users impacted → P1, resolve in 4h"
+        - "🟡 MEDIUM (SEV-3): > 5% deviation, < 100 users impacted → P2, resolve in 24h"
+        - "🟢 LOW (SEV-4): < 5% deviation, minor impact → P3, monitor"
+    validations:
+      required: true
+  
+  - type: checkboxes
+    id: diagnostics
+    attributes:
+      label: "🔧 Diagnostics Checklist"
+      description: "Steps to diagnose the issue"
+      options:
+        - label: "Check Vercel deployment logs (last 24h)"
+          required: false
+        - label: "Review GitHub Actions CI/CD status"
+          required: false
+        - label: "Check Supabase logs for errors"
+          required: false
+        - label: "Review Stripe webhook failures (if Shop)"
+          required: false
+        - label: "Check external API health (Google Maps, etc.)"
+          required: false
+        - label: "Analyze Lighthouse/Performance metrics"
+          required: false
+        - label: "Review tracking events for gaps (G4, G6)"
+          required: false
+        - label: "Check user session logs for errors"
+          required: false
+  
+  - type: textarea
+    id: remediation
+    attributes:
+      label: "🔧 Proposed Remediation"
+      description: "Suggested fix or rollback plan"
+      placeholder: |
+        Option 1 (recommended): [fix description]
+        Option 2: [rollback plan if fix takes too long]
+        Validation: [how to verify the fix worked]
+    validations:
+      required: true
+  
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **SLA Response Times**:
+        - 🔴 SEV-1 (Critical): 30 min response, 1h fix SLA
+        - 🟠 SEV-2 (High): 1h response, 4h fix SLA
+        - 🟡 SEV-3 (Medium): 4h response, 24h fix SLA
+        - 🟢 SEV-4 (Low): 24h response, backlog
+        
+        **Post-Incident**:
+        - [ ] Root cause documented
+        - [ ] Fix deployed and verified
+        - [ ] KPI returned to target ✅
+        - [ ] Postmortem created (if SEV-1/2)
+        - [ ] Monitoring alert configured (prevent recurrence)
+        
+        **OpenClaw Bot** will auto-escalate critical KPI alerts.

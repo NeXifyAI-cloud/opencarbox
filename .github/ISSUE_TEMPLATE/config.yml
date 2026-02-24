@@ -1,5 +1,20 @@
-blank_issues_enabled: true
+# OpenCarBox GitHub Issue Templates Configuration (DOS v1.1)
+# https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/configuring-issue-template-redirect
+
+blank_issues_enabled: false
 contact_links:
-  - name: Report a security vulnerability
-    url: https://github.com/opencarbox/opencarbox/security/policy
-    about: Please review our security policy before reporting private vulnerabilities.
+  - name: 🌐 Website
+    url: https://opencarbox.vercel.app
+    about: "Visit the production application"
+  - name: 📖 Documentation
+    url: https://github.com/NeXifyAI-cloud/opencarbox/wiki
+    about: "Read the documentation wiki"
+  - name: 🔐 Security Policy
+    url: https://github.com/NeXifyAI-cloud/opencarbox/security/policy
+    about: "Report security vulnerabilities (not public)"
+  - name: 💬 Discussions
+    url: https://github.com/NeXifyAI-cloud/opencarbox/discussions
+    about: "Ask questions in discussions"
+  - name: 🤖 OpenClaw Bot
+    url: https://github.com/NeXifyAI-cloud/opencarbox/issues?q=is:issue+author:openclaw-bot
+    about: "View OpenClaw Bot issues and alerts"

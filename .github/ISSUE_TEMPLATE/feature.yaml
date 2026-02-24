@@ -1,0 +1,133 @@
+name: "✨ Feature Request"
+description: "Request a new feature or enhancement (DOS v1.1)"
+title: "[FEATURE] "
+labels: ["type:feature", "status:triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # ✨ Feature Request (DOS v1.1)
+        
+        Thank you for suggesting an improvement! Please fill out the details below.
+  
+  - type: dropdown
+    id: funnel
+    attributes:
+      label: "🎯 Business Funnel (G1)"
+      description: "Which funnel does this feature belong to?"
+      options:
+        - "🛒 Shop (Carvantooo - Spare Parts Sales)"
+        - "🔧 Werkstatt (Workshop - Appointment Booking)"
+        - "🚗 Autohandel (Car Dealership - Vehicle Inquiry)"
+        - "🏢 Backend/Infrastructure"
+        - "❓ Not applicable"
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: brand
+    attributes:
+      label: "🎨 Brand Color (G9)"
+      description: "Ensure brand consistency"
+      options:
+        - "🟨 Shop (Gold #FFB300)"
+        - "🟠 Werkstatt/Autohandel (Orange #FFA800)"
+        - "⚪ Both"
+        - "❓ Not applicable"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: "📝 Feature Description"
+      description: "Clear description of the feature and why it's needed"
+      placeholder: "What should the feature do? Why is it important?"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: requirements
+    attributes:
+      label: "✅ Acceptance Criteria"
+      description: "List specific, testable acceptance criteria"
+      placeholder: |
+        - [ ] User can do X
+        - [ ] System returns Y
+        - [ ] No regressions in Z
+    validations:
+      required: true
+  
+  - type: textarea
+    id: tracking
+    attributes:
+      label: "📊 Tracking Events (G4)"
+      description: "Define tracking events BEFORE implementation (Tracking-First, G4)"
+      placeholder: |
+        - Event: `feature_x_viewed` → schema: {event_id, user_id, timestamp, ...}
+        - Event: `feature_x_completed` → schema: {...}
+        - No PII, only business data (G6)
+    validations:
+      required: false
+  
+  - type: textarea
+    id: kpi
+    attributes:
+      label: "📈 KPI Targets"
+      description: "What KPI should this feature impact?"
+      placeholder: |
+        - Metric: `add_to_cart_rate` → Target: ≥ 8%
+        - Metric: `booking_rate` → Target: ≥ 40%
+  
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "🚨 Priority"
+      options:
+        - "🔴 Critical (Blocks launch)"
+        - "🟠 High (Needed for handover)"
+        - "🟡 Medium (Nice to have)"
+        - "🟢 Low (Backlog)"
+    validations:
+      required: true
+  
+  - type: checkboxes
+    id: guardrails
+    attributes:
+      label: "🛡️ Guardrails Compliance (G1-G10)"
+      description: "Ensure compliance with DOS v1.1 guardrails"
+      options:
+        - label: "G1: Funnel assignment is clear and unique"
+          required: false
+        - label: "G4: Tracking events defined BEFORE implementation"
+          required: false
+        - label: "G6: No PII in events (business data only)"
+          required: false
+        - label: "G7: HSN/TSN validation (if applicable)"
+          required: false
+        - label: "G9: Dual-brand consistency enforced"
+          required: false
+        - label: "G10: DSGVO compliant (German-first, consent-driven)"
+          required: false
+  
+  - type: textarea
+    id: context
+    attributes:
+      label: "🔗 Additional Context"
+      description: "Screenshots, links, technical notes, etc."
+      placeholder: "Any other information that might help?"
+  
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        **Definition of Ready**:
+        - [ ] Funnel assigned (G1)
+        - [ ] Tracking events defined (G4)
+        - [ ] KPI impact identified
+        - [ ] Acceptance criteria testable
+        - [ ] No blocking dependencies
+        
+        **OpenClaw Bot** will analyze this issue automatically.

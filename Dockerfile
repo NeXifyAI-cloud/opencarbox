@@ -1,18 +1,19 @@
 # ---- Base ----
 FROM node:20-alpine AS base
+RUN echo 'Using npm'
 WORKDIR /app
 
 # ---- Dependencies ----
 FROM base AS deps
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm ci --prod=false
 
 # ---- Build ----
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm ci && npm run build
+RUN npm run build
 
 # ---- Production ----
 FROM node:20-alpine AS runner

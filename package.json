@@ -67,7 +67,6 @@
     "env:check": "tsx tools/check_env_schema.ts",
     "env:check:ci": "tsx tools/check_env_schema.ts --ci"
   },
-  "packageManager": "pnpm@9.12.3",
   "dependencies": {
     "@hookform/resolvers": "^3.3.0",
     "@prisma/client": "^5.10.0",

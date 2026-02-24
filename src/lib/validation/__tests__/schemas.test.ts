@@ -24,7 +24,7 @@ describe('Validation Schemas', () => {
     it('should lowercase email', () => {
       const result = emailSchema.safeParse('TEST@EXAMPLE.COM')
       expect(result.success).toBe(true)
-      expect((result as any).data).toBe('test@example.com')
+      expect((result as { success: true; data: string }).data).toBe('test@example.com')
     })
   })
 

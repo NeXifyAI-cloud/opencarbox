@@ -13,8 +13,9 @@ describe('Rate Limiter', () => {
       maxRequests: 5,
     })
 
-    const mockRequest = new NextRequest(new URL('http://localhost'))
-    Object.defineProperty(mockRequest, 'ip', { value: '192.168.1.1' })
+    const mockRequest = new NextRequest(new URL('http://localhost'), {
+      headers: { 'x-forwarded-for': '192.168.1.1' },
+    })
 
     const result = await limiter(mockRequest)
 
@@ -28,8 +29,9 @@ describe('Rate Limiter', () => {
       maxRequests: 3,
     })
 
-    const mockRequest = new NextRequest(new URL('http://localhost'))
-    Object.defineProperty(mockRequest, 'ip', { value: '192.168.1.2' })
+    const mockRequest = new NextRequest(new URL('http://localhost'), {
+      headers: { 'x-forwarded-for': '192.168.1.2' },
+    })
 
     let result = await limiter(mockRequest)
     expect(result.remaining).toBe(2)
@@ -65,8 +67,9 @@ describe('Rate Limiter', () => {
       maxRequests: 1,
     })
 
-    const mockRequest = new NextRequest(new URL('http://localhost'))
-    Object.defineProperty(mockRequest, 'ip', { value: '192.168.1.3' })
+    const mockRequest = new NextRequest(new URL('http://localhost'), {
+      headers: { 'x-forwarded-for': '192.168.1.3' },
+    })
 
     await limiter(mockRequest)
     const result = await limiter(mockRequest)

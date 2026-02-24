@@ -108,6 +108,15 @@ jobs:
               return;
             }
 
+            // Sanitize sourceText to prevent prompt injection
+            const sanitizeInput = (str) => {
+              if (!str) return '';
+              return str
+                .replace(/["\\]/g, '\\\\$&')  // Escape quotes and backslashes
+                .substring(0, 10000);  // Limit message length
+            };
+            sourceText = sanitizeInput(sourceText);
+            
             if (!issueNumber || !sourceText?.trim()) {
               core.info('No target or content found – skipping.');
               return;

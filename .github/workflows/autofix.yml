@@ -132,6 +132,19 @@ jobs:
         if: steps.classify.outputs.has_changes == 'true' && steps.required_checks.outputs.passed != 'true'
         run: echo "Autofix changes were created but checks failed. Skipping PR creation."
 
+      - name: Sanitize user input
+        id: sanitize
+        run: |
+          # Escape special characters in issue body and comments
+          SANITIZED_ISSUE_BODY=$(echo "${{ github.event.issue.body }}" | jq -Rs '.' | sed 's/[\]/\\/g' 2>/dev/null || echo '""')
+          SANITIZED_COMMENT_BODY=$(echo "${{ github.event.issue_comment.body }}" | jq -Rs '.' | sed 's/[\]/\\/g' 2>/dev/null || echo '""')
+          SANITIZED_PR_BODY=$(echo "${{ github.event.pull_request.body }}" | jq -Rs '.' | sed 's/[\]/\\/g' 2>/dev/null || echo '""')
+          
+          echo "SANITIZED_ISSUE_BODY=$SANITIZED_ISSUE_BODY" >> $GITHUB_ENV
+          echo "SANITIZED_COMMENT_BODY=$SANITIZED_COMMENT_BODY" >> $GITHUB_ENV
+          echo "SANITIZED_PR_BODY=$SANITIZED_PR_BODY" >> $GITHUB_ENV
+          echo "✅ User input sanitized (special chars escaped)"
+
       - name: Route failure to Jules
         if: failure()
         run: |

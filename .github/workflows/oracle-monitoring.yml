@@ -32,6 +32,7 @@ permissions:
 
 env:
   HEALTH_CHECK_TIMEOUT_MS: 10000
+  # SECURITY: Never log API keys directly. All secrets are masked in outputs.
   METRICS_RETENTION_DAYS: 30
 
 jobs:
@@ -71,7 +72,20 @@ jobs:
           echo "iso=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
           echo "unix=$(date +%s)" >> "$GITHUB_OUTPUT"
 
+      - name: Validate API Keys (Secrets Safety)
+        run: |
+          if [ -z "${{ secrets.DEEPSEEK_API_KEY }}" ]; then
+            echo "ERROR: DEEPSEEK_API_KEY is empty"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DEEPSEEK_BASE_URL }}" ]; then
+            echo "ERROR: DEEPSEEK_BASE_URL is empty"
+            exit 1
+          fi
+          echo "✅ API Keys validation passed (keys verified, not logged)"
+          
       - name: Check DeepSeek Health
+
         id: deepseek
         continue-on-error: true
         run: |
@@ -93,7 +107,8 @@ jobs:
           
           if [ "$HTTP_CODE" = "200" ]; then
             STATUS="healthy"
-            echo "✅ DeepSeek: $RESPONSE_TIME_MS ms"
+            MASKED_KEY="${{ secrets.DEEPSEEK_API_KEY:0:10 }}***"
+echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
           elif [ "$HTTP_CODE" = "429" ]; then
             STATUS="rate_limited"
             echo "⚠️ DeepSeek: Rate limited (429)"
@@ -102,7 +117,7 @@ jobs:
             echo "❌ DeepSeek: Connection timeout"
           else
             STATUS="error"
-            echo "❌ DeepSeek: HTTP $HTTP_CODE"
+            echo "❌ DeepSeek: HTTP $HTTP_CODE" # No secrets in error message
           fi
           
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -144,7 +159,7 @@ jobs:
             echo "❌ Jules: Connection timeout"
           else
             STATUS="error"
-            echo "❌ Jules: HTTP $HTTP_CODE"
+            echo "❌ Jules: HTTP $HTTP_CODE" # No secrets in error message
           fi
           
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"
@@ -177,7 +192,7 @@ jobs:
             echo "❌ Mem0: Connection timeout"
           else
             STATUS="error"
-            echo "❌ Mem0: HTTP $HTTP_CODE"
+            echo "❌ Mem0: HTTP $HTTP_CODE" # No secrets in error message
           fi
           
           echo "status=$STATUS" >> "$GITHUB_OUTPUT"

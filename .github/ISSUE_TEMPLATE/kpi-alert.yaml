@@ -1,0 +1,89 @@
+name: "📊 KPI Alert"
+description: "Report significant KPI metric deviation or performance issue"
+labels: ["kpi-alert", "monitoring", "urgent"]
+
+body:
+  - type: markdown
+    attributes:
+      value: "# KPI Alert Template\n\nUse this template when you detect significant changes in key performance indicators. This triggers automated escalation and monitoring."
+
+  - type: dropdown
+    id: kpi_type
+    attributes:
+      label: "📊 KPI Category"
+      description: "Which KPI is affected?"
+      options:
+        - "Shop - Add-to-Cart Rate (Target: ≥8%)"
+        - "Shop - Checkout Conversion (Target: ≥35%)"
+        - "Shop - Cart Abandonment (Monitor: <65%)"
+        - "Werkstatt - Booking Rate (Target: ≥40%)"
+        - "Werkstatt - Response Time (Target: <24h)"
+        - "Autohandel - Inquiry Rate (Target: ≥5%)"
+        - "Autohandel - Lead Quality (Monitor: +quality)"
+        - "Performance - LCP (Target: ≤2.5s)"
+        - "Performance - CLS (Target: ≤0.1)"
+        - "Performance - INP (Target: ≤200ms)"
+        - "Performance - TTFB (Target: ≤600ms)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: metric_change
+    attributes:
+      label: "📈 Metric Change Details"
+      description: "Describe the change in the metric"
+      placeholder: "Current Value: 6.2%\nTarget Value: 8%\nChange: -22.5%\nAlert Threshold: -5%\nTime Period: Last 24 hours"
+    validations:
+      required: true
+
+  - type: textarea
+    id: potential_causes
+    attributes:
+      label: "🔍 Potential Root Causes"
+      description: "What might be causing this deviation?"
+      placeholder: "- Recent deployment to main (commit: xyz)\n- Traffic spike from campaign\n- Infrastructure issue..."  
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "🚨 Alert Severity"
+      description: "How critical is this metric deviation?"
+      options:
+        - "🔴 Critical (>20% deviation from target)"
+        - "🟠 High (10-20% deviation)"
+        - "🟡 Medium (5-10% deviation)"
+        - "🟢 Low (<5% deviation, monitoring)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: immediate_action
+    attributes:
+      label: "⚡ Immediate Action Taken"
+      description: "What action (if any) has been taken to investigate?"
+      placeholder: "- Checked deployment logs\n- Monitored in real-time\n- Rolled back version xyz..."  
+
+  - type: dropdown
+    id: funnel_area
+    attributes:
+      label: "🎯 Affected Funnel Areas (G1)"
+      description: "Which funnel area is impacted?"
+      options:
+        - "(shop) - B2C Product Shop"
+        - "(werkstatt) - Workshop Management"
+        - "(autohandel) - Auto Dealership"
+        - "(shared) - Multiple areas"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: escalation
+    attributes:
+      label: "📢 Escalation Checklist"
+      options:
+        - label: "Notify product team immediately"
+        - label: "Create runbook for future incidents"
+        - label: "Add monitoring alert to CI/CD pipeline"
+        - label: "Document root cause analysis"

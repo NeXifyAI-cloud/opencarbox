@@ -1,0 +1,113 @@
+name: "🚀 Feature Request"
+description: "Suggest a new feature or enhancement"
+labels: ["feature", "pending-review"]
+projectsV2: ["OpenCarBox Product Roadmap"]
+
+body:
+  - type: markdown
+    attributes:
+      value: "# Feature Request Template\n\nBefore you submit, please ensure this is not a duplicate. Use our [Product Roadmap](https://github.com/NeXifyAI-cloud/opencarbox/projects) to check."
+
+  - type: dropdown
+    id: funnel_assignment
+    attributes:
+      label: "🎯 Funnel Assignment (G1: MANDATORY)"
+      description: "Which funnel area does this feature belong to?"
+      options:
+        - "(shop) - B2C Product Shop"
+        - "(werkstatt) - Workshop Management"
+        - "(autohandel) - Auto Dealership"
+        - "(shared) - Multiple areas"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: brand_color
+    attributes:
+      label: "🎨 Brand Color (G9: Dual-Brand Enforcement)"
+      description: "Select the brand color scheme for this feature"
+      options:
+        - "#FFB300 (Shop - Yellow)"
+        - "#FFA800 (Werkstatt/Autohandel - Orange)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature_description
+    attributes:
+      label: "📝 Feature Description"
+      description: "Clear, detailed description of the proposed feature"
+      placeholder: "Explain what the feature does and why it's needed..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: user_benefit
+    attributes:
+      label: "💡 User Benefit & KPI Impact"
+      description: "How does this feature improve user experience and which KPI does it target?"
+      placeholder: "e.g., Improves Checkout Conversion by reducing cart abandonment..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kpi_target
+    attributes:
+      label: "📊 KPI Target Area (G4: Tracking-First)"
+      description: "Which key metric does this feature impact?"
+      options:
+        - "Shop - Add-to-Cart Rate (≥8%)"
+        - "Shop - Checkout Conversion (≥35%)"
+        - "Werkstatt - Booking Rate (≥40%)"
+        - "Autohandel - Inquiry Rate (≥5%)"
+        - "Cross-Area - Performance (LCP ≤2.5s)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: tracking_plan
+    attributes:
+      label: "💡 Tracking Plan (G4: Tracking-First Approach)"
+      description: "Define events and data collection for this feature"
+      placeholder: "Event: feature_viewed\nPayload: {user_id, feature_name, timestamp, context}\nNo PII - DSGVO compliant"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: security_impact
+    attributes:
+      label: "🔐 Security Impact"
+      description: "Does this feature involve sensitive data or authentication?"
+      options:
+        - "None - Public data only"
+        - "Low - Non-sensitive user data"
+        - "Medium - Payment/personal data"
+        - "High - Authentication/admin access"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: "✅ Acceptance Criteria"
+      description: "Clear, testable criteria for feature completion (per DOS v1.1)"
+      placeholder: "- [ ] Feature renders correctly on all devices\n- [ ] Tracking events fire correctly\n- [ ] Lighthouse score ≥90..."  
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: dos_compliance
+    attributes:
+      label: "✅ DOS v1.1 Compliance Checklist"
+      description: "Verify this request aligns with quality standards"
+      options:
+        - label: "Funnel assignment is clear (G1)"
+          required: true
+        - label: "Brand color scheme specified (G9)"
+          required: true
+        - label: "Tracking plan defined (G4)"
+          required: true
+        - label: "Performance targets considered (LCP, CLS, INP)"
+          required: true
+        - label: "DSGVO/WhatsApp opt-in requirements noted"
+          required: true

@@ -1,5 +1,11 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
-  - name: Report a security vulnerability
-    url: https://github.com/opencarbox/opencarbox/security/policy
-    about: Please review our security policy before reporting private vulnerabilities.
+  - name: "Questions or General Discussion?"
+    url: "https://github.com/NeXifyAI-cloud/opencarbox/discussions"
+    about: "Use our Discussion forum for questions about usage and features"
+  - name: "Security Vulnerability?"
+    url: "https://github.com/NeXifyAI-cloud/opencarbox/security/advisories/new"
+    about: "Please report security issues privately using our security advisory form"
+  - name: "Documentation Issues?"
+    url: "https://github.com/NeXifyAI-cloud/opencarbox/blob/main/README.md"
+    about: "For documentation improvements, submit a PR directly"

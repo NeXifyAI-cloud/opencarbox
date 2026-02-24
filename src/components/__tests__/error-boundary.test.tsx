@@ -134,7 +134,7 @@ describe('ErrorBoundary', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     render(
-      <ErrorBoundary fallback={(error) => <div>Custom error: {error.message}</div>}>
+      <ErrorBoundary fallback={(error: Error) => <div>Custom error: {error.message}</div>}>
         <ThrowError />
       </ErrorBoundary>
     )

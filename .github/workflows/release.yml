@@ -31,30 +31,28 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.inputs.tag || github.ref }}
 
-      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
 
-      - run: pnpm i --frozen-lockfile
+      - run: npm ci
 
       - name: Generate Prisma Client
-        run: pnpm db:generate
+        run: npm run db:generate
 
       - name: Lint
-        run: pnpm lint
+        run: npm run lint
 
       - name: Type check
-        run: pnpm typecheck
+        run: npm run typecheck
 
       - name: Test
-        run: pnpm test
+        run: npm test
 
       - name: Build
-        run: pnpm build
+        run: npm run build
 
       - name: Generate release notes
         id: notes

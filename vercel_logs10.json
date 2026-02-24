@@ -1,0 +1,145 @@
+[
+{"created":1771953142952,"date":1771953142952,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953142952489062133200000","text":"Running build in Washington, D.C., USA (East) – iad1 (Turbo Build Machine)","type":"stdout","serial":"1771953142952489062133200000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953142953,"date":1771953142953,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953142953489062133200000","text":"Build machine configuration: 30 cores, 60 GB","type":"stdout","serial":"1771953142953489062133200000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143063,"date":1771953143063,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143063489062133200000","text":"Cloning github.com/NeXifyAI-cloud/opencarbox (Branch: main, Commit: 111fc89)","type":"stdout","serial":"1771953143063489062133200000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143063,"date":1771953143063,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143063489062133200002","text":"Previous build caches not available.","type":"stdout","serial":"1771953143063489062133200002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143558,"date":1771953143558,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143558489062133200000","text":"Cloning completed: 495.000ms","type":"stdout","serial":"1771953143558489062133200000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143622,"date":1771953143622,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143622489062133200000","text":"Found .vercelignore","type":"stdout","serial":"1771953143622489062133200000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143639,"date":1771953143639,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143639489062133200000","text":"Removed 169 ignored files defined in .vercelignore","type":"stdout","serial":"1771953143639489062133200000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143639,"date":1771953143639,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143639489062133200001","text":"  /.cline/auto_approve.json","type":"stdout","serial":"1771953143639489062133200001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143639,"date":1771953143639,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143639489062133200002","text":"  /.cline/custom_commands.md","type":"stdout","serial":"1771953143639489062133200002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143639,"date":1771953143639,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143639489062133200003","text":"  /.cline/mcp_settings.example.json","type":"stdout","serial":"1771953143639489062133200003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143639,"date":1771953143639,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143639489062133200004","text":"  /.cline/oracle-context-cache.json","type":"stdout","serial":"1771953143639489062133200004","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143639,"date":1771953143639,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143639489062133200005","text":"  /.cline/oracle-context.json","type":"stdout","serial":"1771953143639489062133200005","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143640,"date":1771953143640,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143640489062133200000","text":"  /.cline/oracle-first-state.json","type":"stdout","serial":"1771953143640489062133200000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143640,"date":1771953143640,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143640489062133200001","text":"  /.cline/oracle-state.json","type":"stdout","serial":"1771953143640489062133200001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143640,"date":1771953143640,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143640489062133200002","text":"  /.cline/README.md","type":"stdout","serial":"1771953143640489062133200002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143640,"date":1771953143640,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143640489062133200003","text":"  /.git/config","type":"stdout","serial":"1771953143640489062133200003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953143640,"date":1771953143640,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953143640489062133200004","text":"  /.git/description","type":"stdout","serial":"1771953143640489062133200004","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953144734,"date":1771953144734,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953144734364352556500000","text":"Warning: Detected \"engines\": { \"node\": \">=18.17.0\" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: https://vercel.link/node-version","type":"stderr","serial":"1771953144734364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953144735,"date":1771953144735,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953144735364352556500000","text":"Running \"vercel build\"","type":"stdout","serial":"1771953144735364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953145230,"date":1771953145230,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953145230364352556500000","text":"Vercel CLI 50.22.0","type":"stderr","serial":"1771953145230364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953145498,"date":1771953145498,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953145498364352556500000","text":"Warning: Detected \"engines\": { \"node\": \">=18.17.0\" } in your `package.json` that will automatically upgrade when a new major Node.js Version is released. Learn More: https://vercel.link/node-version","type":"stderr","serial":"1771953145498364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953145514,"date":1771953145514,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953145514364352556500000","text":"Running \"install\" command: `pnpm install --no-frozen-lockfile`...","type":"stdout","serial":"1771953145514364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."}}
+,
+{"created":1771953146030,"date":1771953146030,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146030364352556500000","text":" WARN  GET https://registry.npmjs.org/@playwright%2Ftest error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146030364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146030,"date":1771953146030,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146030364352556500001","text":" WARN  GET https://registry.npmjs.org/@storybook%2Faddon-a11y error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146030364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146030,"date":1771953146030,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146030364352556500002","text":" WARN  GET https://registry.npmjs.org/@storybook%2Faddon-essentials error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146030364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146030,"date":1771953146030,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146030364352556500003","text":" WARN  GET https://registry.npmjs.org/@storybook%2Faddon-interactions error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146030364352556500003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146030,"date":1771953146030,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146030364352556500004","text":" WARN  GET https://registry.npmjs.org/@storybook%2Fnextjs error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146030364352556500004","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146031,"date":1771953146031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146031364352556500000","text":" WARN  GET https://registry.npmjs.org/@storybook%2Freact error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146031364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146031,"date":1771953146031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146031364352556500001","text":" WARN  GET https://registry.npmjs.org/@testing-library%2Fjest-dom error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146031364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146031,"date":1771953146031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146031364352556500002","text":" WARN  GET https://registry.npmjs.org/@testing-library%2Freact error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146031364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146031,"date":1771953146031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146031364352556500003","text":" WARN  GET https://registry.npmjs.org/@testing-library%2Fuser-event error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146031364352556500003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146031,"date":1771953146031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146031364352556500004","text":" WARN  GET https://registry.npmjs.org/@types%2Fnode error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146031364352556500004","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146031,"date":1771953146031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146031364352556500005","text":" WARN  GET https://registry.npmjs.org/@types%2Freact error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146031364352556500005","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146031,"date":1771953146031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146031364352556500006","text":" WARN  GET https://registry.npmjs.org/@types%2Freact-dom error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146031364352556500006","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146032,"date":1771953146032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146032364352556500000","text":" WARN  GET https://registry.npmjs.org/@typescript-eslint%2Feslint-plugin error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146032364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146032,"date":1771953146032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146032364352556500001","text":" WARN  GET https://registry.npmjs.org/@typescript-eslint%2Fparser error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146032364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146032,"date":1771953146032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146032364352556500002","text":" WARN  GET https://registry.npmjs.org/@vitejs%2Fplugin-react error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146032364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953146032,"date":1771953146032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953146032364352556500003","text":" WARN  GET https://registry.npmjs.org/@vitest%2Fcoverage-v8 error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953146032364352556500003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156031,"date":1771953156031,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156031364352556500000","text":" WARN  GET https://registry.npmjs.org/@playwright%2Ftest error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156031364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156032,"date":1771953156032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156032364352556500000","text":" WARN  GET https://registry.npmjs.org/@storybook%2Faddon-a11y error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156032364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156032,"date":1771953156032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156032364352556500001","text":" WARN  GET https://registry.npmjs.org/@storybook%2Faddon-essentials error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156032364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156032,"date":1771953156032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156032364352556500002","text":" WARN  GET https://registry.npmjs.org/@storybook%2Faddon-interactions error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156032364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156032,"date":1771953156032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156032364352556500003","text":" WARN  GET https://registry.npmjs.org/@storybook%2Fnextjs error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156032364352556500003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156032,"date":1771953156032,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156032364352556500004","text":" WARN  GET https://registry.npmjs.org/@storybook%2Freact error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156032364352556500004","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156034,"date":1771953156034,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156034364352556500000","text":" WARN  GET https://registry.npmjs.org/@testing-library%2Fjest-dom error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156034364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156034,"date":1771953156034,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156034364352556500001","text":" WARN  GET https://registry.npmjs.org/@testing-library%2Freact error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156034364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156034,"date":1771953156034,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156034364352556500002","text":" WARN  GET https://registry.npmjs.org/@testing-library%2Fuser-event error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156034364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156034,"date":1771953156034,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156034364352556500003","text":" WARN  GET https://registry.npmjs.org/@types%2Fnode error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156034364352556500003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156035,"date":1771953156035,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156035364352556500000","text":" WARN  GET https://registry.npmjs.org/@types%2Freact error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156035364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156035,"date":1771953156035,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156035364352556500001","text":" WARN  GET https://registry.npmjs.org/@types%2Freact-dom error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156035364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156035,"date":1771953156035,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156035364352556500002","text":" WARN  GET https://registry.npmjs.org/@typescript-eslint%2Feslint-plugin error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156035364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156035,"date":1771953156035,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156035364352556500003","text":" WARN  GET https://registry.npmjs.org/@typescript-eslint%2Fparser error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156035364352556500003","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156035,"date":1771953156035,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156035364352556500004","text":" WARN  GET https://registry.npmjs.org/@vitejs%2Fplugin-react error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156035364352556500004","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953156036,"date":1771953156036,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953156036364352556500000","text":" WARN  GET https://registry.npmjs.org/@vitest%2Fcoverage-v8 error (ERR_INVALID_THIS). Will retry in 1 minute. 1 retries left.","type":"stdout","serial":"1771953156036364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953216039,"date":1771953216039,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216039364352556500000","text":" WARN  GET https://registry.npmjs.org/@vitest%2Fui error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216039364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"warning"}
+,
+{"created":1771953216041,"date":1771953216041,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216041364352556500000","text":" ERR_PNPM_META_FETCH_FAIL  GET https://registry.npmjs.org/@playwright%2Ftest: Value of \"this\" must be of type URLSearchParams","type":"stdout","serial":"1771953216041364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216041,"date":1771953216041,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216041364352556500001","text":" WARN  GET https://registry.npmjs.org/autoprefixer error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216041364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216041,"date":1771953216041,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216041364352556500002","text":" WARN  GET https://registry.npmjs.org/eslint error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216041364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216042,"date":1771953216042,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216042364352556500000","text":" WARN  GET https://registry.npmjs.org/eslint-config-next error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216042364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216042,"date":1771953216042,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216042364352556500001","text":" WARN  GET https://registry.npmjs.org/glob error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216042364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216042,"date":1771953216042,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216042364352556500002","text":" WARN  GET https://registry.npmjs.org/husky error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216042364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216043,"date":1771953216043,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216043364352556500000","text":" WARN  GET https://registry.npmjs.org/jsdom error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216043364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216043,"date":1771953216043,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216043364352556500001","text":" WARN  GET https://registry.npmjs.org/lint-staged error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216043364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216043,"date":1771953216043,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216043364352556500002","text":" WARN  GET https://registry.npmjs.org/postcss error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216043364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216044,"date":1771953216044,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216044364352556500000","text":" WARN  GET https://registry.npmjs.org/prettier error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216044364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216044,"date":1771953216044,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216044364352556500001","text":" WARN  GET https://registry.npmjs.org/prettier-plugin-tailwindcss error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216044364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216044,"date":1771953216044,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216044364352556500002","text":" WARN  GET https://registry.npmjs.org/tailwindcss error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216044364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216045,"date":1771953216045,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216045364352556500000","text":" WARN  GET https://registry.npmjs.org/tsx error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216045364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216045,"date":1771953216045,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216045364352556500001","text":" WARN  GET https://registry.npmjs.org/typescript error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216045364352556500001","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216045,"date":1771953216045,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216045364352556500002","text":" WARN  GET https://registry.npmjs.org/vitest error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216045364352556500002","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216046,"date":1771953216046,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216046364352556500000","text":" WARN  GET https://registry.npmjs.org/@hookform%2Fresolvers error (ERR_INVALID_THIS). Will retry in 10 seconds. 2 retries left.","type":"stdout","serial":"1771953216046364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+,
+{"created":1771953216056,"date":1771953216056,"deploymentId":"dpl_EzR71jyRAvGMPfScfZYNjHbLYp9e","id":"1771953216056364352556500000","text":"Error: Command \"pnpm install --no-frozen-lockfile\" exited with 1","type":"stderr","serial":"1771953216056364352556500000","info":{"type":"build","name":"bld_czrt7dygs","entrypoint":"."},"level":"error"}
+]

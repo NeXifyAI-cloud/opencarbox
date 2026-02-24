@@ -29,44 +29,42 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
 
-      - run: pnpm i --frozen-lockfile
+      - run: npm ci
 
       - name: Generate Prisma Client
         id: prisma
-        run: pnpm db:generate
+        run: npm run db:generate
         continue-on-error: true
 
       - name: Lint
         id: lint
-        run: pnpm lint
+        run: npm run lint
         continue-on-error: true
 
       - name: Type check
         id: typecheck
-        run: pnpm typecheck
+        run: npm run typecheck
         continue-on-error: true
 
       - name: Test
         id: test
-        run: pnpm test
+        run: npm test
         continue-on-error: true
 
       - name: Build
         id: build
-        run: pnpm build
+        run: npm run build
         continue-on-error: true
 
       - name: Dependency freshness
         id: outdated
-        run: pnpm outdated || true
+        run: npm outdated || true
 
       - name: API health check
         id: api_health

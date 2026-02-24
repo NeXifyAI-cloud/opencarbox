@@ -43,8 +43,8 @@ describe('autofix_policy', () => {
       expect(result.violations.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('blocks pnpm-lock.yaml', () => {
-      const result = checkFiles(['pnpm-lock.yaml']);
+    it('blocks package-lock.json', () => {
+      const result = checkFiles(['package-lock.json']);
       expect(result.allowed).toBe(false);
     });
 

@@ -23,30 +23,28 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm i --frozen-lockfile
+          cache: npm
+      - run: npm ci
       - name: Preflight
         run: npx tsx tools/preflight.ts ci
       - name: Dependency audit
-        run: pnpm audit --prod || true
+        run: npm audit --prod || true
       - name: Secret scan
-        run: pnpm secret:scan
+        run: npm run secret:scan
 
   sbom:
     name: SBOM Generation
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-      - run: pnpm i --frozen-lockfile
+          cache: npm
+      - run: npm ci
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:

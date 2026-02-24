@@ -53,6 +53,8 @@ jobs:
         uses: actions/checkout@v6
         with:
           persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
       - uses: pnpm/action-setup@v4
         if: steps.vercel_check.outputs.skip != 'true'
 
@@ -61,7 +63,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         if: steps.vercel_check.outputs.skip != 'true'

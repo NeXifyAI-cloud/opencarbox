@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { createRateLimiter } from '../rate-limit'
 import { NextRequest } from 'next/server'
 
@@ -78,5 +78,3 @@ describe('Rate Limiter', () => {
     expect(result.retryAfter).toBeLessThanOrEqual(1)
   })
 })
-
-import { vi } from 'vitest'

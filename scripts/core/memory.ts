@@ -81,7 +81,7 @@ export class Memory {
         request = request.match(filter);
       }
 
-      const { data, error } = await request.textSearch('content', query);
+      const { data, error } = await request.textSearch('content', query, { type: 'websearch' });
 
       if (error) {
         throw new Error(`Memory recall failed: ${error.message}`);

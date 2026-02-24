@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
@@ -49,7 +50,7 @@ export async function getSession(): Promise<UserSession | null> {
       emailVerified: !!session.user.email_confirmed_at,
     }
   } catch (error) {
-    console.error('Failed to get session:', error)
+    logger.error('Failed to get session:', error)
     return null
   }
 }

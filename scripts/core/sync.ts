@@ -63,7 +63,20 @@ export async function syncRulesToDocs() {
     return;
   }
 
-  const content = fs.readFileSync(clinerules, 'utf-8');
+  let content = '';
+  const stats = fs.statSync(clinerules);
+
+  if (stats.isDirectory()) {
+    console.log('📂 .clinerules ist ein Verzeichnis, lese alle .md Dateien...');
+    const ruleFiles = await glob('**/*.md', { cwd: clinerules });
+    for (const file of ruleFiles) {
+      const filePath = path.join(clinerules, file);
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      content += `\n## ${file}\n\n${fileContent}\n`;
+    }
+  } else {
+    content = fs.readFileSync(clinerules, 'utf-8');
+  }
 
   // Erstelle formatierte Docs-Version
   const docsContent = `# Cline AI Agent Rules
@@ -97,7 +110,7 @@ export async function syncDocsToOracle() {
 
     if (fs.existsSync(fullPath)) {
       const content = fs.readFileSync(fullPath, 'utf-8');
-      // Verarbeite Dokument mit quickThink statt nicht existierender optimizeContext-Methode
+      // Verarbeite Dokument mit quickThink
       await Oracle.quickThink(`Memoriere folgendes Dokument:\nDocument: ${docPath}\n\n${content.slice(0, 2000)}`);
       console.log(`  ✅ ${docPath} -> Oracle`);
     }

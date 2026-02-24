@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 /**
  * AI Provider Auto-Selection Logic
  * Intelligently selects the optimal AI provider based on availability, cost, and performance
@@ -28,13 +29,13 @@ function log(message: string, level: 'info' | 'warn' | 'error' = 'info'): void {
   if (process.env.NODE_ENV !== 'test') {
     const prefix = '[AIAutoSelector]';
     if (level === 'error') {
-      console.error(`${prefix} ${message}`);
+      logger.error(`${prefix} ${message}`);
     } else if (level === 'warn') {
-      console.warn(`${prefix} ${message}`);
+      logger.warn(`${prefix} ${message}`);
     } else {
       // Only log in development or when AI_DEBUG is enabled
       if (process.env.NODE_ENV === 'development' || process.env.AI_DEBUG === 'true') {
-        console.log(`${prefix} ${message}`);
+        logger.info(`${prefix} ${message}`);
       }
     }
   }

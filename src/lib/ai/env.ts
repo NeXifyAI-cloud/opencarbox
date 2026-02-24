@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 // Legacy schema for backward compatibility
 export const aiEnvSchema = z.object({
-  AI_PROVIDER: z.literal('deepseek').default('deepseek'),
+  AI_PROVIDER: z.enum(['deepseek', 'github-models', 'nscale']).default('deepseek'),
   DEEPSEEK_API_KEY: z.string().min(1).optional(),
   DEEPSEEK_BASE_URL: z.string().url().optional(),
   NSCALE_API_KEY: z.string().min(1).optional(),

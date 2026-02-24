@@ -8,14 +8,17 @@ import { Button } from '@/components/ui/button';
 import { featuredProducts } from '@/lib/mock-data';
 import { ChevronRight, SlidersHorizontal } from 'lucide-react';
 import Link from 'next/link';
+import React from 'react';
 
 interface CategoryPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default function CategoryPage({ params }: CategoryPageProps) {
+  const { slug } = React.use(params);
+
   const normalizeCategorySlug = (value: string) => value
     .trim()
     .toLowerCase()
@@ -35,13 +38,13 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-  const normalizedSlug = normalizeCategorySlug(params.slug);
+  const normalizedSlug = normalizeCategorySlug(slug);
   const products = featuredProducts.filter(
     (product) => normalizeCategorySlug(product.category) === normalizedSlug,
   );
 
   const matchedCategoryName = products[0]?.category;
-  const categoryName = matchedCategoryName || slugToCategoryName(normalizedSlug || params.slug);
+  const categoryName = matchedCategoryName || slugToCategoryName(normalizedSlug || slug);
   const isValidCategory = Boolean(products.length);
 
   return (

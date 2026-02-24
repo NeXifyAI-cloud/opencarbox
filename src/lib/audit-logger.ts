@@ -45,6 +45,7 @@ export async function logEvent({
   } catch (error) {
     // Fehler beim Logging werden absichtlich ignoriert, um den Hauptfluss nicht zu unterbrechen.
     // In einer produktiven Umgebung sollte hier ein externes Monitoring informiert werden.
+    console.error('Audit logging failed:', error);
     return null;
   }
 }

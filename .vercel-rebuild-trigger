@@ -1,0 +1,9 @@
+# FORCE REBUILD TRIGGER
+# This file forces Vercel to rebuild with the latest Prisma postinstall fix
+# Commit de76e29 merged postinstall with DATABASE_URL fallbacks
+# Build should succeed now with:
+# - Empty page.tsx fixed (src/app/admin/termine/page.tsx)
+# - Prisma postinstall with || true fallback
+# - All Vercel env vars set
+# - All GitHub Actions secrets configured
+# Timestamp: $(date -u)

@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { ErrorBoundary } from '../error-boundary'
-import userEvent from '@testing-library/user-event'
 
 describe('ErrorBoundary', () => {
   // Component that throws an error
@@ -40,9 +39,8 @@ describe('ErrorBoundary', () => {
 
   it('should display error details in development', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const originalEnv = process.env.NODE_ENV
 
-    process.env.NODE_ENV = 'development'
+    vi.stubEnv('NODE_ENV', 'development')
 
     render(
       <ErrorBoundary>
@@ -52,15 +50,14 @@ describe('ErrorBoundary', () => {
 
     expect(screen.getByText('Test error')).toBeInTheDocument()
 
-    process.env.NODE_ENV = originalEnv
+    vi.unstubAllEnvs()
     consoleSpy.mockRestore()
   })
 
   it('should hide error details in production', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const originalEnv = process.env.NODE_ENV
 
-    process.env.NODE_ENV = 'production'
+    vi.stubEnv('NODE_ENV', 'production')
 
     render(
       <ErrorBoundary>
@@ -70,7 +67,7 @@ describe('ErrorBoundary', () => {
 
     expect(screen.queryByText('Test error')).not.toBeInTheDocument()
 
-    process.env.NODE_ENV = originalEnv
+    vi.unstubAllEnvs()
     consoleSpy.mockRestore()
   })
 

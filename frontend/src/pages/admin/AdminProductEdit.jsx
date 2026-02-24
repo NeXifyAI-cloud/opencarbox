@@ -48,28 +48,29 @@ const AdminProductEdit = () => {
   const fetchProduct = async () => {
     try {
       const response = await axios.get(`${API}/products/${id}`);
+      const data = response.data;
+      // Ensure images is always an array
       setFormData({
-        ...response.data,
-        original_price: response.data.original_price || 0,
-        images: response.data.images || []
+        ...data,
+        images: data.images || []
       });
+      setLoading(false);
     } catch (error) {
+      console.error('Fehler beim Laden des Produkts:', error);
       toast({
         variant: "destructive",
         title: "Fehler",
-        description: "Produkt konnte nicht geladen werden.",
+        description: "Produkt konnte nicht geladen werden."
       });
-      navigate('/admin/produkte');
-    } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
+    const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'number' ? parseFloat(value) : value
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
@@ -77,16 +78,28 @@ const AdminProductEdit = () => {
     setFormData(prev => ({ ...prev, is_active: checked }));
   };
 
+  const isValidUrl = (url) => {
+    try {
+      const parsed = new URL(url);
+      return ['http:', 'https:'].includes(parsed.protocol);
+    } catch (e) {
+      return false;
+    }
+  };
+
   const handleAddImage = () => {
     if (imageUrl) {
-      // Basic security check: URL must start with http:// or https:// to prevent XSS/injection
-      if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
-        alert('Bitte geben Sie eine gültige URL ein (beginnend mit http:// oder https://)');
+      if (!isValidUrl(imageUrl)) {
+        toast({
+          variant: "destructive",
+          title: "Ungültige URL",
+          description: "Bitte geben Sie eine gültige Bild-URL ein (http:// oder https://)."
+        });
         return;
       }
       setFormData(prev => ({
         ...prev,
-        images: [...prev.images, imageUrl]
+        images: [...(prev.images || []), imageUrl]
       }));
       setImageUrl('');
     }
@@ -95,7 +108,7 @@ const AdminProductEdit = () => {
   const handleRemoveImage = (index) => {
     setFormData(prev => ({
       ...prev,
-      images: prev.images.filter((_, i) => i !== index)
+      images: (prev.images || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -104,23 +117,25 @@ const AdminProductEdit = () => {
     setSaving(true);
     
     try {
+      const config = {
+        headers: { Authorization: `Bearer ${token}` }
+      };
+
       if (isNew) {
-        await axios.post(`${API}/products`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        toast({ title: "Erstellt", description: "Produkt erfolgreich angelegt." });
+        await axios.post(`${API}/products`, formData, config);
+        toast({ title: "Erfolg", description: "Produkt wurde erstellt." });
       } else {
-        await axios.put(`${API}/products/${id}`, formData, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        toast({ title: "Gespeichert", description: "Änderungen erfolgreich gespeichert." });
+        await axios.put(`${API}/products/${id}`, formData, config);
+        toast({ title: "Erfolg", description: "Produkt wurde aktualisiert." });
       }
+
       navigate('/admin/produkte');
     } catch (error) {
+      console.error('Fehler beim Speichern:', error);
       toast({
         variant: "destructive",
         title: "Fehler",
-        description: error.response?.data?.detail || "Speichern fehlgeschlagen.",
+        description: "Änderungen konnten nicht gespeichert werden."
       });
     } finally {
       setSaving(false);
@@ -130,8 +145,8 @@ const AdminProductEdit = () => {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="flex justify-center items-center h-64">
-          <Loader className="h-8 w-8 animate-spin text-[#1e3a5f]" />
+        <div className="flex items-center justify-center h-64">
+          <Loader className="w-8 h-8 animate-spin text-primary" />
         </div>
       </AdminLayout>
     );
@@ -139,102 +154,179 @@ const AdminProductEdit = () => {
 
   return (
     <AdminLayout>
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate('/admin/produkte')}>
-            <ArrowLeft className="h-4 w-4 mr-2" /> Zurück
-          </Button>
-          <h1 className="text-2xl font-bold text-[#1e3a5f]">
-            {isNew ? 'Neues Produkt anlegen' : 'Produkt bearbeiten'}
-          </h1>
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={() => navigate('/admin/produkte')}>
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <h1 className="text-2xl font-bold">
+              {isNew ? 'Neues Produkt' : 'Produkt bearbeiten'}
+            </h1>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Basisdaten</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Produktname</Label>
-                  <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="md:col-span-2">
+              <CardHeader>
+                <CardTitle>Basisinformationen</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Name</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sku">SKU / Artikelnummer</Label>
+                    <Input
+                      id="sku"
+                      name="sku"
+                      value={formData.sku}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sku">Artikelnummer (SKU)</Label>
-                  <Input id="sku" name="sku" value={formData.sku} onChange={handleChange} required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="brand">Marke / Hersteller</Label>
-                  <Input id="brand" name="brand" value={formData.brand} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="category_id">Kategorie ID</Label>
-                  <Input id="category_id" name="category_id" value={formData.category_id || ''} onChange={handleChange} />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="description">Beschreibung</Label>
-                <Textarea id="description" name="description" value={formData.description} onChange={handleChange} rows={5} />
-              </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="brand">Marke</Label>
+                    <Input
+                      id="brand"
+                      name="brand"
+                      value={formData.brand}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2 pt-8">
+                    <Switch
+                      id="is_active"
+                      checked={formData.is_active}
+                      onCheckedChange={handleSwitchChange}
+                    />
+                    <Label htmlFor="is_active">Aktiv / Sichtbar</Label>
+                  </div>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <Label htmlFor="price">Preis (€)</Label>
-                  <Input id="price" name="price" type="number" step="0.01" value={formData.price} onChange={handleChange} required />
+                  <Label htmlFor="description">Beschreibung</Label>
+                  <Textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={5}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Preis & Lager</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="price">Verkaufspreis (€)</Label>
+                  <Input
+                    id="price"
+                    name="price"
+                    type="number"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="original_price">Streichpreis (€)</Label>
-                  <Input id="original_price" name="original_price" type="number" step="0.01" value={formData.original_price} onChange={handleChange} />
+                  <Label htmlFor="original_price">Originalpreis (€) - Optional</Label>
+                  <Input
+                    id="original_price"
+                    name="original_price"
+                    type="number"
+                    step="0.01"
+                    value={formData.original_price}
+                    onChange={handleChange}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="stock">Lagerbestand</Label>
-                  <Input id="stock" name="stock" type="number" value={formData.stock} onChange={handleChange} required />
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Switch id="is_active" checked={formData.is_active} onCheckedChange={handleSwitchChange} />
-                <Label htmlFor="is_active">Produkt ist aktiv und im Shop sichtbar</Label>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t">
-                <Label>Bilder</Label>
-                <div className="flex gap-2">
                   <Input 
-                    placeholder="Bild-URL eingeben..." 
-                    value={imageUrl} 
-                    onChange={(e) => setImageUrl(e.target.value)} 
+                    id="stock"
+                    name="stock"
+                    type="number"
+                    value={formData.stock}
+                    onChange={handleChange}
+                    required
                   />
-                  <Button type="button" onClick={handleAddImage} variant="outline">
-                    <Plus className="h-4 w-4" />
-                  </Button>
                 </div>
-                <div className="grid grid-cols-4 gap-4 mt-2">
-                  {formData.images.map((img, index) => (
-                    <div key={index} className="relative group border rounded-lg overflow-hidden h-24">
-                      <img src={img} alt={`Produktbild ${index}`} className="w-full h-full object-cover" />
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Medien</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Bilder hinzufügen</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Bild-URL..."
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                    />
+                    <Button type="button" onClick={handleAddImage} variant="outline" size="icon">
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mt-4">
+                  {(formData.images || []).map((img, index) => (
+                    <div key={index} className="relative aspect-square border rounded-md overflow-hidden bg-muted">
+                      {isValidUrl(img) ? (
+                        <img
+                          src={img}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.target.src = 'https://placehold.co/400x400?text=Fehler';
+                          }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-[10px] text-center p-1">
+                          Ungültige URL
+                        </div>
+                      )}
                       <button
                         type="button"
                         onClick={() => handleRemoveImage(index)}
-                        className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-0.5 right-0.5 bg-red-500 text-white rounded-full p-0.5"
                       >
                         <Trash2 className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
                 </div>
-              </div>
+              </CardContent>
+            </Card>
+          </div>
 
-              <div className="flex justify-end pt-6">
-                <Button type="submit" className="bg-[#1e3a5f] hover:bg-[#2d4a6f]" disabled={saving}>
-                  {saving && <Loader className="h-4 w-4 mr-2 animate-spin" />}
-                  {isNew ? 'Erstellen' : 'Speichern'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex justify-end mt-8">
+            <Button type="submit" disabled={saving}>
+              {saving ? <Loader className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+              Speichern
+            </Button>
+          </div>
         </form>
       </div>
     </AdminLayout>

@@ -14,6 +14,8 @@ afterEach(() => {
 // Mock environment variables
 process.env.NEXT_PUBLIC_SITE_URL = 'http://localhost:3000'
 process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = 'pk_test_mock'
+process.env.DATABASE_URL = "postgresql://user:pass@localhost:5432/db"
+process.env.DIRECT_URL = "postgresql://user:pass@localhost:5432/db"
 
 // Mock next/router
 vi.mock('next/router', () => ({

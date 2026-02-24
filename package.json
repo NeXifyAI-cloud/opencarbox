@@ -158,5 +158,10 @@
   },
   "engines": {
     "node": ">=18.17.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "minimatch": ">=10.2.1"
+    }
   }
 }

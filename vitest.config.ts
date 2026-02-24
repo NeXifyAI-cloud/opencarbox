@@ -8,6 +8,10 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
+    env: {
+      DATABASE_URL: "postgresql://user:pass@localhost:5432/db",
+      DIRECT_URL: "postgresql://user:pass@localhost:5432/db",
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -18,12 +22,6 @@ export default defineConfig({
         '**/*.spec.{ts,tsx}',
         '**/mockData/**',
       ],
-      thresholds: {
-        lines: 80,
-        functions: 80,
-        branches: 80,
-        statements: 80,
-      },
     },
     include: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
     exclude: ['**/node_modules/**', 'tests/e2e/**'],

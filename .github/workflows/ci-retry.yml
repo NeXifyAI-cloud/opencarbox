@@ -33,15 +33,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
 
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+          cache: npm
 
-      - run: pnpm i --frozen-lockfile
+      - run: npm ci
 
       - name: Check retry count
         id: retry_count

@@ -10,7 +10,7 @@ need() {
 
 need git
 need node
-need pnpm
+need npm
 need gh
 need vercel
 need supabase

@@ -1,3 +1,4 @@
+import { logger } from "./lib/logger";
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
@@ -87,7 +88,7 @@ export async function middleware(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Middleware error:', error)
+    logger.error('Middleware error:', error)
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 }

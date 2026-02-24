@@ -79,6 +79,11 @@ const AdminProductEdit = () => {
 
   const handleAddImage = () => {
     if (imageUrl) {
+      // Basic security check: URL must start with http:// or https:// to prevent XSS/injection
+      if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+        alert('Bitte geben Sie eine gültige URL ein (beginnend mit http:// oder https://)');
+        return;
+      }
       setFormData(prev => ({
         ...prev,
         images: [...prev.images, imageUrl]

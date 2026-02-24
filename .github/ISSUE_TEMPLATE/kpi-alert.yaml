@@ -1,0 +1,34 @@
+name: KPI Alert
+description: Automatischer KPI-Alarm
+body:
+  - type: markdown
+    attributes:
+      value: Wird automatisch via Monitoring erstellt.
+  - type: input
+    id: kpi
+    attributes:
+      label: KPI
+  - type: input
+    id: current_value
+    attributes:
+      label: Aktueller Wert
+  - type: input
+    id: target_value
+    attributes:
+      label: Zielwert
+  - type: input
+    id: timeframe
+    attributes:
+      label: Zeitfenster
+  - type: input
+    id: funnel_step
+    attributes:
+      label: Funnel-Schritt
+  - type: checkboxes
+    id: analysis
+    attributes:
+      label: Analyse
+      options:
+        - label: Event-Tracking korrekt?
+        - label: UX-Regression?
+        - label: Performance-Drop?

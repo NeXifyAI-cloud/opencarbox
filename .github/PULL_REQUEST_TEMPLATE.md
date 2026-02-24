@@ -1,35 +1,73 @@
-## Summary
+# Pull Request
 
-<!-- Kurze Beschreibung der Änderung und Motivation -->
+## Funnel-Zuordnung (G1 – Pflicht)
+- [ ] Awareness
+- [ ] Education
+- [ ] Consideration
+- [ ] Conversion
+- [ ] Retention
 
-## Checklist
+**Begründung (1–2 Sätze):**
+Welche KPI wird direkt beeinflusst?
 
-### CI & Quality
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass locally
-- [ ] CI checks are green (ci / quick-checks, ci / test-and-build)
-- [ ] Tests added/updated where behavior changed
+## Bereich
+- [ ] (shop)
+- [ ] (werkstatt)
+- [ ] (autohandel)
+- [ ] shared
 
-### Documentation & Operations
-- [ ] NOTES updated (`runbook.md`, `brain.md`, `backlog.md`) if relevant
-- [ ] Documentation updated (`README`, `docs/`) if relevant
-- [ ] Migrations included and runbook updated if database schema changed
+## Brand-Check (G9)
+- [ ] Shop verwendet ausschließlich #FFB300
+- [ ] Werkstatt/Autohandel ausschließlich #FFA800
+- [ ] Keine Logoabweichungen
+- [ ] Kein Farben-Mixing
 
-### Security & Secrets
-- [ ] No secrets added to code, logs, or docs
-- [ ] `pnpm secret:scan` passes
-- [ ] OPENAI_* / forbidden provider references not introduced
+## UI-Regel (G3)
+- [ ] Nur src/components/ui verwendet
+- [ ] Keine One-Off Components
+- [ ] 8px Grid eingehalten
+- [ ] Max. 3 CTA-Typen
 
-### Deployment & Release
-- [ ] UI changes include screenshot(s)
-- [ ] DB migration / rollback runbook updated if relevant
-- [ ] Vercel Preview deployment verified (if applicable)
+## Tracking (G4 – Pflicht)
+**Neue/Betroffene Events:**
+- [ ] Event in src/lib/events.ts registriert
+- [ ] Zod-Schema validiert
+- [ ] Keine PII im Payload
+- [ ] Pseudonymisierte user_id
+- [ ] Event-Flow getestet (Preview)
 
-### Orchestrator & Workflows
-- [ ] Bei neuen/umbenannten produktiven Workflows wurde `.github/workflows/failure-orchestrator.yml` (`on.workflow_run.workflows`) in derselben PR aktualisiert
-- [ ] Branch protection contract checked (see NOTES/runbook.md)
+**Event-Liste:**
 
-### Definition of Done
-- [ ] All CI checks green
-- [ ] Code review approved (min 1 reviewer)
-- [ ] Acceptance criteria from linked issue verified
-- [ ] No regressions introduced
+## Security / DSGVO
+- [ ] Keine neuen Secrets im Code
+- [ ] RLS geprüft (falls DB)
+- [ ] Stripe Webhooks validiert (falls betroffen)
+- [ ] WhatsApp Opt-in korrekt umgesetzt
+
+## Performance
+**Preview Lighthouse Score:**
+LCP:
+CLS:
+INP:
+TTFB:
+- [ ] ≥ 90 Score
+
+## Migration / Risk
+- [ ] Prisma Migration?
+- [ ] Breaking Change?
+- [ ] Rollback dokumentiert?
+- [ ] ADR erstellt (falls Architektur betroffen)
+
+## CI Status
+- [ ] Lint
+- [ ] Typecheck
+- [ ] Preflight
+- [ ] AI Guard
+- [ ] Security Audit
+- [ ] Lighthouse CI
+
+## Reviewer Check
+- [ ] Screenshots beigefügt
+- [ ] Funnel plausibel
+- [ ] Claims Policy eingehalten
+- [ ] Copy Compiler Stufen geprüft

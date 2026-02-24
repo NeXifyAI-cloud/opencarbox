@@ -1,3 +1,4 @@
+import { logger } from "../logger";
 /**
  * Unified AI Client
  * Provides a backward-compatible interface while using the new provider system
@@ -24,7 +25,7 @@ export async function aiChatCompletion(
 export async function deepseekChatCompletion(payload: unknown): Promise<unknown> {
   if (process.env.NODE_ENV === 'development') {
     // Only warn in development, not in tests
-    console.warn(
+    logger.warn(
       '[DEPRECATED] deepseekChatCompletion is deprecated. Use aiChatCompletion from @/lib/ai/client instead.'
     );
   }

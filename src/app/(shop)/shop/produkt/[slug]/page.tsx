@@ -16,16 +16,18 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import * as React from 'react';
 import { useState } from 'react';
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 export default function ProductPage({ params }: ProductPageProps) {
-  const product = findFeaturedProductBySlug(params.slug);
+  const { slug } = React.use(params);
+  const product = findFeaturedProductBySlug(slug);
   const [quantity, setQuantity] = useState(1);
 
   if (!product) {
@@ -34,7 +36,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="max-w-2xl mx-auto rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
           <h1 className="text-2xl font-display font-bold text-slate-900 mb-3">Produkt nicht gefunden</h1>
           <p className="text-slate-600 mb-6">
-            Für den Slug "{params.slug}" wurde kein Produkt gefunden.
+            Für den Slug "{slug}" wurde kein Produkt gefunden.
           </p>
           <Button asChild className="bg-carvantooo-500 hover:bg-carvantooo-600 text-white">
             <Link href="/shop">Zurück zum Shop</Link>

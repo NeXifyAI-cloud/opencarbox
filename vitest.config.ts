@@ -12,8 +12,8 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
-        'node_modules/',
-        'src/test/',
+        '**/node_modules/**',
+        'src/test/**',
         '**/*.test.{ts,tsx}',
         '**/*.spec.{ts,tsx}',
         '**/mockData/**',
@@ -26,7 +26,7 @@ export default defineConfig({
       },
     },
     include: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
-    exclude: ['node_modules/', 'tests/e2e/**'],
+    exclude: ['**/node_modules/**', 'tests/e2e/**'],
   },
   resolve: {
     alias: {

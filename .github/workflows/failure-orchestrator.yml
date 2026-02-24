@@ -37,7 +37,7 @@ jobs:
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: pnpm i --frozen-lockfile
+      - run: pnpm i --frozen-lockfile --ignore-scripts
 
       - name: Sanitize user input
         run: |
@@ -140,7 +140,7 @@ jobs:
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: pnpm i --frozen-lockfile
+      - run: pnpm i --frozen-lockfile --ignore-scripts
 
       - name: PR backlog guardrail (max 2 codex PRs)
         id: pr_guardrail
@@ -194,11 +194,8 @@ jobs:
           git commit -m "fix: ai triage for $WF_NAME"
           git push -u origin "$BRANCH"
 
-          gh pr create \
-            --title "fix: ai triage for $WF_NAME" \
-            --base "$WF_HEAD_BRANCH" \
-            --head "$BRANCH" \
-            --body "## Was geändert
+          PR_BODY=$(cat <<EOT
+## Was geändert
 - Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.
 - Validierte Änderungen als separater Fix-Branch erstellt.
 
@@ -215,7 +212,14 @@ jobs:
 - Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.
 - Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.
 
-Marker: ${RUN_REF}"
+Marker: ${RUN_REF}
+EOT
+)
+          gh pr create \
+            --title "fix: ai triage for $WF_NAME" \
+            --base "$WF_HEAD_BRANCH" \
+            --head "$BRANCH" \
+            --body "$PR_BODY"
 
       - name: Fallback issue
         if: steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0'

@@ -87,14 +87,14 @@ VERCEL DASHBOARD
 #### **Production Secrets (main branch)**
 ```plaintext
 # Database
-DATABASE_URL = postgresql://user:pass@prod-db.supabase.co:5432/postgres
-DIRECT_URL = postgresql://user:pass@direct.supabase.co:5432/postgres
+DATABASE_URL = postgresql://<USER>:<PASSWORD>@prod-db.supabase.co:5432/postgres
+DIRECT_URL = postgresql://<USER>:<PASSWORD>@direct.supabase.co:5432/postgres
 
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL = https://prod-supabase.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJ...prod...
-SUPABASE_SERVICE_ROLE_KEY = eyJ...prod-admin...
-SUPABASE_ACCESS_TOKEN = sbp_prod_...
+NEXT_PUBLIC_SUPABASE_ANON_KEY = <REDACTED_JWT>
+SUPABASE_SERVICE_ROLE_KEY = <REDACTED_JWT>
+SUPABASE_ACCESS_TOKEN = <SUPABASE_ACCESS_TOKEN>...
 
 # Stripe (Production Account)
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = pk_live_prod...
@@ -119,13 +119,13 @@ NEXT_PUBLIC_ENABLE_BETA_UI = false
 #### **Staging Secrets (develop/staging branch)**
 ```plaintext
 # Database (Staging)
-DATABASE_URL = postgresql://user:pass@staging-db.supabase.co:5432/postgres
-DIRECT_URL = postgresql://user:pass@staging-direct.supabase.co:5432/postgres
+DATABASE_URL = postgresql://<USER>:<PASSWORD>@staging-db.supabase.co:5432/postgres
+DIRECT_URL = postgresql://<USER>:<PASSWORD>@staging-direct.supabase.co:5432/postgres
 
 # Supabase (Staging)
 NEXT_PUBLIC_SUPABASE_URL = https://staging-supabase.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJ...staging...
-SUPABASE_SERVICE_ROLE_KEY = eyJ...staging-admin...
+NEXT_PUBLIC_SUPABASE_ANON_KEY = <REDACTED_JWT>
+SUPABASE_SERVICE_ROLE_KEY = <REDACTED_JWT>
 
 # Stripe (Staging/Test Account)
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = pk_test_staging...
@@ -146,12 +146,12 @@ NEXT_PUBLIC_ENABLE_BETA_UI = true
 #### **Preview Secrets (PR feature branches)**
 ```plaintext
 # Database (Shared Preview/Test)
-DATABASE_URL = postgresql://user:pass@preview-db.supabase.co:5432/postgres
+DATABASE_URL = postgresql://<USER>:<PASSWORD>@preview-db.supabase.co:5432/postgres
 
 # Supabase (Shared Preview)
 NEXT_PUBLIC_SUPABASE_URL = https://preview-supabase.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY = eyJ...preview...
-SUPABASE_SERVICE_ROLE_KEY = eyJ...preview-admin...
+NEXT_PUBLIC_SUPABASE_ANON_KEY = <REDACTED_JWT>
+SUPABASE_SERVICE_ROLE_KEY = <REDACTED_JWT>
 
 # Stripe (Always Test Account)
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = pk_test_preview...

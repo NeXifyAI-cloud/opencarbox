@@ -4,7 +4,7 @@
   "description": "OpenCarBox & Carvantooo - Premium Automotive Multisite Platform",
   "private": true,
   "scripts": {
-    "postinstall": "prisma generate",
+    "postinstall": "DATABASE_URL=${DATABASE_URL:-file:./dev.db} prisma generate",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

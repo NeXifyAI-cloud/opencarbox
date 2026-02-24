@@ -1,8 +1,8 @@
 // =============================================================================
-// Prisma Schema - OpenCarBox & Carvantooo (SQLite-kompatibel)
+// Prisma Schema - OpenCarBox & Carvantooo (PostgreSQL Production)
 // =============================================================================
 // Datenbank-Schema für die Multisite-Plattform
-// SQLite-kompatible Version für lokale Entwicklung
+// PostgreSQL für Production, SQLite für lokale Entwicklung über env-Variable
 // =============================================================================
 
 generator client {
@@ -10,8 +10,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "sqlite"
+  provider  = "postgresql"
   url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // =============================================================================

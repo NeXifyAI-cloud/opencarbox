@@ -12,7 +12,7 @@ generator client {
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL") // Für Supabase Connection Pooling
+  directUrl = env("DIRECT_URL", env("DATABASE_URL")) // Fallback zu DATABASE_URL wenn DIRECT_URL nicht existiert
 }
 
 // =============================================================================

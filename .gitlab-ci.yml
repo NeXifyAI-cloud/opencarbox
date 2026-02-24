@@ -1,5 +1,5 @@
 # GitLab CI/CD Configuration for OpenCarBox
-# Unified with GitHub Actions using pnpm
+# Unified with GitHub Actions using npm
 
 image: node:20-alpine
 
@@ -12,28 +12,23 @@ stages:
 variables:
   NODE_ENV: production
   CI: "true"
-  PNPM_HOME: "$CI_PROJECT_DIR/.pnpm-store"
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
   paths:
-    - .pnpm-store
     - node_modules/
     - .next/cache/
 
 before_script:
-  - corepack enable
-  - corepack prepare pnpm@latest --activate
-  - pnpm config set store-dir $PNPM_HOME
-  - pnpm i --frozen-lockfile
+  - npm ci
 
 analyze:
   stage: analyze
   script:
     - echo "🔍 Analyzing with Mem0 integration"
     - npx tsx scripts/mem0-integration.ts
-    - pnpm lint
-    - pnpm typecheck
+    - npm run lint
+    - npm run typecheck
   artifacts:
     when: always
     paths:
@@ -42,7 +37,7 @@ analyze:
 test:
   stage: test
   script:
-    - pnpm test
+    - npm test
   artifacts:
     when: always
     paths:
@@ -51,7 +46,7 @@ test:
 build:
   stage: build
   script:
-    - pnpm build
+    - npm run build
   artifacts:
     paths:
       - .next/
@@ -62,7 +57,7 @@ deploy:
   stage: deploy
   script:
     - echo "🚀 Deploying to Vercel"
-    - pnpm dlx vercel --token=$VERCEL_TOKEN --prod --yes
+    - npx vercel --token=$VERCEL_TOKEN --prod --yes
   only:
     - main
   environment:
@@ -83,7 +78,7 @@ health-check:
   stage: analyze
   script:
     - echo "🏥 Health Check for Integration"
-    - pnpm tsx scripts/mcp-health-check.sh || echo "MCP Health Check failed"
+    - npx tsx scripts/mcp-health-check.sh || echo "MCP Health Check failed"
   artifacts:
     when: always
     paths:

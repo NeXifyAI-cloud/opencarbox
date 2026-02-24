@@ -90,7 +90,7 @@ const PATTERNS: Pattern[] = [
   // Dependency errors
   {
     failureClass: 'deps',
-    regex: /ERR_PNPM_LOCKFILE_BREAKING_CHANGE|ERR_PNPM_OUTDATED_LOCKFILE|Lockfile is up to date|pnpm i --frozen-lockfile.*failed/i,
+    regex: /npm ERR! code EUSAGE|npm ci.*failed|package-lock\.json.*missing/i,
     retryable: false,
     confidence: 'high',
   },

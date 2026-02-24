@@ -1,1 +1,15 @@
-{"buildCommand":"pnpm build","installCommand":"pnpm install","framework":"nextjs","regions":["iad1"],"git":{"deploymentEnabled":true,"autoAlias":true}}
+{
+  "buildCommand": "pnpm build",
+  "devCommand": "pnpm dev",
+  "installCommand": "pnpm install",
+  "env": {
+    "NODE_ENV": "production",
+    "NEXT_TELEMETRY_DISABLED": "1"
+  },
+  "functions": {
+    "api/**": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
+}

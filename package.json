@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "postinstall": "npm run prisma:generate:safe",
-    "prisma:generate:safe": "DATABASE_URL=${DATABASE_URL:-file:./dev.db} prisma generate || true",
+    "prisma:generate:safe": "prisma generate || exit 0",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

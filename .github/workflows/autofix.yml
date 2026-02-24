@@ -31,6 +31,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.workflow_run.head_branch }}
+          persist-credentials: false
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -116,7 +117,7 @@ jobs:
           git checkout -b "$BR"
           git add -A
           git commit -m "chore: safe autofix (format/lint)"
-          git push origin "$BR"
+          git push https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git "$BR"
 
           gh label create autofix --color 1d76db --description "Automated safe autofix PR" 2>/dev/null || true
           gh pr create \

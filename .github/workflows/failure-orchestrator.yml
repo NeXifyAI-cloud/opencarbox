@@ -43,7 +43,7 @@ permissions:
   issues: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   # AI Provider Configuration (DeepSeek-only)
   AI_PROVIDER: ${{ vars.AI_PROVIDER || 'deepseek' }}
   AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
@@ -71,15 +71,16 @@ jobs:
       - uses: actions/checkout@v6
 
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: pnpm install
 
       - name: Sanitize user input
         run: |
@@ -89,7 +90,7 @@ jobs:
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: Route failure event to Jules
         run: |
@@ -163,15 +164,16 @@ jobs:
           fetch-depth: 0
 
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: pnpm install
 
       - name: Sanitize user input
         run: |
@@ -181,7 +183,7 @@ jobs:
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: PR backlog guardrail (max 2 codex PRs)
         id: pr_guardrail
@@ -195,8 +197,8 @@ jobs:
       - name: Attempt safe autofix
         if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
-          npx prettier --write . 2>/dev/null || true
-          npx eslint . --fix 2>/dev/null || true
+          pnpm exec prettier --write . 2>/dev/null || true
+          pnpm exec eslint . --fix 2>/dev/null || true
         env:
           AI_MAX_CALLS: '20'
           max_conflict_files: '10'
@@ -209,7 +211,7 @@ jobs:
         if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
           set +e
-          npm run db:generate && npm run lint && npm run typecheck && npm test && npm run build
+          pnpm run db:generate && pnpm run lint && pnpm run typecheck && pnpm test && pnpm run build
           echo "status=$?" >> "$GITHUB_OUTPUT"
 
       - name: Create fix PR
@@ -235,7 +237,7 @@ jobs:
             --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
             --base "${{ github.event.workflow_run.head_branch }}" \
             --head "$BRANCH" \
-            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- npm run lint\n- npm run typecheck\n- npm test\n- npm run build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
+            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- pnpm run lint\n- pnpm run typecheck\n- pnpm test\n- pnpm run build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
 
       - name: Fallback issue
         if: steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0'

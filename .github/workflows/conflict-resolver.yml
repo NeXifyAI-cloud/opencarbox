@@ -15,7 +15,7 @@ permissions:
   issues: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   # AI Provider Configuration (DeepSeek-only)
   AI_PROVIDER: ${{ vars.AI_PROVIDER || 'deepseek' }}
   AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
@@ -37,20 +37,21 @@ jobs:
           fetch-depth: 0
 
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: pnpm install
 
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: Find PRs with conflicts
         id: prs
@@ -107,14 +108,14 @@ jobs:
           else
             echo "Rebase conflict - attempting AI merge..."
             git rebase --abort || true
-            npx tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head" || {
+            pnpm exec tsx tools/ai_merge_conflicts.ts --base "origin/$base" --head "origin/$head" || {
               echo "AI merge failed"
               exit 0
             }
           fi
 
           # Validate
-          npm run db:generate && npm run lint && npm run typecheck && npm test -- --run && npm run build || {
+          pnpm run db:generate && pnpm run lint && pnpm run typecheck && pnpm test -- --run && pnpm run build || {
             echo "Validation failed, skipping PR"
             exit 0
           }
@@ -129,7 +130,7 @@ jobs:
 
           gh pr create \
             --title "chore: resolve conflicts for #$num" \
-            --body "## Was geändert\n- Rebase der betroffenen PR auf den aktuellen Base-Branch.\n- Bei Rebase-Konflikt: DeepSeek-only Merge für Konfliktdateien mit Guardrails.\n\n## Warum\n- Mergebarkeit wiederherstellen, ohne direkten Push auf bestehende PR-Branches.\n\n## Wie getestet\n- npm run lint\n- npm run typecheck\n- npm test -- --run\n- npm run build\n\n## Risiko/Backout\n- Risiko: Falsche Konfliktauflösung in inhaltlich komplexen Dateien.\n- Backout: Erstellte Fix-PR schließen oder revertieren; Ursprungs-PR unverändert erneut bearbeiten." \
+            --body "## Was geändert\n- Rebase der betroffenen PR auf den aktuellen Base-Branch.\n- Bei Rebase-Konflikt: DeepSeek-only Merge für Konfliktdateien mit Guardrails.\n\n## Warum\n- Mergebarkeit wiederherstellen, ohne direkten Push auf bestehende PR-Branches.\n\n## Wie getestet\n- pnpm run lint\n- pnpm run typecheck\n- pnpm test -- --run\n- pnpm run build\n\n## Risiko/Backout\n- Risiko: Falsche Konfliktauflösung in inhaltlich komplexen Dateien.\n- Backout: Erstellte Fix-PR schließen oder revertieren; Ursprungs-PR unverändert erneut bearbeiten." \
             --base "$base" \
             --head "codex/conflictfix-$num" || true
 

@@ -30,7 +30,7 @@ permissions:
   pull-requests: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   # DeepSeek Fallback (optional)
   DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
   NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}

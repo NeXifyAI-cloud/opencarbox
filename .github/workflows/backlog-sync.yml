@@ -15,7 +15,7 @@ permissions:
   issues: read
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
   JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
 
@@ -27,12 +27,13 @@ jobs:
       - uses: actions/checkout@v6
 
 
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install
 
       - name: Fetch open issues
         id: issues
@@ -60,7 +61,7 @@ jobs:
 
       - name: Update backlog
         run: |
-          npx tsx -e "
+          pnpm exec tsx -e "
             import { formatIssuesBlock, updateBacklogContent } from './tools/backlog_sync';
             import * as fs from 'fs';
             const issues = JSON.parse(fs.readFileSync('/tmp/issues.json', 'utf-8'));

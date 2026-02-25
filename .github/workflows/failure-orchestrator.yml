@@ -38,12 +38,12 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
-  pull-requests: read
+  contents: write
+  pull-requests: write
   issues: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   # AI Provider Configuration (DeepSeek-only)
   AI_PROVIDER: ${{ vars.AI_PROVIDER || 'deepseek' }}
   AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
@@ -69,17 +69,18 @@ jobs:
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
     steps:
       - uses: actions/checkout@v6
+          persist-credentials: false
 
-
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: pnpm install --ignore-scripts
 
       - name: Sanitize user input
         run: |
@@ -89,7 +90,7 @@ jobs:
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: Route failure event to Jules
         run: |
@@ -98,15 +99,20 @@ jobs:
             exit 0
           fi
           jq -n \
-            --arg workflow "${{ github.event.workflow_run.name }}" \
-            --arg conclusion "${{ github.event.workflow_run.conclusion }}" \
-            --arg run_url "${{ github.event.workflow_run.html_url }}" \
-            --arg run_id "${{ github.event.workflow_run.id }}" \
+            --arg workflow "$WF_NAME" \
+            --arg conclusion "$WF_CONCLUSION" \
+            --arg run_url "$WF_RUN_URL" \
+            --arg run_id "$WF_RUN_ID" \
             '{source:"failure-orchestrator",kind:"error",name:"workflow.failure",metadata:{workflow:$workflow,conclusion:$conclusion,run_url:$run_url,run_id:$run_id}}' \
             | curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
                 -H "Content-Type: application/json" \
                 -H "Authorization: Bearer $JULES_API_KEY" \
                 --data-binary @- >/dev/null
+        env:
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WF_RUN_URL: ${{ github.event.workflow_run.html_url }}
+          WF_RUN_ID: ${{ github.event.workflow_run.id }}
 
       - name: AI triage eligibility
         id: ai_eligible
@@ -122,9 +128,8 @@ jobs:
       - name: Check for existing triage marker
         id: existing_marker
         run: |
-          RUN_REF="run-id:${{ github.event.workflow_run.id }}"
-          WF_NAME="${{ github.event.workflow_run.name }}"
-          INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
+          RUN_REF="run-id:$WF_RUN_ID"
+          INCIDENT_TITLE="Incident: $WF_NAME fehlgeschlagen"
 
           # Check for exact run-id marker (existing dedup)
           ISSUE_COUNT="$(gh issue list --state open --search "$RUN_REF in:body" --json number --jq 'length')"
@@ -144,6 +149,8 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WF_RUN_ID: ${{ github.event.workflow_run.id }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
 
   ai-triage:
     name: AI Triage & Fix PR
@@ -158,20 +165,20 @@ jobs:
       issues: write
     steps:
       - uses: actions/checkout@v6
-        with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
+          persist-credentials: false
 
-
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: pnpm install --ignore-scripts
 
       - name: Sanitize user input
         run: |
@@ -181,7 +188,7 @@ jobs:
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: PR backlog guardrail (max 2 codex PRs)
         id: pr_guardrail
@@ -195,8 +202,8 @@ jobs:
       - name: Attempt safe autofix
         if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
-          npx prettier --write . 2>/dev/null || true
-          npx eslint . --fix 2>/dev/null || true
+          pnpm exec prettier --write . 2>/dev/null || true
+          pnpm exec eslint . --fix 2>/dev/null || true
         env:
           AI_MAX_CALLS: '20'
           max_conflict_files: '10'
@@ -209,7 +216,7 @@ jobs:
         if: steps.pr_guardrail.outputs.blocked != 'true'
         run: |
           set +e
-          npm run db:generate && npm run lint && npm run typecheck && npm test && npm run build
+          pnpm run db:generate && pnpm run lint && pnpm run typecheck && pnpm test && pnpm run build
           echo "status=$?" >> "$GITHUB_OUTPUT"
 
       - name: Create fix PR
@@ -217,36 +224,44 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: '0'
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_ID: ${{ github.event.workflow_run.id }}
+          WF_HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
-          RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          RUN_REF="run-id:$WF_ID"
           git diff --quiet && { echo "No changes"; exit 0; }
 
-          WORKFLOW_SLUG="$(echo "${{ github.event.workflow_run.name }}" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')"
-          BRANCH="codex/${WORKFLOW_SLUG}-${{ github.event.workflow_run.id }}"
+          WORKFLOW_SLUG="$(echo "$WF_NAME" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-')"
+          BRANCH="codex/${WORKFLOW_SLUG}-$WF_ID"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
           git add -A
-          git commit -m "fix: ai triage for ${{ github.event.workflow_run.name }}"
-          git push -u origin "$BRANCH"
+          git commit -m "fix: ai triage for $WF_NAME"
+
+          # Use token for push since persist-credentials is false
+          git push "https://x-access-token:$GH_TOKEN@github.com/${{ github.repository }}.git" "$BRANCH"
 
           gh pr create \
-            --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
-            --base "${{ github.event.workflow_run.head_branch }}" \
+            --title "fix: ai triage for $WF_NAME" \
+            --base "$WF_HEAD_BRANCH" \
             --head "$BRANCH" \
-            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- npm run lint\n- npm run typecheck\n- npm test\n- npm run build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
+            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- pnpm run lint\n- pnpm run typecheck\n- pnpm test\n- pnpm run build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
 
       - name: Fallback issue
         if: steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0'
         run: |
-          RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          RUN_REF="run-id:$WF_ID"
           gh issue create \
-            --title "Incident: ${{ github.event.workflow_run.name }} fehlgeschlagen" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\nMarker: ${RUN_REF}\n\nAuto-Fix war nicht möglich." \
+            --title "Incident: $WF_NAME fehlgeschlagen" \
+            --body "Workflow: $WF_NAME\nRun: $WF_RUN_URL\nMarker: ${RUN_REF}\n\nAuto-Fix war nicht möglich." \
             --label failure-routing --label ai-triage || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_ID: ${{ github.event.workflow_run.id }}
+          WF_RUN_URL: ${{ github.event.workflow_run.html_url }}
 
   close-resolved-incidents:
     name: Close Resolved Incidents
@@ -262,18 +277,18 @@ jobs:
 
       - name: Close resolved incident issues
         run: |
-          WF_NAME="${{ github.event.workflow_run.name }}"
-          INCIDENT_TITLE="Incident: ${WF_NAME} fehlgeschlagen"
+          INCIDENT_TITLE="Incident: $WF_NAME fehlgeschlagen"
           ISSUE_NUMBERS="$(gh issue list --state open --label failure-routing \
             --json number,title --jq \
             --arg t "$INCIDENT_TITLE" '[.[] | select(.title == $t)] | .[].number')"
           for NUM in $ISSUE_NUMBERS; do
             gh issue comment "$NUM" \
-              --body "✅ Workflow **${WF_NAME}** hat erfolgreich abgeschlossen. Auto-Close." || true
+              --body "✅ Workflow **$WF_NAME** hat erfolgreich abgeschlossen. Auto-Close." || true
             gh issue close "$NUM" --reason completed
           done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
 
   create-routing-issue:
     name: Manual Triage Issue
@@ -288,11 +303,14 @@ jobs:
     steps:
       - name: Create manual triage issue
         run: |
-          RUN_REF="run-id:${{ github.event.workflow_run.id }}"
+          RUN_REF="run-id:$WF_ID"
           gh label create failure-routing --color d93f0b 2>/dev/null || true
           gh issue create \
-            --title "Manual triage: ${{ github.event.workflow_run.name }}" \
-            --body "Workflow: ${{ github.event.workflow_run.name }}\nRun: ${{ github.event.workflow_run.html_url }}\nMarker: ${RUN_REF}\n\nAI-Preflight nicht erfüllt. Manuelle Analyse erforderlich." \
+            --title "Manual triage: $WF_NAME" \
+            --body "Workflow: $WF_NAME\nRun: $WF_RUN_URL\nMarker: ${RUN_REF}\n\nAI-Preflight nicht erfüllt. Manuelle Analyse erforderlich." \
             --label failure-routing || true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WF_ID: ${{ github.event.workflow_run.id }}
+          WF_NAME: ${{ github.event.workflow_run.name }}
+          WF_RUN_URL: ${{ github.event.workflow_run.html_url }}

@@ -16,7 +16,7 @@ permissions:
   contents: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
   VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
   VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -51,34 +51,33 @@ jobs:
       - name: Checkout
         if: steps.vercel_check.outputs.skip != 'true'
         uses: actions/checkout@v6
-        with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
         if: steps.vercel_check.outputs.skip != 'true'
 
+            - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         if: steps.vercel_check.outputs.skip != 'true'
-        with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npm ci
+        run: pnpm install
 
       - name: Preflight
         if: steps.vercel_check.outputs.skip != 'true'
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts deploy
+          pnpm exec tsx tools/preflight.ts deploy
 
       - name: Pull Vercel Environment
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npx vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm exec vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
 
       - name: Build Project
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npx vercel build --prod --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm exec vercel build --prod --token=${{ env.VERCEL_TOKEN }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
@@ -87,14 +86,13 @@ jobs:
         if: steps.vercel_check.outputs.skip != 'true'
         continue-on-error: false
         run: |
-          URL=$(npx vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
+          URL=$(pnpm exec vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "Deployed to: $URL"
 
       - name: Comment on Commit
         if: steps.vercel_check.outputs.skip != 'true' && github.event_name == 'workflow_run'
         uses: peter-evans/commit-comment@v4
-        with:
           sha: ${{ github.event.workflow_run.head_sha }}
           body: |
             **Auto-Deployment erfolgreich!**

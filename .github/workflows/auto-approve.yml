@@ -29,7 +29,6 @@ jobs:
         id: metadata
         if: github.actor == 'dependabot[bot]'
         uses: dependabot/fetch-metadata@v2
-        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Approve Dependabot patch/minor
@@ -38,7 +37,6 @@ jobs:
           (steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
            steps.metadata.outputs.update-type == 'version-update:semver-minor')
         uses: hmarr/auto-approve-action@v4
-        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Approve trusted actor PRs
@@ -53,5 +51,4 @@ jobs:
             contains(github.event.pull_request.labels.*.name, 'dependencies')
           )
         uses: hmarr/auto-approve-action@v4
-        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,44 @@
+name: PR Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Description
+        uses: actions/github-script@v7
+          script: |
+            const body = context.payload.pull_request.body;
+            if (!body) {
+              core.setFailed('PR description is empty. Please follow the PR template.');
+              return;
+            }
+
+            const mandatorySections = [
+              'Funnel-Zuordnung',
+              'Bereich',
+              'Brand-Check',
+              'UI-Regel',
+              'Tracking',
+              'Security / DSGVO',
+              'Performance',
+              'Migration / Risk',
+              'CI Status'
+            ];
+
+            const missingSections = mandatorySections.filter(section => {
+              const regex = new RegExp(section.replace(/[.*+?^${}()|[\]\\\\]/g, '\\$&'), 'i');
+              return !regex.test(body);
+            });
+
+            if (missingSections.length > 0) {
+              core.setFailed(`PR description is missing mandatory sections: ${missingSections.join(', ')}`);
+            } else {
+              console.log('✅ All mandatory sections found in PR description.');
+            }

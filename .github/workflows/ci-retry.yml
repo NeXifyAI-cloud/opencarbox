@@ -20,7 +20,7 @@ permissions:
   issues: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   MAX_RETRIES: '1'
 
 jobs:
@@ -32,19 +32,17 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
-
-
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install
 
       - name: Check retry count
         id: retry_count
         uses: actions/github-script@v8
-        with:
           script: |
             const runId = context.payload.workflow_run.id;
             // Check if this run was already a retry by searching for retry marker
@@ -64,7 +62,6 @@ jobs:
         id: logs
         if: steps.retry_count.outputs.already_retried != 'true'
         uses: actions/github-script@v8
-        with:
           script: |
             const run = context.payload.workflow_run;
             const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
@@ -91,7 +88,7 @@ jobs:
         run: |
           STEPS="${{ steps.logs.outputs.failed_steps }}"
           # Use the TypeScript classifier
-          RESULT=$(npx tsx -e "
+          RESULT=$(pnpm exec tsx -e "
             import { classifyFailure, isTransient, suggestedLabels } from './tools/ci_failure_classify';
             const input = process.argv[1] || '';
             const result = classifyFailure(input);
@@ -113,7 +110,6 @@ jobs:
           steps.retry_count.outputs.already_retried != 'true' &&
           steps.classify.outputs.retryable == 'true'
         uses: actions/github-script@v8
-        with:
           script: |
             const runId = context.payload.workflow_run.id;
             await github.rest.actions.reRunWorkflowFailedJobs({
@@ -127,7 +123,6 @@ jobs:
         if: >-
           steps.classify.outputs.failure_class == 'test-flaky'
         uses: actions/github-script@v8
-        with:
           script: |
             // Ensure label exists
             try {

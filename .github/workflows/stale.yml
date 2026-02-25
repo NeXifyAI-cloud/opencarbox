@@ -20,7 +20,6 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/stale@v10
-        with:
           stale-issue-message: >
             This issue has been automatically marked as **stale** because it has
             the `needs-info` label and has not had any activity for 14 days.
@@ -40,7 +39,6 @@ jobs:
           remove-stale-when-updated: true
           operations-per-run: 60
       - uses: actions/stale@v10
-        with:
           stale-issue-message: >
             This failure-routing incident has been automatically marked as **stale**
             because there has been no activity for 7 days.
@@ -57,7 +55,6 @@ jobs:
           remove-stale-when-updated: true
           operations-per-run: 60
       - uses: actions/stale@v10
-        with:
           stale-issue-message: >
             This CI-failure issue has been automatically marked as **stale**
             because there has been no activity for 7 days.

@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
   # AI Provider Configuration (DeepSeek-only)
   AI_PROVIDER: ${{ vars.AI_PROVIDER || 'deepseek' }}
   AI_AUTO_SELECT: ${{ vars.AI_AUTO_SELECT || 'true' }}
@@ -31,39 +31,36 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install
 
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: Generate DeepSeek backlog suggestions
-        run: npx tsx tools/auto_improve.ts
+        run: pnpm exec tsx tools/auto_improve.ts
         env:
           AI_MAX_CALLS: '10'
           FORBID_WORKFLOW_EDITS: '1'
 
       - name: Generate Prisma Client
-        run: npm run db:generate
+        run: pnpm run db:generate
 
       - name: Run full quality checks
         id: quality
         continue-on-error: true
         run: |
-          npm run lint
-          npm run typecheck
-          npm test
-          npm run build
+          pnpm run lint
+          pnpm run typecheck
+          pnpm test
+          pnpm run build
 
       - name: Status
         run: |

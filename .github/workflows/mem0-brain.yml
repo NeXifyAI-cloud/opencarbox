@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: '22'
 
 jobs:
   mem0-integration:
@@ -23,22 +23,19 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install
 
       - name: Run Mem0 integration
         env:
           GITLAB_PROJEKT_TOKEN: ${{ secrets.GITLAB_PROJEKT_TOKEN }}
           CLASSIC_TOKEN_GITHUB_NEU: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
-        run: npx tsx scripts/mem0-integration.ts
+        run: pnpm exec tsx scripts/mem0-integration.ts
         continue-on-error: true
 
       - name: Sync to GitLab

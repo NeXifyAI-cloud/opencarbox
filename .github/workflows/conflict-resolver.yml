@@ -117,7 +117,7 @@ jobs:
           fi
 
           # Validate
-          npm run db:generate && npm run lint && npm run typecheck && npm test -- --run && npm run build || {
+          pnpm run db:generate && pnpm run lint && pnpm run typecheck && pnpm test -- --run && pnpm run build || {
             echo "Validation failed, skipping PR"
             exit 0
           }
@@ -132,7 +132,7 @@ jobs:
 
           gh pr create \
             --title "chore: resolve conflicts for #$num" \
-            --body "## Was geändert\n- Rebase der betroffenen PR auf den aktuellen Base-Branch.\n- Bei Rebase-Konflikt: DeepSeek-only Merge für Konfliktdateien mit Guardrails.\n\n## Warum\n- Mergebarkeit wiederherstellen, ohne direkten Push auf bestehende PR-Branches.\n\n## Wie getestet\n- npm run lint\n- npm run typecheck\n- npm test -- --run\n- npm run build\n\n## Risiko/Backout\n- Risiko: Falsche Konfliktauflösung in inhaltlich komplexen Dateien.\n- Backout: Erstellte Fix-PR schließen oder revertieren; Ursprungs-PR unverändert erneut bearbeiten." \
+            --body "## Was geändert\n- Rebase der betroffenen PR auf den aktuellen Base-Branch.\n- Bei Rebase-Konflikt: DeepSeek-only Merge für Konfliktdateien mit Guardrails.\n\n## Warum\n- Mergebarkeit wiederherstellen, ohne direkten Push auf bestehende PR-Branches.\n\n## Wie getestet\n- pnpm run lint\n- pnpm run typecheck\n- pnpm test -- --run\n- pnpm run build\n\n## Risiko/Backout\n- Risiko: Falsche Konfliktauflösung in inhaltlich komplexen Dateien.\n- Backout: Erstellte Fix-PR schließen oder revertieren; Ursprungs-PR unverändert erneut bearbeiten." \
             --base "$base" \
             --head "codex/conflictfix-$num" || true
 

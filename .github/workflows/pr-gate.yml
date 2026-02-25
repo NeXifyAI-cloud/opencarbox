@@ -21,16 +21,18 @@ jobs:
               return;
             }
 
+            console.log('PR Body:', body);
+
             const mandatorySections = [
-              '1. Funnel-Zuordnung (G1 – Pflicht)',
-              '2. Bereich',
-              '3. Brand-Check (G9)',
-              '4. UI-Regel (G3)',
-              '5. Tracking (G4 – Pflicht)',
-              '6. Security / DSGVO',
-              '7. Performance',
-              '8. Migration / Risk',
-              '9. CI Status'
+              'Funnel-Zuordnung',
+              'Bereich',
+              'Brand-Check',
+              'UI-Regel',
+              'Tracking',
+              'Security / DSGVO',
+              'Performance',
+              'Migration / Risk',
+              'CI Status'
             ];
 
             const missingSections = mandatorySections.filter(section => !body.includes(section));

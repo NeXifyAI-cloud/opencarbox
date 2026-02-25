@@ -38,8 +38,8 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
-  pull-requests: read
+  contents: write
+  pull-requests: write
   issues: write
 
 env:
@@ -69,9 +69,12 @@ jobs:
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
     steps:
       - uses: actions/checkout@v6
-
+        with:
+          persist-credentials: false
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -168,9 +171,11 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
-
+          persist-credentials: false
 
       - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -240,7 +245,9 @@ jobs:
           git checkout -b "$BRANCH"
           git add -A
           git commit -m "fix: ai triage for $WF_NAME"
-          git push -u origin "$BRANCH"
+
+          # Use token for push since persist-credentials is false
+          git push "https://x-access-token:$GH_TOKEN@github.com/${{ github.repository }}.git" "$BRANCH"
 
           gh pr create \
             --title "fix: ai triage for $WF_NAME" \

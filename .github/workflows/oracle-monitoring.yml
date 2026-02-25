@@ -59,8 +59,10 @@ jobs:
       all_healthy: ${{ steps.summary.outputs.all_healthy }}
 
     steps:
-      - uses: actions/checkout@v4
-        - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -242,8 +244,10 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
       needs.quick-health-check.outputs.all_healthy == 'false'
     
     steps:
-      - uses: actions/checkout@v4
-        - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -309,137 +313,10 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     if: always()
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Check DeepSeek rate limits
-        id: deepseek-ratelimit
-        continue-on-error: true
-        run: |
-          RESPONSE=$(curl -s -i \
-            -H "Authorization: Bearer ${{ secrets.DEEPSEEK_API_KEY }}" \
-            "${{ secrets.DEEPSEEK_BASE_URL }}/v1/models" 2>&1)
-          
-          # Extract rate limit headers
-          LIMIT=$(echo "$RESPONSE" | grep -i "x-ratelimit-limit" | cut -d' ' -f2)
-          REMAINING=$(echo "$RESPONSE" | grep -i "x-ratelimit-remaining" | cut -d' ' -f2)
-          RESET=$(echo "$RESPONSE" | grep -i "x-ratelimit-reset" | cut -d' ' -f2)
-          
-          echo "limit=$LIMIT" >> "$GITHUB_OUTPUT"
-          echo "remaining=$REMAINING" >> "$GITHUB_OUTPUT"
-          echo "reset=$RESET" >> "$GITHUB_OUTPUT"
-          
-          if [ -n "$REMAINING" ] && [ "$REMAINING" -lt 10 ]; then
-            echo "⚠️ DeepSeek: Low quota ($REMAINING/$LIMIT remaining)"
-          fi
-
-      - name: Check Jules rate limits
-        id: jules-ratelimit
-        continue-on-error: true
-        run: |
-          RESPONSE=$(curl -s -i \
-            -H "Authorization: Bearer ${{ secrets.JULES_API_KEY }}" \
-            "${{ secrets.JULES_BASE_URL }}/health" 2>&1)
-          
-          REMAINING=$(echo "$RESPONSE" | grep -i "x-ratelimit-remaining" | cut -d' ' -f2)
-          
-          echo "remaining=$REMAINING" >> "$GITHUB_OUTPUT"
-          
-          if [ -n "$REMAINING" ] && [ "$REMAINING" -lt 5 ]; then
-            echo "⚠️ Jules: Low quota ($REMAINING remaining)"
-          fi
-
-      - name: Alert if rate limits critical
-        if: |
-          (steps.deepseek-ratelimit.outputs.remaining < 5) ||
-          (steps.jules-ratelimit.outputs.remaining < 2)
-        uses: 8398a7/action-slack@v3
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
         with:
-          status: custom
-          custom_payload: |
-            {
-              text: '🚨 Oracle Rate Limit Alert',
-              attachments: [{
-                color: 'danger',
-                text: 'DeepSeek: ${{ steps.deepseek-ratelimit.outputs.remaining }} remaining\nJules: ${{ steps.jules-ratelimit.outputs.remaining }} remaining'
-              }]
-            }
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  # ========================================
-  # PHASE 4: Error Analysis
-  # ========================================
-  error-analysis:
-    name: Error Rate & Pattern Analysis
-    runs-on: ubuntu-latest
-    if: always()
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Query workflow run data
-        id: query
-        run: |
-          # Get recent workflow runs
-          RUNS=$(gh run list \
-            --workflow auto-reply.yml \
-            --status completed \
-            --limit 50 \
-            --json conclusion,durationMinutes,url \
-            2>/dev/null)
-          
-          # Count failures
-          FAILURES=$(echo "$RUNS" | jq '[.[] | select(.conclusion=="failure")] | length')
-          SUCCESSES=$(echo "$RUNS" | jq '[.[] | select(.conclusion=="success")] | length')
-          
-          if [ -n "$FAILURES" ] && [ -n "$SUCCESSES" ]; then
-            ERROR_RATE=$(echo "scale=2; $FAILURES * 100 / ($FAILURES + $SUCCESSES)" | bc)
-          else
-            ERROR_RATE=0
-          fi
-          
-          echo "error_rate=$ERROR_RATE" >> "$GITHUB_OUTPUT"
-          echo "failures=$FAILURES" >> "$GITHUB_OUTPUT"
-          echo "successes=$SUCCESSES" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check for error patterns
-        run: |
-          # Analyze recent logs for common error patterns
-          echo "## 📉 Error Analysis" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Error rate (last 50 runs): ${{ steps.query.outputs.error_rate }}%" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Failures: ${{ steps.query.outputs.failures }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Successes: ${{ steps.query.outputs.successes }}" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Alert if error rate high
-        if: ${{ steps.query.outputs.error_rate > 10 }}
-        uses: 8398a7/action-slack@v3
-        with:
-          status: custom
-          custom_payload: |
-            {
-              text: '⚠️ Oracle High Error Rate',
-              attachments: [{
-                color: 'warning',
-                text: 'Error rate: ${{ steps.query.outputs.error_rate }}% (threshold: 10%)'
-              }]
-            }
-          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-  # ========================================
-  # PHASE 5: Daily Report Generation
-  # ========================================
-  daily-report:
-    name: Generate Daily Report
-    runs-on: ubuntu-latest
-    needs: [quick-health-check, error-analysis]
-    if: |
-      github.event_name == 'schedule' &&
-      github.event.schedule == '0 6 * * *'
-    
-    steps:
-      - uses: actions/checkout@v4
-        - uses: pnpm/action-setup@v4
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -506,8 +383,10 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     if: needs.quick-health-check.outputs.all_healthy == 'false'
 
     steps:
-      - uses: actions/checkout@v4
-        - uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

@@ -26,64 +26,77 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
+// Caching-Maps für Intl-Formatierer zur Performance-Optimierung
+const numberFormatters = new Map<string, Intl.NumberFormat>();
+const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
+
 /**
  * Formatiert einen Preis im deutschen/österreichischen Format.
+ * Nutzt Caching für Intl.NumberFormat Instanzen.
  * 
  * @param price - Der Preis als Zahl
  * @param currency - Die Währung (Standard: EUR)
  * @returns Formatierter Preisstring
- * 
- * @example
- * ```ts
- * formatPrice(1234.56) // "1.234,56 €"
- * ```
  */
 export function formatPrice(price: number, currency: string = 'EUR'): string {
-  return new Intl.NumberFormat('de-AT', {
-    style: 'currency',
-    currency,
-  }).format(price);
+  const cacheKey = `de-AT-${currency}`;
+  let formatter = numberFormatters.get(cacheKey);
+
+  if (!formatter) {
+    formatter = new Intl.NumberFormat('de-AT', {
+      style: 'currency',
+      currency,
+    });
+    numberFormatters.set(cacheKey, formatter);
+  }
+
+  return formatter.format(price);
 }
 
 /**
  * Formatiert ein Datum im deutschen Format.
+ * Nutzt Caching für Intl.DateTimeFormat Instanzen.
  * 
  * @param date - Das Datum als Date-Objekt oder ISO-String
  * @param options - Zusätzliche Formatierungsoptionen
  * @returns Formatierter Datumsstring
- * 
- * @example
- * ```ts
- * formatDate(new Date()) // "5. Dezember 2024"
- * formatDate(new Date(), { short: true }) // "05.12.2024"
- * ```
  */
 export function formatDate(
   date: Date | string,
   options?: { short?: boolean; withTime?: boolean }
 ): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const cacheKey = `de-AT-${options?.short}-${options?.withTime}`;
   
-  if (options?.short) {
-    return new Intl.DateTimeFormat('de-AT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(dateObj);
+  let formatter = dateTimeFormatters.get(cacheKey);
+  
+  if (!formatter) {
+    let formatOptions: Intl.DateTimeFormatOptions;
+
+    if (options?.short) {
+      formatOptions = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      };
+    } else {
+      formatOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      };
+
+      if (options?.withTime) {
+        formatOptions.hour = '2-digit';
+        formatOptions.minute = '2-digit';
+      }
+    }
+
+    formatter = new Intl.DateTimeFormat('de-AT', formatOptions);
+    dateTimeFormatters.set(cacheKey, formatter);
   }
   
-  const formatOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  };
-  
-  if (options?.withTime) {
-    formatOptions.hour = '2-digit';
-    formatOptions.minute = '2-digit';
-  }
-  
-  return new Intl.DateTimeFormat('de-AT', formatOptions).format(dateObj);
+  return formatter.format(dateObj);
 }
 
 /**

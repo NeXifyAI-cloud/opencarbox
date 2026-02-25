@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 
 /**
  * Prisma Client Singleton.
+ * Optimized for performance by reusing the same client instance.
  * Verhindert Mehrfachentitäten des Clients während des Hot-Reloadings in der Entwicklung.
  */
 const prismaClientSingleton = () => {

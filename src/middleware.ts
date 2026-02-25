@@ -10,6 +10,10 @@ export async function middleware(request: NextRequest) {
     '/mein-konto': 'CUSTOMER',
     '/api/admin': 'ADMIN',
     '/api/werkstatt': 'EMPLOYEE',
+    '/api/users': 'ADMIN',
+    '/api/orders': 'EMPLOYEE',
+    '/api/appointments': 'EMPLOYEE',
+    '/api/ai/jules/negotiate': 'EMPLOYEE',
   }
 
   const pathname = request.nextUrl.pathname
@@ -56,6 +60,9 @@ export async function middleware(request: NextRequest) {
     } = await supabase.auth.getSession()
 
     if (!session) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
       return NextResponse.redirect(new URL('/auth/login', request.url))
     }
 
@@ -72,6 +79,9 @@ export async function middleware(request: NextRequest) {
     const requiredLevel = roleHierarchy[requiredRole as string] || 0
 
     if (userLevel < requiredLevel) {
+      if (pathname.startsWith('/api/')) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+      }
       return NextResponse.redirect(new URL('/unauthorized', request.url))
     }
 
@@ -88,6 +98,9 @@ export async function middleware(request: NextRequest) {
     })
   } catch (error) {
     console.error('Middleware error:', error)
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+    }
     return NextResponse.redirect(new URL('/auth/login', request.url))
   }
 }
@@ -99,5 +112,9 @@ export const config = {
     '/mein-konto/:path*',
     '/api/admin/:path*',
     '/api/werkstatt/:path*',
+    '/api/users/:path*',
+    '/api/orders/:path*',
+    '/api/appointments/:path*',
+    '/api/ai/jules/negotiate',
   ],
 }

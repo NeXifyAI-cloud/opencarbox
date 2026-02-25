@@ -1,3 +1,0 @@
-## 2025-05-15 - [Hero Slider Accessibility and Interaction]
-**Learning:** Auto-playing carousels are high-visibility components that often fail WCAG accessibility standards by lacking pause mechanisms and proper ARIA labels. Users with motor impairments or those using screen readers benefit significantly from the ability to pause the movement and have the structure of the carousel (slides and navigation) clearly announced.
-**Action:** Always implement pause-on-hover and pause-on-focus for auto-playing elements, and use `role="region"`, `aria-roledescription="carousel"`, and `role="tablist"` patterns for carousels to ensure they are accessible to all users.

@@ -56,15 +56,18 @@ jobs:
 
         if: steps.vercel_check.outputs.skip != 'true'
 
+            - uses: pnpm/action-setup@v4
+        with:
+          version: 9
       - uses: actions/setup-node@v6
         if: steps.vercel_check.outputs.skip != 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Preflight
         if: steps.vercel_check.outputs.skip != 'true'

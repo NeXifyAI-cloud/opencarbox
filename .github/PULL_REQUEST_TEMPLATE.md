@@ -1,35 +1,80 @@
-## Summary
+Title Format:
+<type>(area): short description
+type: feat | fix | refactor | chore | perf | docs
+area: shop | werkstatt | autohandel | shared | infra
 
-<!-- Kurze Beschreibung der Änderung und Motivation -->
+## Mandatory Sections
 
-## Checklist
+### 1. Funnel-Zuordnung (G1 – Pflicht)
+- [ ] Awareness
+- [ ] Education
+- [ ] Consideration
+- [ ] Conversion
+- [ ] Retention
 
-### CI & Quality
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build` pass locally
-- [ ] CI checks are green (ci / quick-checks, ci / test-and-build)
-- [ ] Tests added/updated where behavior changed
+**Begründung (1–2 Sätze):**
+Welche KPI wird direkt beeinflusst?
 
-### Documentation & Operations
-- [ ] NOTES updated (`runbook.md`, `brain.md`, `backlog.md`) if relevant
-- [ ] Documentation updated (`README`, `docs/`) if relevant
-- [ ] Migrations included and runbook updated if database schema changed
+### 2. Bereich
+- [ ] (shop)
+- [ ] (werkstatt)
+- [ ] (autohandel)
+- [ ] shared
 
-### Security & Secrets
-- [ ] No secrets added to code, logs, or docs
-- [ ] `pnpm secret:scan` passes
-- [ ] OPENAI_* / forbidden provider references not introduced
+### 3. Brand-Check (G9)
+- [ ] Shop verwendet ausschließlich #FFB300
+- [ ] Werkstatt/Autohandel ausschließlich #FFA800
+- [ ] Keine Logoabweichungen
+- [ ] Kein Farben-Mixing
 
-### Deployment & Release
-- [ ] UI changes include screenshot(s)
-- [ ] DB migration / rollback runbook updated if relevant
-- [ ] Vercel Preview deployment verified (if applicable)
+### 4. UI-Regel (G3)
+- [ ] Nur src/components/ui verwendet
+- [ ] Keine One-Off Components
+- [ ] 8px Grid eingehalten
+- [ ] Max. 3 CTA-Typen
 
-### Orchestrator & Workflows
-- [ ] Bei neuen/umbenannten produktiven Workflows wurde `.github/workflows/failure-orchestrator.yml` (`on.workflow_run.workflows`) in derselben PR aktualisiert
-- [ ] Branch protection contract checked (see NOTES/runbook.md)
+### 5. Tracking (G4 – Pflicht)
+Neue/Betroffene Events:
+- [ ] Event in src/lib/events.ts registriert
+- [ ] Zod-Schema validiert
+- [ ] Keine PII im Payload
+- [ ] Pseudonymisierte user_id
+- [ ] Event-Flow getestet (Preview)
 
-### Definition of Done
-- [ ] All CI checks green
-- [ ] Code review approved (min 1 reviewer)
-- [ ] Acceptance criteria from linked issue verified
-- [ ] No regressions introduced
+**Event-Liste:**
+
+### 6. Security / DSGVO
+- [ ] Keine neuen Secrets im Code
+- [ ] RLS geprüft (falls DB)
+- [ ] Stripe Webhooks validiert (falls betroffen)
+- [ ] WhatsApp Opt-in korrekt umgesetzt
+
+### 7. Performance
+Preview Lighthouse Score:
+LCP:
+CLS:
+INP:
+TTFB:
+- [ ] ≥ 90 Score
+
+### 8. Migration / Risk
+- [ ] Prisma Migration?
+- [ ] Breaking Change?
+- [ ] Rollback dokumentiert?
+- [ ] ADR erstellt (falls Architektur betroffen)
+
+### 9. CI Status
+- [ ] Lint
+- [ ] Typecheck
+- [ ] Preflight
+- [ ] AI Guard
+- [ ] Security Audit
+- [ ] Lighthouse CI
+
+---
+
+**Reviewer Check:**
+- [ ] Screenshots beigefügt
+- [ ] Funnel plausibel
+- [ ] Claims Policy eingehalten
+- [ ] Copy Compiler Stufen geprüft

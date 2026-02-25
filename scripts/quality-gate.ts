@@ -197,6 +197,61 @@ function checkAnyTypes(): void {
 }
 
 /**
+ * Prüft auf Markenfarben-Compliance (G9).
+ * Shop: #FFB300, Werkstatt/Autohandel: #FFA800
+ */
+function checkBrandColors(): void {
+  console.log('🔍 Prüfe Markenfarben-Compliance...');
+
+  if (!fs.existsSync(SRC_DIR)) {
+    console.log('  ⚠️  src/ Verzeichnis nicht gefunden');
+    return;
+  }
+
+  const SHOP_DIR = path.join(SRC_DIR, 'app', '(shop)');
+  const WERKSTATT_DIR = path.join(SRC_DIR, 'app', '(werkstatt)');
+  const AUTOHANDEL_DIR = path.join(SRC_DIR, 'app', '(autohandel)');
+
+  const SHOP_COLOR = '#FFB300';
+  const OTHER_COLOR = '#FFA800';
+
+  let violationCount = 0;
+
+  function scanForColor(dir: string, forbiddenColor: string, brandName: string): void {
+    if (!fs.existsSync(dir)) return;
+
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        scanForColor(fullPath, forbiddenColor, brandName);
+      } else if (entry.name.match(/\.(ts|tsx|css|scss)$/)) {
+        const content = fs.readFileSync(fullPath, 'utf-8');
+        if (content.toUpperCase().includes(forbiddenColor.toUpperCase())) {
+          violationCount++;
+          issues.push({
+            type: 'error',
+            category: 'Brand-Check',
+            file: path.relative(process.cwd(), fullPath),
+            message: `Falsche Markenfarbe gefunden. ${brandName} darf nicht ${forbiddenColor} verwenden.`,
+          });
+        }
+      }
+    }
+  }
+
+  scanForColor(SHOP_DIR, OTHER_COLOR, 'Shop');
+  scanForColor(WERKSTATT_DIR, SHOP_COLOR, 'Werkstatt');
+  scanForColor(AUTOHANDEL_DIR, SHOP_COLOR, 'Autohandel');
+
+  if (violationCount === 0) {
+    console.log('  ✅ Markenfarben korrekt verwendet');
+  } else {
+    console.log(`  ❌ ${violationCount} Markenfarben-Verletzungen gefunden`);
+  }
+}
+
+/**
  * Prüft auf große Funktionen (>50 Zeilen).
  */
 function checkFunctionLength(): void {
@@ -307,6 +362,7 @@ function main(): void {
   checkTypeScript();
   checkConsoleLogs();
   checkAnyTypes();
+  checkBrandColors();
   checkFunctionLength();
   checkDocumentation();
 

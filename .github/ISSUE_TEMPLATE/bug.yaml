@@ -1,0 +1,78 @@
+name: Bug Report
+description: Melde einen Fehler DOS-konform
+title: "[BUG]: "
+labels: ["type:bug"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Bereich
+      options:
+        - shop
+        - werkstatt
+        - autohandel
+        - shared
+    validations:
+      required: true
+  - type: dropdown
+    id: funnel
+    attributes:
+      label: Funnel-Schritt
+      options:
+        - Awareness
+        - Education
+        - Consideration
+        - Conversion
+        - Retention
+  - type: dropdown
+    id: criticality
+    attributes:
+      label: Kritikalität
+      options:
+        - blocker
+        - high
+        - medium
+        - low
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduzierbarkeit
+      placeholder: Schritte zum Reproduzieren des Fehlers...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Erwartetes Verhalten
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Tatsächliches Verhalten
+    validations:
+      required: true
+  - type: textarea
+    id: events
+    attributes:
+      label: Betroffene Events
+  - type: input
+    id: sentry
+    attributes:
+      label: Sentry Link
+  - type: textarea
+    id: root_cause
+    attributes:
+      label: Root Cause Analyse (Pflicht)
+    validations:
+      required: true
+  - type: checkboxes
+    id: fix_check
+    attributes:
+      label: Fix-Abnahme
+      options:
+        - label: Keine Sekundärprobleme
+        - label: Regression geprüft
+        - label: STATE aktualisiert

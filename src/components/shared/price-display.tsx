@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice as formatPriceUtil } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
 /**
@@ -52,16 +52,6 @@ const sizeClasses = {
   },
 };
 
-/**
- * Formatiert einen Preis in Euro oder CHF
- */
-function formatPrice(price: number, currency: 'EUR' | 'CHF'): string {
-  return new Intl.NumberFormat('de-AT', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 2,
-  }).format(price);
-}
 
 /**
  * Berechnet den Rabatt-Prozentsatz
@@ -136,7 +126,7 @@ export function PriceDisplay({
 
         {/* Aktueller Preis */}
         <span className={cn(styles.price, 'text-foreground')}>
-          {formatPrice(price, currency)}
+          {formatPriceUtil(price, currency)}
         </span>
 
         {/* Ursprünglicher Preis (durchgestrichen) */}
@@ -147,7 +137,7 @@ export function PriceDisplay({
               'text-muted-foreground line-through'
             )}
           >
-            {formatPrice(originalPrice, currency)}
+            {formatPriceUtil(originalPrice, currency)}
           </span>
         )}
       </div>
@@ -175,11 +165,11 @@ export function PriceCompact({
   return (
     <div className="flex items-baseline gap-1.5">
       <span className="font-semibold text-foreground">
-        {formatPrice(price, currency)}
+        {formatPriceUtil(price, currency)}
       </span>
       {hasDiscount && (
         <span className="text-xs text-muted-foreground line-through">
-          {formatPrice(originalPrice, currency)}
+          {formatPriceUtil(originalPrice, currency)}
         </span>
       )}
     </div>

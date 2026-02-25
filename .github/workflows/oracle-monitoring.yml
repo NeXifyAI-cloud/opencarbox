@@ -61,8 +61,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -227,7 +225,6 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
       - name: Store metrics in cache
         if: always()
         uses: actions/cache/save@v3
-        with:
           path: oracle-metrics.json
           key: oracle-metrics-${{ github.run_id }}
 
@@ -246,8 +243,6 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -295,7 +290,6 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
       - name: Upload diagnostic results
         if: always()
         uses: actions/upload-artifact@v4
-        with:
           name: oracle-diagnostics-${{ github.run_id }}
           path: |
             deepseek-metrics.json
@@ -315,8 +309,6 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -334,14 +326,12 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
 
       - name: Upload report to artifacts
         uses: actions/upload-artifact@v4
-        with:
           name: oracle-daily-report-${{ github.run_number }}
           path: oracle-report.md
           retention-days: ${{ env.METRICS_RETENTION_DAYS }}
 
       - name: Create GitHub issue with report
         uses: actions/github-script@v7
-        with:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('oracle-report.md', 'utf8');
@@ -361,7 +351,6 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
       - name: Send report to Slack
         if: always()
         uses: 8398a7/action-slack@v3
-        with:
           status: custom
           custom_payload: |
             {
@@ -385,8 +374,6 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -409,7 +396,6 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
       - name: Create incident issue
         if: failure()
         uses: actions/github-script@v7
-        with:
           script: |
             await github.rest.issues.create({
               owner: context.repo.owner,
@@ -440,7 +426,6 @@ See workflow logs for details: ${{ github.server_url }}/${{ github.repository }}
       - name: Notify team via Slack
         if: always()
         uses: 8398a7/action-slack@v3
-        with:
           status: custom
           custom_payload: |
             {
@@ -464,7 +449,6 @@ See workflow logs for details: ${{ github.server_url }}/${{ github.repository }}
     steps:
       - name: Set workflow status badge
         uses: actions/github-script@v7
-        with:
           script: |
             const isHealthy = '${{ needs.quick-health-check.outputs.all_healthy }}' === 'true';
             const status = isHealthy ? 'passing' : 'failing';
@@ -476,7 +460,6 @@ See workflow logs for details: ${{ github.server_url }}/${{ github.repository }}
         if: always()
         continue-on-error: true
         uses: actions/github-script@v7
-        with:
           script: |
             // Post to discussions if enabled
             // This is optional; requires discussions enabled on repo
@@ -485,7 +468,6 @@ See workflow logs for details: ${{ github.server_url }}/${{ github.repository }}
       - name: Set commit status
         if: always()
         uses: actions/github-script@v7
-        with:
           script: |
             const isHealthy = '${{ needs.quick-health-check.outputs.all_healthy }}' === 'true';
             
@@ -556,7 +538,6 @@ Add these GitHub secrets:
 
 ## Integration with Other Workflows
 
-This monitoring workflow integrates with:
 - `auto-reply.yml` — Monitors DeepSeek calls
 - `conflict-resolver.yml` — Monitors DeepSeek + Jules
 - `auto-improve.yml` — Monitors DeepSeek + Jules
@@ -579,7 +560,6 @@ This monitoring workflow integrates with:
 
 ## Summary
 
-This workflow provides **24/7 monitoring** of the Oracle AI system with:
 - ✅ Hourly health checks
 - ✅ Automatic error detection & alerting
 - ✅ Rate limit monitoring

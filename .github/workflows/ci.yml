@@ -39,15 +39,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
       - name: Preflight
-        run: npx tsx tools/preflight.ts ci
+        run: pnpm exec tsx tools/preflight.ts ci
       - name: 'Guard: forbid OpenAI usage'
         run: bash tools/guard_no_openai.sh
       - name: Lint
@@ -71,13 +69,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
       - name: Generate Prisma Client
         run: pnpm run db:generate
       - name: Type check
@@ -89,13 +85,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
       - name: Generate Prisma Client
         run: pnpm run db:generate
       - name: Test
@@ -107,13 +101,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
       - name: Generate Prisma Client
         run: pnpm run db:generate
       - name: Restore Next.js build cache

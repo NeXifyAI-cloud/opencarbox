@@ -29,8 +29,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -109,7 +107,6 @@ jobs:
     steps:
       - name: Create health-check incident issue
         uses: actions/github-script@v7
-        with:
           script: |
             const failed   = '${{ needs.health.outputs.failed_step }}' || 'unbekannte Schritte';
             const runUrl   = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;

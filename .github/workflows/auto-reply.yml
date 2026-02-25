@@ -60,7 +60,6 @@ jobs:
           NSCALE_API_KEY: ${{ secrets.NSCALE_API_KEY }}
           DEEPSEEK_BASE_URL: ${{ secrets.DEEPSEEK_BASE_URL }}
           NSCALE_HEADER_NAME: ${{ secrets.NSCALE_HEADER_NAME }}
-        with:
           script: |
             const event = context.eventName;
             const sender = context.payload.sender?.login || 'unknown';

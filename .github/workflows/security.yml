@@ -24,13 +24,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
       - name: Preflight
         run: pnpm exec tsx tools/preflight.ts ci
       - name: Dependency audit
@@ -44,13 +42,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-      - run: pnpm install
+      - run: pnpm install --ignore-scripts
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:

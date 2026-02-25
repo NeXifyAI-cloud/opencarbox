@@ -13,15 +13,12 @@ jobs:
     steps:
       - name: Check PR Description
         uses: actions/github-script@v7
-        with:
           script: |
             const body = context.payload.pull_request.body;
             if (!body) {
               core.setFailed('PR description is empty. Please follow the PR template.');
               return;
             }
-
-            console.log('PR Body:', body);
 
             const mandatorySections = [
               'Funnel-Zuordnung',
@@ -35,7 +32,10 @@ jobs:
               'CI Status'
             ];
 
-            const missingSections = mandatorySections.filter(section => !body.includes(section));
+            const missingSections = mandatorySections.filter(section => {
+              const regex = new RegExp(section.replace(/[.*+?^${}()|[\]\\\\]/g, '\\$&'), 'i');
+              return !regex.test(body);
+            });
 
             if (missingSections.length > 0) {
               core.setFailed(`PR description is missing mandatory sections: ${missingSections.join(', ')}`);

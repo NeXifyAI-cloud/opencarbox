@@ -15,6 +15,5 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/labeler@v6
-        with:
           configuration-path: .github/labeler.yml
           sync-labels: false

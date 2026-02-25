@@ -33,8 +33,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -45,7 +43,6 @@ jobs:
       - name: Check retry count
         id: retry_count
         uses: actions/github-script@v8
-        with:
           script: |
             const runId = context.payload.workflow_run.id;
             // Check if this run was already a retry by searching for retry marker
@@ -65,7 +62,6 @@ jobs:
         id: logs
         if: steps.retry_count.outputs.already_retried != 'true'
         uses: actions/github-script@v8
-        with:
           script: |
             const run = context.payload.workflow_run;
             const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
@@ -114,7 +110,6 @@ jobs:
           steps.retry_count.outputs.already_retried != 'true' &&
           steps.classify.outputs.retryable == 'true'
         uses: actions/github-script@v8
-        with:
           script: |
             const runId = context.payload.workflow_run.id;
             await github.rest.actions.reRunWorkflowFailedJobs({
@@ -128,7 +123,6 @@ jobs:
         if: >-
           steps.classify.outputs.failure_class == 'test-flaky'
         uses: actions/github-script@v8
-        with:
           script: |
             // Ensure label exists
             try {

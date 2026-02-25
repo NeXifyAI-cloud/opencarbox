@@ -51,17 +51,13 @@ jobs:
       - name: Checkout
         if: steps.vercel_check.outputs.skip != 'true'
         uses: actions/checkout@v6
-        with:
           ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
         if: steps.vercel_check.outputs.skip != 'true'
 
             - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         if: steps.vercel_check.outputs.skip != 'true'
-        with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
@@ -97,7 +93,6 @@ jobs:
       - name: Comment on Commit
         if: steps.vercel_check.outputs.skip != 'true' && github.event_name == 'workflow_run'
         uses: peter-evans/commit-comment@v4
-        with:
           sha: ${{ github.event.workflow_run.head_sha }}
           body: |
             **Auto-Deployment erfolgreich!**

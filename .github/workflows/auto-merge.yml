@@ -79,7 +79,6 @@ jobs:
         id: metadata
         if: github.actor == 'dependabot[bot]' && steps.safety_check.outputs.blocked != 'true' && steps.ci_check.outputs.passed == 'true'
         uses: dependabot/fetch-metadata@v2
-        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Auto-approve PR

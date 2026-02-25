@@ -93,7 +93,7 @@ jobs:
       - name: Generate Prisma Client
         run: pnpm run db:generate
       - name: Test
-        run: ppnpm test
+        run: pnpm test
 
   build:
     name: Build

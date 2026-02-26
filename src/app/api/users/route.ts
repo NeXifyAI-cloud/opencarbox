@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
 
 // Validation Schema für User Updates
 const userUpdateSchema = z.object({
@@ -13,6 +11,15 @@ const userUpdateSchema = z.object({
 // GET /api/users - Alle Benutzer abrufen (mit Pagination)
 export async function GET(request: NextRequest) {
   try {
+    // Sicherheit: Nur Admins dürfen die Benutzerliste sehen
+    const userRole = request.headers.get('x-user-role')
+    if (userRole !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Nicht autorisiert' },
+        { status: 403 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -72,17 +79,33 @@ export async function GET(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const userId = searchParams.get('id')
+    const targetUserId = searchParams.get('id')
     
-    if (!userId) {
+    if (!targetUserId) {
       return NextResponse.json(
         { success: false, error: 'Benutzer-ID ist erforderlich' },
         { status: 400 }
       )
     }
 
+    // Sicherheit: Nur Admins oder der Benutzer selbst dürfen aktualisieren
+    const currentUserId = request.headers.get('x-user-id')
+    const currentUserRole = request.headers.get('x-user-role')
+
+    if (currentUserRole !== 'ADMIN' && targetUserId !== currentUserId) {
+      return NextResponse.json(
+        { success: false, error: 'Nicht autorisiert' },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
     
+    // Sicherheit: Rollenänderungen nur durch Admins zulassen
+    if (currentUserRole !== 'ADMIN' && body.role) {
+      delete body.role
+    }
+
     // Validierung
     const validation = userUpdateSchema.safeParse(body)
     if (!validation.success) {
@@ -98,7 +121,7 @@ export async function PUT(request: NextRequest) {
 
     // Prüfen ob Benutzer existiert
     const existingUser = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: targetUserId },
     })
 
     if (!existingUser) {
@@ -110,7 +133,7 @@ export async function PUT(request: NextRequest) {
 
     // Benutzer aktualisieren
     const updatedUser = await prisma.user.update({
-      where: { id: userId },
+      where: { id: targetUserId },
       data: validation.data,
       select: {
         id: true,

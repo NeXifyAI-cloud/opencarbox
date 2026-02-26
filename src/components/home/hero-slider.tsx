@@ -4,36 +4,61 @@ import { Button } from '@/components/ui/button';
 import { bannerSlides } from '@/lib/mock-data';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
+/**
+ * HeroSlider component with accessibility enhancements.
+ * Note: ARIA labels are in German as per the project's primary locale requirements.
+ */
 export function HeroSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
-    }, 5000);
-    return () => clearInterval(timer);
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
   }, []);
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % bannerSlides.length);
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev - 1 + bannerSlides.length) % bannerSlides.length);
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(nextSlide, 5000);
+    return () => clearInterval(timer);
+  }, [isPaused, nextSlide]);
+
+  const handleNextSlide = () => {
+    nextSlide();
   };
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + bannerSlides.length) % bannerSlides.length);
+  const handlePrevSlide = () => {
+    prevSlide();
   };
 
   return (
-    <div className="relative rounded-lg overflow-hidden shadow-lg">
+    <div
+      className="relative rounded-lg overflow-hidden shadow-lg"
+      role="region"
+      aria-roledescription="carousel"
+      aria-label="Haupt-Slider"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={() => setIsPaused(false)}
+    >
       {/* Slides */}
-      <div className="relative h-[300px] md:h-[400px]">
+      <div className="relative h-[300px] md:h-[400px]" aria-live="polite">
         {bannerSlides.map((slide, index) => (
           <div
             key={slide.id}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`Slide ${index + 1} von ${bannerSlides.length}`}
             className={`absolute inset-0 transition-opacity duration-700 ${
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
+            aria-hidden={index !== currentSlide}
           >
             <div
               className="absolute inset-0 bg-cover bg-center"
@@ -64,25 +89,30 @@ export function HeroSlider() {
 
       {/* Navigation Arrows */}
       <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-2 rounded-full transition-all"
+        onClick={handlePrevSlide}
+        aria-label="Vorheriges Slide"
+        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-[#4fd1c5]"
       >
         <ChevronLeft className="h-6 w-6 text-white" />
       </button>
       <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-2 rounded-full transition-all"
+        onClick={handleNextSlide}
+        aria-label="Nächstes Slide"
+        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm p-2 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-[#4fd1c5]"
       >
         <ChevronRight className="h-6 w-6 text-white" />
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2" role="tablist">
         {bannerSlides.map((_, index) => (
           <button
             key={index}
+            role="tab"
+            aria-selected={index === currentSlide}
+            aria-label={`Gehe zu Slide ${index + 1}`}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 rounded-full transition-all ${
+            className={`w-3 h-3 rounded-full transition-all focus-visible:ring-2 focus-visible:ring-[#4fd1c5] ${
               index === currentSlide
                 ? 'bg-[#4fd1c5] w-8'
                 : 'bg-white/50 hover:bg-white/80'

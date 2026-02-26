@@ -1,0 +1,3 @@
+## 2025-02-26 - [HeroSlider Accessibility & Interaction]
+**Learning:** For automotive platforms (or any e-commerce site) using auto-playing carousels, implementing 'pause-on-interaction' (hover/focus) is a critical UX/accessibility win. Users often need more time to process technical details or offers. Semantic ARIA roles and localized labels (German in this case) significantly improve screen reader navigation.
+**Action:** Always include `onMouseEnter`/`onMouseLeave` and `onFocus`/`onBlur` handlers to toggle a `isPaused` state in carousels, and ensure `role="region"`, `aria-roledescription="carousel"`, and `role="group"` with `aria-roledescription="slide"` are used.

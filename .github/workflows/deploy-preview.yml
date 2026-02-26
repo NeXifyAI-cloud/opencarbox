@@ -51,13 +51,10 @@ jobs:
         if: steps.vercel_check.outputs.skip != 'true'
         with:
           ref: ${{ github.event.workflow_run.head_sha || github.event.pull_request.head.sha || github.sha }}
-
-        if: steps.vercel_check.outputs.skip != 'true'
+          persist-credentials: false
 
       - uses: pnpm/action-setup@v4
-
         with:
-
           version: 10
 
       - uses: actions/setup-node@v6

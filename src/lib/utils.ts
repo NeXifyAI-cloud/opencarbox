@@ -27,7 +27,14 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
+ * Cache für Intl-Instanzen zur Performance-Optimierung.
+ */
+const numberFormatCache = new Map<string, Intl.NumberFormat>();
+const dateTimeFormatCache = new Map<string, Intl.DateTimeFormat>();
+
+/**
  * Formatiert einen Preis im deutschen/österreichischen Format.
+ * Nutzt Caching für Intl.NumberFormat Instanzen.
  * 
  * @param price - Der Preis als Zahl
  * @param currency - Die Währung (Standard: EUR)
@@ -39,14 +46,23 @@ export function cn(...inputs: ClassValue[]): string {
  * ```
  */
 export function formatPrice(price: number, currency: string = 'EUR'): string {
-  return new Intl.NumberFormat('de-AT', {
-    style: 'currency',
-    currency,
-  }).format(price);
+  const cacheKey = `price-${currency}`;
+  let formatter = numberFormatCache.get(cacheKey);
+
+  if (!formatter) {
+    formatter = new Intl.NumberFormat('de-AT', {
+      style: 'currency',
+      currency,
+    });
+    numberFormatCache.set(cacheKey, formatter);
+  }
+
+  return formatter.format(price);
 }
 
 /**
  * Formatiert ein Datum im deutschen Format.
+ * Nutzt Caching für Intl.DateTimeFormat Instanzen.
  * 
  * @param date - Das Datum als Date-Objekt oder ISO-String
  * @param options - Zusätzliche Formatierungsoptionen
@@ -63,27 +79,35 @@ export function formatDate(
   options?: { short?: boolean; withTime?: boolean }
 ): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const cacheKey = `date-${options?.short || false}-${options?.withTime || false}`;
   
-  if (options?.short) {
-    return new Intl.DateTimeFormat('de-AT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(dateObj);
+  let formatter = dateTimeFormatCache.get(cacheKey);
+
+  if (!formatter) {
+    if (options?.short) {
+      formatter = new Intl.DateTimeFormat('de-AT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+    } else {
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      };
+
+      if (options?.withTime) {
+        formatOptions.hour = '2-digit';
+        formatOptions.minute = '2-digit';
+      }
+
+      formatter = new Intl.DateTimeFormat('de-AT', formatOptions);
+    }
+    dateTimeFormatCache.set(cacheKey, formatter);
   }
   
-  const formatOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  };
-  
-  if (options?.withTime) {
-    formatOptions.hour = '2-digit';
-    formatOptions.minute = '2-digit';
-  }
-  
-  return new Intl.DateTimeFormat('de-AT', formatOptions).format(dateObj);
+  return formatter.format(dateObj);
 }
 
 /**
@@ -277,4 +301,3 @@ export function calculateDiscountPercentage(
   if (originalPrice <= 0) return 0;
   return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
 }
-

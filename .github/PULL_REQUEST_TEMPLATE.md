@@ -1,7 +1,9 @@
+<!--
 Title Format:
 <type>(area): short description
 type: feat | fix | refactor | chore | perf | docs
 area: shop | werkstatt | autohandel | shared | infra
+-->
 
 Mandatory Sections:
 

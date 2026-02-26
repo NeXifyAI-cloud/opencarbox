@@ -30,6 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           ref: ${{ github.event.workflow_run.head_branch }}
 
 
@@ -80,7 +81,7 @@ jobs:
 
       - name: Generate Prisma Client
         if: steps.classify.outputs.has_changes == 'true'
-        run: pnpm db:generate
+        run: pnpm run db:generate
 
       - name: Run required checks
         id: required_checks
@@ -90,12 +91,12 @@ jobs:
           PASSED=true
 
           if [ "$PROFILE" = "full" ]; then
-            pnpm lint || PASSED=false
-            pnpm typecheck || PASSED=false
-            pnpm test || PASSED=false
-            pnpm build || PASSED=false
+            pnpm run lint || PASSED=false
+            pnpm run typecheck || PASSED=false
+            pnpm run test || PASSED=false
+            pnpm run build || PASSED=false
           else
-            pnpm lint || PASSED=false
+            pnpm run lint || PASSED=false
           fi
 
           echo "passed=$PASSED" >> "$GITHUB_OUTPUT"

@@ -36,7 +36,7 @@ jobs:
       - name: Dependency audit
         run: pnpm audit --prod || true
       - name: Secret scan
-        run: pnpm secret:scan
+        run: pnpm run secret:scan
 
   sbom:
     name: SBOM Generation
@@ -55,4 +55,5 @@ jobs:
         uses: anchore/sbom-action@v0
         with:
           path: .
+          dependency-snapshot: true
           artifact-name: sbom-opencarbox.spdx.json

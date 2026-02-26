@@ -260,7 +260,7 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
         id: deepseek-diag
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/diagnostic-deepseek.ts \
+          pnpm exec ts-node scripts/oracle/diagnostic-deepseek.ts \
             --service-url "${{ secrets.DEEPSEEK_BASE_URL }}" \
             --api-key "${{ secrets.DEEPSEEK_API_KEY }}" \
             --timeout 30000
@@ -272,7 +272,7 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
         id: jules-diag
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/diagnostic-jules.ts \
+          pnpm exec ts-node scripts/oracle/diagnostic-jules.ts \
             --service-url "${{ secrets.JULES_BASE_URL }}" \
             --api-key "${{ secrets.JULES_API_KEY }}" \
             --timeout 30000
@@ -281,7 +281,7 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
         id: mem0-diag
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/diagnostic-mem0.ts \
+          pnpm exec ts-node scripts/oracle/diagnostic-mem0.ts \
             --service-url "${{ secrets.MCP_SERVER_URL }}" \
             --timeout 30000
 
@@ -457,7 +457,7 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
       - name: Generate report
         id: report
         run: |
-          npx ts-node scripts/oracle/generate-report.ts \
+          pnpm exec ts-node scripts/oracle/generate-report.ts \
             --date "$(date -u +'%Y-%m-%d')" \
             --output oracle-report.md
 
@@ -525,7 +525,7 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
         id: reset
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/reset-circuit-breakers.ts \
+          pnpm exec ts-node scripts/oracle/reset-circuit-breakers.ts \
             --timeout 15000
 
       - name: Restart failed service containers (if applicable)

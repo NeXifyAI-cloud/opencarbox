@@ -1,0 +1,43 @@
+name: PR Gate
+
+on:
+  pull_request:
+    types: [opened, edited, synchronized]
+
+jobs:
+  check-description:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || "";
+            const mandatorySections = [
+              "1. Funnel-Zuordnung (G1 – Pflicht)",
+              "2. Bereich",
+              "3. Brand-Check (G9)",
+              "4. UI-Regel (G3)",
+              "5. Tracking (G4 – Pflicht)",
+              "6. Security / DSGVO",
+              "7. Performance",
+              "8. Migration / Risk",
+              "9. CI Status"
+            ];
+
+            let missing = [];
+            for (const section of mandatorySections) {
+              if (!body.includes(section)) {
+                missing.push(section);
+              }
+            }
+
+            if (missing.length > 0) {
+              core.setFailed("Missing mandatory sections in PR description: " + missing.join(", "));
+            }
+
+            // Check if Funnel section is empty (no checkboxes checked or no text)
+            const funnelSection = body.split("1. Funnel-Zuordnung (G1 – Pflicht)")[1]?.split("2. Bereich")[0] || "";
+            if (!funnelSection.includes("[x]") && !funnelSection.includes("[X]")) {
+               core.setFailed("Funnel-Zuordnung must have at least one stage selected.");
+            }

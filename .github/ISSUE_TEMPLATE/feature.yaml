@@ -1,0 +1,47 @@
+name: Feature Request
+description: Neues Feature DOS-konform implementieren
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Bereich
+      options:
+        - shop
+        - werkstatt
+        - autohandel
+        - shared
+        - infra
+    validations:
+      required: true
+  - type: textarea
+    id: funnel
+    attributes:
+      label: Funnel-Zuordnung (Pflicht)
+    validations:
+      required: true
+  - type: input
+    id: kpi
+    attributes:
+      label: KPI-Ziel
+      placeholder: "z. B. Add-to-Cart Rate +1%"
+    validations:
+      required: true
+  - type: textarea
+    id: events
+    attributes:
+      label: Betroffene Events
+  - type: textarea
+    id: security
+    attributes:
+      label: Security-Bewertung
+      description: RLS, DSGVO, Zahlungsrelevanz?
+  - type: checkboxes
+    id: done
+    attributes:
+      label: Done-Kriterien
+      options:
+        - label: UI-Regel erfüllt
+        - label: Tracking integriert
+        - label: Lighthouse ≥ 90
+        - label: Tests ergänzt
+        - label: Dokumentation (STATE/KNOWLEDGE)

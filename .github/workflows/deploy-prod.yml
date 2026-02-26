@@ -17,6 +17,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  ENABLE_PNPM: '1'
 
 jobs:
   validate:
@@ -27,7 +28,7 @@ jobs:
         if: github.event.inputs.confirm != 'deploy'
         run: |
           echo "::error::Deployment not confirmed. Input must be 'deploy'."
-          ex""it 1
+          exit 1
 
   deploy-prod:
     name: Deploy to Production
@@ -38,29 +39,36 @@ jobs:
       url: ${{ steps.deploy.outputs.url }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Preflight
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts deploy
+          pnpm exec tsx tools/preflight.ts deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
       - name: Pull Vercel Environment
-        run: npx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm exec vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
       - name: Build
-        run: npx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm exec vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
@@ -68,7 +76,7 @@ jobs:
       - name: Deploy to Production
         id: deploy
         run: |
-          URL=$(npx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(pnpm exec vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed to production: $URL"
         env:
@@ -83,7 +91,7 @@ jobs:
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ steps.deploy.outputs.url }}/api/health || echo "failed")
           if [ "$STATUS" != "200" ]; then
             echo "::error::Health check failed with status $STATUS"
-            ex""it 1
+            exit 1
           fi
           echo "Health check passed!"
 
@@ -91,7 +99,7 @@ jobs:
         if: failure() && steps.deploy.outcome == 'success'
         run: |
           echo "Deployment failed health check. Rolling back..."
-          npx vercel rollback --token=${{ secrets.VERCEL_TOKEN }} --yes
+          pnpm exec vercel rollback --token=${{ secrets.VERCEL_TOKEN }} --yes
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}

@@ -34,7 +34,7 @@ jobs:
       - name: Preflight
         run: pnpm exec tsx tools/preflight.ts ci
       - name: Dependency audit
-        run: npm audit --prod || true
+        run: pnpm audit --prod || true
       - name: Secret scan
         run: pnpm secret:scan
 

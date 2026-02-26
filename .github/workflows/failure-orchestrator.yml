@@ -69,6 +69,8 @@ jobs:
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
 
       - uses: pnpm/action-setup@v4
@@ -164,6 +166,7 @@ jobs:
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
+          persist-credentials: false
 
 
       - uses: pnpm/action-setup@v4

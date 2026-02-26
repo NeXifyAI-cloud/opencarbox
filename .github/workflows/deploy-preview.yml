@@ -54,20 +54,23 @@ jobs:
 
         if: steps.vercel_check.outputs.skip != 'true'
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         if: steps.vercel_check.outputs.skip != 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
         if: steps.vercel_check.outputs.skip != 'true'
 
       - name: Preflight
         if: steps.vercel_check.outputs.skip != 'true'
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts deploy
+          pnpm exec tsx tools/preflight.ts deploy
 
       - name: Pull Vercel Environment
         if: steps.vercel_check.outputs.skip != 'true'

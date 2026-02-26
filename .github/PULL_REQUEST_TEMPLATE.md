@@ -24,6 +24,7 @@ Welche KPI wird direkt beeinflusst?
 - [ ] (werkstatt)
 - [ ] (autohandel)
 - [ ] shared
+- [ ] infra
 
 3. Brand-Check (G9)
 

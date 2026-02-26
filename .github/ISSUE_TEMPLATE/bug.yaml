@@ -10,6 +10,7 @@ body:
         - werkstatt
         - autohandel
         - shared
+        - infra
     validations:
       required: true
   - type: input

@@ -23,30 +23,37 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Preflight
-        run: npx tsx tools/preflight.ts ci
+        run: pnpm exec tsx tools/preflight.ts ci
       - name: Dependency audit
-        run: npm audit --prod || true
+        run: pnpm audit --prod || true
       - name: Secret scan
-        run: npm run secret:scan
+        run: pnpm run secret:scan
 
   sbom:
     name: SBOM Generation
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:
           path: .
+          dependency-snapshot: true
           artifact-name: sbom-opencarbox.spdx.json

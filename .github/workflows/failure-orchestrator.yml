@@ -69,17 +69,21 @@ jobs:
       marker_exists: ${{ steps.existing_marker.outputs.exists }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
-
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Sanitize user input
         run: |
@@ -89,7 +93,7 @@ jobs:
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: Route failure event to Jules
         run: |
@@ -157,21 +161,29 @@ jobs:
       pull-requests: write
       issues: write
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout trusted code
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0
+          persist-credentials: false
 
+      - name: Fetch untrusted PR code
+        if: github.event.workflow_run.head_repository.full_name == github.repository
+        run: |
+          git fetch origin ${{ github.event.workflow_run.head_sha }}
+          git checkout FETCH_HEAD
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y jq gh
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Sanitize user input
         run: |
@@ -181,7 +193,7 @@ jobs:
       - name: Normalize environment aliases
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts ai
+          pnpm exec tsx tools/preflight.ts ai
 
       - name: PR backlog guardrail (max 2 codex PRs)
         id: pr_guardrail
@@ -193,10 +205,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Attempt safe autofix
-        if: steps.pr_guardrail.outputs.blocked != 'true'
+        if: steps.pr_guardrail.outputs.blocked != 'true' && github.event.workflow_run.head_repository.full_name == github.repository
         run: |
-          npx prettier --write . 2>/dev/null || true
-          npx eslint . --fix 2>/dev/null || true
+          pnpm exec prettier --write . 2>/dev/null || true
+          pnpm exec eslint . --fix 2>/dev/null || true
         env:
           AI_MAX_CALLS: '20'
           max_conflict_files: '10'
@@ -206,14 +218,14 @@ jobs:
 
       - name: Validate fix
         id: validate
-        if: steps.pr_guardrail.outputs.blocked != 'true'
+        if: steps.pr_guardrail.outputs.blocked != 'true' && github.event.workflow_run.head_repository.full_name == github.repository
         run: |
           set +e
-          npm run db:generate && npm run lint && npm run typecheck && npm test && npm run build
+          pnpm run db:generate && pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build
           echo "status=$?" >> "$GITHUB_OUTPUT"
 
       - name: Create fix PR
-        if: steps.pr_guardrail.outputs.blocked != 'true' && steps.validate.outputs.status == '0'
+        if: steps.pr_guardrail.outputs.blocked != 'true' && steps.validate.outputs.status == '0' && github.event.workflow_run.head_repository.full_name == github.repository
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: '0'
@@ -235,10 +247,10 @@ jobs:
             --title "fix: ai triage for ${{ github.event.workflow_run.name }}" \
             --base "${{ github.event.workflow_run.head_branch }}" \
             --head "$BRANCH" \
-            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- npm run lint\n- npm run typecheck\n- npm test\n- npm run build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
+            --body "## Was geändert\n- Safe-Autofix (Format/Lint) auf Basis des fehlgeschlagenen Runs ausgeführt.\n- Validierte Änderungen als separater Fix-Branch erstellt.\n\n## Warum\n- Fehlgeschlagenen Workflow deterministisch und reproduzierbar beheben.\n\n## Wie getestet\n- pnpm run lint\n- pnpm run typecheck\n- pnpm run test\n- pnpm run build\n\n## Risiko/Backout\n- Risiko: Unzureichende Auto-Fixes für komplexe Ursachen.\n- Backout: Fix-PR schließen oder revertieren; Original-Branch bleibt unverändert.\n\nMarker: ${RUN_REF}"
 
       - name: Fallback issue
-        if: steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0'
+        if: (steps.pr_guardrail.outputs.blocked == 'true' || steps.validate.outputs.status != '0') && github.event.workflow_run.head_repository.full_name == github.repository
         run: |
           RUN_REF="run-id:${{ github.event.workflow_run.id }}"
           gh issue create \

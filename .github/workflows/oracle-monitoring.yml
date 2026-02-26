@@ -60,10 +60,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: npm
+          cache: pnpm
 
       - name: Get current timestamp
         id: timestamp
@@ -242,19 +245,22 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run DeepSeek diagnostic
         id: deepseek-diag
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/diagnostic-deepseek.ts \
+          pnpm exec ts-node scripts/oracle/diagnostic-deepseek.ts \
             --service-url "${{ secrets.DEEPSEEK_BASE_URL }}" \
             --api-key "${{ secrets.DEEPSEEK_API_KEY }}" \
             --timeout 30000
@@ -266,7 +272,7 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
         id: jules-diag
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/diagnostic-jules.ts \
+          pnpm exec ts-node scripts/oracle/diagnostic-jules.ts \
             --service-url "${{ secrets.JULES_BASE_URL }}" \
             --api-key "${{ secrets.JULES_API_KEY }}" \
             --timeout 30000
@@ -275,7 +281,7 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
         id: mem0-diag
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/diagnostic-mem0.ts \
+          pnpm exec ts-node scripts/oracle/diagnostic-mem0.ts \
             --service-url "${{ secrets.MCP_SERVER_URL }}" \
             --timeout 30000
 
@@ -437,18 +443,21 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Generate report
         id: report
         run: |
-          npx ts-node scripts/oracle/generate-report.ts \
+          pnpm exec ts-node scripts/oracle/generate-report.ts \
             --date "$(date -u +'%Y-%m-%d')" \
             --output oracle-report.md
 
@@ -504,16 +513,19 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: npm
+          cache: pnpm
 
       - name: Attempt circuit breaker reset
         id: reset
         continue-on-error: true
         run: |
-          npx ts-node scripts/oracle/reset-circuit-breakers.ts \
+          pnpm exec ts-node scripts/oracle/reset-circuit-breakers.ts \
             --timeout 15000
 
       - name: Restart failed service containers (if applicable)

@@ -36,34 +36,43 @@ jobs:
       name: staging
       url: ${{ steps.deploy.outputs.url }}
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout trusted code
+        uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
 
+      - name: Fetch PR code (if internal)
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.head_repository.full_name == github.repository
+        run: |
+          git fetch origin ${{ github.event.workflow_run.head_sha }}
+          git checkout FETCH_HEAD
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Preflight
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts deploy
+          pnpm run preflight deploy
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
       - name: Pull Vercel Environment
-        run: npx vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm exec vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
 
       - name: Build
-        run: npx vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm exec vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.NEU_VERCEL_PROJEKT_ID || secrets.VERCEL_PROJECT_ID }}
@@ -71,7 +80,7 @@ jobs:
       - name: Deploy to Staging
         id: deploy
         run: |
-          URL=$(npx vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          URL=$(pnpm exec vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$URL" >> "$GITHUB_OUTPUT"
           echo "Deployed to staging: $URL"
         env:
@@ -85,6 +94,6 @@ jobs:
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" ${{ steps.deploy.outputs.url }}/api/health || echo "failed")
           if [ "$STATUS" != "200" ]; then
             echo "::error::Health check failed with status $STATUS"
-            ex""it 1
+            exit 1
           fi
           echo "Health check passed!"

@@ -56,29 +56,32 @@ jobs:
 
         if: steps.vercel_check.outputs.skip != 'true'
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         if: steps.vercel_check.outputs.skip != 'true'
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
       - name: Install dependencies
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Preflight
         if: steps.vercel_check.outputs.skip != 'true'
         run: |
           source tools/export_env.sh
-          npx tsx tools/preflight.ts deploy
+          pnpm exec tsx tools/preflight.ts deploy
 
       - name: Pull Vercel Environment
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npx vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm exec vercel pull --yes --environment=production --token=${{ env.VERCEL_TOKEN }}
 
       - name: Build Project
         if: steps.vercel_check.outputs.skip != 'true'
-        run: npx vercel build --prod --token=${{ env.VERCEL_TOKEN }}
+        run: pnpm exec vercel build --prod --token=${{ env.VERCEL_TOKEN }}
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
@@ -87,7 +90,7 @@ jobs:
         if: steps.vercel_check.outputs.skip != 'true'
         continue-on-error: false
         run: |
-          URL=$(npx vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
+          URL=$(pnpm exec vercel deploy --prebuilt --prod --token=${{ env.VERCEL_TOKEN }})
           echo "url=$URL" >> $GITHUB_OUTPUT
           echo "Deployed to: $URL"
 

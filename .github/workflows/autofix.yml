@@ -105,8 +105,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: '0'
+          WF_ID: ${{ github.event.workflow_run.id }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
         run: |
-          BR="codex/autofix-safe-${{ github.event.workflow_run.id }}"
+          BR="codex/autofix-safe-$WF_ID"
 
           # Max 2 open autofix PRs guardrail
           OPEN_COUNT="$(gh pr list --state open --label autofix --json number --jq 'length')"
@@ -126,7 +128,7 @@ jobs:
           gh pr create \
             --title "chore: safe autofix" \
             --body "Sichere Autofixes (Formatierung/Lint) auf dem fehlerhaften Branch angewendet." \
-            --base "${{ github.event.workflow_run.head_branch }}" \
+            --base "$HEAD_BRANCH" \
             --label autofix
 
       - name: Log check failure
@@ -148,6 +150,9 @@ jobs:
 
       - name: Route failure to Jules
         if: failure()
+        env:
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           source tools/export_env.sh
           if [ -z "${JULES_API_KEY:-}" ] || [ -z "${JULES_BASE_URL:-}" ]; then
@@ -157,4 +162,4 @@ jobs:
           curl -sS -X POST "${JULES_BASE_URL%/}/api/events" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer $JULES_API_KEY" \
-            -d "{\"source\":\"autofix\",\"kind\":\"error\",\"name\":\"autofix.failed\",\"metadata\":{\"branch\":\"${{ github.event.workflow_run.head_branch }}\",\"run_id\":\"${{ github.run_id }}\"}}"
+            -d "{\"source\":\"autofix\",\"kind\":\"error\",\"name\":\"autofix.failed\",\"metadata\":{\"branch\":\"$HEAD_BRANCH\",\"run_id\":\"$RUN_ID\"}}"

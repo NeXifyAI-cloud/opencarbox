@@ -1,1 +1,46 @@
-{"name":"opencarbox-minimal","version":"1.0.0","description":"Minimal Next.js - LIVE","private":true,"scripts":{"dev":"next dev","build":"next build --no-lint","start":"next start","lint":"echo 'Linting disabled'"},"dependencies":{"next":"^15.5.10","react":"^18.3.0","react-dom":"^18.3.0"},"devDependencies":{"typescript":"^5.9.3","@types/react":"^18.2.0","@types/react-dom":"^18.2.0","@types/node":"^20.19.30","eslint":"^8.57.0","eslint-config-next":"^15.5.10"},"engines":{"node":">=18.17.0"}}
+{
+  "name": "opencarbox-minimal",
+  "version": "1.0.0",
+  "description": "Minimal Next.js - LIVE",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build --no-lint",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:generate": "prisma generate"
+  },
+  "dependencies": {
+    "next": "^15.5.10",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/node": "^20.19.30",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^15.5.10",
+    "vitest": "^4.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "jsdom": "^26.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "lucide-react": "^0.500.0",
+    "prisma": "^5.10.0",
+    "@prisma/client": "^5.10.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.0",
+    "class-variance-authority": "^0.7.0",
+    "@radix-ui/react-slot": "^1.1.0",
+    "zustand": "^5.0.0",
+    "zod": "^3.23.0",
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  }
+}

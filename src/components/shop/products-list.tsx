@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ShoppingCart, Eye } from 'lucide-react'
+import { formatPrice } from '@/lib/utils'
 
 interface Product {
   id: string
@@ -108,13 +109,6 @@ export function ProductsList() {
     // Hier würde später die Cart-Logik implementiert werden
     // logger.info('Produkt zum Warenkorb hinzugefügt:', product)
     alert(`${product.name} wurde zum Warenkorb hinzugefügt!`)
-  }
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('de-DE', {
-      style: 'currency',
-      currency: 'EUR',
-    }).format(price)
   }
 
   if (loading && products.length === 0) {

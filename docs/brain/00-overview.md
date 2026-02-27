@@ -8,9 +8,9 @@ Premium Automotive Multisite Platform — three sites sharing one codebase:
 
 | Site | Purpose | Brand Color |
 |------|---------|-------------|
-| Carvantooo (Shop) | Online parts shop | `#E53E3E` (red) |
-| OpenCarBox Werkstatt | Workshop services | `#3182CE` (blue) |
-| OpenCarBox Autohandel | Vehicle trading | `#3182CE` (blue) |
+| Carvantooo (Shop) | Online parts shop | `#FFB300` (red) |
+| OpenCarBox Werkstatt | Workshop services | `#FFA800` (blue) |
+| OpenCarBox Autohandel | Vehicle trading | `#FFA800` (blue) |
 
 ## Tech Stack
 

@@ -11,40 +11,40 @@
 export const designTokens = {
   // Primary - OpenCarBox (Werkstatt & Autohandel)
   primary: {
-    DEFAULT: '#3B82F6',      // Professionelles Blau
-    light: '#60A5FA',
-    dark: '#2563EB',
+    DEFAULT: '#FFA800',      // Service Primary (Orange)
+    light: '#FFB833',
+    dark: '#CC8600',
     foreground: '#FFFFFF',
-    50: '#EFF6FF',
-    100: '#DBEAFE',
-    200: '#BFDBFE',
-    300: '#93C5FD',
-    400: '#60A5FA',
-    500: '#3B82F6',
-    600: '#2563EB',
-    700: '#1D4ED8',
-    800: '#1E40AF',
-    900: '#1E3A8A',
-    950: '#172554',
+    50: '#FFF7E6',
+    100: '#FFEFCC',
+    200: '#FFDF99',
+    300: '#FFCF66',
+    400: '#FFBF33',
+    500: '#FFA800',
+    600: '#E69700',
+    700: '#B37600',
+    800: '#805400',
+    900: '#4D3200',
+    950: '#1A1100',
   },
-  
+
   // Secondary - Carvantooo Shop
   secondary: {
-    DEFAULT: '#14B8A6',      // Teal
-    light: '#5EEAD4',
-    dark: '#0D9488',
+    DEFAULT: '#FFB300',      // Shop Primary (Yellow-Orange)
+    light: '#FFC233',
+    dark: '#CC8F00',
     foreground: '#FFFFFF',
-    50: '#F0FDFA',
-    100: '#CCFBF1',
-    200: '#99F6E4',
-    300: '#5EEAD4',
-    400: '#2DD4BF',
-    500: '#14B8A6',
-    600: '#0D9488',
-    700: '#0F766E',
-    800: '#115E59',
-    900: '#134E4A',
-    950: '#042F2E',
+    50: '#FFF8E6',
+    100: '#FFF0CC',
+    200: '#FFE299',
+    300: '#FFD366',
+    400: '#FFC533',
+    500: '#FFB300',
+    600: '#E6A100',
+    700: '#B37D00',
+    800: '#805900',
+    900: '#4D3600',
+    950: '#1A1200',
   },
   
   // Accent - Highlight-Farbe

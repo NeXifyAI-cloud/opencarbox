@@ -5,6 +5,12 @@
 - Tech-Stack: Next.js 14, TypeScript, Tailwind CSS, Prisma, Supabase.
 - Sprach-Konvention (G10): Englisch für Code/Git, Deutsch für UI/Doku.
 
+## Prüfstrategie (DOS v1.1)
+- Jede Änderung folgt der Kette: Kontext → Konsistenz → Validierung → CI/Governance.
+- Stufenweise Prüfung: Statische Qualität (CI), API/Integration, E2E Journeys, Non-Functional (Performance, Security), Release/Smoke.
+- Strikte Dual-Brand Trennung: Shop (#FFB300) vs. Werkstatt/Autohandel (#FFA800).
+- "Tracking First" Prinzip: Kritische Aktionen erfordern Zod-validierte Events in `src/lib/events.ts`.
+
 ## Sicherheits-Anforderungen
 - Keine autonome Kontrolle über das System.
 - Traceability durch Logging aller Aktionen (Zeitstempel, User, Aktion).

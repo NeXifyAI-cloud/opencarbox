@@ -33,12 +33,12 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-/* Primärfarbe - Professionelles Blau (Corporate Identity) */
-    --primary: 221 83% 53%;            /* #3B82F6 */
+/* Primärfarbe - OpenCarBox Orange */
+    --primary: 40 100% 50%;            /* #FFA800 */
     --primary-foreground: 0 0% 100%;
 
-    /* Sekundärfarbe - Modernes Teal (Akzente) */
-    --secondary: 173 80% 40%;          /* #14B8A6 */
+    /* Sekundärfarbe - Carvantooo Yellow-Orange */
+    --secondary: 42 100% 50%;          /* #FFB300 */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 40% 96.1%;
@@ -61,13 +61,13 @@
        Marken-spezifische Variablen (aktualisiert - kein Rot)
        --------------------------------------------------------------------- */
     
-    /* Carvantooo (Shop) - Primary Blau */
-    --carvantooo-primary: 221 83% 53%;           /* #3B82F6 */
-    --carvantooo-glow: rgba(59, 130, 246, 0.4);
+    /* Carvantooo (Shop) - #FFB300 */
+    --carvantooo-primary: 42 100% 50%;
+    --carvantooo-glow: rgba(255, 179, 0, 0.4);
     
-    /* OpenCarBox (Services) - Secondary Teal */
-    --opencarbox-primary: 173 80% 40%;           /* #14B8A6 */
-    --opencarbox-glow: rgba(20, 184, 166, 0.4);
+    /* OpenCarBox (Services) - #FFA800 */
+    --opencarbox-primary: 40 100% 50%;
+    --opencarbox-glow: rgba(255, 168, 0, 0.4);
 
     /* ---------------------------------------------------------------------
        Schatten
@@ -87,10 +87,10 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 221 83% 65%;            /* Helleres Blau für Dark Mode */
+    --primary: 40 100% 65%;            /* Helleres Orange für Dark Mode */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 173 80% 50%;          /* Helleres Teal für Dark Mode */
+    --secondary: 42 100% 65%;          /* Helleres Gelb-Orange für Dark Mode */
     --secondary-foreground: 0 0% 100%;
 
     --muted: 217.2 32.6% 17.5%;
@@ -106,9 +106,9 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 221 83% 65%;               /* Helleres Blau für Dark Mode */
 
-    /* Marken-spezifische Glow Effects (aktualisiert) */
-    --carvantooo-glow: rgba(59, 130, 246, 0.4);    /* Primary Blau */
-    --opencarbox-glow: rgba(20, 184, 166, 0.4);    /* Secondary Teal */
+    /* Marken-spezifische Glow Effects */
+    --carvantooo-glow: rgba(255, 179, 0, 0.4);
+    --opencarbox-glow: rgba(255, 168, 0, 0.4);
   }
 }
 
@@ -231,14 +231,14 @@
   .border-gradient-primary {
     @apply relative;
     background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #3B82F6, #1D4ED8) border-box;
+                linear-gradient(135deg, #FFA800, #1D4ED8) border-box;
     border: 2px solid transparent;
   }
 
   .border-gradient-secondary {
     @apply relative;
     background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #14B8A6, #0F766E) border-box;
+                linear-gradient(135deg, #FFB300, #0F766E) border-box;
     border: 2px solid transparent;
   }
 

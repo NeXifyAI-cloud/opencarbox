@@ -1,0 +1,50 @@
+name: PR Gate Validation
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Validate PR Description
+        shell: bash
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          echo "Validating PR description against DOS v1.1 rules..."
+
+          # Check for Funnel-Zuordnung section and at least one checkbox selected
+          if ! echo "$PR_BODY" | grep -qi "### 1. Funnel-Zuordnung"; then
+            echo "Error: Mandatory section '1. Funnel-Zuordnung' is missing."
+            exit 1
+          fi
+
+          if ! echo "$PR_BODY" | grep -A 10 "### 1. Funnel-Zuordnung" | grep -q "\[[xX]\]"; then
+            echo "Error: No Funnel stage selected in '1. Funnel-Zuordnung'."
+            exit 1
+          fi
+
+          # Check for Bereich section
+          if ! echo "$PR_BODY" | grep -qi "### 2. Bereich"; then
+            echo "Error: Mandatory section '2. Bereich' is missing."
+            exit 1
+          fi
+
+          # Check for Tracking section
+          if ! echo "$PR_BODY" | grep -qi "### 5. Tracking"; then
+            echo "Error: Mandatory section '5. Tracking' is missing."
+            exit 1
+          fi
+
+          # Check for Performance section
+          if ! echo "$PR_BODY" | grep -qi "### 7. Performance"; then
+            echo "Error: Mandatory section '7. Performance' is missing."
+            exit 1
+          fi
+
+          echo "PR Description validation successful."

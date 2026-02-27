@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
 /**
@@ -52,16 +52,6 @@ const sizeClasses = {
   },
 };
 
-/**
- * Formatiert einen Preis in Euro oder CHF
- */
-function formatPrice(price: number, currency: 'EUR' | 'CHF'): string {
-  return new Intl.NumberFormat('de-AT', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 2,
-  }).format(price);
-}
 
 /**
  * Berechnet den Rabatt-Prozentsatz

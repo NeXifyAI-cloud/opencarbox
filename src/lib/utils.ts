@@ -26,6 +26,10 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 
+// Cache für Intl-Formatierer zur Performance-Optimierung
+const numberFormatters = new Map<string, Intl.NumberFormat>();
+const dateTimeFormatters = new Map<string, Intl.DateTimeFormat>();
+
 /**
  * Formatiert einen Preis im deutschen/österreichischen Format.
  * 
@@ -39,10 +43,19 @@ export function cn(...inputs: ClassValue[]): string {
  * ```
  */
 export function formatPrice(price: number, currency: string = 'EUR'): string {
-  return new Intl.NumberFormat('de-AT', {
-    style: 'currency',
-    currency,
-  }).format(price);
+  const cacheKey = `de-AT-${currency}`;
+  let formatter = numberFormatters.get(cacheKey);
+
+  if (!formatter) {
+    formatter = new Intl.NumberFormat('de-AT', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+    });
+    numberFormatters.set(cacheKey, formatter);
+  }
+
+  return formatter.format(price);
 }
 
 /**
@@ -63,27 +76,35 @@ export function formatDate(
   options?: { short?: boolean; withTime?: boolean }
 ): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
+  const cacheKey = `de-AT-${options?.short}-${options?.withTime}`;
   
-  if (options?.short) {
-    return new Intl.DateTimeFormat('de-AT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(dateObj);
+  let formatter = dateTimeFormatters.get(cacheKey);
+  
+  if (!formatter) {
+    if (options?.short) {
+      formatter = new Intl.DateTimeFormat('de-AT', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+    } else {
+      const formatOptions: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      };
+
+      if (options?.withTime) {
+        formatOptions.hour = '2-digit';
+        formatOptions.minute = '2-digit';
+      }
+
+      formatter = new Intl.DateTimeFormat('de-AT', formatOptions);
+    }
+    dateTimeFormatters.set(cacheKey, formatter);
   }
   
-  const formatOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  };
-  
-  if (options?.withTime) {
-    formatOptions.hour = '2-digit';
-    formatOptions.minute = '2-digit';
-  }
-  
-  return new Intl.DateTimeFormat('de-AT', formatOptions).format(dateObj);
+  return formatter.format(dateObj);
 }
 
 /**
@@ -277,4 +298,3 @@ export function calculateDiscountPercentage(
   if (originalPrice <= 0) return 0;
   return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
 }
-

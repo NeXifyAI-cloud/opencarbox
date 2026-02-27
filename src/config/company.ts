@@ -2,9 +2,9 @@
  * Firmenkonfiguration für OpenCarBox & Carvantooo
  * Zentrale Unternehmensdaten gemäß österreichischem Recht
  *
- * Carvantooo = Shop/Teile (rot #E53E3E)
- * OpenCarBox Werkstatt = Service (blau #3182CE)
- * OpenCarBox Autohandel = Fahrzeuge (blau #3182CE)
+ * Carvantooo = Shop/Teile (rot #FFB300)
+ * OpenCarBox Werkstatt = Service (blau #FFA800)
+ * OpenCarBox Autohandel = Fahrzeuge (blau #FFA800)
  */
 export const companyConfig = {
   // Markenname für den Shop

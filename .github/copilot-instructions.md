@@ -4,7 +4,7 @@
 
 ## Architecture Overview
 
-**Three-site platform** sharing one codebase: Carvantooo (Shop, rot `#E53E3E`), OpenCarBox Werkstatt + Autohandel (blau `#3182CE`).
+**Three-site platform** sharing one codebase: Carvantooo (Shop, rot `#FFB300`), OpenCarBox Werkstatt + Autohandel (blau `#FFA800`).
 
 ```
 Client: React + TanStack Query + Zustand | TypeScript strict

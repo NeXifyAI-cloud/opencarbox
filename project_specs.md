@@ -64,9 +64,9 @@ Entwicklung einer hochprofessionellen Multisite E-Commerce Plattform für die Op
 
 | Marke | Bereich | Claim | Primärfarbe | Charakter |
 |-------|---------|-------|-------------|-----------|
-| **Carvantooo** | Onlineshop | "With Carvantooo Parts, Your Car Drives Better" | Rot `#E53E3E` | Dynamisch, Action, E-Commerce |
-| **OpenCarBox** | Werkstatt | "Weil das Auto zur Familie gehört" | Blau `#3182CE` | Vertrauen, Familie, Service |
-| **OpenCarBox** | Autohandel | "Ihr Traumauto wartet" | Blau `#3182CE` | Professionell, Beratung |
+| **Carvantooo** | Onlineshop | "With Carvantooo Parts, Your Car Drives Better" | Rot `#FFB300` | Dynamisch, Action, E-Commerce |
+| **OpenCarBox** | Werkstatt | "Weil das Auto zur Familie gehört" | Blau `#FFA800` | Vertrauen, Familie, Service |
+| **OpenCarBox** | Autohandel | "Ihr Traumauto wartet" | Blau `#FFA800` | Professionell, Beratung |
 
 ### 2.3 Logo-Verwendung
 
@@ -106,13 +106,13 @@ Entwicklung einer hochprofessionellen Multisite E-Commerce Plattform für die Op
 --carvantooo-200: #FEB2B2;   /* Border light */
 --carvantooo-300: #FC8181;   /* Text subtle */
 --carvantooo-400: #F56565;   /* Icon default */
---carvantooo-500: #E53E3E;   /* ✓ Primary default */
+--carvantooo-500: #FFB300;   /* ✓ Primary default */
 --carvantooo-600: #C53030;   /* Primary hover */
 --carvantooo-700: #9B2C2C;   /* Primary active */
 --carvantooo-800: #822727;   /* Text dark */
 --carvantooo-900: #63171B;   /* Text darkest */
 --carvantooo-glow: rgba(229, 62, 62, 0.4);
---carvantooo-gradient: linear-gradient(135deg, #E53E3E 0%, #9B2C2C 100%);
+--carvantooo-gradient: linear-gradient(135deg, #FFB300 0%, #9B2C2C 100%);
 ```
 
 #### OpenCarBox (Services) - Blau-Spektrum
@@ -122,13 +122,13 @@ Entwicklung einer hochprofessionellen Multisite E-Commerce Plattform für die Op
 --opencarbox-200: #90CDF4;
 --opencarbox-300: #63B3ED;
 --opencarbox-400: #4299E1;
---opencarbox-500: #3182CE;   /* ✓ Primary default */
+--opencarbox-500: #FFA800;   /* ✓ Primary default */
 --opencarbox-600: #2B6CB0;   /* Primary hover */
 --opencarbox-700: #2C5282;   /* Primary active */
 --opencarbox-800: #2A4365;   /* Text dark */
 --opencarbox-900: #1A365D;   /* Text darkest */
 --opencarbox-glow: rgba(49, 130, 206, 0.4);
---opencarbox-gradient: linear-gradient(135deg, #3182CE 0%, #1A365D 100%);
+--opencarbox-gradient: linear-gradient(135deg, #FFA800 0%, #1A365D 100%);
 ```
 
 #### Neutrale Palette
@@ -151,7 +151,7 @@ Entwicklung einer hochprofessionellen Multisite E-Commerce Plattform für die Op
 --success: #10B981;   /* Emerald 500 */
 --warning: #F59E0B;   /* Amber 500 */
 --error:   #EF4444;   /* Red 500 */
---info:    #3B82F6;   /* Blue 500 */
+--info:    #FFA800;   /* Blue 500 */
 ```
 
 ### 3.3 Typografie

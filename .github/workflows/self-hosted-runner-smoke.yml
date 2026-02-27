@@ -30,7 +30,7 @@ jobs:
         shell: pwsh
         run: |
           node --version
-          npm --version
+          pnpm --version
 
       - name: GitHub checkout
         uses: actions/checkout@v4

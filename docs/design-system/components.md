@@ -190,13 +190,13 @@ HSN/TSN-Fahrzeugsuche mit Autocomplete.
 
 ### Carvantooo (Shop)
 
-- Primärfarbe: Rot (#E53E3E)
+- Primärfarbe: Rot (#FFB300)
 - Button-Variante: `variant="carvantooo"`
 - Energetisch, Action-orientiert
 
 ### OpenCarBox (Services)
 
-- Primärfarbe: Blau (#3182CE)
+- Primärfarbe: Blau (#FFA800)
 - Button-Variante: `variant="opencarbox"`
 - Vertrauenswürdig, professionell
 

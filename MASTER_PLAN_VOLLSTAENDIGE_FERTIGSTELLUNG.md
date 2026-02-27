@@ -10,17 +10,17 @@ Dieser Master-Plan definiert die vollständige Fertigstellung des OpenCarBox-Sys
 
 ## 📋 PHASE 1: DESIGN-SYSTEM-VEREINHEITLICHUNG (KEIN ROT)
 
-### 1.1 Neue Farbpalette basierend auf Sharon UI Base Tokens
+### 1.1 Neue Farbpalette basierend auf Sharon UI Base Tokens (DOS v1.1)
 
-**Primärfarbe:** Professionelles Blau (Corporate Identity)
-- `primary.DEFAULT`: `#2563EB` (Professional Blue)
-- `primary.light`: `#3B82F6`
-- `primary.dark`: `#1D4ED8`
+**Primärfarbe:** OpenCarBox Orange (Service Primary)
+- `primary.DEFAULT`: `#FFA800`
+- `primary.light`: `#FFBF33`
+- `primary.dark`: `#B37600`
 
-**Sekundärfarbe:** Modernes Teal (Akzente)
-- `secondary.DEFAULT`: `#0D9488` (Modern Teal)
-- `secondary.light`: `#14B8A6`
-- `secondary.dark`: `#0F766E`
+**Sekundärfarbe:** Carvantooo Yellow-Orange (Shop Primary)
+- `secondary.DEFAULT`: `#FFB300`
+- `secondary.light`: `#FFC533`
+- `secondary.dark`: `#B37D00`
 
 **Neutrale Palette:** Sharon UI Neutral Scale
 - `neutral.50` bis `neutral.950`

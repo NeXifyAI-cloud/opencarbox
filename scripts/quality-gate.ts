@@ -123,6 +123,8 @@ function checkDocumentation(): void {
     'docs/tasks/master_plan.md',
     'docs/architecture/system-overview.md',
     'docs/design-system/colors.md',
+    'docs/PRUEFPLAN_DOS.md',
+    'DESIGN_TOKENS.md',
     'project_specs.md',
   ];
 
@@ -298,6 +300,89 @@ function generateSummary(): void {
 }
 
 /**
+ * Prüft auf korrekte Branding-Farben gemäß DOS v1.1.
+ */
+function checkBrandingColors(): void {
+  console.log('🔍 Prüfe Branding-Farben...');
+
+  const forbiddenColors = [
+    '#3B82F6', // Altes OCB Blau
+    '#14B8A6', // Altes Carvantooo Teal
+    '#E53E3E', // Altes Carvantooo Rot
+    '#3182CE', // Altes OCB Blau (docs)
+  ];
+
+  const mandatoryColors = [
+    '#FFB300', // Shop Primary
+    '#FFA800', // Service Primary
+  ];
+
+  let violationCount = 0;
+
+  function scanDirectory(dir: string): void {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      const relativePath = path.relative(process.cwd(), fullPath);
+
+      // Überspringe node_modules, .next, und die Farbdokumentation selbst (um Zirkelschlüsse zu vermeiden)
+      if (
+        entry.isDirectory() &&
+        !['node_modules', '.next', '.git'].includes(entry.name)
+      ) {
+        scanDirectory(fullPath);
+      } else if (
+        entry.name.match(/\.(ts|tsx|css|scss|md)$/) &&
+        !['docs/design-system/colors.md', 'DESIGN_TOKENS.md', 'src/config/design-tokens.ts', 'tailwind.config.ts', 'scripts/quality-gate.ts'].includes(relativePath)
+      ) {
+        const content = fs.readFileSync(fullPath, 'utf-8');
+
+        for (const color of forbiddenColors) {
+          if (content.toUpperCase().includes(color.toUpperCase())) {
+            violationCount++;
+            issues.push({
+              type: 'warning',
+              category: 'Branding',
+              file: relativePath,
+              message: `Veraltete Branding-Farbe gefunden: ${color}`,
+            });
+          }
+        }
+      }
+    }
+  }
+
+  scanDirectory(process.cwd());
+
+  // Überprüfe ob Pflichtfarben in Konfig vorhanden sind
+  const configFiles = ['src/config/design-tokens.ts', 'tailwind.config.ts'];
+  for (const file of configFiles) {
+    const fullPath = path.join(process.cwd(), file);
+    if (fs.existsSync(fullPath)) {
+      const content = fs.readFileSync(fullPath, 'utf-8');
+      for (const color of mandatoryColors) {
+        if (!content.toUpperCase().includes(color.toUpperCase())) {
+          violationCount++;
+          issues.push({
+            type: 'error',
+            category: 'Branding',
+            file: file,
+            message: `Pflicht-Branding-Farbe fehlt: ${color}`,
+          });
+        }
+      }
+    }
+  }
+
+  if (violationCount === 0) {
+    console.log('  ✅ Branding-Farben konform');
+  } else {
+    console.log(`  ❌ ${violationCount} Branding-Verletzungen gefunden`);
+  }
+}
+
+/**
  * Hauptfunktion
  */
 function main(): void {
@@ -309,6 +394,7 @@ function main(): void {
   checkAnyTypes();
   checkFunctionLength();
   checkDocumentation();
+  checkBrandingColors();
 
   generateSummary();
 }

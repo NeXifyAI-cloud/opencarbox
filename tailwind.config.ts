@@ -56,40 +56,40 @@ const config: Config = {
         ring: 'hsl(var(--ring))',
         input: 'hsl(var(--input))',
 
-        /* Primary - Professionelles Blau (Corporate Identity) */
+        /* Primary - OpenCarBox Orange */
         primary: {
-          50: '#EFF6FF',
-          100: '#DBEAFE',
-          200: '#BFDBFE',
-          300: '#93C5FD',
-          400: '#60A5FA',
-          500: '#3B82F6', // DEFAULT
-          600: '#2563EB', // Hover
-          700: '#1D4ED8', // Active
-          800: '#1E40AF',
-          900: '#1E3A8A',
-          950: '#172554',
-          DEFAULT: '#3B82F6',
-          light: '#60A5FA',
-          dark: '#1D4ED8',
+          50: '#FFF7E6',
+          100: '#FFEFCC',
+          200: '#FFDF99',
+          300: '#FFCF66',
+          400: '#FFBF33',
+          500: '#FFA800', // DEFAULT
+          600: '#E69700', // Hover
+          700: '#B37600', // Active
+          800: '#805400',
+          900: '#4D3200',
+          950: '#1A1100',
+          DEFAULT: '#FFA800',
+          light: '#FFBF33',
+          dark: '#B37600',
           foreground: '#FFFFFF',
         },
-        /* Secondary - Modernes Teal (Akzente) */
+        /* Secondary - Carvantooo Yellow-Orange */
         secondary: {
-          50: '#F0FDFA',
-          100: '#CCFBF1',
-          200: '#99F6E4',
-          300: '#5EEAD4',
-          400: '#2DD4BF',
-          500: '#14B8A6', // DEFAULT
-          600: '#0D9488', // Hover
-          700: '#0F766E', // Active
-          800: '#115E59',
-          900: '#134E4A',
-          950: '#042F2E',
-          DEFAULT: '#14B8A6',
-          light: '#2DD4BF',
-          dark: '#0F766E',
+          50: '#FFF8E6',
+          100: '#FFF0CC',
+          200: '#FFE299',
+          300: '#FFD366',
+          400: '#FFC533',
+          500: '#FFB300', // DEFAULT
+          600: '#E6A100', // Hover
+          700: '#B37D00', // Active
+          800: '#805900',
+          900: '#4D3600',
+          950: '#1A1200',
+          DEFAULT: '#FFB300',
+          light: '#FFC533',
+          dark: '#B37D00',
           foreground: '#FFFFFF',
         },
         /* Accent - Für besondere Hervorhebungen */

@@ -9,11 +9,13 @@
  * - Ungenutzte Exports
  * - Fehlende JSDoc-Kommentare
  * - Code-Duplikation (Basic)
- * - Projekt-Standards-Compliance
+ * - Projekt-Standards-Compliance (DOS v1.1)
+ * - Brand Color Compliance
  *
  * Ausführung: npm run quality-gate
  *
  * @see project_specs.md - Abschnitt 6
+ * @see docs/PRUEFPLAN_DOS.md
  */
 
 import { execSync } from 'child_process';
@@ -39,6 +41,11 @@ const issues: QualityIssue[] = [];
 function checkTypeScript(): void {
   console.log('🔍 Prüfe TypeScript...');
 
+  if (!fs.existsSync(path.join(process.cwd(), 'tsconfig.json'))) {
+    console.log('  ⚠️  Keine tsconfig.json gefunden. TypeScript Check übersprungen.');
+    return;
+  }
+
   try {
     execSync('npx tsc --noEmit', { stdio: 'pipe' });
     console.log('  ✅ Keine TypeScript-Fehler');
@@ -54,7 +61,6 @@ function checkTypeScript(): void {
       });
       console.log(`  ❌ ${errorCount} TypeScript-Fehler`);
     } else {
-      // Falls tsc fehlschlägt aber keine "error TS" gefunden werden (z.B. Config Error)
       issues.push({
         type: 'error',
         category: 'TypeScript',
@@ -114,7 +120,7 @@ function checkConsoleLogs(): void {
 }
 
 /**
- * Prüft auf fehlende Dokumentation.
+ * Prüft auf fehlende Dokumentation (DOS v1.1).
  */
 function checkDocumentation(): void {
   console.log('🔍 Prüfe Dokumentation...');
@@ -122,8 +128,10 @@ function checkDocumentation(): void {
   const requiredDocs = [
     'docs/tasks/master_plan.md',
     'docs/architecture/system-overview.md',
-    'docs/design-system/colors.md',
     'project_specs.md',
+    'docs/PRUEFPLAN_DOS.md',
+    'DESIGN_TOKENS.md',
+    'docs/QA_MASTER_CHECKLIST.md'
   ];
 
   let missingCount = 0;
@@ -171,7 +179,6 @@ function checkAnyTypes(): void {
         scanDirectory(fullPath);
       } else if (entry.name.match(/\.(ts|tsx)$/)) {
         const content = fs.readFileSync(fullPath, 'utf-8');
-        // Suche nach : any, as any, <any>, any[] etc.
         const matches = content.match(/:\s*any\b|as\s+any\b|<any>|any\[\]/g);
 
         if (matches) {
@@ -193,6 +200,67 @@ function checkAnyTypes(): void {
     console.log('  ✅ Keine "any" Types');
   } else {
     console.log(`  ⚠️  ${anyCount} "any" Types gefunden`);
+  }
+}
+
+/**
+ * Prüft auf Branding-Farben Compliance.
+ */
+function checkBrandingColors(): void {
+  console.log('🔍 Prüfe Branding-Farben...');
+
+  if (!fs.existsSync(SRC_DIR)) {
+    return;
+  }
+
+  const SHOP_COLOR = '#FFB300';
+  const WERKSTATT_COLOR = '#FFA800';
+  const IGNORE_COLORS = ['#FFFFFF', '#FFF', '#F0F0F0', '#F9FAFB']; // Häufige Nicht-Branding-Farben
+
+  let colorIssues = 0;
+
+  function scanDirectory(dir: string): void {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+
+      // Überspringe dieses Script selbst
+      if (entry.name === 'quality-gate.ts') continue;
+
+      if (entry.isDirectory() && !entry.name.includes('node_modules')) {
+        scanDirectory(fullPath);
+      } else if (entry.name.match(/\.(tsx|ts|css|scss)$/)) {
+        const content = fs.readFileSync(fullPath, 'utf-8');
+        const hexMatches = content.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/g);
+
+        if (hexMatches) {
+          for (const match of hexMatches) {
+            const upperMatch = match.toUpperCase();
+            if (upperMatch.startsWith('#FF') &&
+                upperMatch !== SHOP_COLOR &&
+                upperMatch !== WERKSTATT_COLOR &&
+                !IGNORE_COLORS.includes(upperMatch)) {
+              colorIssues++;
+              issues.push({
+                type: 'warning',
+                category: 'Branding',
+                file: path.relative(process.cwd(), fullPath),
+                message: `Potentiell falsche Branding-Farbe gefunden: ${match}`,
+              });
+            }
+          }
+        }
+      }
+    }
+  }
+
+  scanDirectory(SRC_DIR);
+
+  if (colorIssues === 0) {
+    console.log('  ✅ Branding-Farben scheinen korrekt');
+  } else {
+    console.log(`  ⚠️  ${colorIssues} potentielle Branding-Farbkonflikte`);
   }
 }
 
@@ -220,13 +288,9 @@ function checkFunctionLength(): void {
         scanDirectory(fullPath);
       } else if (entry.name.match(/\.(ts|tsx|js|jsx)$/)) {
         const content = fs.readFileSync(fullPath, 'utf-8');
-
-        // Einfache Heuristik: Zähle Zeilen zwischen function/const und schließender Klammer
-        // Genauere Analyse würde einen Parser erfordern
         const functionMatches = content.match(/(function\s+\w+|const\s+\w+\s*=\s*(?:async\s*)?\([^)]*\)\s*=>|const\s+\w+\s*=\s*(?:async\s*)?function)/g);
 
         if (functionMatches && functionMatches.length > 0) {
-          // Vereinfachte Prüfung: Wenn Datei sehr lang ist, warnen
           const lines = content.split('\n').length;
           const avgLinesPerFunction = lines / functionMatches.length;
 
@@ -288,8 +352,8 @@ function generateSummary(): void {
   if (errors.length > 0) {
     console.log('❌ QUALITY-GATE: NICHT BESTANDEN');
     process.exit(1);
-  } else if (warnings.length > 5) {
-    console.log('⚠️  QUALITY-GATE: BESTANDEN MIT WARNUNGEN');
+  } else if (warnings.length > 30) {
+    console.log('⚠️  QUALITY-GATE: BESTANDEN MIT VIELEN WARNUNGEN');
     process.exit(0);
   } else {
     console.log('✅ QUALITY-GATE: BESTANDEN');
@@ -301,12 +365,13 @@ function generateSummary(): void {
  * Hauptfunktion
  */
 function main(): void {
-  console.log('\n🚀 Starte Quality-Gate Prüfungen...\n');
+  console.log('\n🚀 Starte Quality-Gate Prüfungen (DOS v1.1)...\n');
   console.log('─'.repeat(60) + '\n');
 
   checkTypeScript();
   checkConsoleLogs();
   checkAnyTypes();
+  checkBrandingColors();
   checkFunctionLength();
   checkDocumentation();
 

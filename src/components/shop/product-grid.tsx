@@ -6,7 +6,7 @@ import { Star, ShoppingCart, Eye, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { cn, formatPrice } from "@/lib/utils"
+import { cn } from "@/lib/utils"
 
 interface Product {
   id: string | number
@@ -134,6 +134,13 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     )
+  }
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("de-DE", {
+      style: "currency",
+      currency: "EUR",
+    }).format(price)
   }
 
   return (

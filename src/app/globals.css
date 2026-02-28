@@ -58,16 +58,16 @@
     --radius: 0.5rem;
 
     /* ---------------------------------------------------------------------
-       Marken-spezifische Variablen (aktualisiert - kein Rot)
+       Marken-spezifische Variablen (aktualisiert DOS v1.1)
        --------------------------------------------------------------------- */
     
-    /* Carvantooo (Shop) - Primary Blau */
-    --carvantooo-primary: 221 83% 53%;           /* #3B82F6 */
-    --carvantooo-glow: rgba(59, 130, 246, 0.4);
+    /* Carvantooo (Shop) - Gold-Gelb */
+    --carvantooo-primary: 42 100% 50%;           /* #FFB300 */
+    --carvantooo-glow: rgba(255, 179, 0, 0.4);
     
-    /* OpenCarBox (Services) - Secondary Teal */
-    --opencarbox-primary: 173 80% 40%;           /* #14B8A6 */
-    --opencarbox-glow: rgba(20, 184, 166, 0.4);
+    /* OpenCarBox (Services) - Orange */
+    --opencarbox-primary: 40 100% 50%;           /* #FFA800 */
+    --opencarbox-glow: rgba(255, 168, 0, 0.4);
 
     /* ---------------------------------------------------------------------
        Schatten
@@ -106,9 +106,9 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 221 83% 65%;               /* Helleres Blau für Dark Mode */
 
-    /* Marken-spezifische Glow Effects (aktualisiert) */
-    --carvantooo-glow: rgba(59, 130, 246, 0.4);    /* Primary Blau */
-    --opencarbox-glow: rgba(20, 184, 166, 0.4);    /* Secondary Teal */
+    /* Marken-spezifische Glow Effects (aktualisiert DOS v1.1) */
+    --carvantooo-glow: rgba(255, 179, 0, 0.4);
+    --opencarbox-glow: rgba(255, 168, 0, 0.4);
   }
 }
 

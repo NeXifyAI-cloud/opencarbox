@@ -32,6 +32,9 @@ const config: Config = {
         ocb: {
           orange: '#FFA800',
           'orange-hover': '#e09400',
+          'shop': '#FFB300',
+          'werkstatt': '#FFA800',
+          'autohandel': '#FFA800',
         },
         /* ---------------------------------------------------------
            shadcn/ui CSS-Variable Tokens (Dark-Mode-kompatibel)

@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
 
 // Validation Schema für User Updates
 const userUpdateSchema = z.object({
@@ -12,6 +10,16 @@ const userUpdateSchema = z.object({
 
 // GET /api/users - Alle Benutzer abrufen (mit Pagination)
 export async function GET(request: NextRequest) {
+  const userRole = request.headers.get('x-user-role')
+
+  // Nur Admins dürfen alle Benutzer auflisten
+  if (userRole !== 'ADMIN') {
+    return NextResponse.json(
+      { success: false, error: 'Nicht autorisiert' },
+      { status: 403 }
+    )
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
@@ -70,10 +78,13 @@ export async function GET(request: NextRequest) {
 
 // PUT /api/users - Benutzer aktualisieren
 export async function PUT(request: NextRequest) {
+  const currentUserId = request.headers.get('x-user-id')
+  const currentUserRole = request.headers.get('x-user-role')
+
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('id')
-    
+
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'Benutzer-ID ist erforderlich' },
@@ -81,8 +92,24 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Nur Admins oder der Benutzer selbst dürfen aktualisieren
+    if (currentUserRole !== 'ADMIN' && currentUserId !== userId) {
+      return NextResponse.json(
+        { success: false, error: 'Nicht autorisiert' },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
-    
+
+    // Nur Admins dürfen Rollen ändern
+    if (body.role && currentUserRole !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Rollenänderung nur für Admins zulässig' },
+        { status: 403 }
+      )
+    }
+
     // Validierung
     const validation = userUpdateSchema.safeParse(body)
     if (!validation.success) {

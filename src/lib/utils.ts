@@ -77,12 +77,12 @@ export function formatDate(
     month: 'long',
     year: 'numeric',
   };
-  
+
   if (options?.withTime) {
     formatOptions.hour = '2-digit';
     formatOptions.minute = '2-digit';
   }
-  
+
   return new Intl.DateTimeFormat('de-AT', formatOptions).format(dateObj);
 }
 
@@ -277,4 +277,3 @@ export function calculateDiscountPercentage(
   if (originalPrice <= 0) return 0;
   return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
 }
-

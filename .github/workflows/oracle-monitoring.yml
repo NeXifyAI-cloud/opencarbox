@@ -60,13 +60,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: pnpm
+          cache: npm
 
       - name: Get current timestamp
         id: timestamp
@@ -245,16 +242,13 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: pnpm
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Run DeepSeek diagnostic
         id: deepseek-diag
@@ -443,16 +437,13 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
     
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: pnpm
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Generate report
         id: report
@@ -513,13 +504,10 @@ echo "✅ DeepSeek: $RESPONSE_TIME_MS ms (API key starts with $MASKED_KEY)"
 
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: pnpm
+          cache: npm
 
       - name: Attempt circuit breaker reset
         id: reset

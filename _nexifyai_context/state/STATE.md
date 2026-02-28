@@ -11,8 +11,7 @@
 - **JULES-Integration:** Systemweit aktiv in ci, autofix, conflict-resolver, deploy-preview, backlog-sync, auto-improve
 
 ## Letzte Aktionen
-- Guard-False-Positive in tools/guard_no_openai.sh behoben.
-- JULES systemweit integriert.
-- DOS v1.1 Prüfplan (`docs/PRUEFPLAN_DOS.md`) und Design Tokens (`DESIGN_TOKENS.md`) initialisiert.
-- Branding Farben auf #FFB300 (Shop) und #FFA800 (Werkstatt/Autohandel) aktualisiert.
-- Tracking-System (`src/lib/events.ts`) mit Zod-Validierung implementiert.
+- Guard-False-Positive in tools/guard_no_openai.sh behoben (github_issues.json + NOTES/ + docs/ + *.md ausgeschlossen)
+- NOTES/automation-manifest.md von OPENAI_API_KEY Referenzen bereinigt
+- JULES systemweit in alle Workflows integriert (sofortiges Agieren bei Failures)
+- 31 offene Incident-Issues können nach Merge geschlossen werden

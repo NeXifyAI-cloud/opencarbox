@@ -4,13 +4,6 @@
 - Multisite-Plattform für OpenCarBox (Werkstatt/Autohandel) und Carvantooo (Shop).
 - Tech-Stack: Next.js 14, TypeScript, Tailwind CSS, Prisma, Supabase.
 - Sprach-Konvention (G10): Englisch für Code/Git, Deutsch für UI/Doku.
-- Branding (DOS v1.1): Shop = #FFB300, Werkstatt/Autohandel = #FFA800.
-
-## Prüfstrategie (DOS v1.1)
-- Zentraler Prüfplan in `docs/PRUEFPLAN_DOS.md`.
-- G3: Keine One-Off UI (shadcn/ui only, Design Tokens in `DESIGN_TOKENS.md`).
-- G4: Tracking First (Zod-validierte Events in `src/lib/events.ts`).
-- G9: Dual-Brand Konsistenz (Farben strikt trennen).
 
 ## Sicherheits-Anforderungen
 - Keine autonome Kontrolle über das System.

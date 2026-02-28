@@ -27,21 +27,18 @@ jobs:
           fetch-depth: 0
 
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
+          cache: npm
 
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
 
       - name: Run Mem0 integration
         env:
           GITLAB_PROJEKT_TOKEN: ${{ secrets.GITLAB_PROJEKT_TOKEN }}
           CLASSIC_TOKEN_GITHUB_NEU: ${{ secrets.CLASSIC_TOKEN_GITHUB_NEU }}
-        run: pnpm exec tsx scripts/mem0-integration.ts
+        run: npx tsx scripts/mem0-integration.ts
         continue-on-error: true
 
       - name: Sync to GitLab

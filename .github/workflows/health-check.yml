@@ -30,29 +30,26 @@ jobs:
       - uses: actions/checkout@v4
 
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
+          cache: npm
 
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
 
       - name: Generate Prisma Client
         id: prisma
-        run: pnpm run db:generate
+        run: npm run db:generate
         continue-on-error: true
 
       - name: Lint
         id: lint
-        run: pnpm run lint
+        run: npm run lint
         continue-on-error: true
 
       - name: Type check
         id: typecheck
-        run: pnpm run typecheck
+        run: npm run typecheck
         continue-on-error: true
 
       - name: Test
@@ -62,7 +59,7 @@ jobs:
 
       - name: Build
         id: build
-        run: pnpm run build
+        run: npm run build
         continue-on-error: true
 
       - name: Dependency freshness

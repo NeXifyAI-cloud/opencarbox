@@ -29,8 +29,8 @@ export default defineConfig({
         statements: 80,
       },
     },
-    include: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
-    exclude: ['node_modules/', 'tests/e2e/**'],
+    include: ['src/**/*.test.{ts,tsx}', 'src/**/*.spec.{ts,tsx}'],
+    exclude: ['node_modules/', 'tests/e2e/**', 'node_modules/.pnpm/**'],
   },
   resolve: {
     alias: {

@@ -23,13 +23,10 @@ jobs:
       - uses: actions/checkout@v6
 
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
+          cache: npm
 
       - name: Install system tools
         run: sudo apt-get update && sudo apt-get install -y gh jq
@@ -38,12 +35,12 @@ jobs:
         run: npm install -g vercel supabase
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci
 
       - name: Preflight
         run: |
           source tools/export_env.sh
-          pnpm exec tsx tools/preflight.ts ci
+          npx tsx tools/preflight.ts ci
 
       - name: Run bootstrap (idempotent)
         run: |

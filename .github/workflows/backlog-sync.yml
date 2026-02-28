@@ -26,16 +26,13 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 10
 
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: pnpm
+          cache: npm
 
-      - run: pnpm install --frozen-lockfile
+      - run: npm ci
 
       - name: Fetch open issues
         id: issues
@@ -63,7 +60,7 @@ jobs:
 
       - name: Update backlog
         run: |
-          pnpm exec tsx -e "
+          npx tsx -e "
             import { formatIssuesBlock, updateBacklogContent } from './tools/backlog_sync';
             import * as fs from 'fs';
             const issues = JSON.parse(fs.readFileSync('/tmp/issues.json', 'utf-8'));

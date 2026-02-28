@@ -34,12 +34,15 @@ jobs:
       - uses: actions/checkout@v6
 
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+          cache: pnpm
 
-      - run: npm ci
+      - run: pnpm install --frozen-lockfile
 
       - name: Check retry count
         id: retry_count
@@ -91,7 +94,7 @@ jobs:
         run: |
           STEPS="${{ steps.logs.outputs.failed_steps }}"
           # Use the TypeScript classifier
-          RESULT=$(npx tsx -e "
+          RESULT=$(pnpm exec tsx -e "
             import { classifyFailure, isTransient, suggestedLabels } from './tools/ci_failure_classify';
             const input = process.argv[1] || '';
             const result = classifyFailure(input);

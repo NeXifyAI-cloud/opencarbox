@@ -107,6 +107,7 @@ interface ProductGridProps {
 export function ProductGrid({ category, limit, showFilters = true, products: customProducts }: ProductGridProps) {
   const [wishlist, setWishlist] = React.useState<(string | number)[]>([])
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null)
+  const [loadingProductId, setLoadingProductId] = React.useState<string | number | null>(null)
 
   const categories = Array.from(new Set((customProducts || mockProducts).map(p => p.category)))
 
@@ -134,6 +135,14 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
         ? prev.filter(id => id !== productId)
         : [...prev, productId]
     )
+  }
+
+  const handleAddToCart = (productId: string | number) => {
+    setLoadingProductId(productId)
+    // Simulate API call
+    setTimeout(() => {
+      setLoadingProductId(null)
+    }, 1000)
   }
 
   const formatPrice = (price: number) => {
@@ -272,8 +281,12 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
               <Button
                 className="flex-1 bg-gradient-to-r from-carvantooo-500 to-carvantooo-700 hover:from-carvantooo-600 hover:to-carvantooo-800"
                 size="lg"
+                loading={loadingProductId === product.id}
+                onClick={() => handleAddToCart(product.id)}
               >
-                <ShoppingCart className="mr-2 h-4 w-4" />
+                {!loadingProductId || loadingProductId !== product.id ? (
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                ) : null}
                 In den Warenkorb
               </Button>
               <Button variant="outline" size="icon">

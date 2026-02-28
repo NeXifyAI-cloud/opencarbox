@@ -1,0 +1,64 @@
+name: Feature Request
+description: Neues Feature DOS-konform implementieren (G1-G9)
+title: "[feat]: "
+labels: ["type:feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Bitte füllen Sie alle Felder gemäß DOS v1.1 aus.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Bereich
+      options:
+        - shop
+        - werkstatt
+        - autohandel
+        - shared
+    validations:
+      required: true
+  - type: checkboxes
+    id: funnel
+    attributes:
+      label: Funnel-Zuordnung (Pflicht)
+      options:
+        - label: Awareness
+        - label: Education
+        - label: Consideration
+        - label: Conversion
+        - label: Retention
+    validations:
+      required: true
+  - type: input
+    id: kpi_goal
+    attributes:
+      label: KPI-Ziel
+      description: Welcher Wert wird beeinflusst? (z. B. Add-to-Cart Rate +1%)
+    validations:
+      required: true
+  - type: textarea
+    id: events
+    attributes:
+      label: Betroffene Events
+      description: Welche Tracking-Events sind relevant oder neu?
+  - type: checkboxes
+    id: security
+    attributes:
+      label: Security-Bewertung
+      options:
+        - label: RLS geprüft
+        - label: DSGVO-konform (keine PII)
+        - label: Zahlungsrelevanz / Stripe-Impact geprüft
+  - type: checkboxes
+    id: done_criteria
+    attributes:
+      label: Done-Kriterien
+      options:
+        - label: UI-Regel erfüllt (G3)
+        - label: Tracking integriert (G4)
+        - label: Lighthouse ≥ 90 (G5)
+        - label: Tests ergänzt
+        - label: Dokumentation aktualisiert (STATE/KNOWLEDGE)
+    validations:
+      required: true

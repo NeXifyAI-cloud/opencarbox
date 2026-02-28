@@ -1,0 +1,45 @@
+name: KPI Alert
+description: Automatischer Alarm bei KPI-Abweichungen
+title: "[incident]: KPI Alert - "
+labels: ["type:incident", "kpi-alert"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Dieser Issue wird automatisch via Monitoring erstellt.
+  - type: input
+    id: kpi
+    attributes:
+      label: KPI
+    validations:
+      required: true
+  - type: input
+    id: current_value
+    attributes:
+      label: Aktueller Wert
+  - type: input
+    id: target_value
+    attributes:
+      label: Zielwert
+  - type: input
+    id: window
+    attributes:
+      label: Zeitfenster
+  - type: dropdown
+    id: funnel
+    attributes:
+      label: Funnel-Schritt
+      options:
+        - Awareness
+        - Education
+        - Consideration
+        - Conversion
+        - Retention
+  - type: checkboxes
+    id: analysis
+    attributes:
+      label: Analyse
+      options:
+        - label: Event-Tracking korrekt?
+        - label: UX-Regression?
+        - label: Performance-Drop?

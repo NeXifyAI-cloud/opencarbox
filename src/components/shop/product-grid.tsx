@@ -6,7 +6,7 @@ import { Star, ShoppingCart, Eye, Heart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { cn } from "@/lib/utils"
+import { cn, formatPrice } from "@/lib/utils"
 
 interface Product {
   id: string | number
@@ -107,6 +107,7 @@ interface ProductGridProps {
 export function ProductGrid({ category, limit, showFilters = true, products: customProducts }: ProductGridProps) {
   const [wishlist, setWishlist] = React.useState<(string | number)[]>([])
   const [selectedCategory, setSelectedCategory] = React.useState<string | null>(null)
+  const [isAddingToCart, setIsAddingToCart] = React.useState<Record<string | number, boolean>>({})
 
   const categories = Array.from(new Set((customProducts || mockProducts).map(p => p.category)))
 
@@ -136,11 +137,13 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
     )
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("de-DE", {
-      style: "currency",
-      currency: "EUR",
-    }).format(price)
+  const handleAddToCart = (productId: string | number) => {
+    setIsAddingToCart(prev => ({ ...prev, [productId]: true }))
+    // In einer echten App würde hier der Cart-Store aufgerufen werden.
+    // Wir simulieren hier nur den Loading-State für die UX-Verbesserung.
+    setTimeout(() => {
+      setIsAddingToCart(prev => ({ ...prev, [productId]: false }))
+    }, 1000)
   }
 
   return (
@@ -198,6 +201,7 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
               size="icon"
               className="absolute top-3 right-3 z-10 bg-background/80 backdrop-blur-sm hover:bg-background"
               onClick={() => toggleWishlist(product.id)}
+              aria-label={wishlist.includes(product.id) ? "Von Wunschliste entfernen" : "Zur Wunschliste hinzufügen"}
             >
               <Heart
                 className={cn(
@@ -206,8 +210,8 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
                     ? "fill-red-500 text-red-500"
                     : "text-muted-foreground"
                 )}
+                aria-hidden="true"
               />
-              <span className="sr-only">Zur Wunschliste hinzufügen</span>
             </Button>
 
             {/* Product Image */}
@@ -251,7 +255,7 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
                   ))}
                 </div>
                 <span className="text-sm text-muted-foreground">
-                  {product.rating} ({product.reviewCount} Bewertungen)
+                  {product.rating} ({product.reviewCount || product.reviews || 0} Bewertungen)
                 </span>
               </div>
 
@@ -272,13 +276,14 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
               <Button
                 className="flex-1 bg-gradient-to-r from-carvantooo-500 to-carvantooo-700 hover:from-carvantooo-600 hover:to-carvantooo-800"
                 size="lg"
+                loading={isAddingToCart[product.id]}
+                onClick={() => handleAddToCart(product.id)}
               >
-                <ShoppingCart className="mr-2 h-4 w-4" />
+                {!isAddingToCart[product.id] && <ShoppingCart className="mr-2 h-4 w-4" aria-hidden="true" />}
                 In den Warenkorb
               </Button>
-              <Button variant="outline" size="icon">
-                <Eye className="h-4 w-4" />
-                <span className="sr-only">Details anzeigen</span>
+              <Button variant="outline" size="icon" aria-label="Details anzeigen">
+                <Eye className="h-4 w-4" aria-hidden="true" />
               </Button>
             </CardFooter>
           </Card>
@@ -288,7 +293,7 @@ export function ProductGrid({ category, limit, showFilters = true, products: cus
       {filteredProducts.length === 0 && (
         <div className="text-center py-12">
           <div className="mx-auto w-24 h-24 rounded-full bg-muted flex items-center justify-center mb-4">
-            <ShoppingCart className="h-12 w-12 text-muted-foreground" />
+            <ShoppingCart className="h-12 w-12 text-muted-foreground" aria-hidden="true" />
           </div>
           <h3 className="text-lg font-semibold mb-2">Keine Produkte gefunden</h3>
           <p className="text-muted-foreground">

@@ -9,38 +9,31 @@
 
 | Marke | Bereich | Primärfarbe | Verwendung |
 |-------|---------|-------------|------------|
-| **Carvantooo** | Onlineshop | Rot `#E53E3E` | CTAs, Warenkorb, Aktionen |
-| **OpenCarBox** | Werkstatt, Autohandel | Blau `#3182CE` | Navigation, Vertrauen, Services |
+| **Carvantooo** | Onlineshop | Gelb `#FFB300` | CTAs, Warenkorb, Aktionen |
+| **OpenCarBox** | Werkstatt, Autohandel | Orange `#FFA800` | Navigation, Vertrauen, Services |
 
 ---
 
-## 🔴 Carvantooo Rot-Spektrum
+## 🟡 Carvantooo Gelb-Spektrum (DOS v1.1)
 
 Für alle Shop-bezogenen Elemente, E-Commerce-Aktionen, Kauf-CTAs.
 
 ```css
-/* Carvantooo Rot-Palette */
---carvantooo-50:  #FFF5F5;   /* Hintergrund subtle - für Info-Boxen */
---carvantooo-100: #FED7D7;   /* Hintergrund light - für Badges */
---carvantooo-200: #FEB2B2;   /* Border light - für Outlines */
---carvantooo-300: #FC8181;   /* Text subtle - für sekundäre Info */
---carvantooo-400: #F56565;   /* Icon default - für Icons */
---carvantooo-500: #E53E3E;   /* ✓ PRIMARY - Hauptfarbe */
---carvantooo-600: #C53030;   /* Hover State - Button Hover */
---carvantooo-700: #9B2C2C;   /* Active State - Button Active */
---carvantooo-800: #822727;   /* Text dark - für dunklen Text */
---carvantooo-900: #63171B;   /* Text darkest - für Headlines */
+/* Carvantooo Gelb-Palette */
+--carvantooo-500: #FFB300;   /* ✓ PRIMARY - Hauptfarbe */
+--carvantooo-600: #E6A100;   /* Hover State */
+--carvantooo-700: #CC8F00;   /* Active State */
 ```
 
 ### Spezial-Effekte
 
 ```css
 /* Glow-Effekt für CTAs */
---carvantooo-glow: rgba(229, 62, 62, 0.4);
+--carvantooo-glow: rgba(255, 179, 0, 0.4);
 box-shadow: 0 0 20px var(--carvantooo-glow);
 
 /* Gradient für Buttons und Hero */
---carvantooo-gradient: linear-gradient(135deg, #E53E3E 0%, #9B2C2C 100%);
+--carvantooo-gradient: linear-gradient(135deg, #FFB300 0%, #E6A100 100%);
 
 /* Glassmorphism Background */
 --carvantooo-glass: rgba(229, 62, 62, 0.1);
@@ -60,32 +53,25 @@ backdrop-filter: blur(20px);
 
 ---
 
-## 🔵 OpenCarBox Blau-Spektrum
+## 🟠 OpenCarBox Orange-Spektrum (DOS v1.1)
 
 Für Werkstatt-Services, Autohandel, Vertrauens-Elemente, Navigation.
 
 ```css
-/* OpenCarBox Blau-Palette */
---opencarbox-50:  #EBF8FF;   /* Hintergrund subtle */
---opencarbox-100: #BEE3F8;   /* Hintergrund light */
---opencarbox-200: #90CDF4;   /* Border light */
---opencarbox-300: #63B3ED;   /* Text subtle */
---opencarbox-400: #4299E1;   /* Icon default */
---opencarbox-500: #3182CE;   /* ✓ PRIMARY - Hauptfarbe */
---opencarbox-600: #2B6CB0;   /* Hover State */
---opencarbox-700: #2C5282;   /* Active State */
---opencarbox-800: #2A4365;   /* Text dark */
---opencarbox-900: #1A365D;   /* Text darkest */
+/* OpenCarBox Orange-Palette */
+--opencarbox-500: #FFA800;   /* ✓ PRIMARY - Hauptfarbe */
+--opencarbox-600: #E69700;   /* Hover State */
+--opencarbox-700: #CC8600;   /* Active State */
 ```
 
 ### Spezial-Effekte
 
 ```css
 /* Glow-Effekt */
---opencarbox-glow: rgba(49, 130, 206, 0.4);
+--opencarbox-glow: rgba(255, 168, 0, 0.4);
 
 /* Gradient */
---opencarbox-gradient: linear-gradient(135deg, #3182CE 0%, #1A365D 100%);
+--opencarbox-gradient: linear-gradient(135deg, #FFA800 0%, #E69700 100%);
 
 /* Glassmorphism */
 --opencarbox-glass: rgba(49, 130, 206, 0.1);

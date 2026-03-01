@@ -10,6 +10,7 @@
  * - Fehlende JSDoc-Kommentare
  * - Code-Duplikation (Basic)
  * - Projekt-Standards-Compliance
+ * - DOS v1.1 Branding & Dokumentations-Check
  *
  * Ausführung: npm run quality-gate
  *
@@ -40,6 +41,11 @@ function checkTypeScript(): void {
   console.log('🔍 Prüfe TypeScript...');
 
   try {
+    // Check if tsconfig.json exists
+    if (!fs.existsSync(path.join(process.cwd(), 'tsconfig.json'))) {
+        console.log('  ⚠️  tsconfig.json nicht gefunden, überspringe Type-Check');
+        return;
+    }
     execSync('npx tsc --noEmit', { stdio: 'pipe' });
     console.log('  ✅ Keine TypeScript-Fehler');
   } catch (error: any) {
@@ -114,7 +120,7 @@ function checkConsoleLogs(): void {
 }
 
 /**
- * Prüft auf fehlende Dokumentation.
+ * Prüft auf fehlende Dokumentation (DOS v1.1 erweitert).
  */
 function checkDocumentation(): void {
   console.log('🔍 Prüfe Dokumentation...');
@@ -124,6 +130,9 @@ function checkDocumentation(): void {
     'docs/architecture/system-overview.md',
     'docs/design-system/colors.md',
     'project_specs.md',
+    'docs/PRUEFPLAN_DOS.md',
+    'docs/QA_MASTER_CHECKLIST.md',
+    'DESIGN_TOKENS.md'
   ];
 
   let missingCount = 0;
@@ -145,6 +154,62 @@ function checkDocumentation(): void {
     console.log('  ✅ Alle Pflicht-Dokumente vorhanden');
   } else {
     console.log(`  ❌ ${missingCount} Dokumente fehlen`);
+  }
+}
+
+/**
+ * Prüft Brand-Farben Compliance (DOS v1.1 G9).
+ */
+function checkBrandColors(): void {
+  console.log('🔍 Prüfe Brand-Farben Compliance (G9)...');
+
+  if (!fs.existsSync(SRC_DIR)) {
+      console.log('  ⚠️  src/ Verzeichnis nicht gefunden');
+      return;
+  }
+
+  let colorViolations = 0;
+  // Shop: #FFB300, Werkstatt/Autohandel: #FFA800
+  // Wir suchen nach Hex-Farben die mit #FF anfangen aber nicht die erlaubten sind.
+  // Ignoriere #FFFFFF, #FFF (Weiß) und ähnliche Graustufen falls vorhanden.
+  const hexRegex = /#(FF[0-9A-F]{4}|FF[0-9A-F]{1})/gi;
+  const allowedColors = ['#FFB300', '#FFA800', '#FFFFFF', '#FFF'];
+
+  function scanDirectory(dir: string): void {
+      const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+      for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+
+          if (entry.isDirectory() && !entry.name.includes('node_modules') && !entry.name.includes('.next')) {
+              scanDirectory(fullPath);
+          } else if (entry.name.match(/\.(ts|tsx|css|scss)$/)) {
+              const content = fs.readFileSync(fullPath, 'utf-8');
+              const matches = content.match(hexRegex);
+
+              if (matches) {
+                  for (const match of matches) {
+                      if (!allowedColors.includes(match.toUpperCase())) {
+                          colorViolations++;
+                          issues.push({
+                              type: 'error',
+                              category: 'Branding',
+                              file: path.relative(process.cwd(), fullPath),
+                              message: `Unerlaubte Farbe gefunden: ${match} (Erlaubt: #FFB300, #FFA800)`,
+                          });
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+  scanDirectory(SRC_DIR);
+
+  if (colorViolations === 0) {
+      console.log('  ✅ Brand-Farben konform');
+  } else {
+      console.log(`  ❌ ${colorViolations} Brand-Farben Verstöße gefunden`);
   }
 }
 
@@ -309,6 +374,7 @@ function main(): void {
   checkAnyTypes();
   checkFunctionLength();
   checkDocumentation();
+  checkBrandColors();
 
   generateSummary();
 }

@@ -29,6 +29,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  PNPM_VERSION: '10'
   JULES_API_KEY: ${{ secrets.JULES_API_KEY }}
   JULES_BASE_URL: ${{ secrets.JULES_BASE_URL }}
 
@@ -38,17 +39,20 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Preflight
-        run: npx tsx tools/preflight.ts ci
+        run: pnpm dlx tsx tools/preflight.ts ci
       - name: 'Guard: forbid OpenAI usage'
         run: bash tools/guard_no_openai.sh
       - name: Lint
-        run: npm run lint
+        run: pnpm run lint
       - name: Route failure to Jules
         if: failure()
         run: |
@@ -67,50 +71,59 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Generate Prisma Client
-        run: npm run db:generate
+        run: pnpm run db:generate
       - name: Type check
-        run: npm run typecheck
+        run: pnpm run typecheck
 
   test:
     name: Unit Tests
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Generate Prisma Client
-        run: npm run db:generate
+        run: pnpm run db:generate
       - name: Test
-        run: npm test
+        run: pnpm test
 
   build:
     name: Build
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Generate Prisma Client
-        run: npm run db:generate
+        run: pnpm run db:generate
       - name: Restore Next.js build cache
         uses: actions/cache@v5
         with:
           path: .next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**') }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('src/**') }}
           restore-keys: |
-            nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+            nextjs-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
             nextjs-${{ runner.os }}-
       - name: Build
-        run: npm run build
+        run: pnpm run build

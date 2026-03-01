@@ -16,6 +16,7 @@ permissions:
 
 env:
   NODE_VERSION: '20'
+  PNPM_VERSION: '10'
 
 jobs:
   audit:
@@ -23,28 +24,34 @@ jobs:
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Preflight
-        run: npx tsx tools/preflight.ts ci
+        run: pnpm dlx tsx tools/preflight.ts ci
       - name: Dependency audit
-        run: npm audit --prod || true
+        run: pnpm audit --prod || true
       - name: Secret scan
-        run: npm run secret:scan
+        run: pnpm run secret:scan
 
   sbom:
     name: SBOM Generation
     runs-on: ${{ vars.RUNNER || 'ubuntu-latest' }}
     steps:
       - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:

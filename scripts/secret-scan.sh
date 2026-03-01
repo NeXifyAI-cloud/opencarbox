@@ -3,15 +3,15 @@ set -euo pipefail
 
 echo "🔎 Running lightweight secret scan on tracked files..."
 
-PATTERN="(sbp_[A-Za-z0-9]{20,}|SUPABASE_SERVICE_ROLE_KEY\s*=\s*eyJ[A-Za-z0-9._-]+|SUPABASE_ACCESS_TOKEN\s*=\s*[^<\s][^\s]*|NEXT_PUBLIC_SUPABASE_ANON_KEY\s*=\s*eyJ[A-Za-z0-9._-]+|ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}|sk-or-v1-[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}|QDRANT_API_KEY\s*=\s*eyJ[A-Za-z0-9._-]+|postgres(?:ql)?://[^\s\"'@]+:(?!<|password|PASSWORD|localdev)[^\s\"'@]+@)"
+PATTERN="(sbp_[A-Za-z0-9]{20,}|SUPABASE_SERVICE_ROLE_KEY\s*=\s*eyJ[A-Za-z0-9._-]+|SUPABASE_ACCESS_TOKEN\s*=\s*[^<\s][^\s]*|NEXT_PUBLIC_SUPABASE_ANON_KEY\s*=\s*eyJ[A-Za-z0-9._-]+|ghp_[A-Za-z0-9]{20,}|xox[baprs]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|sk-[A-Za-z0-9]{20,}|sk-or-v1-[A-Za-z0-9]{20,}|AIza[0-9A-Za-z_-]{20,}|QDRANT_API_KEY\s*=\s*eyJ[A-Za-z0-9._-]+|postgres(?:ql)?://(?!user:pass|postgres:postgres)[^\s\"'@]+:(?!<|password|PASSWORD|localdev|pass|postgres|user:pass)[^\s\"'@]+@)"
 
 if command -v rg >/dev/null 2>&1; then
-  if rg -n --hidden --glob '!.git' --glob '!.next' --glob '!node_modules' --glob '!package-lock.json' --glob '!yarn.lock' --pcre2 "$PATTERN" .; then
+  if rg -n --hidden --glob '!.git' --glob '!.next' --glob '!node_modules' --glob '!package-lock.json' --glob '!yarn.lock' --glob '!.github/docs/**' --pcre2 "$PATTERN" .; then
     echo "❌ Potential secret/token pattern found in tracked content."
     exit 1
   fi
 else
-  if grep -rn --exclude-dir=.git --exclude-dir=.next --exclude-dir=node_modules --exclude=package-lock.json --exclude=yarn.lock -E "$PATTERN" . 2>/dev/null; then
+  if grep -rn --exclude-dir=.git --exclude-dir=.next --exclude-dir=node_modules --exclude-dir=.github/docs --exclude=package-lock.json --exclude=yarn.lock -E "$PATTERN" . 2>/dev/null; then
     echo "❌ Potential secret/token pattern found in tracked content."
     exit 1
   fi

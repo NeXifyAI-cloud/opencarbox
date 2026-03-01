@@ -1,7 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { PrismaClient } from '@prisma/client'
-
-const prisma = new PrismaClient()
+import prisma from '@/lib/prisma'
 const API_URL = 'http://localhost:3000/api/products'
 
 describe('Products API', () => {

@@ -11,13 +11,17 @@
     "db:generate": "prisma generate",
     "secret:scan": "bash scripts/secret-scan.sh",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "^15.5.10",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@prisma/client": "^5.10.0"
+    "@prisma/client": "^5.10.0",
+    "@supabase/supabase-js": "^2.39.7",
+    "@supabase/ssr": "^0.1.0"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

@@ -5,6 +5,9 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   test: {
+    env: {
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres",
+    },
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],

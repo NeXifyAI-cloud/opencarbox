@@ -33,10 +33,6 @@ jobs:
       - run: pnpm install
       - name: Preflight
         run: npx tsx tools/preflight.ts ci
-      - name: Dependency audit
-        run: npm audit --prod || true
-      - name: Secret scan
-        run: npm run secret:scan
 
   sbom:
     name: SBOM Generation

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
 
 // Validation Schema für Vehicle
 const vehicleSchema = z.object({
@@ -25,11 +23,25 @@ const vehicleSchema = z.object({
 // GET /api/vehicles - Alle Fahrzeuge abrufen
 export async function GET(request: NextRequest) {
   try {
+    const currentUserId = request.headers.get('x-user-id')
+    const currentUserRole = request.headers.get('x-user-role')
+
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
     const skip = (page - 1) * limit
     const userId = searchParams.get('userId')
+
+    // Autorisierung: Nur ADMIN/EMPLOYEE darf alle Fahrzeuge sehen, CUSTOMER nur die eigenen
+    if (currentUserRole === 'CUSTOMER' && userId && userId !== currentUserId) {
+      return NextResponse.json(
+        { success: false, error: 'Nicht autorisiert' },
+        { status: 403 }
+      )
+    }
+
+    // Wenn kein userId angegeben ist und der User CUSTOMER ist, zeige nur eigene Fahrzeuge
+    const effectiveUserId = (currentUserRole === 'CUSTOMER') ? currentUserId : userId
     const brand = searchParams.get('brand')
     const model = searchParams.get('model')
 
@@ -40,7 +52,7 @@ export async function GET(request: NextRequest) {
       model?: { contains: string; mode: 'insensitive' }
     } = {}
     
-    if (userId) where.userId = userId
+    if (effectiveUserId) where.userId = effectiveUserId
     if (brand) where.brand = { contains: brand, mode: 'insensitive' }
     if (model) where.model = { contains: model, mode: 'insensitive' }
 
@@ -85,10 +97,21 @@ export async function GET(request: NextRequest) {
 // POST /api/vehicles - Neues Fahrzeug erstellen
 export async function POST(request: NextRequest) {
   try {
+    const currentUserId = request.headers.get('x-user-id')
+    const currentUserRole = request.headers.get('x-user-role')
+
     const body = await request.json()
     
     // Validierung
     const validation = vehicleSchema.safeParse(body)
+
+    // Autorisierung: CUSTOMER darf nur für sich selbst Fahrzeuge erstellen
+    if (currentUserRole === 'CUSTOMER' && validation.success && validation.data.userId && validation.data.userId !== currentUserId) {
+      return NextResponse.json(
+        { success: false, error: 'Nicht autorisiert' },
+        { status: 403 }
+      )
+    }
     if (!validation.success) {
       return NextResponse.json(
         { 

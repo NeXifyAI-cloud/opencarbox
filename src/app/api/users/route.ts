@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@prisma/client'
+import prisma from '@/lib/prisma'
 import { z } from 'zod'
-
-const prisma = new PrismaClient()
 
 // Validation Schema für User Updates
 const userUpdateSchema = z.object({
@@ -13,6 +11,16 @@ const userUpdateSchema = z.object({
 // GET /api/users - Alle Benutzer abrufen (mit Pagination)
 export async function GET(request: NextRequest) {
   try {
+    const userRole = request.headers.get('x-user-role')
+
+    // Nur ADMIN darf alle Benutzer auflisten
+    if (userRole !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Nicht autorisiert' },
+        { status: 403 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
@@ -71,9 +79,12 @@ export async function GET(request: NextRequest) {
 // PUT /api/users - Benutzer aktualisieren
 export async function PUT(request: NextRequest) {
   try {
+    const currentUserId = request.headers.get('x-user-id')
+    const currentUserRole = request.headers.get('x-user-role')
+
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('id')
-    
+
     if (!userId) {
       return NextResponse.json(
         { success: false, error: 'Benutzer-ID ist erforderlich' },
@@ -81,8 +92,24 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    // Autorisierung: Nur ADMIN oder der Benutzer selbst
+    if (currentUserRole !== 'ADMIN' && currentUserId !== userId) {
+      return NextResponse.json(
+        { success: false, error: 'Nicht autorisiert' },
+        { status: 403 }
+      )
+    }
+
     const body = await request.json()
-    
+
+    // Sicherheit: Nur ADMIN darf die Rolle ändern
+    if (body.role && currentUserRole !== 'ADMIN') {
+      return NextResponse.json(
+        { success: false, error: 'Rollenänderung nur für Administratoren zulässig' },
+        { status: 403 }
+      )
+    }
+
     // Validierung
     const validation = userUpdateSchema.safeParse(body)
     if (!validation.success) {

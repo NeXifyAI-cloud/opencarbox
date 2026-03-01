@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { cn } from '@/lib/utils';
+import { cn, formatPrice as formatPriceUtil } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
 /**
@@ -53,14 +53,10 @@ const sizeClasses = {
 };
 
 /**
- * Formatiert einen Preis in Euro oder CHF
+ * Formatiert einen Preis in Euro oder CHF unter Verwendung der zentralen Utility
  */
 function formatPrice(price: number, currency: 'EUR' | 'CHF'): string {
-  return new Intl.NumberFormat('de-AT', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 2,
-  }).format(price);
+  return formatPriceUtil(price, currency);
 }
 
 /**

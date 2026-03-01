@@ -42,6 +42,7 @@ export function formatPrice(price: number, currency: string = 'EUR'): string {
   return new Intl.NumberFormat('de-AT', {
     style: 'currency',
     currency,
+    minimumFractionDigits: 2,
   }).format(price);
 }
 
@@ -64,20 +65,10 @@ export function formatDate(
 ): string {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   
-  if (options?.short) {
-    return new Intl.DateTimeFormat('de-AT', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-    }).format(dateObj);
-  }
-  
-  const formatOptions: Intl.DateTimeFormatOptions = {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  };
-  
+  const formatOptions: Intl.DateTimeFormatOptions = options?.short
+    ? { day: '2-digit', month: '2-digit', year: 'numeric' }
+    : { day: 'numeric', month: 'long', year: 'numeric' };
+
   if (options?.withTime) {
     formatOptions.hour = '2-digit';
     formatOptions.minute = '2-digit';
@@ -277,4 +268,3 @@ export function calculateDiscountPercentage(
   if (originalPrice <= 0) return 0;
   return Math.round(((originalPrice - salePrice) / originalPrice) * 100);
 }
-

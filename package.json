@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "echo 'Linting disabled'",
     "secret:scan": "bash scripts/secret-scan.sh",
-    "quality-gate": "npx tsx scripts/quality-gate.ts"
+    "quality-gate": "npx tsx scripts/quality-gate.ts",
+    "db:generate": "prisma generate"
   },
   "dependencies": {
     "next": "^15.5.10",
@@ -24,7 +25,8 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^15.5.10",
     "@playwright/test": "^1.50.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "prisma": "^5.10.2"
   },
   "engines": {
     "node": ">=18.17.0"

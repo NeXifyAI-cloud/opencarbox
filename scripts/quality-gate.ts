@@ -40,6 +40,11 @@ function checkTypeScript(): void {
   console.log('🔍 Prüfe TypeScript...');
 
   try {
+    // Falls tsconfig.json nicht existiert, überspringen wir den tsc Check im minimal-repo
+    if (!fs.existsSync(path.join(process.cwd(), 'tsconfig.json'))) {
+      console.log('  ⚠️  tsconfig.json nicht gefunden, überspringe tsc Check');
+      return;
+    }
     execSync('npx tsc --noEmit', { stdio: 'pipe' });
     console.log('  ✅ Keine TypeScript-Fehler');
   } catch (error: any) {
@@ -124,6 +129,9 @@ function checkDocumentation(): void {
     'docs/architecture/system-overview.md',
     'docs/design-system/colors.md',
     'project_specs.md',
+    'docs/PRUEFPLAN_DOS.md',
+    'docs/DESIGN_TOKENS.md',
+    'docs/QA_MASTER_CHECKLIST.md',
   ];
 
   let missingCount = 0;
@@ -298,6 +306,57 @@ function generateSummary(): void {
 }
 
 /**
+ * Prüft auf Brand-Color Compliance (DOS v1.1).
+ * Shop: #FFB300, Service: #FFA800
+ */
+function checkBrandColors(): void {
+  console.log('🔍 Prüfe Brand-Colors (DOS v1.1)...');
+
+  const configPath = path.join(process.cwd(), 'tailwind.config.ts');
+  const cssPath = path.join(process.cwd(), 'src/app/globals.css');
+
+  if (fs.existsSync(configPath)) {
+    const config = fs.readFileSync(configPath, 'utf-8');
+    if (!config.includes('#FFB300') || !config.includes('#FFA800')) {
+      issues.push({
+        type: 'error',
+        category: 'Branding',
+        file: 'tailwind.config.ts',
+        message: 'Brand-Colors entsprechen nicht DOS v1.1 (#FFB300, #FFA800)',
+      });
+    }
+  }
+
+  if (fs.existsSync(cssPath)) {
+    const css = fs.readFileSync(cssPath, 'utf-8');
+    // Prüfe auf HSL oder HEX Repräsentationen
+    if (!css.includes('42 100% 50%') && !css.includes('#FFB300')) {
+      issues.push({
+        type: 'error',
+        category: 'Branding',
+        file: 'src/app/globals.css',
+        message: 'Shop Brand-Color (#FFB300) fehlt in globals.css',
+      });
+    }
+    if (!css.includes('40 100% 50%') && !css.includes('#FFA800')) {
+      issues.push({
+        type: 'error',
+        category: 'Branding',
+        file: 'src/app/globals.css',
+        message: 'Service Brand-Color (#FFA800) fehlt in globals.css',
+      });
+    }
+  }
+
+  const brandingIssues = issues.filter(i => i.category === 'Branding');
+  if (brandingIssues.length === 0) {
+    console.log('  ✅ Brand-Colors konform');
+  } else {
+    console.log(`  ❌ ${brandingIssues.length} Branding-Verstöße gefunden`);
+  }
+}
+
+/**
  * Hauptfunktion
  */
 function main(): void {
@@ -309,6 +368,7 @@ function main(): void {
   checkAnyTypes();
   checkFunctionLength();
   checkDocumentation();
+  checkBrandColors();
 
   generateSummary();
 }

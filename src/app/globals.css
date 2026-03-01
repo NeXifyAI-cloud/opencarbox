@@ -58,16 +58,16 @@
     --radius: 0.5rem;
 
     /* ---------------------------------------------------------------------
-       Marken-spezifische Variablen (aktualisiert - kein Rot)
+       Marken-spezifische Variablen (DOS v1.1)
        --------------------------------------------------------------------- */
     
-    /* Carvantooo (Shop) - Primary Blau */
-    --carvantooo-primary: 221 83% 53%;           /* #3B82F6 */
-    --carvantooo-glow: rgba(59, 130, 246, 0.4);
+    /* Carvantooo (Shop) - Gold-Gelb */
+    --carvantooo-primary: 42 100% 50%;           /* #FFB300 */
+    --carvantooo-glow: rgba(255, 179, 0, 0.4);
     
-    /* OpenCarBox (Services) - Secondary Teal */
-    --opencarbox-primary: 173 80% 40%;           /* #14B8A6 */
-    --opencarbox-glow: rgba(20, 184, 166, 0.4);
+    /* OpenCarBox (Services) - Orange */
+    --opencarbox-primary: 40 100% 50%;           /* #FFA800 */
+    --opencarbox-glow: rgba(255, 168, 0, 0.4);
 
     /* ---------------------------------------------------------------------
        Schatten
@@ -106,9 +106,9 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 221 83% 65%;               /* Helleres Blau für Dark Mode */
 
-    /* Marken-spezifische Glow Effects (aktualisiert) */
-    --carvantooo-glow: rgba(59, 130, 246, 0.4);    /* Primary Blau */
-    --opencarbox-glow: rgba(20, 184, 166, 0.4);    /* Secondary Teal */
+    /* Marken-spezifische Glow Effects (DOS v1.1) */
+    --carvantooo-glow: rgba(255, 179, 0, 0.4);    /* Gold-Gelb */
+    --opencarbox-glow: rgba(255, 168, 0, 0.4);    /* Orange */
   }
 }
 
@@ -231,14 +231,14 @@
   .border-gradient-primary {
     @apply relative;
     background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #3B82F6, #1D4ED8) border-box;
+                linear-gradient(135deg, #FFB300, #E6A100) border-box;
     border: 2px solid transparent;
   }
 
   .border-gradient-secondary {
     @apply relative;
     background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #14B8A6, #0F766E) border-box;
+                linear-gradient(135deg, #FFA800, #E69700) border-box;
     border: 2px solid transparent;
   }
 
@@ -307,16 +307,16 @@
   /* Mesh Gradient Backgrounds */
   .bg-mesh-primary {
     background: 
-      radial-gradient(at 40% 20%, rgba(59, 130, 246, 0.3) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, rgba(29, 78, 216, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, rgba(219, 234, 254, 0.3) 0px, transparent 50%);
+      radial-gradient(at 40% 20%, rgba(255, 179, 0, 0.3) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(230, 161, 0, 0.2) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(255, 230, 128, 0.3) 0px, transparent 50%);
   }
 
   .bg-mesh-secondary {
     background: 
-      radial-gradient(at 40% 20%, rgba(20, 184, 166, 0.3) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, rgba(15, 118, 110, 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, rgba(204, 251, 241, 0.3) 0px, transparent 50%);
+      radial-gradient(at 40% 20%, rgba(255, 168, 0, 0.3) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(230, 151, 0, 0.2) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, rgba(255, 220, 128, 0.3) 0px, transparent 50%);
   }
 
   /* Animierte Unterstreichung für Links */

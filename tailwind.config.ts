@@ -33,6 +33,9 @@ const config: Config = {
           orange: '#FFA800',
           'orange-hover': '#e09400',
         },
+        carvantooo: {
+          primary: '#FFB300',
+        },
         /* ---------------------------------------------------------
            shadcn/ui CSS-Variable Tokens (Dark-Mode-kompatibel)
            --------------------------------------------------------- */
